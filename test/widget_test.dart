@@ -8,7 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:jobs_flutter_base_config/UITabbarController.dart';
+import 'package:jobs_flutter_base_config/%E6%BB%9A%E5%8A%A8%E6%8E%A7%E4%BB%B6/UITabbarController.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
