@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 // 演示了类似于iOS.UITableView的效果： ListView + 自定义Cell + 点击Cell跳转到DetailPage
-// 真机运行如果出现空白页面，则在工程根目录下执行 flutter run --release
+
+// 真机运行如果出现空白页面的解决方案：
+// 方案1、在工程根目录下执行 flutter run --release 或者 
+// 方案2、通过 flutter devices 拿到设备id，然后 flutter run -d 设备ID
 void main() {
   runApp(const MyApp());
 }
