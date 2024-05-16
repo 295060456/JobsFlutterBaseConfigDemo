@@ -22,7 +22,7 @@ class GalleryDemo extends StatelessWidget {
     return MaterialApp(
       title: 'Image Picker Demo - Gallery',
       theme: ThemeData(
-        primarySwatch: Colors.red,
+        primarySwatch: Colors.blue,
       ),
       home: const ImagePickerDemo(imageSource: ImageSource.gallery),
     );
