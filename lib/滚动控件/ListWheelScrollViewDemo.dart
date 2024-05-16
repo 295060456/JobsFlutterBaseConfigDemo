@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+// 真机运行如果出现空白页面，则在工程根目录下执行 flutter run --release
 void main() {
   runApp(const MyApp());
 }

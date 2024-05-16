@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-
+// VideoPlayerDemo
+// 真机运行如果出现空白页面，则在工程根目录下执行 flutter run --release
 void main() {
   runApp(const VideoPlayerDemo());
 }
@@ -35,7 +36,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   void initState() {
     super.initState();
     _controller = VideoPlayerController.networkUrl(
-        'https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4' as Uri);
+        Uri.parse('https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4'));
     _initializeVideoPlayerFuture = _controller.initialize();
     _controller.setLooping(true);
   }
