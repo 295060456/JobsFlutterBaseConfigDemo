@@ -4,7 +4,7 @@ import 'dart:convert';
 class DynamicForm extends StatefulWidget {
   final String jsonString;
 
-  const DynamicForm({Key? key, required this.jsonString}) : super(key: key);
+  const DynamicForm({super.key, required this.jsonString});
 
   @override
   _DynamicFormState createState() => _DynamicFormState();
@@ -27,7 +27,7 @@ class _DynamicFormState extends State<DynamicForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dynamic Form'),
+        title: const Text('Dynamic Form'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -43,14 +43,14 @@ class _DynamicFormState extends State<DynamicForm> {
                   ),
                 ),
               );
-            }).toList(),
+            }),
             ElevatedButton(
               onPressed: () {
                 jsonMap.forEach((key, value) {
                   print('$key: ${controllers[key]?.text}');
                 });
               },
-              child: Text('Submit'),
+              child: const Text('Submit'),
             ),
           ],
         ),
