@@ -32,8 +32,8 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 flutter:
   uses-material-design: true # 指示应用程序是否应该使用Material Design风格
-  # assets:
-    # - assets/images/
+  assets:
+    - assets/
 
 # flutter pub get
 # flutter pub upgrade -major-versions # 更新Flutter项目的依赖包到major版本

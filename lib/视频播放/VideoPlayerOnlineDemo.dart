@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-// VideoPlayerDemo
-// 真机运行如果出现空白页面，则在工程根目录下执行 flutter run --release
+// VideoPlayerOnlineDemo.dart
+
+// 真机运行如果出现空白页面的解决方案：
+// 方案1、在工程根目录下执行 flutter run --release 或者 
+// 方案2、通过 flutter devices 拿到设备id，然后 flutter run -d 设备ID
+
+// dependencies:
+//   flutter:
+//     sdk: flutter
+//   video_player: 
+
 void main() {
   runApp(const VideoPlayerDemo());
 }
