@@ -146,31 +146,31 @@ class _CountdownBtnState extends State<CountdownBtn> {
 
   TextSpan _coloredTimeSpan(String time) {
     List<InlineSpan> spans = [];
-    time.split(RegExp(r'(\d+)')).forEach((segment) {
-      if (segment.isNotEmpty) {
-        if (RegExp(r'\d+').hasMatch(segment)) {
-          switch (segment[segment.length - 1]) {
-            case '时':
-              spans.add(TextSpan(
-                  text: segment,
-                  style: widget.textStyle.copyWith(color: Colors.red)));
-              break;
-            case '分':
-              spans.add(TextSpan(
-                  text: segment,
-                  style: widget.textStyle.copyWith(color: Colors.yellow)));
-              break;
-            case '秒':
-              spans.add(TextSpan(
-                  text: segment,
-                  style: widget.textStyle.copyWith(color: Colors.green)));
-              break;
-            default:
-              spans.add(TextSpan(text: segment, style: widget.textStyle));
-          }
-        } else {
-          spans.add(TextSpan(text: segment, style: widget.textStyle));
+    // 使用正则表达式匹配数字和单位的组合
+    final regex = RegExp(r'(\d+)([^\d]+)');
+    regex.allMatches(time).forEach((match) {
+      final number = match.group(1);
+      final unit = match.group(2);
+      if (number != null && unit != null) {
+        // 根据单位为文本设置不同颜色
+        Color color;
+        switch (unit) {
+          case '时':
+            color = Colors.red;
+            break;
+          case '分':
+            color = Colors.yellow;
+            break;
+          case '秒':
+            color = Colors.white;
+            break;
+          default:
+            color = Colors.black;
         }
+        spans.add(TextSpan(
+          text: '$number$unit',
+          style: widget.textStyle.copyWith(color: color),
+        ));
       }
     });
     return TextSpan(children: spans);
