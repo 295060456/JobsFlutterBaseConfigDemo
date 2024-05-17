@@ -6,7 +6,12 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 environment:
   sdk: '>=3.3.1 <4.0.0'
+
 dependencies:
+  json_annotation: 
+  flutter_bloc: 
+  bloc:
+  equatable: 
   video_player:
   image_picker: 
   cupertino_icons: ^1.0.6
@@ -15,10 +20,14 @@ dependencies:
   get_storage: 
   flutter:
     sdk: flutter
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0 # Flutter代码规范
+  build_runner: 
+  json_serializable: 
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 flutter:

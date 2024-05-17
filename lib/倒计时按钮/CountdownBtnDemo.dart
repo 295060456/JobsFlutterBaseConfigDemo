@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'CountdownBtn.dart';
+import 'CountdownBtn.dart' as countdown_btn;
 
 void main() {
   runApp(const CountdownBtnDemo());
@@ -19,7 +19,7 @@ class CountdownBtnDemo extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CountdownBtn(
+              countdown_btn.CountdownBtn(
                 textFront: '现在是距离倒计时结束还有：',
                 textBack: '请做好准备。',
                 isVertical: false,
@@ -31,7 +31,7 @@ class CountdownBtnDemo extends StatelessWidget {
                 initialTime: DateTime.now(),
               ),
               const SizedBox(height: 20),
-              CountdownBtn(
+              countdown_btn.CountdownBtn(
                 textFront: '现在是距离倒计时结束还有：',
                 textBack: '请做好准备。',
                 isVertical: true,
@@ -43,7 +43,7 @@ class CountdownBtnDemo extends StatelessWidget {
                 initialTime: DateTime.now(),
               ),
               const SizedBox(height: 20),
-              CountdownBtn(
+              countdown_btn.CountdownBtn(
                 textFront: '现在是距离倒计时结束还有：',
                 textBack: '请做好准备。',
                 isVertical: false,
@@ -55,7 +55,7 @@ class CountdownBtnDemo extends StatelessWidget {
                 initialTime: DateTime.now(),
               ),
               const SizedBox(height: 20),
-              CountdownBtn(
+              countdown_btn.CountdownBtn(
                 textFront: '现在是距离倒计时结束还有：',
                 textBack: '请做好准备。',
                 isVertical: true,
