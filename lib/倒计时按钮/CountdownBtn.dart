@@ -31,7 +31,7 @@ class CountdownBtn extends StatefulWidget {
 }
 
 class _CountdownBtnState extends State<CountdownBtn> {
-  late DateTime _remainingTime;
+  late Duration _remainingDuration;
   late Timer? _timer;
   bool isCountingDown = false;
   bool isPaused = false;
@@ -39,8 +39,7 @@ class _CountdownBtnState extends State<CountdownBtn> {
   @override
   void initState() {
     super.initState();
-    _remainingTime = widget.initialTime ??
-        DateTime.now().add(Duration(milliseconds: (widget.duration * 1000).toInt())); // 转换为毫秒
+    _remainingDuration = Duration(milliseconds: (widget.duration * 1000).toInt());
     if (widget.autoStart) {
       _startCountdown();
     }
@@ -58,7 +57,7 @@ class _CountdownBtnState extends State<CountdownBtn> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(widget.textFront, style: widget.textStyle),
-                  RichText(text: _coloredTimeSpan(formatDate(_remainingTime))),
+                  RichText(text: _coloredTimeSpan(formatDuration(_remainingDuration))),
                   Text(widget.textBack, style: widget.textStyle),
                 ],
               )
@@ -66,7 +65,7 @@ class _CountdownBtnState extends State<CountdownBtn> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(widget.textFront, style: widget.textStyle),
-                  RichText(text: _coloredTimeSpan(formatDate(_remainingTime))),
+                  RichText(text: _coloredTimeSpan(formatDuration(_remainingDuration))),
                   Text(widget.textBack, style: widget.textStyle),
                 ],
               ),
@@ -104,14 +103,15 @@ class _CountdownBtnState extends State<CountdownBtn> {
       Duration(milliseconds: (widget.timeStep.abs() * 1000).toInt()), // 毫秒为单位
       (timer) {
         setState(() {
-          _remainingTime = _remainingTime.add(Duration(milliseconds: (widget.timeStep * 1000).toInt())); // 更新剩余时间
-          if (_remainingTime.isBefore(DateTime.now())) {
+          _remainingDuration -= Duration(milliseconds: (widget.timeStep * 1000).toInt()); // 更新剩余时间
+          if (_remainingDuration <= Duration.zero) {
             timer.cancel();
             isCountingDown = false;
+            _remainingDuration = Duration.zero;
           }
         });
         // 打印当前时间
-        debugPrint('打印当前时间: ${DateTime.now()}');
+        // debugPrint('打印当前时间: ${DateTime.now()}');
       },
     );
     _playSound();
@@ -139,9 +139,9 @@ class _CountdownBtnState extends State<CountdownBtn> {
     SystemSound.play(SystemSoundType.click);
   }
 
-  String formatDate(DateTime dateTime) {
-    return '${dateTime.year}年${dateTime.month}月${dateTime.day}日'
-        ' ${dateTime.hour}时${dateTime.minute}分${dateTime.second}秒';
+  String formatDuration(Duration duration) {
+    debugPrint('打印duration: ${duration.inHours}时${duration.inMinutes.remainder(60)}分${duration.inSeconds.remainder(60)}秒');
+    return '${duration.inHours}时${duration.inMinutes.remainder(60)}分${duration.inSeconds.remainder(60)}秒';
   }
 
   TextSpan _coloredTimeSpan(String time) {
@@ -150,21 +150,6 @@ class _CountdownBtnState extends State<CountdownBtn> {
       if (segment.isNotEmpty) {
         if (RegExp(r'\d+').hasMatch(segment)) {
           switch (segment[segment.length - 1]) {
-            case '年':
-              spans.add(TextSpan(
-                  text: segment,
-                  style: widget.textStyle.copyWith(color: Colors.blue)));
-              break;
-            case '月':
-              spans.add(TextSpan(
-                  text: segment,
-                  style: widget.textStyle.copyWith(color: Colors.orange)));
-              break;
-            case '日':
-              spans.add(TextSpan(
-                  text: segment,
-                  style: widget.textStyle.copyWith(color: Colors.brown)));
-              break;
             case '时':
               spans.add(TextSpan(
                   text: segment,
