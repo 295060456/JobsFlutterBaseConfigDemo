@@ -19,53 +19,53 @@ class CountdownBtnDemo extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // 水平布局、点击触发、步长2(计时器模式)
               countdown_btn.CountdownBtn(
-                textFront: '现在是距离倒计时结束还有：',
+                textFront: '现在已经进行：',
                 textBack: '请做好准备。',
                 isVertical: false,
                 duration: 3600, // 1小时
                 textStyle: const TextStyle(fontSize: 16),
                 autoStart: false, // 点击触发
-                timeStep: 2,
-                countUp: true,
+                timeStep: 0.5,
                 initialTime: DateTime.now(),
               ),
               const SizedBox(height: 20),
-              countdown_btn.CountdownBtn(
-                textFront: '现在是距离倒计时结束还有：',
-                textBack: '请做好准备。',
-                isVertical: true,
-                duration: 3600, // 1小时
-                textStyle: const TextStyle(fontSize: 16),
-                autoStart: true, // 自动触发
-                timeStep: 1,
-                countUp: true,
-                initialTime: DateTime.now(),
-              ),
+              // 垂直布局、自动触发、步长1(计时器模式)
+              // countdown_btn.CountdownBtn(
+              //   textFront: '现在已经进行：',
+              //   textBack: '请做好准备。',
+              //   isVertical: true,
+              //   duration: 3600, // 1小时
+              //   textStyle: const TextStyle(fontSize: 16),
+              //   autoStart: true, // 自动触发
+              //   timeStep: 1,
+              //   initialTime: DateTime.now(),
+              // ),
               const SizedBox(height: 20),
-              countdown_btn.CountdownBtn(
-                textFront: '现在是距离倒计时结束还有：',
-                textBack: '请做好准备。',
-                isVertical: false,
-                duration: 3600, // 1小时
-                textStyle: const TextStyle(fontSize: 16),
-                autoStart: false, // 点击触发
-                timeStep: -2,
-                countUp: false,
-                initialTime: DateTime.now(),
-              ),
+              // 水平布局、点击触发、步长-2(倒计时模式)
+              // countdown_btn.CountdownBtn(
+              //   textFront: '现在距离倒计时结束还有：',
+              //   textBack: '请做好准备。',
+              //   isVertical: false,
+              //   duration: 3600, // 1小时
+              //   textStyle: const TextStyle(fontSize: 16),
+              //   autoStart: false, // 点击触发
+              //   timeStep: -2,
+              //   initialTime: DateTime.now(),
+              // ),
               const SizedBox(height: 20),
-              countdown_btn.CountdownBtn(
-                textFront: '现在是距离倒计时结束还有：',
-                textBack: '请做好准备。',
-                isVertical: true,
-                duration: 3600, // 1小时
-                textStyle: const TextStyle(fontSize: 16),
-                autoStart: true, // 自动触发
-                timeStep: -1,
-                countUp: false,
-                initialTime: DateTime.now(),
-              ),
+              // 垂直布局、自动触发、步长-1(倒计时模式)
+              // countdown_btn.CountdownBtn(
+              //   textFront: '现在距离倒计时结束还有：',
+              //   textBack: '请做好准备。',
+              //   isVertical: true,
+              //   duration: 3600, // 1小时
+              //   textStyle: const TextStyle(fontSize: 16),
+              //   autoStart: true, // 自动触发
+              //   timeStep: -1,
+              //   initialTime: DateTime.now(),
+              // ),
             ],
           ),
         ),

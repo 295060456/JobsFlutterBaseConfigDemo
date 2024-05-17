@@ -47,7 +47,7 @@ class _DynamicFormState extends State<DynamicForm> {
             ElevatedButton(
               onPressed: () {
                 jsonMap.forEach((key, value) {
-                  print('$key: ${controllers[key]?.text}');
+                  debugPrint('$key: ${controllers[key]?.text}');
                 });
               },
               child: const Text('Submit'),

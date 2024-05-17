@@ -10,8 +10,7 @@ class CountdownBtn extends StatefulWidget {
   final int duration;
   final TextStyle textStyle;
   final bool autoStart;
-  final int timeStep;
-  final bool countUp;
+  final double timeStep; // 改为 double 类型
   final DateTime? initialTime;
 
   const CountdownBtn({
@@ -23,8 +22,7 @@ class CountdownBtn extends StatefulWidget {
     required this.duration,
     required this.textStyle,
     this.autoStart = false,
-    this.timeStep = 1,
-    this.countUp = false,
+    this.timeStep = 0.5,
     this.initialTime,
   });
 
@@ -42,7 +40,8 @@ class _CountdownBtnState extends State<CountdownBtn> {
   void initState() {
     super.initState();
     _remainingTime = widget.initialTime ??
-        DateTime.now().add(Duration(seconds: widget.duration));
+        DateTime.now()
+            .add(Duration(seconds: widget.duration)); // 当前时间加上指定的秒数后的时间
     if (widget.autoStart) {
       _startCountdown();
     }
@@ -82,8 +81,9 @@ class _CountdownBtnState extends State<CountdownBtn> {
     super.dispose();
   }
 
-  // 切换
+  // 手势切换
   void _toggleCountdown() {
+    debugPrint("手势切换");
     if (isCountingDown) {
       if (isPaused) {
         _resumeCountdown();
@@ -95,26 +95,24 @@ class _CountdownBtnState extends State<CountdownBtn> {
     }
   }
 
-  // 开始倒计时
+  // 开始倒计时(核心方法)
   void _startCountdown() {
     setState(() {
       isCountingDown = true;
       isPaused = false;
     });
     _timer = Timer.periodic(
-      Duration(seconds: widget.timeStep.abs()),
+      Duration(milliseconds: (widget.timeStep.abs() * 1000).toInt()), // 毫秒为单位
       (timer) {
         setState(() {
-          _remainingTime = widget.countUp
-              ? _remainingTime.add(Duration(seconds: widget.timeStep))
-              : _remainingTime
-                  .subtract(Duration(seconds: widget.timeStep.abs()));
-
+          _remainingTime = _remainingTime.add(Duration(seconds: widget.timeStep.toInt())); // 秒数取整
           if (_remainingTime.isBefore(DateTime.now())) {
             timer.cancel();
             isCountingDown = false;
           }
         });
+        // 打印当前时间
+        debugPrint('打印当前时间: ${DateTime.now()}');
       },
     );
     _playSound();
