@@ -25,45 +25,52 @@ class DraggableButton extends StatefulWidget {
 
 class _DraggableButtonState extends State<DraggableButton>
     with SingleTickerProviderStateMixin {
-  double posX = 0.0;
-  double posY = 0.0;
-  bool returnToOrigin = false;
+  Offset _position = const Offset(300, 600); // 初始位置在右下角
+  bool returnToOrigin = true; // 控制是否返回原点
   bool isRotating = false;
-  AnimationController? _controller;
+  late AnimationController _rotationController;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+    _rotationController = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
-    )..repeat();
+    );
+    if (!isRotating) {
+      _rotationController.stop();
+    } else {
+      _rotationController.repeat();
+    }
   }
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _rotationController.dispose();
     super.dispose();
   }
 
   void _toggleRotation() {
     setState(() {
       if (isRotating) {
-        _controller?.stop();
+        _rotationController.stop();
       } else {
-        _controller?.repeat();
+        _rotationController.repeat();
       }
       isRotating = !isRotating;
     });
   }
 
   void _onDragEnd(DraggableDetails details) {
-    if (returnToOrigin) {
-      setState(() {
-        posX = 0.0;
-        posY = 0.0;
-      });
-    }
+    final RenderBox renderBox = context.findRenderObject() as RenderBox;
+    final Offset localOffset = renderBox.globalToLocal(details.offset);
+    setState(() {
+      if (returnToOrigin) {
+        _position = const Offset(300, 600); // 回到初始位置
+      } else {
+        _position = localOffset; // 停留在拖拽的结束位置
+      }
+    });
   }
 
   void _showMenu() {
@@ -90,8 +97,8 @@ class _DraggableButtonState extends State<DraggableButton>
     return Stack(
       children: [
         Positioned(
-          bottom: posY,
-          right: posX,
+          left: _position.dx,
+          top: _position.dy,
           child: GestureDetector(
             onLongPress: _showMenu,
             child: Draggable(
@@ -110,7 +117,7 @@ class _DraggableButtonState extends State<DraggableButton>
     return GestureDetector(
       onTap: _toggleRotation,
       child: RotationTransition(
-        turns: _controller!,
+        turns: _rotationController,
         child: Container(
           width: 60,
           height: 60,
