@@ -1,55 +1,61 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-// 仅调取相册
-// 真机运行如果出现空白页面的解决方案：
-// 方案1、在工程根目录下执行 flutter run --release 或者 
-// 方案2、通过 flutter devices 拿到设备id，然后 flutter run -d 设备ID
+import 'package:flutter/services.dart';
 
-// 权限问题：Flutter代码不配置设备权限。配置权限需要进入特定的代码里面，按照设备所属的代码规范进行配置。比如：
-// iOS进入`info.plist`里面进行配置
-// Android通常只涉及两个主要文件：`AndroidManifest.xml` 和 `build.gradle`
+// open -a Simulator
 void main() {
-  runApp(const GalleryDemo());
+  // 用于确保Flutter框架已经初始化(某些情况下可以省略，最新版本的Flutter中不需要显示调用，但是为了确保向下兼容，还是加上)
+  WidgetsFlutterBinding.ensureInitialized();
+  debugPrint("Hi");// 用这一句进行打印
+
+  // 获取环境变量
+  Map<String, String> environment = Platform.environment;
+  // 获取 FLUTTER_TARGET 变量的值
+  String? flutterTarget = environment['FLUTTER_TARGET'];
+  // 打印 FLUTTER_TARGET 的值
+  debugPrint('FLUTTER_TARGET: $flutterTarget');
+
+  runApp(const MyApp());
+  // 修改安卓状态栏颜色
+  if (Platform.isAndroid) {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+    ));
+  }
 }
 
-class GalleryDemo extends StatelessWidget {
-  const GalleryDemo({super.key});
-
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Image Picker Demo - Gallery',
+      debugShowCheckedModeBanner: false ,
+      // initialRoute: '',/// 初始化的时候加载的路由
+      title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
-      home: const ImagePickerDemo(imageSource: ImageSource.gallery),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class ImagePickerDemo extends StatefulWidget {
-  final ImageSource imageSource;
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
 
-  const ImagePickerDemo({super.key, required this.imageSource});
+  final String title;
 
   @override
-  _ImagePickerDemoState createState() => _ImagePickerDemoState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _ImagePickerDemoState extends State<ImagePickerDemo> {
-  File? _image;
-  final picker = ImagePicker();
+class _MyHomePageState extends State<MyHomePage> {
+  int _counter = 0;
 
-  Future getImage() async {
-    final pickedFile = await picker.pickImage(source: widget.imageSource);
+  void _incrementCounter() {
     setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      } else {
-        debugPrint('No image selected.');
-      }
+      _counter++;
     });
   }
 
@@ -57,18 +63,50 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Image Picker Demo - Gallery'),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
+        centerTitle: true,/// 无论在 Android 还是在 iOS 上，标题都是居中显示
+        /// 自定义返回按钮
+        leading: IconButton(
+          icon:const Icon(Icons.menu),
+          onPressed: (){
+            debugPrint('menu');
+          },
+        ),
+        actions: <Widget>[
+          IconButton(
+            icon:const Icon(Icons.search),
+            onPressed: (){
+              debugPrint('search');
+            },
+        ),
+          IconButton(
+            icon:const Icon(Icons.settings),
+            onPressed: (){
+              debugPrint('settings');
+            }, 
+        ),
+        ],
       ),
       body: Center(
-        child: _image == null
-            ? const Text('No image selected.')
-            : Image.file(_image!),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              'You have pushed the button this many times:',
+            ),
+            Text(
+              '$_counter',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: getImage,
-        tooltip: 'Pick Image from gallery',
-        child: const Icon(Icons.photo_library),
-      ),
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
