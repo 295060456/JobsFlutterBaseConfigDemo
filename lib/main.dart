@@ -1,9 +1,20 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 // open -a Simulator
 void main() {
+  // 捕获FlutterError，并打印到控制台
+  // 注意：在Release模式下，应用会被系统终止，因此需要在Release模式下关闭此功能
+ FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.dumpErrorToConsole(details);
+    if (kReleaseMode) {
+      // 在Release模式下，将应用控制权交给系统
+      exit(1);
+    }
+  };
+
   // 用于确保Flutter框架已经初始化(某些情况下可以省略，最新版本的Flutter中不需要显示调用，但是为了确保向下兼容，还是加上)
   WidgetsFlutterBinding.ensureInitialized();
   debugPrint("Hi");// 用这一句进行打印

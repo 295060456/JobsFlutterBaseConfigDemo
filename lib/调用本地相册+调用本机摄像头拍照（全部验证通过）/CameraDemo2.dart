@@ -1,30 +1,32 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+// image_picker 插件只能分别调用拍照或录像功能，但不能直接调用系统相机应用的完整界面
 import 'package:image_picker/image_picker.dart';
-// 仅调取相册
+// 仅调取相机
 // 真机运行如果出现空白页面的解决方案：
 // 方案1、在工程根目录下执行 flutter run --release 或者 
-// 方案2、通过 flutter devices 拿到设备id，然后 flutter run -d 设备ID
-// flutter run lib/调用本地相册+调用本机摄像头拍照（全部验证通过）/GalleryDemo.dart -d 00008110-000625583EE3801E
+// 方案2、通过 flutter devices 拿到设备id，然后 flutter run -d 设备ID。比如
+// flutter run lib/调用本地相册+调用本机摄像头拍照（全部验证通过）/CameraDemo2.dart -d 00008110-000625583EE3801E
+
 // 权限问题：Flutter代码不配置设备权限。配置权限需要进入特定的代码里面，按照设备所属的代码规范进行配置。比如：
 // iOS进入`info.plist`里面进行配置
 // Android通常只涉及两个主要文件：`AndroidManifest.xml` 和 `build.gradle`
 void main() {
-  runApp(const GalleryDemo());
+  runApp(const CameraDemo());
 }
 
-class GalleryDemo extends StatelessWidget {
-  const GalleryDemo({super.key});
+class CameraDemo extends StatelessWidget {
+  const CameraDemo({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Image Picker Demo - Gallery',
+      title: 'Image Picker Demo - Camera',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const ImagePickerDemo(imageSource: ImageSource.gallery),
+      home: const ImagePickerDemo(imageSource: ImageSource.camera),
     );
   }
 }
@@ -57,7 +59,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Image Picker Demo - Gallery'),
+        title: const Text('Image Picker Demo - Camera'),
       ),
       body: Center(
         child: _image == null
@@ -66,8 +68,8 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: getImage,
-        tooltip: 'Pick Image from gallery',
-        child: const Icon(Icons.photo_library),
+        tooltip: 'Take a Photo',
+        child: const Icon(Icons.camera_alt),
       ),
     );
   }

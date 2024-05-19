@@ -14,7 +14,10 @@ dependencies:
   equatable: 
   video_player: # 用于播放视频
   transparent_image: # 用于网络图片的透明占位符
-  image_picker: 
+  image_picker: # image_picker 插件只能分别调用拍照或录像功能，但不能直接调用系统相机应用的完整界面
+  camera: 
+  path_provider: 
+  gallery_saver: # 用于保存图片和视频到相册中
   cupertino_icons: ^1.0.6
   get: 
   lottie: 
