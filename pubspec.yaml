@@ -19,7 +19,8 @@ dependencies:
   path_provider: 
   gallery_saver: # 用于保存图片和视频到相册中
   cupertino_icons: ^1.0.6
-  get: 
+  provider:
+  get:
   lottie: 
   get_storage: 
   flutter:
