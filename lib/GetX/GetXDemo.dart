@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+// https://github.com/jonataslaw/getx
 void main() {
   runApp(MyApp());
 }
@@ -15,6 +15,10 @@ class CounterController extends GetxController {
 
 class MyApp extends StatelessWidget {
   final CounterController counterController = Get.put(CounterController());
+
+  MyApp({super.key});
+
+  // const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
