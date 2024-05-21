@@ -1,4 +1,5 @@
 {
-    "cmake.sourceDirectory": "/Users/jobs/Documents/GitHub/JobsFlutterBaseConfig/jobs_flutter_base_config/linux",
-    "java.compile.nullAnalysis.mode": "automatic",
+  "cmake.sourceDirectory": "/Users/jobs/Documents/GitHub/JobsFlutterBaseConfig/jobs_flutter_base_config/linux",
+  "java.compile.nullAnalysis.mode": "automatic",
+  "dart.flutterSdkPath": ".fvm/versions/stable"
 }
