@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 // GridView使用演示
 // 真机运行如果出现空白页面的解决方案：
@@ -5,6 +6,7 @@ import 'package:flutter/material.dart';
 // 方案2、通过 flutter devices 拿到设备id，然后 flutter run -d 设备ID
 void main() {
   runApp(const MyApp());
+  log('GridViewDemo');
 }
 
 class MyApp extends StatelessWidget {
