@@ -8,6 +8,7 @@ environment:
   sdk: '>=3.3.1 <4.0.0'
 
 dependencies:
+  source_gen:
   json_annotation: 
   flutter_bloc: 
   bloc:
