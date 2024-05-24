@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 // https://github.com/jonataslaw/getx
+// 这个类给我们演示了如何使用 GetX 来管理状态，并自动更新 UI。
 void main() {
   runApp(MyApp());
 }

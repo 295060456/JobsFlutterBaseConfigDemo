@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+// 定义了如何注入HomeController
 // 利用GetX做路由管理
 void main() {
   runApp(const MyApp());
