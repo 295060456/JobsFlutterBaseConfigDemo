@@ -27,8 +27,11 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       localizationsDelegates: const [
+        // 提供 Material 设计组件的本地化资源。包括诸如按钮、对话框、日期选择器等在内的各种组件的本地化字符串。
         GlobalMaterialLocalizations.delegate,
+        // 提供基本的小部件（widget）的本地化支持。这些小部件包括 TextField 的提示文本等。
         GlobalWidgetsLocalizations.delegate,
+        // 提供 Cupertino（iOS 风格）组件的本地化支持。包括 iOS 风格的日期选择器、对话框等的本地化字符串。
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [

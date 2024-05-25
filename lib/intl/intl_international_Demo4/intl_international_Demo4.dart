@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+
 import 'locales.dart'; // 引入新创建的文件
 
 void main() {
@@ -32,6 +33,7 @@ class _MyAppState extends State<MyApp> {
         GlobalWidgetsLocalizations.delegate,
         // 提供 Cupertino（iOS 风格）组件的本地化支持。包括 iOS 风格的日期选择器、对话框等的本地化字符串。
         GlobalCupertinoLocalizations.delegate,
+        AppLocalizationsDelegate(), // 添加本地化代理
       ],
       supportedLocales: const [
         Locale('zh', ''), // Chinese, no country code
@@ -55,11 +57,7 @@ class _MyAppState extends State<MyApp> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                _locale.languageCode == 'zh'
-                    ? '你好'
-                    : _locale.languageCode == 'ja'
-                        ? 'こんにちは'
-                        : 'Hello',
+                AppLocalizations.instance.hello, // 使用本地化字符串
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
             ],
