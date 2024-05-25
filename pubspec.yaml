@@ -8,6 +8,13 @@ environment:
   sdk: '>=3.3.1 <4.0.0'
 
 dependencies:
+  intl: # 提供国际化和本地化设施，包括消息翻译、复数和性别、日期/数字格式和解析以及双向文本
+  flutter:
+    sdk: flutter
+  flutter_localizations: # 一个使用地图数据进行应用内定位的软件包
+  # google_maps_flutter: # 一个使用地图数据进行应用内定位的软件包
+  # geolocator: # 一个使用地图数据进行应用内定位的软件包
+    sdk: flutter
   source_gen:
   json_annotation: 
   flutter_bloc: 
@@ -24,8 +31,6 @@ dependencies:
   get:
   lottie: 
   get_storage: 
-  flutter:
-    sdk: flutter
   url_launcher: # 用于在移动应用中打开 URLs，包括网页、电子邮件、电话等
 
 dev_dependencies:
@@ -41,6 +46,7 @@ flutter:
   uses-material-design: true # 指示应用程序是否应该使用Material Design风格
   assets:
     - assets/
+    - assets/i18n/
 
 # flutter pub get
 # flutter pub upgrade -major-versions # 更新Flutter项目的依赖包到major版本
