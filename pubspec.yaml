@@ -1,6 +1,4 @@
 name: jobs_flutter_base_config
-# main: lib/main0.dart
-# main: lib/main.dart
 description: "A new Flutter project."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
@@ -8,51 +6,134 @@ environment:
   sdk: '>=3.3.1 <4.0.0'
 
 dependencies:
-  intl: # 提供国际化和本地化设施，包括消息翻译、复数和性别、日期/数字格式和解析以及双向文本
-  timezone: # 用于获取设备时区
-  shared_preferences: # 用于存储键值对数据
-  flutter:
-    sdk: flutter
-  flutter_localizations: # 一个使用地图数据进行应用内定位的软件包
-  # google_maps_flutter: # 一个使用地图数据进行应用内定位的软件包
-  # geolocator: # 一个使用地图数据进行应用内定位的软件包
-    sdk: flutter
-  source_gen:
-  json_annotation: 
-  flutter_bloc: 
-  bloc:
-  equatable: 
-  video_player: # 用于播放视频
-  transparent_image: # 用于网络图片的透明占位符
-  image_picker: # image_picker 插件只能分别调用拍照或录像功能，但不能直接调用系统相机应用的完整界面
-  camera: 
-  path_provider: 
-  gallery_saver: # 用于保存图片和视频到相册中
+# UI组件库
   cupertino_icons: ^1.0.6
-  provider:
-  get:
-  lottie: 
+  shimmer: # 用于显示占位符
   carousel_slider: # 用于轮播图
+  card_swiper: # 用于轮播图
+  pin_code_fields: # 用于输入验证码
+  fl_chart: # 用于绘制图表
   flutter_slidable: # 可滑动的列表项
-  flutter_svg: # 用于显示SVG图片  
+  flutter_datetime_picker: # 用于日期时间选择器
+  easy_refresh: # 用于下拉刷新
+  extended_text: # 用于显示富文本
+  camera: # 用于拍照
+  image_cropper: # 用于裁剪图片
+  image_editor: # 用于编辑图片
+  photo_view: # 用于查看图片
+  flutter_image_compress: # 用于压缩图片
+  flutter_image_compress_platform_interface: # 用于压缩图片 (platform interface)
+  flutter_image_compress_web: # 用于压缩图片 (web)
+  font_awesome_flutter: # 用于显示字体图标
+  image_picker: # image_picker 插件只能分别调用拍照或录像功能，但不能直接调用系统相机应用的完整界面
   flutter_html: # 用于显示HTML内容
+  flutter_native_splash: # 用于生成启动页
+  flutter_native_view: # 用于显示原生视图 (iOS)
   webview_flutter: # 用于显示网页
+  webview_flutter_wkwebview: # 用于显示网页
+  flutter_inappwebview: # 用于显示网页 (iOS)
+  flutter_webview_plugin: # 用于显示网页 (Android)
+  google_mobile_ads: # 用于显示广告
+  cached_network_image: # 用于显示网络图片
+  flutter_inappwebview_platform_interface: # 用于显示网页 (platform interface)
+  flutter_inappwebview_web: # 用于显示网页 (web)
+# 图片处理
+  wechat_assets_picker: # 用于选择微信相册中的图片(微信UI)
+  wechat_camera_picker: # 用于拍照(微信UI)
+  gallery_saver: # 用于保存图片和视频到相册中
+  image: # 用于处理图片
+  transparent_image: # 用于网络图片的透明占位符
+  flutter_svg: # 用于显示SVG图片
+  flutter_native_image: # 用于处理原生图片
+  image_gallery_saver: # 用于保存图片到相册中
+# 数据处理
+  json_serializable: # 用于序列化/反序列化JSON数据
+  json_annotation: # 用于序列化/反序列化JSON数据
+  messagepack: # 用于序列化/反序列化MessagePack数据
+  shared_preferences: # 用于存储键值对数据
+  date_format: # 用于格式化日期
+  encrypt: # 用于加密数据
+  pointycastle: # 用于加密数据
+  money2: # 用于金额格式化
+  flutter_widget_from_html_core: # 用于解析HTML内容
+# 状态管理
+  get: # 用于管理应用状态
+  provider: # 用于管理应用状态
+  bloc: # 用于管理应用状态
+  flutter_bloc: # 用于管理应用状态
+# 用户权限处理
+  permission_handler: # 用于处理权限
+# 网络请求
+  connectivity: # 用于检查设备网络连接状态
+  http: # 用于网络请求
+  dio: # 用于网络请求
+  dio_cache_interceptor: # 用于缓存网络请求
+  dio_cookie_manager: # 用于管理Cookie
+  telnet: # 用于Telnet客户端
+  web_socket_channel: # 用于WebSocket客户端
+  pretty_dio_logger: # 用于打印网络请求日志
+  mqtt_client: # 用于连接MQTT服务器
+  flutter_cache_manager_firebase: # 用于缓存网络请求 (Firebase)
+  flutter_cache_manager: # 用于缓存网络请求
+# 本地存储
   get_storage: 
-  url_launcher: # 用于在移动应用中打开 URLs，包括网页、电子邮件、电话等
+  firebase_core: # 用于使用Firebase
+  flutter_secure_storage: # 用于存储敏感数据
+  flutter_secure_storage_macos: # 用于存储敏感数据 (macOS)
+  shared_preferences_web: # 用于存储键值对数据 (web)
+  shared_preferences_platform_interface: # 用于存储键值对数据 (platform interface)
+# 播放器
+  video_player: # 用于播放视频
+  chewie: # 用于播放视频
+  lottie: # 用于播放动画
+# 国际化
+  intl: # 提供国际化和本地化设施，包括消息翻译、复数和性别、日期/数字格式和解析以及双向文本
+# 设备/应用相关
+  device_info_plus: # 用于获取设备信息
+  timezone: # 用于获取设备时区
+  flutter_native_timezone: # 用于获取设备时区 (iOS)
+  location: # 用于获取设备位置
+  package_info_plus: # 用于获取应用信息
   uuid: # 用于生成唯一标识符
   platform_device_id: # 用于获取设备唯一标识符
   package_info: # 用于获取应用信息
   device_info: # 用于获取设备信息
-  connectivity: # 用于检查设备网络连接状态
-  firebase_core: # 用于使用Firebase
-  http: # 用于网络请求
-  dio: # 用于网络请求
+# 分享功能
+  share: # 用于分享内容
+  share_plus: # 用于分享内容
+# 账号登陆
+  google_sign_in: # 用于登录Google账号
+# 键盘相关
+  keyboard_actions: # 用于处理键盘事件
+  flutter_keyboard_visibility: # 用于监听键盘是否显示
+# 地图相关
+  flutter_localizations: # 一个使用地图数据进行应用内定位的软件包
+    sdk: flutter
+  geolocator: # 一个使用地图数据进行应用内定位的软件包
+  google_maps_flutter: # 一个使用地图数据进行应用内定位的软件包
+  google_maps_webservice: # 用于使用Google Maps API
+  google_maps_flutter_platform_interface: # 用于使用Google Maps API (platform interface)
+  google_maps_flutter_web: # 用于使用Google Maps API (web)
+ 
 
+# 工具库
+  connectivity_plus: # 用于检查设备网络连接状态
+  install_plugin: # 用于安装插件
+  visibility_detector: # 用于监听可见性(判断页面是否显示在最上层)
+  flutter_downloader: # 用于下载文件
+  url_launcher: # 用于在移动应用中打开 URLs，包括网页、电子邮件、电话等
+  qr_flutter: # 用于生成二维码
+  flutter:
+    sdk: flutter
+# 应用程序
+  flutter_plugin_android_lifecycle: # 用于管理生命周期 (Android)
+# 日志调试
+  flutter_ulog: # 用于打印日志
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0 # Flutter代码规范
-  build_runner: 
+  build_runner: # 用于运行生成代码
   json_serializable: 
 
 # For information on the generic Dart part of this file, see the
@@ -64,7 +145,6 @@ flutter:
     - assets/i18n/
     - assets/App启动开屏素材/
     - assets/轮播图图片素材/
-    
 
 # flutter pub get
 # flutter pub upgrade -major-versions # 更新Flutter项目的依赖包到major版本
