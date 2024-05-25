@@ -6,10 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:video_player/video_player.dart';
 
-
 void main() {
-
- FlutterError.onError = (FlutterErrorDetails details) {
+  FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.dumpErrorToConsole(details);
     if (kReleaseMode) {
       // 在Release模式下，将应用控制权交给系统
@@ -65,8 +63,8 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
     if (pickedFile != null) {
       setState(() {
         _media = File(pickedFile.path);
-        _initializeVideoController(_media!);
       });
+      _initializeVideoController(_media!);
     } else {
       _showSnackBar('No video selected.');
     }
