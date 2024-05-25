@@ -3,15 +3,19 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
 import 'Tools/SPUtil.dart';
-// import 'Tools/Theme/theme_service.dart';
+import 'Tools/Theme/theme_service.dart';
 import 'Tools/channel_util.dart';
+import 'Tools/custom_route_listen_widget.dart';
 import 'Tools/device_service.dart';
+import 'Tools/l10n.dart';
+import 'routes.dart';
+import '页面合集/splash/binding.dart';
 
 // open -a Simulator
 Future<void> main() async {
@@ -76,6 +80,7 @@ Future<void> main() async {
     SystemChrome.setSystemUIOverlayStyle(style);
   }
 }
+
 //=================================================有状态小部件====================================================
 // 有状态小部件
 class MyApp2 extends StatefulWidget {
@@ -85,6 +90,7 @@ class MyApp2 extends StatefulWidget {
   // _MyAppState createState() => _MyAppState();
   State<MyApp2> createState() => _MyAppState();
 }
+
 // 有状态小部件的关联状态
 class _MyAppState extends State<MyApp2> with WidgetsBindingObserver {
   @override
@@ -111,50 +117,54 @@ class _MyAppState extends State<MyApp2> with WidgetsBindingObserver {
           hideKeyboard(context);
         },
         child: null);
-        // child: _buildMaterialApp(context));
+    // child: _buildMaterialApp(context));
   }
 
-  //   Widget _buildMaterialApp(BuildContext mContext) {
-  //   // log('当前语言包---：${Get.locale}---${Get.deviceLocale}----${LangService().lang.toLocaleValue}');
-  //   return Consumer<CurrentLocale>(
-  //     builder: (context, currentLocale, child) {
-  //       return GetMaterialApp(
-  //         locale: currentLocale.getLocale(),
-  //         fallbackLocale: Get.deviceLocale,
-  //         // fallbackLocale: LangService().lang.toLocaleValue,
-  //         debugShowCheckedModeBanner: false,
-  //         navigatorObservers: [
-  //           CustomRouteListenWidget.routeObserver,
-  //           CustomGlobalNavigatorObserver()
-  //         ],
-  //         initialRoute: '/',
-  //         getPages: [...Routes.routePage],
-  //         theme: ThemeService.instance.lightTheme,
-  //         darkTheme: ThemeService.instance.darkTheme,
-  //         themeMode: ThemeService.instance.themeMode,
-  //         defaultTransition: Transition.cupertino,
-  //         localizationsDelegates: const [
-  //           S.delegate,
-  //           GlobalMaterialLocalizations.delegate,
-  //           GlobalWidgetsLocalizations.delegate,
-  //           GlobalCupertinoLocalizations.delegate,
-  //         ],
-  //         supportedLocales: S.delegate.supportedLocales,
-  //         initialBinding: SplashBinding(),
-  //         home: SplashPage(
-  //           onFinish: (context) async {
-  //             _initThirdSDK();
-  //             await AccountService().initAsync();
-  //             Future.delayed(const Duration(seconds: 1), () {
-  //               RouteUtil.pushToView(Routes.mainPage, offAll: true);
-  //             });
-  //           },
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
+  // ignore: unused_element
+  Widget _buildMaterialApp(BuildContext mContext) {
+    // log('当前语言包---：${Get.locale}---${Get.deviceLocale}----${LangService().lang.toLocaleValue}');
+    return Consumer<CurrentLocale>(
+      builder: (context, currentLocale, child) {
+        return GetMaterialApp(
+          locale: currentLocale.getLocale(),
+          fallbackLocale: Get.deviceLocale,
+          // fallbackLocale: LangService().lang.toLocaleValue,
+          debugShowCheckedModeBanner: false,
+          navigatorObservers: [
+            CustomRouteListenWidget.routeObserver,
+            CustomGlobalNavigatorObserver()
+          ],
+          initialRoute: '/',
+          getPages: [...Routes.routePage],
+          theme: ThemeService.instance.lightTheme,
+          darkTheme: ThemeService.instance.darkTheme,
+          themeMode: ThemeService.instance.themeMode,
+          // GetX提供的 iOS 平台上的过渡效果
+          defaultTransition: Transition.cupertino,
+          localizationsDelegates: const [
+            S.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: S.delegate.supportedLocales,
+          initialBinding: SplashBinding(),
+          home: null,
+          // home: SplashPage(
+          //   onFinish: (context) async {
+          //     _initThirdSDK();
+          //     await AccountService().initAsync();
+          //     Future.delayed(const Duration(seconds: 1), () {
+          //       RouteUtil.pushToView(Routes.mainPage, offAll: true);
+          //     });
+          //   },
+          // ),
+        );
+      },
+    );
+  }
 }
+
 //=================================================无状态小部件====================================================
 // 无状态小部件没有关联状态
 class MyApp1 extends StatelessWidget {
@@ -245,6 +255,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
 //=================================================一些功能性方法====================================================
 // 自定义状态管理类，切换语言
 class CurrentLocale with ChangeNotifier {
@@ -276,10 +287,25 @@ class CurrentLocale with ChangeNotifier {
     }
   }
 }
-///关闭软键盘
+
+// 关闭软键盘
 void hideKeyboard(BuildContext context) {
+  // 获取当前的焦点
   FocusScopeNode currentFocus = FocusScope.of(context);
+  // 检查当前焦点状态：如果当前焦点不是空的，则关闭软键盘
+  // 如果当前 FocusScopeNode 不是主焦点并且有一个焦点子节点，则进入条件语句。
   if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+    // 取消焦点（隐藏键盘）：
     FocusManager.instance.primaryFocus!.unfocus();
+  }
+}
+
+class CustomGlobalNavigatorObserver extends NavigatorObserver {
+  @override
+  void didPop(Route route, Route? previousRoute) {
+    // TODO: implement didPop
+    super.didPop(route, previousRoute);
+    // CustomSnackBar.dismiss();
+    // CustomToast.dismiss();
   }
 }

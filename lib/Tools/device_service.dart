@@ -1,7 +1,12 @@
 import 'dart:io';
 import 'dart:math';
 
-import '../单例的写法/MySingletonDemo2.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:uuid/uuid.dart';
+import 'package:platform_device_id/platform_device_id.dart';
+
+import 'SPUtil.dart';
 
 // import 'package:device_info_plus/device_info_plus.dart';
 // import 'package:flutter_bet/constant/app_cache_key.dart';
@@ -28,10 +33,10 @@ class DeviceService {
 
   String getClientId() {
     if (_clientId.isEmpty) {
-      final cache = SPUtil().getString(CacheKey.clientIdKey);
+      final cache = SPUtil().getString("clientIdKey");
       if (cache == null) {
         _clientId = uuid.v4();
-        SPUtil().setString(CacheKey.clientIdKey, _clientId);
+        SPUtil().setString("clientIdKey", _clientId);
       } else {
         _clientId = cache;
       }
