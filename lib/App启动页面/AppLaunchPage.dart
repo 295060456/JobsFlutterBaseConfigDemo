@@ -38,7 +38,7 @@ class _LaunchScreenState extends State<LaunchScreen> {
     super.initState();
     // 初始化视频播放器
     _videoController =
-        VideoPlayerController.asset('assets/welcome_video.mp4')
+        VideoPlayerController.asset('assets/App启动开屏素材/welcome_video.mp4')
           ..initialize().then((_) {
             setState(() {});
             _videoController.play();
@@ -95,11 +95,11 @@ void _launchURL(String url) async {
             ),
           if (_showImage)
             Positioned.fill(
-              child: Image.asset('assets/welcome.png', fit: BoxFit.cover),
+              child: Image.asset('assets/App启动开屏素材/welcome.png', fit: BoxFit.cover),
             ),
           if (_showGif)
             Positioned.fill(
-              child: Image.asset('assets/welcome.gif', fit: BoxFit.cover),
+              child: Image.asset('assets/App启动开屏素材/welcome.gif', fit: BoxFit.cover),
             ),
           Positioned.fill(
             child: GestureDetector(

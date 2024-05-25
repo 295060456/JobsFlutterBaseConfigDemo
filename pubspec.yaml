@@ -32,6 +32,11 @@ dependencies:
   provider:
   get:
   lottie: 
+  carousel_slider: # 用于轮播图
+  flutter_slidable: # 可滑动的列表项
+  flutter_svg: # 用于显示SVG图片  
+  flutter_html: # 用于显示HTML内容
+  webview_flutter: # 用于显示网页
   get_storage: 
   url_launcher: # 用于在移动应用中打开 URLs，包括网页、电子邮件、电话等
   uuid: # 用于生成唯一标识符
@@ -57,6 +62,9 @@ flutter:
   assets:
     - assets/
     - assets/i18n/
+    - assets/App启动开屏素材/
+    - assets/轮播图图片素材/
+    
 
 # flutter pub get
 # flutter pub upgrade -major-versions # 更新Flutter项目的依赖包到major版本
