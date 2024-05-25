@@ -74,6 +74,7 @@ samples, guidance on mobile development, and a full API reference.
     * **定义项目依赖**：通过 `dependencies` 和 `dev_dependencies` 部分，你可以指定项目所依赖的第三方库。其中，`dependencies` 指定项目运行时依赖的库，而 `dev_dependencies` 则是开发时依赖的库，比如测试框架、代码分析工具等。
     * **指定 Dart 版本**：你可以指定项目所需的 Dart SDK 版本，以确保项目的兼容性。
     * **添加其他配置**：除了上述内容外，你还可以在 `pubspec.yaml` 文件中添加其他配置，比如项目的环境依赖、脚本命令、资源文件等。
+  * <font color=red>`assets` **路径名不能有中文，否则可能无法正常读取**</font>
 
   *`pubspec.yaml`*
 
@@ -94,6 +95,12 @@ samples, guidance on mobile development, and a full API reference.
   
   flutter:
     uses-material-design: true
+    
+  assets: # 路径名不能有中文，否则可能无法正常读取
+    - assets/
+    - assets/i18n/
+    - assets/CarouselAssets/
+    - assets/AppLaunchAssets/
   
   #这个文件定义了一个名为 `my_project` 的 Dart 项目
   #它依赖于 Flutter SDK

@@ -33,7 +33,7 @@ dependencies:
   webview_flutter_wkwebview: # 用于显示网页
   flutter_inappwebview: # 用于显示网页 (iOS)
   flutter_webview_plugin: # 用于显示网页 (Android)
-  google_mobile_ads: # 用于显示广告
+  # google_mobile_ads: # 用于显示广告。初始化的时候必须要带 Key 否则程序崩溃
   cached_network_image: # 用于显示网络图片
   flutter_inappwebview_platform_interface: # 用于显示网页 (platform interface)
   flutter_inappwebview_web: # 用于显示网页 (web)
@@ -114,8 +114,6 @@ dependencies:
   google_maps_webservice: # 用于使用Google Maps API
   google_maps_flutter_platform_interface: # 用于使用Google Maps API (platform interface)
   google_maps_flutter_web: # 用于使用Google Maps API (web)
- 
-
 # 工具库
   connectivity_plus: # 用于检查设备网络连接状态
   install_plugin: # 用于安装插件
@@ -123,28 +121,30 @@ dependencies:
   flutter_downloader: # 用于下载文件
   url_launcher: # 用于在移动应用中打开 URLs，包括网页、电子邮件、电话等
   qr_flutter: # 用于生成二维码
+  auto_route: # 用于管理应用路由
   flutter:
     sdk: flutter
 # 应用程序
   flutter_plugin_android_lifecycle: # 用于管理生命周期 (Android)
 # 日志调试
   flutter_ulog: # 用于打印日志
+  path_provider: ^2.1.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.0 # Flutter代码规范
+  flutter_lints: ^4.0.0 # Flutter代码规范
   build_runner: # 用于运行生成代码
-  json_serializable: 
+  auto_route_generator: # 用于生成路由代码
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 flutter:
   uses-material-design: true # 指示应用程序是否应该使用Material Design风格
-  assets:
+  assets: # 路径名不能为中文，否则可能无法正常读取
     - assets/
     - assets/i18n/
-    - assets/App启动开屏素材/
-    - assets/轮播图图片素材/
+    - assets/CarouselAssets/
+    - assets/AppLaunchAssets/
 
 # flutter pub get
 # flutter pub upgrade -major-versions # 更新Flutter项目的依赖包到major版本

@@ -1,10 +1,13 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:video_player/video_player.dart';
+import 'package:path_provider/path_provider.dart';
 
 void main() {
   FlutterError.onError = (FlutterErrorDetails details) {
@@ -52,6 +55,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
       setState(() {
         _media = File(pickedFile.path);
         _disposeVideoController();
+        debugPrint('Image selected: ${_media!.path}');
       });
     } else {
       _showSnackBar('No image selected.');
@@ -63,8 +67,9 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
     if (pickedFile != null) {
       setState(() {
         _media = File(pickedFile.path);
+        debugPrint('Video selected: ${_media!.path}');
       });
-      _initializeVideoController(_media!);
+      await _copyToAppDirectory(_media!);
     } else {
       _showSnackBar('No video selected.');
     }
@@ -81,7 +86,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
     }
 
     bool success = false;
-    if (_media!.path.endsWith('.mp4')) {
+    if (_media!.path.endsWith('.mp4') || _media!.path.endsWith('.mov')) {
       success = await GallerySaver.saveVideo(_media!.path, albumName: 'Jobs') ?? false;
     } else {
       success = await GallerySaver.saveImage(_media!.path, albumName: 'Jobs') ?? false;
@@ -97,15 +102,45 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
     }
   }
 
-  void _initializeVideoController(File file) {
+  Future<void> _copyToAppDirectory(File file) async {
+    final appDir = await getApplicationDocumentsDirectory();
+    final fileName = file.path.split('/').last;
+    final newFile = File('${appDir.path}/$fileName');
+    await file.copy(newFile.path);
+    debugPrint('File copied to: ${newFile.path}');
+    _initializeVideoController(newFile);
+  }
+
+  void _initializeVideoController(File file) async {
+    if (!file.existsSync()) {
+      debugPrint('File does not exist: ${file.path}');
+      _showSnackBar('File does not exist: ${file.path}');
+      return;
+    }
     _disposeVideoController();
-    _videoController = VideoPlayerController.file(file)
-      ..initialize().then((_) {
-        setState(() {});
-        _videoController!.play();
-      }).catchError((error) {
-        _showSnackBar('Error loading video: $error');
-      });
+    try {
+      const String videoPath = '/var/mobile/Containers/Data/Application/C7CEA48F-26B6-461F-A118-985D220826BA/Documents/image_picker_14CE8DD3-77CC-4222-A853-F7F281B8C0B8-7217-00000249980499CD73833523874__250E5310-DBD1-4EBE-80C9-49B1B7D514AA.MOV';
+      VideoPlayerController.file(File(videoPath));
+      _videoController = VideoPlayerController.file(file)
+        ..addListener(() {
+          if (_videoController!.value.hasError) {
+            _showSnackBar('Error playing video: ${_videoController!.value.errorDescription}');
+            debugPrint('Error playing video: ${_videoController!.value.errorDescription}');
+          }
+        })
+        ..setLooping(true)
+        ..initialize().then((_) {
+          setState(() {});
+          _videoController!.play();
+          debugPrint('Video controller initialized');
+        }).catchError((error) {
+          _showSnackBar('Error initializing video: $error');
+          debugPrint('Error initializing video controller: $error');
+        });
+    } catch (error) {
+      _showSnackBar('Error: $error');
+      debugPrint('Error initializing video controller: $error');
+    }
   }
 
   void _disposeVideoController() {
@@ -136,7 +171,7 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
       body: Center(
         child: _media == null
             ? const Text('No media selected.')
-            : _media!.path.endsWith('.mp4')
+            : _media!.path.endsWith('.mp4') || _media!.path.endsWith('.mov')
                 ? _videoController != null && _videoController!.value.isInitialized
                     ? AspectRatio(
                         aspectRatio: _videoController!.value.aspectRatio,

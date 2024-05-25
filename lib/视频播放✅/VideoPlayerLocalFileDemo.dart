@@ -51,7 +51,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   void initState() {
     super.initState();
     // 创建VideoPlayerController并加载本地视频文件
-    _controller = VideoPlayerController.asset('assets/App启动开屏素材/welcome_video.mp4');
+    _controller = VideoPlayerController.asset('assets/AppLaunchAssets/welcome_video.mp4');
     // 初始化VideoPlayerController
     _initializeVideoPlayerFuture = _controller.initialize();
     // 循环播放视频
