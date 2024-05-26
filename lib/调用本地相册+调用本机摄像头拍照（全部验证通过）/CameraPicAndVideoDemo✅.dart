@@ -6,15 +6,7 @@ import 'package:video_player/video_player.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:path/path.dart' as path;
-// 仅调取相机进行录像，且播放
-// 真机运行如果出现空白页面的解决方案：
-// 方案1、在工程根目录下执行 flutter run --release 或者 
-// 方案2、通过 flutter devices 拿到设备id，然后 flutter run -d 设备ID。比如
-// flutter run lib/调用本地相册+调用本机摄像头拍照（全部验证通过）/CameraDemo2.dart -d 00008110-000625583EE3801E
 
-// 权限问题：Flutter代码不配置设备权限。配置权限需要进入特定的代码里面，按照设备所属的代码规范进行配置。比如：
-// iOS进入`info.plist`里面进行配置
-// Android通常只涉及两个主要文件：`AndroidManifest.xml` 和 `build.gradle`
 void main() {
   runApp(const VideoPlayerApp());
 }
@@ -25,7 +17,7 @@ class VideoPlayerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Video Player Demo',
+      title: '拍照.录像.存相册',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -35,7 +27,7 @@ class VideoPlayerApp extends StatelessWidget {
 }
 
 class VideoPlayerScreen extends StatefulWidget {
-   final ImageSource imageSource;
+  final ImageSource imageSource;
   const VideoPlayerScreen({super.key, required this.imageSource});
 
   @override
@@ -54,7 +46,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       if (pickedFile != null) {
         _media = File(pickedFile.path);
       } else {
-        debugPrint('No image selected.');
+        debugPrint('还没选择资源');
       }
     });
   }
@@ -65,6 +57,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       final File movFile = File(pickedFile.path);
       final mp4File = await _convertMovToMp4(movFile);
       if (mp4File != null) {
+        setState(() {
+          _media = mp4File;
+        });
         _initializeVideoPlayer(mp4File);
       }
     } else {
@@ -72,7 +67,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     }
   }
 
-    Future<void> saveToGallery() async {
+  Future<void> saveToGallery() async {
     if (_media == null) {
       _showSnackBar('没有什么需要保存的...');
       return;
@@ -83,7 +78,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     }
 
     bool success = false;
-    if (_media!.path.endsWith('.mp4') || _media!.path.endsWith('.mov')) {
+    if (_media!.path.endsWith('.mp4')) {
+      success = await GallerySaver.saveVideo(_media!.path, albumName: 'Jobs') ?? false;
+    } else if (_media!.path.endsWith('.mov')) {
       success = await GallerySaver.saveVideo(_media!.path, albumName: 'Jobs') ?? false;
     } else {
       success = await GallerySaver.saveImage(_media!.path, albumName: 'Jobs') ?? false;
@@ -152,14 +149,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         title: const Text('Video Player Demo'),
       ),
       body: Center(
-        child: _controller == null
-            ? const Text('No video selected.')
-            : _controller!.value.isInitialized
-                ? AspectRatio(
-                    aspectRatio: _controller!.value.aspectRatio,
-                    child: VideoPlayer(_controller!),
-                  )
-                : const CircularProgressIndicator(),
+              child: _media == null
+            ? const Text('No image selected.')
+            : Image.file(_media!),
+        // child: _controller == null
+        //     ? const Text('No video selected.')
+        //     : _controller!.value.isInitialized
+        //         ? AspectRatio(
+        //             aspectRatio: _controller!.value.aspectRatio,
+        //             child: VideoPlayer(_controller!),
+        //           )
+        //         : const CircularProgressIndicator(),
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -167,19 +167,19 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         children: [
           FloatingActionButton(
             onPressed: getImage,
-            tooltip: 'Take a Photo',
+            tooltip: '拍照',
             child: const Icon(Icons.camera_alt),
           ),
           const SizedBox(height: 16),
           FloatingActionButton(
             onPressed: getVideo,
-            tooltip: 'Record a Video',
+            tooltip: '录像',
             child: const Icon(Icons.videocam),
           ),
           const SizedBox(height: 16),
           FloatingActionButton(
             onPressed: saveToGallery,
-            tooltip: 'Save to Gallery',
+            tooltip: '保存到相册',
             child: const Icon(Icons.save),
           ),
         ],
