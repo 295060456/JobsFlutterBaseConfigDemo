@@ -52,13 +52,24 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   }
 
   Future<void> _loadVideo() async {
-    // 将 assets 中的视频文件复制到应用文档目录
+
+    // VideoPlayerController 目前不支持直接播放 assets 中的视频文件
+    // 将 assets 中的视频文件复制到应用文档目录的过程实际上是为了将视频文件转换成 VideoPlayerController 可以识别的格式
+    // assets 文件在 Flutter 中并不具有标准的文件路径。
+    // assets 文件通常被打包到应用程序内部，并且它们的路径是相对于应用程序的，这使得某些插件（如 video_player）无法直接访问它们
+
+    // 从 assets 中加载视频文件的字节数据
     final ByteData data = await rootBundle.load('assets/Video/AppLaunchAssets/appLaunch_welcome.mp4');
+    // 获取临时目录
     final Directory tempDir = await getTemporaryDirectory();
+    // 创建临时文件并写入字节数据
     final File tempFile = File(path.join(tempDir.path, 'welcome_video.mp4'));
     await tempFile.writeAsBytes(data.buffer.asUint8List(), flush: true);
 
-    // 使用复制后的文件路径初始化 VideoPlayerController
+    // 沙盒文件路径
+    // const String tempFile = '/private/var/mobile/Containers/Data/Application/F7564880-6969-4F34-8562-BD818D2E2A06/tmp/image_picker_35D24461-B866-4D93-A00B-618901C487A1-10834-000003230A5787C573840049933__F1737025-DD89-4E41-890E-993495A0E8E5.MOV';
+
+    // 使用临时文件路径初始化 VideoPlayerController
     _controller = VideoPlayerController.file(tempFile);
     await _controller!.initialize();
     setState(() {});

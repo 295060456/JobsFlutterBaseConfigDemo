@@ -17,6 +17,13 @@ PODS:
     - Flutter
   - device_info_plus (0.0.1):
     - Flutter
+  - ffmpeg-kit-ios-https (6.0)
+  - ffmpeg_kit_flutter (6.0.3):
+    - ffmpeg_kit_flutter/https (= 6.0.3)
+    - Flutter
+  - ffmpeg_kit_flutter/https (6.0.3):
+    - ffmpeg-kit-ios-https (= 6.0)
+    - Flutter
   - Firebase/CoreOnly (10.25.0):
     - FirebaseCore (= 10.25.0)
   - Firebase/Storage (10.25.0):
@@ -192,6 +199,7 @@ DEPENDENCIES:
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/darwin`)
   - device_info (from `.symlinks/plugins/device_info/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
+  - ffmpeg_kit_flutter (from `.symlinks/plugins/ffmpeg_kit_flutter/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
   - Flutter (from `Flutter`)
@@ -233,6 +241,7 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - AppAuth
+    - ffmpeg-kit-ios-https
     - Firebase
     - FirebaseAppCheckInterop
     - FirebaseAuthInterop
@@ -265,6 +274,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/device_info/ios"
   device_info_plus:
     :path: ".symlinks/plugins/device_info_plus/ios"
+  ffmpeg_kit_flutter:
+    :path: ".symlinks/plugins/ffmpeg_kit_flutter/ios"
   firebase_core:
     :path: ".symlinks/plugins/firebase_core/ios"
   firebase_storage:
@@ -347,6 +358,8 @@ SPEC CHECKSUMS:
   connectivity_plus: ddd7f30999e1faaef5967c23d5b6d503d10434db
   device_info: d7d233b645a32c40dfdc212de5cf646ca482f175
   device_info_plus: 97af1d7e84681a90d0693e63169a5d50e0839a0d
+  ffmpeg-kit-ios-https: f9c838aa5400a6c5ba12324c6b798f52197ba354
+  ffmpeg_kit_flutter: b4ca70cac3fc1d8ac14cdc660754b60870358732
   Firebase: 0312a2352584f782ea56f66d91606891d4607f06
   firebase_core: 22e117a2e0dec3cb318c8f53f2dd01c140375617
   firebase_storage: f370e615a09cce01a5d5bc31c45b1adeff3e9453

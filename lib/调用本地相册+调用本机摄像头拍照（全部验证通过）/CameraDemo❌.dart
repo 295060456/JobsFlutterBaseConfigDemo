@@ -1,13 +1,12 @@
 import 'dart:io';
-import 'dart:math';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:video_player/video_player.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
+import 'package:path/path.dart' as path;
 
 void main() {
   FlutterError.onError = (FlutterErrorDetails details) {
@@ -55,7 +54,6 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
       setState(() {
         _media = File(pickedFile.path);
         _disposeVideoController();
-        debugPrint('Image selected: ${_media!.path}');
       });
     } else {
       _showSnackBar('No image selected.');
@@ -65,15 +63,16 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
   Future<void> getVideo() async {
     final pickedFile = await picker.pickVideo(source: ImageSource.camera);
     if (pickedFile != null) {
-      setState(() {
-        _media = File(pickedFile.path);
-        debugPrint('Video selected: ${_media!.path}');
-      });
-      await _copyToAppDirectory(_media!);
+      final File movFile = File(pickedFile.path);
+      final mp4File = await _convertMovToMp4(movFile);
+      if (mp4File != null) {
+        _initializeVideoPlayer(mp4File);
+      }
     } else {
       _showSnackBar('No video selected.');
     }
   }
+
 
   Future<void> saveToGallery() async {
     if (_media == null) {
@@ -102,45 +101,36 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
     }
   }
 
-  Future<void> _copyToAppDirectory(File file) async {
+  Future<File?> _convertMovToMp4(File movFile) async {
     final appDir = await getApplicationDocumentsDirectory();
-    final fileName = file.path.split('/').last;
-    final newFile = File('${appDir.path}/$fileName');
-    await file.copy(newFile.path);
-    debugPrint('File copied to: ${newFile.path}');
-    _initializeVideoController(newFile);
+    final mp4FilePath = path.join(appDir.path, '${path.basenameWithoutExtension(movFile.path)}.mp4');
+    final mp4File = File(mp4FilePath);
+
+    await FFmpegKit.execute('-i ${movFile.path} -vcodec h264 -acodec aac -strict -2 ${mp4File.path}');
+
+    if (await mp4File.exists()) {
+      return mp4File;
+    } else {
+      _showSnackBar('Failed to convert video.');
+      return null;
+    }
   }
 
-  void _initializeVideoController(File file) async {
-    if (!file.existsSync()) {
-      debugPrint('File does not exist: ${file.path}');
-      _showSnackBar('File does not exist: ${file.path}');
-      return;
-    }
-    _disposeVideoController();
-    try {
-      const String videoPath = '/var/mobile/Containers/Data/Application/C7CEA48F-26B6-461F-A118-985D220826BA/Documents/image_picker_14CE8DD3-77CC-4222-A853-F7F281B8C0B8-7217-00000249980499CD73833523874__250E5310-DBD1-4EBE-80C9-49B1B7D514AA.MOV';
-      VideoPlayerController.file(File(videoPath));
-      _videoController = VideoPlayerController.file(file)
-        ..addListener(() {
-          if (_videoController!.value.hasError) {
-            _showSnackBar('Error playing video: ${_videoController!.value.errorDescription}');
-            debugPrint('Error playing video: ${_videoController!.value.errorDescription}');
-          }
-        })
-        ..setLooping(true)
-        ..initialize().then((_) {
-          setState(() {});
-          _videoController!.play();
-          debugPrint('Video controller initialized');
-        }).catchError((error) {
-          _showSnackBar('Error initializing video: $error');
-          debugPrint('Error initializing video controller: $error');
-        });
-    } catch (error) {
-      _showSnackBar('Error: $error');
-      debugPrint('Error initializing video controller: $error');
-    }
+    void _initializeVideoPlayer(File file) {
+    _videoController?.dispose();
+    _videoController = VideoPlayerController.file(file)
+      ..addListener(() {
+        if (_videoController?.value.hasError == true) {
+          _showSnackBar('Error playing video: ${_videoController?.value.errorDescription}');
+        }
+      })
+      ..setLooping(true)
+      ..initialize().then((_) {
+        setState(() {});
+        _videoController?.play();
+      }).catchError((error) {
+        _showSnackBar('Error initializing video: $error');
+      });
   }
 
   void _disposeVideoController() {
@@ -168,17 +158,17 @@ class _ImagePickerDemoState extends State<ImagePickerDemo> {
       appBar: AppBar(
         title: const Text('Image Picker Demo - Camera'),
       ),
-      body: Center(
+      body: Center(// const CircularProgressIndicator()
         child: _media == null
-            ? const Text('No media selected.')
-            : _media!.path.endsWith('.mp4') || _media!.path.endsWith('.mov')
-                ? _videoController != null && _videoController!.value.isInitialized
-                    ? AspectRatio(
-                        aspectRatio: _videoController!.value.aspectRatio,
-                        child: VideoPlayer(_videoController!),
-                      )
-                    : const CircularProgressIndicator()
-                : Image.file(_media!),
+                ? const Text('No media selected.')
+                : _media!.path.endsWith('.mp4')
+                    ? _videoController != null && _videoController!.value.isInitialized
+                        ? AspectRatio(
+                            aspectRatio: _videoController!.value.aspectRatio,
+                            child: VideoPlayer(_videoController!),
+                          )
+                        : const CircularProgressIndicator()
+                    : Image.file(_media!),
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,

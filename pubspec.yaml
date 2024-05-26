@@ -63,6 +63,7 @@ dependencies:
   encrypt: # 用于加密数据
   pointycastle: # 用于加密数据
   money2: # 用于金额格式化
+  ffmpeg_kit_flutter: # 用于处理视频
   flutter_widget_from_html_core: # 用于解析HTML内容
 # 状态管理
   get: # 用于管理应用状态
