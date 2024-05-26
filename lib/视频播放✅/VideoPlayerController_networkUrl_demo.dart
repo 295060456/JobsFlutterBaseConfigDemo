@@ -1,16 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'dart:io';
-import 'package:path/path.dart' as path;
-import 'package:flutter/services.dart' show ByteData, rootBundle;
-import 'package:path_provider/path_provider.dart';
+
+// VideoPlayerController_networkUrl_demo.dart
+
+// 真机运行如果出现空白页面的解决方案：
+// 方案1、在工程根目录下执行 flutter run --release 或者 
+// 方案2、通过 flutter devices 拿到设备id，然后 flutter run -d 设备ID
+
+// 视频资源Online地址：
+// https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4
+
+// dependencies:
+//   flutter:
+//     sdk: flutter
+//   video_player: 
 
 void main() {
-  runApp(const VideoPlayerApp());
+  runApp(const VideoPlayerDemo());
 }
 
-class VideoPlayerApp extends StatelessWidget {
-  const VideoPlayerApp({super.key});
+class VideoPlayerDemo extends StatelessWidget {
+  const VideoPlayerDemo({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,30 +48,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   @override
   void initState() {
     super.initState();
-    _loadVideo();
-  }
-
-  Future<void> _loadVideo() async {
-    // 将 assets 中的视频文件复制到应用文档目录
-    final ByteData data = await rootBundle.load('assets/App启动开屏素材/welcome_video.mp4');
-    final Directory tempDir = await getTemporaryDirectory();
-    final File tempFile = File(path.join(tempDir.path, 'welcome_video.mp4'));
-    await tempFile.writeAsBytes(data.buffer.asUint8List(), flush: true);
-
-    // 使用复制后的文件路径初始化 VideoPlayerController
-    _controller = VideoPlayerController.file(tempFile);
-    _initializeVideoPlayerFuture = _controller.initialize().then((_) {
-      setState(() {});
-      _controller.play();
-    });
-
+    _controller = VideoPlayerController.networkUrl(
+        Uri.parse('https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4'));
+    _initializeVideoPlayerFuture = _controller.initialize();
     _controller.setLooping(true);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _controller.dispose();
   }
 
   @override
@@ -74,11 +64,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         future: _initializeVideoPlayerFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return Center(
-              child: AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: VideoPlayer(_controller),
-              ),
+            return AspectRatio(
+              aspectRatio: _controller.value.aspectRatio,
+              child: VideoPlayer(_controller),
             );
           } else {
             return const Center(
@@ -102,5 +90,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }

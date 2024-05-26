@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+
 // 此案例演示了利用carousel_slider实现轮播图效果。
+
+// 图片资源位于项目跟目录下的：
+// 'assets/Images/CarouselAssets/slide1.png',
+// 'assets/Images/CarouselAssets/slide2.png',
 void main() {
   runApp(const MyApp());
 }
@@ -23,8 +28,8 @@ class MyApp extends StatelessWidget {
 // 展示轮播图的页面
 class CarouselDemo extends StatelessWidget {
   static const List<String> imgList = [
-    'assets/轮播图图片素材/slide1.png',
-    'assets/轮播图图片素材/slide2.png',
+    'assets/Images/CarouselAssets/slide1.png',
+    'assets/Images/CarouselAssets/slide2.png',
     'https://imgs.699pic.com/images/500/362/891.jpg!list1x.v2',
     'https://pic.huitu.com/pic/20230531/3248670_20230531151554010203_0.jpg',
   ];

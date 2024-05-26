@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-// VideoPlayerLocalFileDemo.dart
+// VideoPlayerController_asset_demo.dart
 
 // 真机运行如果出现空白页面的解决方案：
 // 方案1、在工程根目录下执行 flutter run --release 或者 
 // 方案2、通过 flutter devices 拿到设备id，然后 flutter run -d 设备ID
 
-// 视频资源位于项目跟目录下的assets文件夹中，文件名为welcome_video.mp4
+// 视频资源位于项目跟目录下的：
+// assets/Video/AppLaunchAssets/appLaunch_welcome.mp4
 
 // dependencies:
 //   flutter:
@@ -51,7 +52,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   void initState() {
     super.initState();
     // 创建VideoPlayerController并加载本地视频文件
-    _controller = VideoPlayerController.asset('assets/AppLaunchAssets/welcome_video.mp4');
+    _controller = VideoPlayerController.asset('assets/Video/AppLaunchAssets/appLaunch_welcome.mp4');
     // 初始化VideoPlayerController
     _initializeVideoPlayerFuture = _controller.initialize();
     // 循环播放视频

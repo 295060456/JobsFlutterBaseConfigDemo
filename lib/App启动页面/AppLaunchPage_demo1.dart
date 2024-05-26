@@ -3,6 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+// 当前只读取本地资源作为App开屏页，后续可根据需求增加网络资源
+
+// 视频资源位于项目跟目录下的：
+// assets/Video/AppLaunchAssets/appLaunch_welcome.mp4
+// 图片资源位于项目跟目录下的：
+// assets/Images/AppLaunchAssets/appLaunch_welcome.gif
+// assets/Images/AppLaunchAssets/appLaunch_welcome.png
+// 视频资源Online地址：
+// https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4
+
 void main() {
   runApp(const MyApp());
 }
@@ -38,7 +48,7 @@ class _LaunchScreenState extends State<LaunchScreen> {
     super.initState();
     // 初始化视频播放器
     _videoController =
-        VideoPlayerController.asset('assets/App启动开屏素材/welcome_video.mp4')
+        VideoPlayerController.asset('assets/Video/AppLaunchAssets/appLaunch_welcome.mp4')
           ..initialize().then((_) {
             setState(() {});
             _videoController.play();
@@ -95,11 +105,11 @@ void _launchURL(String url) async {
             ),
           if (_showImage)
             Positioned.fill(
-              child: Image.asset('assets/App启动开屏素材/welcome.png', fit: BoxFit.cover),
+              child: Image.asset('assets/Images/AppLaunchAssets/appLaunch_welcome.png', fit: BoxFit.cover),
             ),
           if (_showGif)
             Positioned.fill(
-              child: Image.asset('assets/App启动开屏素材/welcome.gif', fit: BoxFit.cover),
+              child: Image.asset('assets/Images/AppLaunchAssets/appLaunch_welcome.gif', fit: BoxFit.cover),
             ),
           Positioned.fill(
             child: GestureDetector(
