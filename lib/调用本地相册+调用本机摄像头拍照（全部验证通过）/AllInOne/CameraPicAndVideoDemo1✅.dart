@@ -7,6 +7,17 @@ import 'package:path_provider/path_provider.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:path/path.dart' as path;
 
+// 跳转系统相机，进行录像或者拍照，且显示拍摄的结果
+// 可以对拍摄的结果进行保存在本地相册（相册名：Jobs）
+
+// 真机运行如果出现空白页面的解决方案：
+// 方案1、在工程根目录下执行 flutter run --release 或者 
+// 方案2、通过 flutter devices 拿到设备id，然后 flutter run -d 设备ID。比如
+// flutter run lib/调用本地相册+调用本机摄像头拍照（全部验证通过）/CameraDemo2.dart -d 00008110-000625583EE3801E
+
+// 权限问题：Flutter代码不配置设备权限。配置权限需要进入特定的代码里面，按照设备所属的代码规范进行配置。比如：
+// iOS进入`info.plist`里面进行配置
+// Android通常只涉及两个主要文件：`AndroidManifest.xml` 和 `build.gradle`
 void main() {
   runApp(const VideoPlayerApp());
 }
@@ -45,6 +56,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     setState(() {
       if (pickedFile != null) {
         _media = File(pickedFile.path);
+        _controller?.dispose();
+        _controller = null;
       } else {
         debugPrint('还没选择资源');
       }
@@ -63,7 +76,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         _initializeVideoPlayer(mp4File);
       }
     } else {
-      _showSnackBar('No video selected.');
+      _showSnackBar('还没有选择视频资源...');
     }
   }
 
@@ -106,7 +119,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     if (await mp4File.exists()) {
       return mp4File;
     } else {
-      _showSnackBar('Failed to convert video.');
+      _showSnackBar('视频转码失败...');
       return null;
     }
   }
@@ -116,7 +129,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     _controller = VideoPlayerController.file(file)
       ..addListener(() {
         if (_controller?.value.hasError == true) {
-          _showSnackBar('Error playing video: ${_controller?.value.errorDescription}');
+          _showSnackBar('播放视频错误: ${_controller?.value.errorDescription}');
         }
       })
       ..setLooping(true)
@@ -124,7 +137,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         setState(() {});
         _controller?.play();
       }).catchError((error) {
-        _showSnackBar('Error initializing video: $error');
+        _showSnackBar('初始化视频错误: $error');
       });
   }
 
@@ -146,20 +159,21 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Video Player Demo'),
+        title: const Text('拍照.录像.存相册'),
       ),
       body: Center(
-              child: _media == null
-            ? const Text('No image selected.')
+        child: _media == null
+          ? const Text('没有资源被选择...')
+          : _media!.path.endsWith('.mp4')
+            ? _controller == null
+              ? const CircularProgressIndicator()
+              : _controller!.value.isInitialized
+                ? AspectRatio(
+                    aspectRatio: _controller!.value.aspectRatio,
+                    child: VideoPlayer(_controller!),
+                  )
+                : const CircularProgressIndicator()
             : Image.file(_media!),
-        // child: _controller == null
-        //     ? const Text('No video selected.')
-        //     : _controller!.value.isInitialized
-        //         ? AspectRatio(
-        //             aspectRatio: _controller!.value.aspectRatio,
-        //             child: VideoPlayer(_controller!),
-        //           )
-        //         : const CircularProgressIndicator(),
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
