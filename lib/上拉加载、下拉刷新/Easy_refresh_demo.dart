@@ -30,7 +30,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _itemCount = 20;
   bool _hasMore = true;
-  final EasyRefreshController _controller = EasyRefreshController();
+  final EasyRefreshController _controller = EasyRefreshController(
+  // _AssertionError ('package:easy_refresh/src/controller/controller.dart': Failed assertion: line 206 pos 12: 'controlFinishLoad || force': Please set controlFinishLoad to true, then use. If you want to modify the result, you can set force to true.)
+  // _AssertionError ('package:easy_refresh/src/controller/controller.dart': Failed assertion: line 196 pos 12: 'controlFinishRefresh || force': Please set controlFinishRefresh to true, then use. If you want to modify the result, you can set force to true.)
+  controlFinishLoad: true,// 控制是否完成刷新，默认false，设置为true后，刷新完成后，不会再次刷新，除非设置force为true
+  controlFinishRefresh: true, // 控制是否完成加载，默认false，设置为true后，加载完成后，不会再次加载，除非设置force为true
+);
 
   Future<void> _onRefresh() async {
     await Future.delayed(const Duration(seconds: 2));
