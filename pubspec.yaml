@@ -133,10 +133,13 @@ dependencies:
   auto_route: # 用于管理应用路由
   path: # 用于处理文件路径
   path_provider: # 用于获取文件路径
+  google_fonts: # 用于使用Google Fonts字体
+  flutter_local_notifications: # 用于显示本地通知
 # 应用程序
   flutter_plugin_android_lifecycle: # 用于管理生命周期 (Android)
 # 日志调试
   flutter_ulog: # 用于打印日志
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -155,6 +158,7 @@ flutter:
   assets: # 路径名不能有中文，否则可能无法正常读取
     - assets/
     - assets/Fonts/
+    - assets/fonts/
     - assets/HTML/
     - assets/i18n/
     - assets/Images/
@@ -167,13 +171,15 @@ flutter:
   
 # For details regarding fonts from package dependencies,
 # see https://flutter.dev/custom-fonts/#from-packages
+# 
+# https://fonts.google.com/
 fonts:
-  - family: Proximanova-bold
-    fonts:
-      - asset: assets/fonts/ProximaNovaBold.otf
   - family: Akrobat-Bold
     fonts:      
       - asset: assets/fonts/Akrobat-Bold.otf     
+  - family: Proximanova-bold
+    fonts:
+      - asset: assets/fonts/ProximaNovaBold.otf
   - family: Schyler
     fonts:
       - asset: assets/fonts/Schyler-Regular.ttf
