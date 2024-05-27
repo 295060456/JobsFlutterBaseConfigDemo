@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import '/models/video_item.dart';
-import '/models/serializers.dart';
-// 运行崩
+import '/JSON解析/models/built_value/video_item.dart';
+import '/JSON解析/models/built_value/serializers.dart';
+
 void main() {
   runApp(const MyApp());
 }

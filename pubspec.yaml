@@ -63,6 +63,7 @@ dependencies:
   freezed: # 用于序列化/反序列化数据
   json_serializable: # 用于序列化/反序列化JSON数据
   json_annotation: # 用于序列化/反序列化JSON数据
+  freezed_annotation: # 用于序列化/反序列化数据
   messagepack: # 用于序列化/反序列化MessagePack数据
   shared_preferences: # 用于存储键值对数据
   date_format: # 用于格式化日期

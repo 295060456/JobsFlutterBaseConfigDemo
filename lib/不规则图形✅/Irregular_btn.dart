@@ -35,6 +35,14 @@ class MyApp extends StatelessWidget {
                   Vibration.vibrate(duration: 200);
                 },
               ),
+              const SizedBox(height: 20),
+              CustomShapeButton(
+                shape: Shape.parallelogram,
+                onPressed: () {
+                  debugPrint('我是平行四边形按钮');
+                  Vibration.vibrate(duration: 200);
+                },
+              ),
             ],
           ),
         ),
@@ -43,21 +51,46 @@ class MyApp extends StatelessWidget {
   }
 }
 
-enum Shape { triangle, star }
+enum Shape { triangle, star, parallelogram }
 
-class CustomShapeButton extends StatelessWidget {
+class CustomShapeButton extends StatefulWidget {
   final Shape shape;
   final VoidCallback onPressed;
 
   const CustomShapeButton({super.key, required this.shape, required this.onPressed});
 
   @override
+  _CustomShapeButtonState createState() => _CustomShapeButtonState();
+}
+
+class _CustomShapeButtonState extends State<CustomShapeButton> {
+  bool _isPressed = false;
+
+  void _handleTap() {
+    setState(() {
+      _isPressed = true;
+    });
+
+    Future.delayed(const Duration(milliseconds: 200), () {
+      setState(() {
+        _isPressed = false;
+      });
+    });
+
+    widget.onPressed();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onPressed,
-      child: CustomPaint(
-        size: const Size(100, 100),
-        painter: ShapePainter(shape),
+      onTap: _handleTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: _isPressed ? 120 : 100,
+        height: _isPressed ? 120 : 100,
+        child: CustomPaint(
+          painter: ShapePainter(widget.shape),
+        ),
       ),
     );
   }
@@ -80,6 +113,9 @@ class ShapePainter extends CustomPainter {
         break;
       case Shape.star:
         drawStar(canvas, size, paint);
+        break;
+      case Shape.parallelogram:
+        drawParallelogram(canvas, size, paint);
         break;
     }
   }
@@ -117,6 +153,17 @@ class ShapePainter extends CustomPainter {
       path.lineTo(innerPoint.dx, innerPoint.dy);
     }
     path.close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  void drawParallelogram(Canvas canvas, Size size, Paint paint) {
+    final path = Path()
+      ..moveTo(size.width * 0.2, 0)
+      ..lineTo(size.width, 0)
+      ..lineTo(size.width * 0.8, size.height)
+      ..lineTo(0, size.height)
+      ..close();
 
     canvas.drawPath(path, paint);
   }
