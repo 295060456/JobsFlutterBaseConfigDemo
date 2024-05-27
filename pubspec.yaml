@@ -139,12 +139,13 @@ dependencies:
   flutter_downloader: # 用于下载文件
   url_launcher: # 用于在移动应用中打开 URLs，包括网页、电子邮件、电话等
   qr_flutter: # 用于生成二维码
-  auto_route: # 用于管理应用路由
   path: # 用于处理文件路径
   path_provider: # 用于获取文件路径
   google_fonts: # 用于使用Google Fonts字体
   flutter_local_notifications: # 用于显示本地通知
   auto_route_generator: # 用于生成路由代码
+  auto_route: # 用于管理应用路由
+  fluro:
 # 应用程序
   flutter_plugin_android_lifecycle: # 用于管理生命周期 (Android)
 # 日志调试
