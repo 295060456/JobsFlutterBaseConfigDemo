@@ -1,7 +1,3 @@
----
-typora-root-url: ./assets
----
-
 # 使用built_value解析json文件自动生成Model
 
 * 不同的 JSON 解析库有不同的要求和范式，因此对应的模型类定义也会有所不同。
@@ -12,7 +8,7 @@ typora-root-url: ./assets
 
 * *video_item.dart*和*video_item.dart*可以是任意路径，但是必须关联在主文件*built_value_demo.dart*里面
 
-  ![](/IMAGE 2024-05-27 12:25:47.jpg)
+  ![](./assets/IMAGE 2024-05-27 12:25:47.jpg)
 
   * *serializers.dart*
   
