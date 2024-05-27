@@ -30,12 +30,12 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
+  
   @override
   Widget build(BuildContext context) {
-    // 当在一个 const 构造函数中使用 Get.put(MyController()) 初始化控制器时，会出现错误。
-    // 这是因为 const 构造函数中的所有成员变量必须是编译时常量，而 Get.put(MyController()) 不是编译时常量。
-    // 解决这个问题的方法是将控制器的初始化移到 build 方法中
+    // 初始化控制器
     final MyController controller = Get.put(MyController());
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('GetX Ever Demo'),
@@ -44,13 +44,19 @@ class MyHomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Obx(() => const Text(
-              'You have pushed the button this many times:',
-            )),
-            Obx(() => Text(
-              '${controller.count}',
-              style: Theme.of(context).textTheme.headlineMedium,
-            )),
+            // 包装在 Obx 内的文本小部件
+            Obx(() {
+              return Text(
+                'You have pushed the button this many times:',
+                style: Theme.of(context).textTheme.headlineLarge,
+              );
+            }),
+            Obx(() {
+              return Text(
+                '${controller.count}',
+                style: Theme.of(context).textTheme.headlineMedium,
+              );
+            }),
           ],
         ),
       ),
@@ -70,7 +76,7 @@ class MyController extends GetxController {
   void onInit() {
     super.onInit();
     // 使用 ever 监听 count 的变化
-    ever(count, (value) {
+    ever<int>(count, (value) {
       debugPrint("Count has changed to $value");
     });
   }
