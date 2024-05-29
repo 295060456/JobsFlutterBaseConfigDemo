@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
 
 class HomePage extends StatelessWidget {
   // 定义GlobalKey
-  final GlobalKey<_MainPageBottomBarWidgetState> mainPageKey = GlobalKey<_MainPageBottomBarWidgetState>();
+  final GlobalKey<_AState> aKey = GlobalKey<_AState>();
 
   HomePage({super.key});
 
@@ -30,11 +30,11 @@ class HomePage extends StatelessWidget {
       ),
       body: Column(
         children: [
-          MainPageBottomBarWidget(key: mainPageKey),
+          A(key: aKey),
           ElevatedButton(
             onPressed: () {
               // 通过GlobalKey调用实例方法
-              mainPageKey.currentState?.dd();
+              aKey.currentState?.dd();
             },
             child: const Text('Call Instance Method'),
           ),
@@ -44,14 +44,14 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class MainPageBottomBarWidget extends StatefulWidget {
-  const MainPageBottomBarWidget({super.key});
+class A extends StatefulWidget {
+  const A({super.key});
 
   @override
-  _MainPageBottomBarWidgetState createState() => _MainPageBottomBarWidgetState();
+  _AState createState() => _AState();
 }
 
-class _MainPageBottomBarWidgetState extends State<MainPageBottomBarWidget> {
+class _AState extends State<A> {
   void dd() {
     debugPrint("sss");
   }

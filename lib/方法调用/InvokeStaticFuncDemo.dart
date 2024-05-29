@@ -11,19 +11,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       title: 'CustomScrollView Demo',
-      home: AnotherWidget(),
+      home: B(),
     );
   }
 }
 
-class MainPageBottomBarWidget extends StatefulWidget {
-  const MainPageBottomBarWidget({super.key});
+class A extends StatefulWidget {
+  const A({super.key});
 
   @override
-  _MainPageBottomBarWidgetState createState() => _MainPageBottomBarWidgetState();
+  _AState createState() => _AState();
 }
 
-class _MainPageBottomBarWidgetState extends State<MainPageBottomBarWidget> {
+class _AState extends State<A> {
   static void dd() {
     debugPrint("sss");
   }
@@ -41,8 +41,8 @@ class _MainPageBottomBarWidgetState extends State<MainPageBottomBarWidget> {
   }
 }
 
-class AnotherWidget extends StatelessWidget {
-  const AnotherWidget({super.key});
+class B extends StatelessWidget {
+  const B({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +53,7 @@ class AnotherWidget extends StatelessWidget {
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            _MainPageBottomBarWidgetState.dd();
+            _AState.dd();
           },
           child: const Text('Call Static Method'),
         ),
