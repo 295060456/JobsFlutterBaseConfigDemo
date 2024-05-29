@@ -987,6 +987,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.19"
+  flutter_screenutil:
+    dependency: "direct main"
+    description:
+      name: flutter_screenutil
+      sha256: b372c35a772a1dc84142a3b9c5ee89a390834bd258e5e6a450d9b975b985d1c9
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.9.1"
   flutter_secure_storage:
     dependency: "direct main"
     description:
@@ -1693,6 +1701,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "10.2.1"
+  murmur3:
+    dependency: "direct main"
+    description:
+      name: murmur3
+      sha256: dae85e6df94a31534f6cc8c079e68e93b6b6c2e7165512cf923bca676f130c62
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
+  murmurhash:
+    dependency: "direct main"
+    description:
+      name: murmurhash
+      sha256: e9f30312675b6184d1311f87d27eeb9c3b2e107ea2eed94d79ecdc4f59fd2256
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   nested:
     dependency: transitive
     description:

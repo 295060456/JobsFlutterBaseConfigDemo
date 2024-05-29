@@ -145,7 +145,10 @@ dependencies:
   flutter_local_notifications: # 用于显示本地通知
   auto_route_generator: # 用于生成路由代码
   auto_route: # 用于管理应用路由
-  fluro:
+  flutter_screenutil: # 用于屏幕适配
+  fluro: # 用于管理应用路由
+  murmur3: # 
+  murmurhash: #
 # 应用程序
   flutter_plugin_android_lifecycle: # 用于管理生命周期 (Android)
 # 日志调试
