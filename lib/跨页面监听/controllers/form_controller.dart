@@ -15,11 +15,7 @@ class FormController extends GetxController {
   }
 
   void _validateForm() {
-    if (firstTextController.text.isNotEmpty && secondTextController.text.isNotEmpty) {
-      isButtonEnabled.value = true;
-    } else {
-      isButtonEnabled.value = false;
-    }
+    isButtonEnabled.value = firstTextController.text.isNotEmpty && secondTextController.text.isNotEmpty;
   }
 
   void onButtonPressed() {
