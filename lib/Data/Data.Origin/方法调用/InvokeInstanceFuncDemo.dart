@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,6 +25,9 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //其他地方用这个aKey
+    // Get.put(aKey);
+    // final GlobalKey<_AState> aKey = Get.find();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home Page'),
