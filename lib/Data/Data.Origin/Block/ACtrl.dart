@@ -20,7 +20,6 @@ class ACtrl extends GetxController {
     };
   }
 
-
   void useLocaleCallback() {
     if (localeCallback != null) {
       Locale currentLocale = localeCallback!();

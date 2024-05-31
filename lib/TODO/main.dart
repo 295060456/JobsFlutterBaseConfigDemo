@@ -8,14 +8,14 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
-import 'Tools/SPUtil.dart';
-import 'Tools/Theme/theme_service.dart';
-import 'Tools/channel_util.dart';
-import 'Tools/custom_route_listen_widget.dart';
-import 'Tools/device_service.dart';
-import 'Tools/l10n.dart';
+import '../Tools/SPUtil.dart';
+import '../Tools/Theme/theme_service.dart';
+import '../Tools/channel_util.dart';
+import '../Tools/custom_route_listen_widget.dart';
+import '../Tools/device_service.dart';
+import '../Tools/l10n.dart';
 import 'routes.dart';
-import '页面合集/splash/binding.dart';
+import '../页面合集/splash/binding.dart';
 
 // open -a Simulator
 Future<void> main() async {

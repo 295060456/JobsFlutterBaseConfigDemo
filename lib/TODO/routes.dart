@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 
-import 'GetXDemo✅/GetX_RouteDemo/GetX_RouteDemo1/home_binding.dart';
-import 'GetXDemo✅/GetX_RouteDemo/GetX_RouteDemo1/home_view.dart';
+import '../Data/Data.3rd/GetXDemo✅/GetX_RouteDemo/GetX_RouteDemo1/home_binding.dart';
+import '../Data/Data.3rd/GetXDemo✅/GetX_RouteDemo/GetX_RouteDemo1/home_view.dart';
 // import '页面合集/splash/binding.dart';
 // import '页面合集/splash/view.dart';
 

@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import '/JSON解析/models/built_value/video_item.dart';
-import '/JSON解析/models/built_value/serializers.dart';
+import 'models/built_value/video_item.dart';
+import 'models/built_value/serializers.dart';
 
 void main() {
   runApp(const MyApp());

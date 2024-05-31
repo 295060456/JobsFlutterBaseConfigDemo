@@ -8,7 +8,7 @@ import 'package:jobs_flutter_base_config/KKK/session_change_notifier.dart';
 import 'package:jobs_flutter_base_config/KKK/splash/binding.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
-import '../routes.dart';
+import '../TODO/routes.dart';
 import 'generated/l10n.dart';
 import 'splash/view.dart';
 import 'utils/sp_util.dart';
