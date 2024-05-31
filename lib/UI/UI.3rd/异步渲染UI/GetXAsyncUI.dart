@@ -11,18 +11,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const GetMaterialApp(
-      home: RegisterPage(),
+      home: A(),
     );
   }
 }
 
-class RegisterPage extends GetView<RegisterLogic> {
-  const RegisterPage({super.key});
+class A extends GetView<ACtrl> {
+  const A({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<RegisterLogic>(
-      init: RegisterLogic(),
+    return GetBuilder<ACtrl>(
+      init: ACtrl(),
       id: "register",
       builder: (_) {
         controller.context = context;
@@ -48,7 +48,7 @@ class RegisterPage extends GetView<RegisterLogic> {
           const SizedBox(height: 20),
           Obx(() => Text(
                 controller.isUpdated.value
-                    ? "Content updated after 5 seconds"
+                    ? "Content updated after 1 seconds"
                     : "Press the button to start timer",
                 style: const TextStyle(fontSize: 24),
               )),
@@ -58,12 +58,12 @@ class RegisterPage extends GetView<RegisterLogic> {
   }
 }
 
-class RegisterLogic extends GetxController {
+class ACtrl extends GetxController {
   BuildContext? context;
   var isUpdated = false.obs;
 
   void startTimer() {
-    Future.delayed(const Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 1), () {
       isUpdated.value = true;
       update(["register"]);
     });
