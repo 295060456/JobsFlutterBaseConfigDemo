@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'Storage.dart';
 import 'user_info.dart';
-import 'storage.dart'; // 包含存取扩展方法
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await UserInfoStorage.loadFromPreferences();
+void main() {
   runApp(const MyApp());
 }
 
@@ -14,123 +13,173 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('UserInfo & Storage Demo')),
-        body: const UserInfoDemo(),
+      title: 'Storage Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
+      home: const StorageDemo(),
     );
   }
 }
 
-class UserInfoDemo extends StatefulWidget {
-  const UserInfoDemo({super.key});
+class StorageDemo extends StatefulWidget {
+  const StorageDemo({super.key});
 
   @override
-  _UserInfoDemoState createState() => _UserInfoDemoState();
+  _StorageDemoState createState() => _StorageDemoState();
 }
 
-class _UserInfoDemoState extends State<UserInfoDemo> {
-  late UserInfo _userInfo;
-  DateTime? loadedDate;
-  double? loadedNumber;
-  String? loadedText;
-  bool? loadedBoolean;
-  int? loadedAge;
-  int? loadedHeight;
+class _StorageDemoState extends State<StorageDemo> {
+  final Storage _storage = Storage.instance;
+  late final SharedPreferences prefs;
 
   @override
   void initState() {
     super.initState();
-    _userInfo = UserInfo();
-    _loadAdditionalData();
+    _loadInitialValues();
+  }
+
+  Future<void> _loadInitialValues() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      // Load data from SharedPreferences
+      UserInfo userInfo = await StorageHelper.loadUserInfo();
+      String key = prefs.getString('key') ?? '';
+      String dateTimeString = prefs.getString('dateTime') ?? '';
+      DateTime dateTime = dateTimeString.isNotEmpty
+          ? DateTime.tryParse(dateTimeString) ?? DateTime.now()
+          : DateTime.now();
+      double doubleValue = prefs.getDouble('doubleValue') ?? 0.0;
+      int intValue = prefs.getInt('intValue') ?? 0;
+      bool boolValue = prefs.getBool('boolValue') ?? false;
+      // Update state
+      setState(() {
+        _storage.userInfo = userInfo;
+        _storage.key = key;
+        _storage.dateTime = dateTime;
+        _storage.doubleValue = doubleValue;
+        _storage.intValue = intValue;
+        _storage.boolValue = boolValue;
+      });
+    } catch (e) {
+      debugPrint('Error loading initial values: $e');
+    }
+  }
+
+  Future<void> _saveValues() async {
+    await _storage.userInfo.save('userInfo');
+    await _storage.key!.save('key');
+    await _storage.dateTime!.save('dateTime');
+    await _storage.doubleValue.save('doubleValue');
+    await _storage.intValue.save('intValue');
+    await _storage.boolValue.save('boolValue');
+  }
+
+  Future<void> _deleteValues() async {
+    await _storage.userInfo.delete('userInfo');
+    await _storage.key!.delete('key');
+    await _storage.dateTime!.delete('dateTime');
+    await _storage.doubleValue.delete('doubleValue');
+    await _storage.intValue.delete('intValue');
+    await _storage.boolValue.delete('boolValue');
+    setState(() {
+      _storage.userInfo = UserInfo();
+      _storage.key = "";
+      _storage.dateTime = DateTime.now();
+      _storage.doubleValue = 0.0;
+      _storage.intValue = 0;
+      _storage.boolValue = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Name: ${_userInfo.name}'),
-          Text('Age: ${_userInfo.age}'),
-          const SizedBox(height: 20),
-          Text('Loaded Date: $loadedDate'),
-          Text('Loaded Number: $loadedNumber'),
-          Text('Loaded Text: $loadedText'),
-          Text('Loaded Boolean: $loadedBoolean'),
-          Text('Loaded Age: $loadedAge'),
-          Text('Loaded Height: $loadedHeight'),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: _updateUserInfo,
-            child: const Text('更新用户信息'),
-          ),
-          ElevatedButton(
-            onPressed: _saveAdditionalData,
-            child: const Text('保存其他数据'),
-          ),
-          ElevatedButton(
-            onPressed: _loadAdditionalData,
-            child: const Text('加载其他数据'),
-          ),
-          // ElevatedButton(
-          //   onPressed: _deleteAdditionalData,
-          //   child: const Text('删除其他数据'),
-          // ),
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Storage Demo'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              decoration: const InputDecoration(labelText: 'User Info'),
+              onChanged: (value) {
+                _storage.userInfo = UserInfo.fromString(value);
+              },
+            ),
+            TextField(
+              decoration: const InputDecoration(labelText: 'Key'),
+              onChanged: (value) {
+                _storage.key = value;
+              },
+            ),
+            TextField(
+              decoration: const InputDecoration(labelText: 'DateTime'),
+              onChanged: (value) {
+                _storage.dateTime = DateTime.tryParse(value) ?? DateTime.now();
+              },
+            ),
+            TextField(
+              decoration: const InputDecoration(labelText: 'Double Value'),
+              onChanged: (value) {
+                _storage.doubleValue = double.tryParse(value) ?? 0.0;
+              },
+            ),
+            TextField(
+              decoration: const InputDecoration(labelText: 'Int Value'),
+              onChanged: (value) {
+                _storage.intValue = int.tryParse(value) ?? 0;
+              },
+            ),
+            SwitchListTile(
+              title: const Text('Bool Value'),
+              value: _storage.boolValue,
+              onChanged: (value) {
+                setState(() {
+                  _storage.boolValue = value;
+                });
+              },
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _saveValues,
+              child: const Text('Save Values'),
+            ),
+            ElevatedButton(
+              onPressed: _deleteValues,
+              child: const Text('Delete Values'),
+            ),
+          ],
+        ),
       ),
     );
   }
+}
 
-  void _updateUserInfo() async {
-    _userInfo.name = '隔壁老王';
-    _userInfo.age = 25;
-    await _userInfo.saveToPreferences();
-    setState(() {});
-  }
+void storageUsageDemo() {
+  // UserInfo 字段的使用
+  Storage.instance.userInfo.setUserInfo(name: "汤山老王", age: 33);
+  debugPrint(Storage.instance.userInfo.name);
+  debugPrint(Storage.instance.userInfo.age.toString());
 
-  void _saveAdditionalData() async {
-    DateTime now = DateTime.now();
-    double number = 123456.789;
-    String text = "hello";
-    bool boolean = true;
-    int age = 30;
-    int height = 175;
+  // String 字段的使用
+  Storage.instance.key = "newKey";
+  debugPrint(Storage.instance.key);
 
-    await now.save('currentDateTime');
-    await number.save('numberValue');
-    await text.save('textValue');
-    await boolean.save('booleanValue');
-    await age.save('ageValue');
-    await height.save('heightValue');
-  }
+  // DateTime 字段的使用
+  Storage.instance.dateTime = DateTime(2023, 1, 1);
+  debugPrint(Storage.instance.dateTime?.toIso8601String());
 
-  void _loadAdditionalData() async {
-    loadedDate = await DateTimeStorage.load('currentDateTime');
-    loadedNumber = await DoubleStorage.load('numberValue');
-    loadedText = await StringStorage.load('textValue');
-    loadedBoolean = await BoolStorage.load('booleanValue');
-    loadedAge = await IntStorage.load('ageValue');
-    loadedHeight = await IntStorage.load('heightValue');
-    setState(() {});
-  }
+  // double 字段的使用
+  Storage.instance.doubleValue = 1.23;
+  debugPrint(Storage.instance.doubleValue.toString());
 
-  // void _deleteAdditionalData() async {
-  //   await DateTimeStorage.delete('currentDateTime');
-  //   await DoubleStorage.delete('numberValue');
-  //   await StringStorage.delete('textValue');
-  //   await BoolStorage.delete('booleanValue');
-  //   await IntStorage.delete('ageValue');
-  //   await IntStorage.delete('heightValue');
-  //   setState(() {
-  //     loadedDate = null;
-  //     loadedNumber = null;
-  //     loadedText = null;
-  //     loadedBoolean = null;
-  //     loadedAge = null;
-  //     loadedHeight = null;
-  //   });
-  // }
+  // int 字段的使用
+  Storage.instance.intValue = 42;
+  debugPrint(Storage.instance.intValue.toString());
+
+  // bool 字段的使用
+  Storage.instance.boolValue = true;
+  debugPrint(Storage.instance.boolValue.toString());
 }
