@@ -1,17 +1,27 @@
 
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'user_info.dart';
 
 class Storage {
   // 私有构造函数。只是提醒私有，外部还是可以被调用的。
   Storage._();
-  // 单例对象，不仅能保证 _instance 是唯一的，还能确保在其声明时就被初始化
-  static final Storage _instance = Storage._();
+  // 单例对象
+  // 单例对象要被重置为null，要求_instance不能被final修饰，因为不能直接赋值null
+  static Storage? _instance;
   // 获取单例对象的方法
-  static Storage get instance => _instance;
-  // UserInfo 字段n
+  static Storage get instance {
+    _instance ??= Storage._();
+    return _instance!;
+  }
+  // 销毁单例对象的方法
+  static void destroyInstance() {
+    _instance = null;
+    debugPrint("该单例对象已经被销毁");
+  }
+  // UserInfo 字段
   UserInfo? _userInfo;
   UserInfo get userInfo {
     _userInfo ??= UserInfo();

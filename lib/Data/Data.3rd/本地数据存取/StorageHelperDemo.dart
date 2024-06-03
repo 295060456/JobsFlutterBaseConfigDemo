@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'Storage.dart';
-import 'user_info.dart';
+import 'dart:convert';
 
 void main() {
   runApp(const MyApp());
@@ -12,9 +11,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    storageUsageDemo();
     return MaterialApp(
-      title: 'Storage Demo',
+      title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -31,66 +29,81 @@ class StorageDemo extends StatefulWidget {
 }
 
 class _StorageDemoState extends State<StorageDemo> {
-  final Storage _storage = Storage.instance;
-  late final SharedPreferences prefs;
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
+  final TextEditingController _stringController = TextEditingController();
+  final TextEditingController _intController = TextEditingController();
+  final TextEditingController _doubleController = TextEditingController();
+  final TextEditingController _boolController = TextEditingController();
+  final TextEditingController _dateTimeController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _loadInitialValues();
+    _loadStoredData();
   }
 
-  Future<void> _loadInitialValues() async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      // Load data from SharedPreferences
-      UserInfo userInfo = await StorageHelper.loadUserInfo();
-      String key = prefs.getString('key') ?? '';
-      String dateTimeString = prefs.getString('dateTime') ?? '';
-      DateTime dateTime = dateTimeString.isNotEmpty
-          ? DateTime.tryParse(dateTimeString) ?? DateTime.now()
-          : DateTime.now();
-      double doubleValue = prefs.getDouble('doubleValue') ?? 0.0;
-      int intValue = prefs.getInt('intValue') ?? 0;
-      bool boolValue = prefs.getBool('boolValue') ?? false;
-      // Update state
-      setState(() {
-        _storage.userInfo = userInfo;
-        _storage.key = key;
-        _storage.dateTime = dateTime;
-        _storage.doubleValue = doubleValue;
-        _storage.intValue = intValue;
-        _storage.boolValue = boolValue;
-      });
-    } catch (e) {
-      debugPrint('Error loading initial values: $e');
+  Future<void> _loadStoredData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String? userInfoString = prefs.getString('userInfo');
+    if (userInfoString != null) {
+      Map<String, dynamic> userInfoMap = jsonDecode(userInfoString);
+      _nameController.text = userInfoMap['name'];
+      _ageController.text = userInfoMap['age'].toString();
     }
+
+    _stringController.text = prefs.getString('stringValue') ?? '';
+    _intController.text = (prefs.getInt('intValue') ?? '').toString();
+    _doubleController.text = (prefs.getDouble('doubleValue') ?? '').toString();
+    _boolController.text = (prefs.getBool('boolValue') ?? '').toString();
+    _dateTimeController.text = prefs.getString('dateTimeValue') ?? '';
   }
 
-  Future<void> _saveValues() async {
-    await _storage.userInfo.save('userInfo');
-    await _storage.key!.save('key');
-    await _storage.dateTime!.save('dateTime');
-    await _storage.doubleValue.save('doubleValue');
-    await _storage.intValue.save('intValue');
-    await _storage.boolValue.save('boolValue');
+  Future<void> _saveString() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('stringValue', _stringController.text);
   }
 
-  Future<void> _deleteValues() async {
-    await _storage.userInfo.delete('userInfo');
-    await _storage.key!.delete('key');
-    await _storage.dateTime!.delete('dateTime');
-    await _storage.doubleValue.delete('doubleValue');
-    await _storage.intValue.delete('intValue');
-    await _storage.boolValue.delete('boolValue');
-    setState(() {
-      _storage.userInfo = UserInfo();
-      _storage.key = "";
-      _storage.dateTime = DateTime.now();
-      _storage.doubleValue = 0.0;
-      _storage.intValue = 0;
-      _storage.boolValue = false;
+  Future<void> _saveInt() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('intValue', int.parse(_intController.text));
+  }
+
+  Future<void> _saveDouble() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('doubleValue', double.parse(_doubleController.text));
+  }
+
+  Future<void> _saveBool() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('boolValue', _boolController.text.toLowerCase() == 'true');
+  }
+
+  Future<void> _saveDateTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('dateTimeValue', _dateTimeController.text);
+  }
+
+  Future<void> _saveUserInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userInfo = jsonEncode({
+      'name': _nameController.text,
+      'age': int.parse(_ageController.text),
     });
+    await prefs.setString('userInfo', userInfo);
+  }
+
+  Future<void> _resetAll() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    _nameController.clear();
+    _ageController.clear();
+    _stringController.clear();
+    _intController.clear();
+    _doubleController.clear();
+    _boolController.clear();
+    _dateTimeController.clear();
   }
 
   @override
@@ -101,86 +114,45 @@ class _StorageDemoState extends State<StorageDemo> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
+        child: ListView(
           children: [
-            TextField(
-              decoration: const InputDecoration(labelText: 'User Info'),
-              onChanged: (value) {
-                _storage.userInfo = UserInfo.fromString(value);
-              },
-            ),
-            TextField(
-              decoration: const InputDecoration(labelText: 'Key'),
-              onChanged: (value) {
-                _storage.key = value;
-              },
-            ),
-            TextField(
-              decoration: const InputDecoration(labelText: 'DateTime'),
-              onChanged: (value) {
-                _storage.dateTime = DateTime.tryParse(value) ?? DateTime.now();
-              },
-            ),
-            TextField(
-              decoration: const InputDecoration(labelText: 'Double Value'),
-              onChanged: (value) {
-                _storage.doubleValue = double.tryParse(value) ?? 0.0;
-              },
-            ),
-            TextField(
-              decoration: const InputDecoration(labelText: 'Int Value'),
-              onChanged: (value) {
-                _storage.intValue = int.tryParse(value) ?? 0;
-              },
-            ),
-            SwitchListTile(
-              title: const Text('Bool Value'),
-              value: _storage.boolValue,
-              onChanged: (value) {
-                setState(() {
-                  _storage.boolValue = value;
-                });
-              },
-            ),
+            _buildTextField('Name', _nameController, _saveUserInfo),
+            _buildTextField('Age', _ageController, _saveUserInfo),
+            _buildTextField('String Value', _stringController, _saveString),
+            _buildTextField('Integer Value', _intController, _saveInt),
+            _buildTextField('Double Value', _doubleController, _saveDouble),
+            _buildTextField('Boolean Value', _boolController, _saveBool),
+            _buildTextField('Date Time Value', _dateTimeController, _saveDateTime),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _saveValues,
-              child: const Text('Save Values'),
-            ),
-            ElevatedButton(
-              onPressed: _deleteValues,
-              child: const Text('Delete Values'),
+              onPressed: _resetAll,
+              child: const Text('Reset All'),
             ),
           ],
         ),
       ),
     );
   }
-}
 
-void storageUsageDemo() {
-  // UserInfo 字段的使用
-  Storage.instance.userInfo.setUserInfo(name: "汤山老王", age: 33);
-  debugPrint(Storage.instance.userInfo.name);
-  debugPrint(Storage.instance.userInfo.age.toString());
-
-  // String 字段的使用
-  Storage.instance.key = "newKey";
-  debugPrint(Storage.instance.key);
-
-  // DateTime 字段的使用
-  Storage.instance.dateTime = DateTime(2023, 1, 1);
-  debugPrint(Storage.instance.dateTime?.toIso8601String());
-
-  // double 字段的使用
-  Storage.instance.doubleValue = 1.23;
-  debugPrint(Storage.instance.doubleValue.toString());
-
-  // int 字段的使用
-  Storage.instance.intValue = 42;
-  debugPrint(Storage.instance.intValue.toString());
-
-  // bool 字段的使用
-  Storage.instance.boolValue = true;
-  debugPrint(Storage.instance.boolValue.toString());
+  Widget _buildTextField(String label, TextEditingController controller, Future<void> Function() saveFunction) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                labelText: label,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: saveFunction,
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
 }
