@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    storageUsageDemo();
     return MaterialApp(
       title: 'Storage Demo',
       theme: ThemeData(
