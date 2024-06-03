@@ -156,7 +156,7 @@ class _StorageDemoState extends State<StorageDemo> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _resetAll,
-              child: const Text('Reset All'),
+              child: const Text('全部重置'),
             ),
           ],
         ),
