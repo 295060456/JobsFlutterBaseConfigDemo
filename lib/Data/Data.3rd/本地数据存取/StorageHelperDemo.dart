@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: '本地数据存取',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -49,8 +49,8 @@ class _StorageDemoState extends State<StorageDemo> {
     String? userInfoString = prefs.getString('userInfo');
     if (userInfoString != null) {
       Map<String, dynamic> userInfoMap = jsonDecode(userInfoString);
-      _nameController.text = userInfoMap['name'];
-      _ageController.text = userInfoMap['age'].toString();
+      _nameController.text = userInfoMap['name'].toString().isEmpty ? "" :userInfoMap['name'];
+      _ageController.text = userInfoMap['age'].toString().isEmpty ? "" : userInfoMap['age'].toString();
     }
 
     _stringController.text = prefs.getString('stringValue') ?? '';
@@ -63,35 +63,56 @@ class _StorageDemoState extends State<StorageDemo> {
   Future<void> _saveString() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('stringValue', _stringController.text);
+    _showSuccessMessage('字符串 ${_stringController.text} 存储成功');
   }
 
   Future<void> _saveInt() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setInt('intValue', int.parse(_intController.text));
+    _showSuccessMessage('int值 ${_intController.text} 存储成功');
   }
 
   Future<void> _saveDouble() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setDouble('doubleValue', double.parse(_doubleController.text));
+    _showSuccessMessage('Double值 ${_doubleController.text} 存储成功');
   }
 
   Future<void> _saveBool() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('boolValue', _boolController.text.toLowerCase() == 'true');
+    _showSuccessMessage('Dool值 ${_boolController.text} 存储成功');
   }
 
   Future<void> _saveDateTime() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('dateTimeValue', _dateTimeController.text);
+    _showSuccessMessage('DateTime值 ${_dateTimeController.text} 存储成功');
   }
 
   Future<void> _saveUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String userInfo = jsonEncode({
-      'name': _nameController.text,
-      'age': int.parse(_ageController.text),
-    });
+
+    String userInfo; 
+    if(_ageController.text.isEmpty || _ageController.text is! int){
+      userInfo = jsonEncode({
+        'name': _nameController.text.isEmpty ? "" : _nameController.text,
+        });
+    }else{
+      userInfo = jsonEncode({
+        'name': _nameController.text.isEmpty ? "" : _nameController.text,
+        'age': int.parse(_ageController.text),
+      });
+    }
+
     await prefs.setString('userInfo', userInfo);
+   
+    if(_ageController.text.isEmpty || _ageController.text is! int){
+      _showSuccessMessage('Userinfo.姓名 ${_nameController.text} 存储成功');
+    }else{
+      _showSuccessMessage('Userinfo.姓名 ${_nameController.text} 存储成功');
+      _showSuccessMessage('Userinfo.年龄 ${_ageController.text} 存储成功');
+    }
   }
 
   Future<void> _resetAll() async {
@@ -104,20 +125,29 @@ class _StorageDemoState extends State<StorageDemo> {
     _doubleController.clear();
     _boolController.clear();
     _dateTimeController.clear();
+    _showSuccessMessage('重置数据成功');
+  }
+
+  void _showSuccessMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Storage Demo'),
+        title: const Text('本地数据存取的Demo'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
-            _buildTextField('Name', _nameController, _saveUserInfo),
-            _buildTextField('Age', _ageController, _saveUserInfo),
+            _buildTextField('姓名', _nameController, _saveUserInfo),
+            _buildTextField('年龄', _ageController, _saveUserInfo),
             _buildTextField('String Value', _stringController, _saveString),
             _buildTextField('Integer Value', _intController, _saveInt),
             _buildTextField('Double Value', _doubleController, _saveDouble),
@@ -134,7 +164,9 @@ class _StorageDemoState extends State<StorageDemo> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, Future<void> Function() saveFunction) {
+  Widget _buildTextField(String label, 
+  TextEditingController controller, 
+  Future<void> Function() saveFunction) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -149,7 +181,7 @@ class _StorageDemoState extends State<StorageDemo> {
           ),
           ElevatedButton(
             onPressed: saveFunction,
-            child: const Text('Save'),
+            child: const Text('保存'),
           ),
         ],
       ),
