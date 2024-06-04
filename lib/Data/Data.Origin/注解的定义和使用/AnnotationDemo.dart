@@ -1,6 +1,8 @@
 // 定义一个自定义注解
 import 'package:flutter/material.dart';
-
+// 注解是一种元数据，它们被用来为代码添加额外的信息。
+// 这些信息在编译时或运行时可以被工具、框架或库所使用，以改变程序的行为或生成额外的代码。
+// 但是，注解本身并不直接执行任何代码。
 void main() {
   // 检查类是否有 MyAnnotation 注解
   var classAnnotation = getAnnotation<MyAnnotation>(MyClass);
@@ -25,13 +27,11 @@ T? getAnnotation<T>(Object element) {
     var endIndex = annotations.indexOf(')', startIndex);
     var message = annotations.substring(startIndex, endIndex);
     return MyAnnotation(message) as T; // 使用工厂函数创建注解对象
-  }
-  return null;
+  }return null;
 }
 
 class MyAnnotation {
   final String message;
-
   const MyAnnotation(this.message);
 }
 
