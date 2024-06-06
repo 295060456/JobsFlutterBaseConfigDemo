@@ -1,6 +1,8 @@
 # 使用built_value解析json文件自动生成Model
 
-* 不同的 JSON 解析库有不同的要求和范式，因此对应的模型类定义也会有所不同。
+* <font color=red>**不同的 json 解析库有不同的要求和范式，因此对应的模型类定义也会有所不同。**</font>
+
+* 一个项目最好统一用一个模型解析器。不同的模型解析可能会引发冲突。
 
 * 具体来说，`freezed` 和 `built_value` 使用的方式和生成的代码有很大差异，因此模型类的定义方式也会不同。
 
@@ -87,28 +89,60 @@
     }
     ```
   
-  * 其中的`video_item.g.dart`和`serializers.g.dart`均为自动生成，生成方式如下：
+  * 其中的`video_item.g.dart`和`serializers.g.dart`均为自动生成。生成路径与模型文件`video_item.dart`在同一文件夹[**生成方式如下**](#执行脚本自动生成代码)：
   
   * 配置*pubspec.yaml*
   
     ```yaml
-    dependencies:
-      flutter:
+    # flutter pub get
+    # flutter pub upgrade -major-versions # 更新Flutter项目的依赖包到major版本
+    # flutter pub outdated
+    # open pub.dev
+    
+    name: jobs_flutter_base_config
+    description: "A new Flutter project."
+    publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+    version: 1.0.0+1
+    environment:
+      sdk: '>=3.3.1 <4.0.0'
+    # 在dependencies部分中已经声明了某个包，就不需要在dev_dependencies部分重复声明了。
+    dependencies: 
+    # 核心库
+      flutter: 
         sdk: flutter
-      dio: ^5.0.3
-      built_value: ^8.0.6
-      built_collection: ^5.0.1
-    
+    # 数据处理
+      built_collection:
+      built_value: # 用于序列化/反序列化数据
+      built_value_generator: # 用于生成序列化/反序列化代码
+      freezed: # 用于序列化/反序列化数据
+      freezed_annotation: # 用于序列化/反序列化数据
     dev_dependencies:
-      build_runner: ^2.0.6
-      built_value_generator: ^8.0.6
-    
+      flutter_test:
+        sdk: flutter
+      flutter_lints: ^4.0.0 # Flutter代码规范
+      build_runner:
+    # For information on the generic Dart part of this file, see the
+    # following page: https://dart.dev/tools/pub/pubspec
     flutter:
-      assets:
+      uses-material-design: true # 指示应用程序是否应该使用Material Design风格
+      # An image asset can refer to one or more resolution-specific "variants", see
+      # https://flutter.dev/assets-and-images/#resolution-aware
+      # For details regarding adding assets from package dependencies, see
+      # https://flutter.dev/assets-and-images/#from-packages
+      assets: # 路径名不能有中文，否则可能无法正常读取
+        - assets/
         - assets/Jsons/data.json
+    # For details regarding fonts from package dependencies,
+    # see https://flutter.dev/custom-fonts/#from-packages
+    # 
+    # https://fonts.google.com/
+    fonts:
+      - family: Akrobat-Bold
+        fonts:      
+          - asset: assets/fonts/Akrobat-Bold.otf     
     ```
     
-  * <font color=red>**主文件也不能有一点错否则无法成功生成代码**</font>
+  * <font color=red>**主文件也不能有一点错否则无法成功生成代码，也可以先不写主文件**</font>
   
     *built_value_demo.dart*
     
@@ -204,13 +238,14 @@
     }
     ```
     
-  * 进入项目根目录，执行：
+  * <font id=执行脚本自动生成代码>进入项目根目录，执行：</font>
   
-    ```dart
+    ```shell
     flutter packages upgrade       
     flutter clean
     flutter pub get --no-example
-    flutter pub run build_runner build
+    # flutter pub run build_runner build
+    dart run build_runner build
     ```
     
     ```shell
