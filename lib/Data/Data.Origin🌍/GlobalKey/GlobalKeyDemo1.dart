@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+/// 直接用Key取UI的值（状态），而不关心UI的具体实现。
 void main() {
   runApp(const MyApp());
 }

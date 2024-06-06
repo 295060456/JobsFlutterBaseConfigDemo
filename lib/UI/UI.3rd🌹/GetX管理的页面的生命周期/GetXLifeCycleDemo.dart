@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'GetX.PageA/views/pageA_View.dart';
+import '../../UI.3rd/GetX管理的页面的生命周期/GetX.PageA/views/pageA_View.dart';
 
 void main() {
   runApp(const MyApp());
