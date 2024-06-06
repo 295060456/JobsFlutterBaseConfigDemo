@@ -100,6 +100,7 @@ dependencies:
   flutter_secure_storage: # 用于存储敏感数据
   flutter_secure_storage_macos: # 用于存储敏感数据 (macOS)
   firebase_core: # 用于使用Firebase
+  sqflite: # 用于本地数据库
 # 播放器
   video_player: # 用于播放视频
   chewie: # 用于播放视频
