@@ -33,9 +33,11 @@ class MyApp extends StatelessWidget {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  // Get.find 是 Flutter GetX 状态管理库中的一个方法，用于查找和获取已经注册的控制器或服务。
-                  // 通过 Get.find 获取 CounterController 实例，并调用其中的方法
-                  Get.find<CounterController>().increment();
+                  if (Get.isRegistered<CounterController>()) {
+                    // Get.find 是 Flutter GetX 状态管理库中的一个方法，用于查找和获取已经注册的控制器或服务。
+                    // 通过 Get.find 获取 CounterController 实例，并调用其中的方法
+                    Get.find<CounterController>().increment();
+                    }
                 },
                 child: const Text('Increment'),
               ),

@@ -24,8 +24,10 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final HomeController homeController = Get.find<HomeController>();
-
+    late final HomeController homeController;
+    if (Get.isRegistered<HomeController>()) {
+      homeController = Get.find<HomeController>();
+    }
     return Scaffold(
       body: Obx(() {
         return IndexedStack(

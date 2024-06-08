@@ -9,7 +9,10 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final HomeController controller = Get.find();
+    late final HomeController controller;
+    if (Get.isRegistered<HomeController>()) {
+      controller = Get.find<HomeController>();
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
