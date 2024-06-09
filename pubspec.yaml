@@ -57,11 +57,13 @@ dependencies:
   flutter_native_image: # 用于处理原生图片
   image_gallery_saver: # 用于保存图片到相册中
 # 数据处理
+  equatable: # 用于定义值对象的相等性
   built_value: # 用于序列化/反序列化数据
   built_value_generator: # 用于生成序列化/反序列化代码
   built_collection: # 用于序列化/反序列化数据
   freezed: # 用于序列化/反序列化数据
   freezed_annotation: # 用于序列化/反序列化数据
+  msgpack_dart: # 用于序列化/反序列化MessagePack数据
   json_annotation: # 用于序列化/反序列化JSON数据
   messagepack: # 用于序列化/反序列化MessagePack数据
   shared_preferences: # 用于存储键值对数据

@@ -80,7 +80,7 @@ class HomeScreen extends StatelessWidget {
                   titleTextAlign: TextAlign.left, // 标题对齐方式
                   subtitleTextAlign: TextAlign.left, // 副标题对齐方式
                   actions: [
-                    Text('关闭'), // 自定义按钮
+                    const Text('关闭'), // 自定义按钮
                   ],
                   actionTextStyles: [
                     const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),

@@ -37,6 +37,7 @@ class _ScreenshotDemoState extends State<ScreenshotDemo> {
     super.initState();
     _screenshotChannel.receiveBroadcastStream().listen((event) {
       if (event == 'screenshot_taken') {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Screenshot taken!')),
         );

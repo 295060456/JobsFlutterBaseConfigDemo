@@ -18,6 +18,7 @@ class SuperClass {
 }
 
 class SubClass extends SuperClass {
+  @override
   @jobsOverride
   void someMethod() {
     debugPrint("SubClass someMethod");

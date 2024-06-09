@@ -1,4 +1,4 @@
-// counter_event.dart
+// ignore: depend_on_referenced_packages
 import 'package:equatable/equatable.dart';
 
 abstract class CounterEvent extends Equatable {

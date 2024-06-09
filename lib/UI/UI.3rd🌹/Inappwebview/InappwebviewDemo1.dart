@@ -65,8 +65,8 @@ class _WebViewExampleState extends State<WebViewExample> {
         ),
       ),
       body: PopScope(
-        canPop: canPopWebView,// 决定是否允许返回操作
-        onPopInvoked: (didPop) async {// 当返回操作被触发时调用
+        canPop: canPopWebView, // Determines whether back navigation is allowed
+        onPopInvokedWithResult: (didPop, result) async { // Called when back navigation is triggered
           if (webViewController != null && await webViewController!.canGoBack()) {
             webViewController!.goBack();
             setState(() {
@@ -84,10 +84,10 @@ class _WebViewExampleState extends State<WebViewExample> {
             webViewController = controller;
           },
           onLoadStart: (controller, url) {
-            debugPrint("网页开始加载: $url");
+            debugPrint("Page started loading: $url");
           },
           onLoadStop: (controller, url) {
-            debugPrint("网页加载结束: $url");
+            debugPrint("Page finished loading: $url");
           },
         ),
       ),

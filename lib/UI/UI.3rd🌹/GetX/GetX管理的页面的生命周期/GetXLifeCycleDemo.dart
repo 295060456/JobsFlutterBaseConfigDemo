@@ -46,9 +46,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         debugPrint('应用程序没有关联的 Flutter 引擎');
         break;
       case AppLifecycleState.hidden:
-        // TODO: Handle this case.
-    }
-    super.didChangeAppLifecycleState(state);
+      // AppLifecycleState.hidden 是 Flutter 中的一个枚举值，它表示应用程序的状态在 iOS 平台上被隐藏时的状态。
+      // 具体来说，AppLifecycleState.hidden 是在 iOS 上当用户按下主屏幕按钮或切换到另一个应用程序时，Flutter 应用程序进入后台并且不再可见的状态。
+      // 在 Android 平台上没有完全对应的状态。
+      // 在 Android 上，当应用程序进入后台时，通常会接收到 AppLifecycleState.paused 状态。
+        debugPrint('Handle this case');
+    }super.didChangeAppLifecycleState(state);
   }
 
   @override

@@ -17,7 +17,7 @@ extension UserInfoStorage on UserInfo {
   // 将用户信息保存到 SharedPreferences
   Future<void> saveToPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String userInfoString = json.encode(this.toJson());
+    String userInfoString = json.encode(toJson());
     await prefs.setString('userInfo', userInfoString);
   }
 }
