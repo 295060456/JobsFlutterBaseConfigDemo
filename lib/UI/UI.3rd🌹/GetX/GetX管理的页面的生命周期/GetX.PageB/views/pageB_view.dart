@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class PageBView extends StatelessWidget {
+class PageBView extends GetView {
   const PageBView({super.key});
 
   @override

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-/// SingleChildScrollView类似于iOS的showsVerticalScrollIndicator效果
+
 void main() {
   runApp(const MyApp());
 }
@@ -31,16 +31,17 @@ class _ScrollViewWithScrollbarState extends State<ScrollViewWithScrollbar> {
       appBar: AppBar(
         title: const Text('Scroll View with Scrollbar'),
       ),
-      body: Scrollbar(
-        controller: _scrollController,
-        thumbVisibility: true, // 始终显示滚动条
-        child: SingleChildScrollView(
+      body: RawScrollbar(
+          thumbColor: Colors.redAccent,
           controller: _scrollController,
-          child: Column(
-            children: List.generate(50, (index) => ListTile(title: Text('Item $index'))),
+          thumbVisibility: true, // 始终显示滚动条
+          child: SingleChildScrollView(
+            controller: _scrollController,
+            child: Column(
+              children: List.generate(50, (index) => ListTile(title: Text('Item $index'))),
+            ),
           ),
         ),
-      ),
     );
   }
 
