@@ -37,7 +37,7 @@ class LaunchScreen extends StatefulWidget {
 
 class _LaunchScreenState extends State<LaunchScreen> {
   late VideoPlayerController _videoController;
-  late Timer _timer;
+  late Timer? _timer;
   int _countdown = 60; // 默认倒计时秒数
   final bool _showVideo = false; // 是否显示视频
   final bool _showImage = false; // 是否显示图片
@@ -60,10 +60,12 @@ class _LaunchScreenState extends State<LaunchScreen> {
 
   @override
   void dispose() {
-    _videoController.dispose();
-    _timer.cancel();
-    super.dispose();
+  _videoController.dispose();
+  if (_timer?.isActive ?? false) {
+    _timer!.cancel();
   }
+  super.dispose();
+}
 
   void _startCountdown() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -78,7 +80,11 @@ class _LaunchScreenState extends State<LaunchScreen> {
   }
 
   void _navigateToHome() {
-    _timer.cancel();
+
+    if (_timer?.isActive ?? false) {
+      _timer!.cancel();
+    }
+
     Navigator.of(context).pushReplacement(MaterialPageRoute(
       builder: (context) => const HomePage(),
     ));

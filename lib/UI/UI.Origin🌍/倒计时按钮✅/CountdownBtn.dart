@@ -75,7 +75,9 @@ class _CountdownBtnState extends State<CountdownBtn> {
 
   @override
   void dispose() {
-    _timer?.cancel();
+    if (_timer?.isActive ?? false) {
+      _timer!.cancel();
+    }
     super.dispose();
   }
 
@@ -105,7 +107,9 @@ class _CountdownBtnState extends State<CountdownBtn> {
         setState(() {
           _remainingDuration -= Duration(milliseconds: (widget.timeStep * 1000).toInt()); // 更新剩余时间
           if (_remainingDuration <= Duration.zero) {
-            timer.cancel();
+            if (timer.isActive) {
+              timer.cancel();
+              }
             isCountingDown = false;
             _remainingDuration = Duration.zero;
           }
@@ -122,10 +126,11 @@ class _CountdownBtnState extends State<CountdownBtn> {
     setState(() {
       isPaused = true;
     });
-    _timer?.cancel();
+    if (_timer?.isActive ?? false) {
+      _timer!.cancel();
+    }
     _playSound();
   }
-
   // 重启定时器
   void _resumeCountdown() {
     setState(() {
