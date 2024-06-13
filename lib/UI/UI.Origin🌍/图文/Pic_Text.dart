@@ -17,7 +17,11 @@ class MyApp extends StatelessWidget {
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
+// 显示小数点后2位
+  String formatNumber(double number) {
+    return number.toStringAsFixed(number.truncateToDouble() == number ? 1 : 2);
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
