@@ -82,6 +82,9 @@ PODS:
     - Flutter
   - flutter_webview_plugin (0.0.1):
     - Flutter
+  - fluttertoast (0.0.2):
+    - Flutter
+    - Toast
   - gallery_saver (0.0.1):
     - Flutter
   - geolocator_apple (1.2.0):
@@ -184,6 +187,7 @@ PODS:
   - sqflite (0.0.3):
     - Flutter
     - FlutterMacOS
+  - Toast (4.1.1)
   - TOCropViewController (2.6.1)
   - url_launcher_ios (0.0.1):
     - Flutter
@@ -217,6 +221,7 @@ DEPENDENCIES:
   - flutter_native_timezone (from `.symlinks/plugins/flutter_native_timezone/ios`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - flutter_webview_plugin (from `.symlinks/plugins/flutter_webview_plugin/ios`)
+  - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - gallery_saver (from `.symlinks/plugins/gallery_saver/ios`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
   - google_maps_flutter_ios (from `.symlinks/plugins/google_maps_flutter_ios/ios`)
@@ -267,6 +272,7 @@ SPEC REPOS:
     - Reachability
     - SDWebImage
     - SDWebImageWebPCoder
+    - Toast
     - TOCropViewController
 
 EXTERNAL SOURCES:
@@ -308,6 +314,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_secure_storage/ios"
   flutter_webview_plugin:
     :path: ".symlinks/plugins/flutter_webview_plugin/ios"
+  fluttertoast:
+    :path: ".symlinks/plugins/fluttertoast/ios"
   gallery_saver:
     :path: ".symlinks/plugins/gallery_saver/ios"
   geolocator_apple:
@@ -390,6 +398,7 @@ SPEC CHECKSUMS:
   flutter_native_timezone: 5f05b2de06c9776b4cc70e1839f03de178394d22
   flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
   flutter_webview_plugin: ed9e8a6a96baf0c867e90e1bce2673913eeac694
+  fluttertoast: e9a18c7be5413da53898f660530c56f35edfba9c
   gallery_saver: 9fc173c9f4fcc48af53b2a9ebea1b643255be542
   geolocator_apple: 6cbaf322953988e009e5ecb481f07efece75c450
   google_maps_flutter_ios: c454f18e0e22df6ac0e9f2a4df340858f5a3680c
@@ -423,6 +432,7 @@ SPEC CHECKSUMS:
   share_plus: 8875f4f2500512ea181eef553c3e27dba5135aad
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
   sqflite: 673a0e54cc04b7d6dba8d24fb8095b31c3a99eec
+  Toast: 1f5ea13423a1e6674c4abdac5be53587ae481c4e
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
   vibration: 7d883d141656a1c1a6d8d238616b2042a51a1241
