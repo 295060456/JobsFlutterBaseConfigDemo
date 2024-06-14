@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'dart:convert';
 
 class CommonUtil {
   final ok = false.obs;
@@ -153,59 +154,94 @@ class CommonUtil {
   }
 
 }
-class TimeAgo {
-  int totalSeconds;
+/// 日志打印输出文件和行
+/// 如果要打印类的实例，需要在类中添加 Map<String, dynamic> toJson() 方法
+// ignore: non_constant_identifier_names
+void JobsPrint(Object? message) {
+  final StackTrace stackTrace = StackTrace.current;
+  final List<String> stackTraceLines = stackTrace.toString().split('\n');
+  final String logLine = stackTraceLines.length > 1 ? _formatStackTraceLine(stackTraceLines[1]) : 'Unknown location';
+  print('[$logLine] ${_messageToString(message)}');
+}
 
-  int yearsAgo = 0;
-  int monthsAgo = 0;
-  int daysAgo = 0;
-  int hoursAgo = 0;
-  int minutesAgo = 0;
-  int secondsAgo = 0;
-
-  TimeAgo(this.totalSeconds) {
-    _calculate();
+String _formatStackTraceLine(String stackTraceLine) {
+  final RegExp pattern = RegExp(r'#\d+\s+(.+)\s+\((.+):(\d+):(\d+)\)');
+  final Match? match = pattern.firstMatch(stackTraceLine);
+  if (match != null && match.groupCount == 4) {
+    final String fileName = match.group(2) ?? 'unknown file';
+    final String lineNumber = match.group(3) ?? 'unknown line';
+    return '$fileName:$lineNumber';
   }
+  return stackTraceLine;
+}
 
-  void _calculate() {
-    int remainingSeconds = totalSeconds;
-
-    yearsAgo = remainingSeconds ~/ (365 * 24 * 60 * 60);
-    remainingSeconds %= (365 * 24 * 60 * 60);
-
-    monthsAgo = remainingSeconds ~/ (30 * 24 * 60 * 60);
-    remainingSeconds %= (30 * 24 * 60 * 60);
-
-    daysAgo = remainingSeconds ~/ (24 * 60 * 60);
-    remainingSeconds %= (24 * 60 * 60);
-
-    hoursAgo = remainingSeconds ~/ (60 * 60);
-    remainingSeconds %= (60 * 60);
-
-    minutesAgo = remainingSeconds ~/ 60;
-    secondsAgo = remainingSeconds % 60;
-  }
-
-  @override
-  String toString() {
-    return '$yearsAgo years, $monthsAgo months, $daysAgo days, $hoursAgo hours, $minutesAgo minutes, $secondsAgo seconds';
+String _messageToString(Object? message) {
+  if (message == null) {
+    return 'null';
+  } else if (message is List) {
+    return _listToString(message);
+  } else if (message is Map) {
+    return _mapToString(message);
+  } else if (_isBasicType(message)) {
+    return message.toString();
+  } else {
+    return _objectToString(message);
   }
 }
 
-  /// 日志打印输出文件和行
-  void JobsPrint(Object? message) {
-    final StackTrace stackTrace = StackTrace.current;
-    final List<String> stackTraceLines = stackTrace.toString().split('\n');
-    final String logLine = stackTraceLines.length > 1 ? _formatStackTraceLine(stackTraceLines[1]) : 'Unknown location';
-    print('[$logLine] $message');
+String _mapToString(Map map) {
+  return '{${map.entries.map((e) => '${e.key}: ${_messageToString(e.value)}').join(', ')}}';
+}
+
+bool _isBasicType(Object object) {
+  return object is String || object is num || object is bool || object is DateTime;
+}
+
+String _objectToString(Object object) {
+  if (object is List) {
+    return _listToString(object);
   }
 
-  String _formatStackTraceLine(String stackTraceLine) {
-    final RegExp pattern = RegExp(r'#\d+\s+(.+)\s+\((.+):(\d+):(\d+)\)');
-    final Match? match = pattern.firstMatch(stackTraceLine);
-    if (match != null && match.groupCount == 4) {
-      final String fileName = match.group(2) ?? 'unknown file';
-      final String lineNumber = match.group(3) ?? 'unknown line';
-      return '$fileName:$lineNumber';
-    }return stackTraceLine;
+  if (_isBasicType(object)) {
+    return object.toString();
   }
+
+  final buffer = StringBuffer();
+  buffer.write('${object.runtimeType} ');
+
+  if (object is Map) {
+    return _mapToString(object);
+  }
+
+  // 尝试调用 toJson 方法
+  try {
+    dynamic jsonData = (object as dynamic).toJson();
+    if (jsonData is Map) {
+      const JsonEncoder encoder = JsonEncoder.withIndent('  ');
+      buffer.write(encoder.convert(jsonData));
+    } else {
+      buffer.write(jsonData.toString());
+    }
+  } catch (_) {
+    // 如果没有 toJson 方法，直接使用 toString
+    buffer.write(object.toString());
+  }
+
+  return buffer.toString();
+}
+
+String _listToString(List list) {
+  final buffer = StringBuffer();
+  buffer.writeln('[');
+  for (var i = 0; i < list.length; i++) {
+    var item = list[i];
+    buffer.write('  ${_objectToString(item).replaceAll('\n', '\n  ')}');
+    if (i < list.length - 1) {
+      buffer.writeln(',');
+    } else {
+      buffer.writeln();
+    }
+  }
+  buffer.write(']');
+  return buffer.toString();
+}
