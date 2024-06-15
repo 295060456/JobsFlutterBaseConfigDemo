@@ -18,6 +18,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   screenshot: # 截屏操作
   vibration: # 震动
+  fluttertoast: # 弹出提示框
   shimmer: # 用于显示占位符
   carousel_slider: # 用于轮播图
   card_swiper: # 用于轮播图
@@ -136,6 +137,8 @@ dependencies:
   google_maps_flutter_web: # 用于使用Google Maps API (web)
 # 工具库
   connectivity_plus: # 用于检查设备网络连接状态
+  overlay_support: # 用于显示遮罩层
+  clipboard: # 用于复制内容到剪贴板
   install_plugin: # 用于安装插件
   visibility_detector: # 用于监听可见性(判断页面是否显示在最上层)
   flutter_downloader: # 用于下载文件

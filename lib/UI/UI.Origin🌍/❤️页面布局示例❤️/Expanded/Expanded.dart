@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 // 第一个 Container 和最后一个 Container 有固定的高度 100。
 // 中间的 Container 被 Expanded 小部件包裹，这样它将占据剩余的可用空间。
 // 每个 Container 具有不同的背景颜色以便于区分。
-// Expanded 小部件的作用是使其子小部件在主轴方向上填充所有可用的剩余空间。在这个例子中，绿色的 Container 将扩展以填充除红色和蓝色 Container 占用空间之外的所有剩余空间。
+// Expanded 小部件的作用是使其子小部件在主轴方向上填充所有可用的剩余空间。
+// 在这个例子中，绿色的 Container 将扩展以填充除红色和蓝色 Container 占用空间之外的所有剩余空间。
 void main() {
   runApp(const MyApp());
 }
