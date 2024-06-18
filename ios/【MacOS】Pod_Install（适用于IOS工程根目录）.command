@@ -2,7 +2,9 @@
 
 # 获取当前脚本文件的目录
 current_directory=$(dirname "$(readlink -f "$0")")
-echo "Current directory: $current_directory"
+echo "\033[31m当前文件路径为：\033[0m $current_directory"
+# cd $current_directory/ios
+cd $current_directory
 
 # 检查是否存在Podfile文件
 if [ -f "$current_directory/Podfile" ]; then
