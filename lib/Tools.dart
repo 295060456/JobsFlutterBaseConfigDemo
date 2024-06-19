@@ -69,7 +69,7 @@ class CommonUtil {
   }
   ///最大的天数
   static int getMaxDays(int year, int month) {
-    if (year == null || month == null) {
+    if (month == null) {
       // 处理空值的情况
       return 0;
     }

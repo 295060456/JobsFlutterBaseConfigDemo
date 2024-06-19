@@ -12,6 +12,7 @@ environment:
 # 在dependencies部分中已经声明了某个包，就不需要在dev_dependencies部分重复声明了。
 dependencies: 
 # 核心库
+  ffi:
   flutter: 
     sdk: flutter
 # UI组件库

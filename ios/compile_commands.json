@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/Users/jobs/Documents/GitHub/JobsFlutterBaseConfig/JobsFlutterBaseConfigDemo/ios",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc -Dexample_EXPORTS  -std=gnu11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk -fPIC -o CMakeFiles/example.dir/lib/Data/Data.Origin🌍/调用C/example.c.o -c /Users/jobs/Documents/GitHub/JobsFlutterBaseConfig/JobsFlutterBaseConfigDemo/lib/Data/Data.Origin🌍/调用C/example.c",
+  "file": "/Users/jobs/Documents/GitHub/JobsFlutterBaseConfig/JobsFlutterBaseConfigDemo/lib/Data/Data.Origin🌍/调用C/example.c",
+  "output": "CMakeFiles/example.dir/lib/Data/Data.Origin🌍/调用C/example.c.o"
+}
+]

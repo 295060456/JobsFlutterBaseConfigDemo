@@ -1,0 +1,3 @@
+/Users/jobs/Documents/GitHub/JobsFlutterBaseConfig/JobsFlutterBaseConfigDemo/ios/CMakeFiles/example.dir
+/Users/jobs/Documents/GitHub/JobsFlutterBaseConfig/JobsFlutterBaseConfigDemo/ios/CMakeFiles/edit_cache.dir
+/Users/jobs/Documents/GitHub/JobsFlutterBaseConfig/JobsFlutterBaseConfigDemo/ios/CMakeFiles/rebuild_cache.dir
