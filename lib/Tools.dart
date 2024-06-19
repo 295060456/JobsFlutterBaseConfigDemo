@@ -168,7 +168,7 @@ String _formatStackTraceLine(String stackTraceLine) {
   final RegExp pattern = RegExp(r'#\d+\s+(.+)\s+\((.+):(\d+):(\d+)\)');
   final Match? match = pattern.firstMatch(stackTraceLine);
   if (match != null && match.groupCount == 4) {
-    final String fileName = match.group(2) ?? 'unknown file';
+    final String fileName = Uri.decodeComponent(match.group(2) ?? 'unknown file');
     final String lineNumber = match.group(3) ?? 'unknown line';
     return '$fileName:$lineNumber';
   }
@@ -180,6 +180,8 @@ String _messageToString(Object? message) {
     return 'null';
   } else if (message is List) {
     return _listToString(message);
+  } else if (message is Set) {
+    return _setToString(message);
   } else if (message is Map) {
     return _mapToString(message);
   } else if (_isBasicType(message)) {
@@ -200,6 +202,10 @@ bool _isBasicType(Object object) {
 String _objectToString(Object object) {
   if (object is List) {
     return _listToString(object);
+  }
+
+  if (object is Set) {
+    return _setToString(object);
   }
 
   if (_isBasicType(object)) {
@@ -243,5 +249,22 @@ String _listToString(List list) {
     }
   }
   buffer.write(']');
+  return buffer.toString();
+}
+
+String _setToString(Set set) {
+  final buffer = StringBuffer();
+  buffer.write('{');
+  for (var item in set) {
+    buffer.write('${_objectToString(item)}, ');
+  }
+  if (buffer.length > 1) {
+    // 移除最后一个逗号和空格
+    buffer.write('}');
+    var result = buffer.toString();
+    result = '${result.substring(0, result.length - 3)}}';
+    return result;
+  }
+  buffer.write('}');
   return buffer.toString();
 }

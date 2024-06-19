@@ -38,10 +38,12 @@ class MyApp extends StatelessWidget {
 
 Future<void> _loadData() async {
   try {
+    /// 打印一般的字符串
     JobsPrint("AAA");
+    /// 打印json字符串
     String jsonString = await rootBundle.loadString('assets/Jsons/data.json');
     JobsPrint(jsonString);
-
+    /// 打印实现了toJson的类
     TimeAgo timeAgo = TimeAgo(123456789098765);
     JobsPrint(timeAgo);
     JobsPrint(timeAgo.yearsAgo);
@@ -50,12 +52,20 @@ Future<void> _loadData() async {
     JobsPrint(timeAgo.hoursAgo);
     JobsPrint(timeAgo.minutesAgo);
     JobsPrint(timeAgo.secondsAgo);
-
-    var fruits = ['Apple', 'Banana', 'Orange'];
+    /// 打印Map
+    Map<String, int> map = {
+    'apple': 1,
+    'banana': 2,
+    'cherry': 3,
+    };
+    JobsPrint(map);
+    /// 打印Set
+    Set<String> fruitsSet = {'apple', 'banana', 'cherry'};
+    JobsPrint(fruitsSet);
+    /// 打印List
+    List<String> fruits = ['Apple', 'Banana', 'Orange'];
     JobsPrint(fruits);
-
   } catch (e) {
     JobsPrint('Error loading local JSON: $e');
   }
 }
-
