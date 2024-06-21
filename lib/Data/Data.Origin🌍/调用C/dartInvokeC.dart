@@ -1,9 +1,9 @@
 import 'dart:ffi';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:jobs_flutter_base_config/Tools.dart';
 
-// 定义与C函数相对应的类型
 typedef HelloFromCFunc = Void Function();
 typedef HelloFromCDart = void Function();
 
@@ -30,29 +30,44 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  static const platform = MethodChannel('com.example/simulator');
   late DynamicLibrary dylib;
   bool isLibraryLoaded = false;
 
   @override
   void initState() {
     super.initState();
-    try {
-      if (Platform.isIOS) {
-        if (Platform.environment.containsKey('SIMULATOR_DEVICE_NAME')) {
-          dylib = DynamicLibrary.open('Frameworks/libexample_sim.dylib');
-        } else {
-          dylib = DynamicLibrary.open('Frameworks/libexample_ios.dylib');
+    checkIfSimulator().then((isSimulator) {
+      try {
+        JobsPrint('Running on iOS Simulator: $isSimulator');
+         if (Platform.isIOS) {
+          JobsPrint('Loading libexample_universal.dylib');
+          /// iOS Simulator + iOS Device
+          dylib = DynamicLibrary.open('libexample_universal.dylib');
+        } else if (Platform.isMacOS) {
+          dylib = DynamicLibrary.open('libexample.dylib');
+        } else if (Platform.isLinux) {
+          dylib = DynamicLibrary.open('libexample.so');
+        } else if (Platform.isWindows) {
+          dylib = DynamicLibrary.open('example.dll');
         }
-      } else if (Platform.isMacOS) {
-        dylib = DynamicLibrary.open('libexample.dylib');
-      } else if (Platform.isLinux) {
-        dylib = DynamicLibrary.open('libexample.so');
-      } else if (Platform.isWindows) {
-        dylib = DynamicLibrary.open('example.dll');
+        setState(() {
+          isLibraryLoaded = true;
+        });
+      } catch (e) {
+        JobsPrint('Failed to load dynamic library: $e');
       }
-      isLibraryLoaded = true;
-    } catch (e) {
-      JobsPrint('Failed to load dynamic library: $e');
+    });
+  }
+
+  Future<bool> checkIfSimulator() async {
+    try {
+      final bool isSimulator = await platform.invokeMethod('isSimulator');
+      JobsPrint('isSimulator method result: $isSimulator');
+      return isSimulator;
+    } on PlatformException catch (e) {
+      JobsPrint("Failed to check if simulator: '${e.message}'.");
+      return false;
     }
   }
 
@@ -66,7 +81,6 @@ class _MyHomePageState extends State<MyHomePage> {
         child: isLibraryLoaded
             ? ElevatedButton(
                 onPressed: () {
-                  // 在按钮点击时调用C函数
                   final HelloFromCDart helloFromC = dylib
                       .lookup<NativeFunction<HelloFromCFunc>>('helloFromC')
                       .asFunction();
