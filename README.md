@@ -7,6 +7,7 @@
 * [**Flutter 项目的配置**](https://github.com/295060456/JobsFlutterBaseConfig/blob/main/README.md)
 * [**Flutter 经验**](https://github.com/295060456/JobsFlutterBaseConfig/blob/main/FlutterDoc/FlutterDoc.md)
 * [**Flutter.UI （系统控件及其相关常用属性/方法）**](https://github.com/295060456/JobsFlutterBaseConfig/blob/main/FlutterDoc/Flutter.UI%20%EF%BC%88%E7%B3%BB%E7%BB%9F%E6%8E%A7%E4%BB%B6%E5%8F%8A%E5%85%B6%E7%9B%B8%E5%85%B3%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7%3A%E6%96%B9%E6%B3%95%EF%BC%89.md)
+* [**LYM_Flutter_Demo**](https://github.com/295060456/LYM_Flutter_Demo)
 
 ## 项目文件（夹）功能
 
