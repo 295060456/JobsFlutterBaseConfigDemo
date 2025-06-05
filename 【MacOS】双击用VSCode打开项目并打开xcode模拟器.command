@@ -1,32 +1,61 @@
-#! /bin/sh
+#!/bin/sh
+
+# 设置绿色打印函数
+print_green() {
+    echo "\033[1;32m$1\033[0m"
+}
 
 # 获取当前脚本文件的目录
 current_directory=$(dirname "$(readlink -f "$0")")
-echo $current_directory
-cd $current_directory
+print_green "当前脚本目录：$current_directory"
+cd "$current_directory"
 
-# 关闭所有iOS模拟器
+# 关闭所有 iOS 模拟器（使用 simctl）
 xcrun simctl shutdown all
-# 检查是否有iOS模拟器进程存在(存在即杀进程)
+print_green "已关闭所有正在运行的 iOS 模拟器"
+
+# 检查是否存在 iOS 模拟器进程（使用 pkill 结束）
 if pgrep -f 'Simulator' >/dev/null; then
-    # 如果有，则会杀死所有包含"Simulator"字符串的进程
     pkill -f 'Simulator'
-    echo "iOS模拟器进程已终止"
+    print_green "iOS 模拟器进程已终止"
 else
-    echo "没有找到iOS模拟器进程"
+    print_green "没有检测到 iOS 模拟器进程"
 fi
 
-# 打开xcode模拟器
+# 启动 Xcode 模拟器
 open -a Simulator
-# 打开VSCode
-code .
+print_green "已启动 Xcode 模拟器"
 
-#xcrun simctl shutdown all：
-#这是一个由苹果提供的命令行工具，用于与模拟器进行交互。
-#simctl是用于管理iOS模拟器的工具，可以执行各种操作，如启动、关闭、安装应用等。
-#shutdown all参数会关闭所有当前正在运行的iOS模拟器。
+# 打开 VS Code，如果找不到命令行工具则尝试自动配置
+if command -v code >/dev/null 2>&1; then
+    print_green "正在打开 VS Code..."
+    code .
+else
+    echo "\033[1;33m⚠️ 未检测到 VS Code 的命令行工具（code）...\033[0m"
+    insert_line='export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"'
+    if grep -q 'source ~/.bash_profile' ~/.bash_profile; then
+        sed -i '' "/source ~/.bash_profile/i\\
+$insert_line
+" ~/.bash_profile
+    else
+        echo "$insert_line" >> ~/.bash_profile
+    fi
+    source ~/.bash_profile
+    print_green "VS Code 命令行工具路径已添加，请重新执行脚本"
+fi
 
-#pkill -f 'Simulator'：
-#这是一个通用的Unix/Linux命令，用于根据进程名终止进程。
-#pkill会根据提供的模式（这里是'Simulator'）终止匹配的进程。
-#这个命令会终止包含"Simulator"字符串的所有进程，无论它们是何种进程（包括但不限于iOS模拟器）。
+# === 脚本知识注释 ===
+# xcrun simctl shutdown all：
+#   关闭所有 iOS 模拟器。simctl 是 Apple 提供的模拟器管理工具。
+# pkill -f 'Simulator'：
+#   强制杀死所有包含 "Simulator" 字符串的进程，确保模拟器彻底关闭。
+
+# === 在桌面创建此脚本的软链接 ===
+desktop_path=~/Desktop
+script_name=$(basename "$0")
+link_path="$desktop_path/$script_name"
+
+# 如果链接已存在则先删除
+[ -L "$link_path" ] && rm "$link_path"
+
+ln -s "$current_directory/$script_name" "$link_path" && print_green "✅ 已在桌面创建脚本快捷方式：$link_path"

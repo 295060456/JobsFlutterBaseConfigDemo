@@ -79,24 +79,29 @@ add_line_if_not_exists() {
 # 检查是否已安装 FVM
 check_FVM(){
     if ! command -v fvm &> /dev/null; then
-        _JobsPrint_Green "FVM 还没安装。安装现在开始..."
-        # 安装 FVM
-        dart pub global activate fvm
-        # 将 FVM 添加到 PATH
-        add_line_if_not_exists "$HOME/.bashrc" "export PATH="$PATH":"$HOME/.pub-cache/bin""
-        add_line_if_not_exists "$HOME/.zshrc" "export PATH="$PATH":"$HOME/.pub-cache/bin""
-        add_line_if_not_exists "$HOME/.bash_profile" "export PATH="$PATH":"$HOME/.pub-cache/bin""
-        
-        source ~/.bashrc
-        source ~/.zshrc
-        source ~/.bash_profile
+        _JobsPrint_Green "FVM 还没安装，准备开始安装..."
+        if command -v dart &> /dev/null; then
+            _JobsPrint_Green "检测到 Dart 环境，使用 dart pub global 安装 FVM..."
+            dart pub global activate fvm
+        else
+            _JobsPrint_Green "未检测到 Dart 环境，使用 Homebrew 安装 FVM..."
+            brew tap leoafarias/fvm
+            brew install fvm
+        fi
+        # 添加 FVM 到 PATH（针对 dart 安装方式）
+        add_line_if_not_exists "$HOME/.bashrc" 'export PATH="$PATH:$HOME/.pub-cache/bin"'
+        add_line_if_not_exists "$HOME/.zshrc" 'export PATH="$PATH:$HOME/.pub-cache/bin"'
+        add_line_if_not_exists "$HOME/.bash_profile" 'export PATH="$PATH:$HOME/.pub-cache/bin"'
 
+        source ~/.bashrc 2>/dev/null
+        source ~/.zshrc 2>/dev/null
+        source ~/.bash_profile 2>/dev/null
         color=$(tput setaf 2) # 设置文本颜色为绿色
-        reset=$(tput sgr0)    # 重置颜色设置
-        echo "${color}FVM 成功安装${reset}"
+        reset=$(tput sgr0)
+        echo "${color}FVM 安装成功！${reset}"
     else
-        color=$(tput setaf 1) # 设置文本颜色为红色
-        reset=$(tput sgr0)    # 重置颜色设置
+        color=$(tput setaf 1)
+        reset=$(tput sgr0)
         _JobsPrint_Green "${color}FVM 已经安装${reset}"
     fi
 }

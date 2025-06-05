@@ -1,11 +1,11 @@
-#! /bin/sh
+#!/bin/sh
 
-# 格式化打印输出
+# 格式化打印输出为绿色
 print() {
     local mainMessage=$1
     local subMessage=$2
-    echo "\033[1m${mainMessage}\033[0m"
-    echo "\033[31m${subMessage}\033[0m"
+    echo "\033[1;32m${mainMessage}\033[0m"
+    echo "\033[32m${subMessage}\033[0m"
 }
 
 # 获取当前脚本文件的目录
@@ -21,69 +21,52 @@ if [ ! -f ~/.bash_profile ]; then
     print "~/.bash_profile 文件" "已创建"
 fi
 
-# 检查并添加行到 ~/.bash_profile
+# 向 ~/.bash_profile 添加配置（无空行 + 带中文注释）
 add_line_if_not_exists_bash_profile() {
-    local line=$1
-    if ! grep -qF "$line" ~/.bash_profile; then
-        echo '' >> ~/.bash_profile # 写入之前，先进行提行
+    local line="$1"
+    if ! grep -Fxq "$line" ~/.bash_profile; then
         echo "$line" >> ~/.bash_profile
-        print "添加到 ~/.bash_profile ：" "$line"
+        print "添加到 ~/.bash_profile：" "$line"
     else
         print "~/.bash_profile 中已存在" "$line"
     fi
 }
-# 检查并添加行到 ~/.zshrc
+
+# 向 ~/.zshrc 添加配置（无空行 + 带中文注释）
 add_line_if_not_exists_zshrc() {
-    local line=$1
-    if ! grep -qF "$line" source ~/.zshrc; then
-        echo '' >> ~/.zshrc # 写入之前，先进行提行
-        echo "$line" >> source ~/.zshrc
-        print "添加到 ~/.zshrc ：" "$line"
+    local line="$1"
+    if ! grep -Fxq "$line" ~/.zshrc; then
+        echo "$line" >> ~/.zshrc
+        print "添加到 ~/.zshrc：" "$line"
     else
         print "~/.zshrc 中已存在" "$line"
     fi
 }
-# 添加各行配置到 ~/.bash_profile
-# 配置FVM环境
-add_line_if_not_exists_bash_profile 'export PATH="$PATH":"$HOME/.pub-cache/bin"'
-# 配置VSCode环境
-add_line_if_not_exists_bash_profile 'export PATH="$PATH":/usr/local/bin'
-add_line_if_not_exists_bash_profile 'export PATH="$PATH":/usr/local/bin/code'
 
-# 添加 Android 环境变量配置
-add_line_if_not_exists_bash_profile 'export ANDROID_HOME=/Users/jobs/Library/Android/sdk'
-add_line_if_not_exists_bash_profile 'export PATH=${PATH}:${ANDROID_HOME}/platform-tools'
-add_line_if_not_exists_bash_profile 'export PATH=${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin'
+# 添加带注释的环境变量配置
+add_line_if_not_exists_bash_profile 'export PATH="$PATH":"$HOME/.pub-cache/bin" # Dart pub 工具路径，安装 dart/flutter 包时用'
+add_line_if_not_exists_bash_profile 'export PATH="$PATH":/usr/local/bin # 常用工具路径，Homebrew 默认路径'
+add_line_if_not_exists_bash_profile 'export PATH="$PATH":/usr/local/bin/code # VSCode 的 code 命令（如果手动放入该路径）'
 
-# 添加 Flutter 环境变量配置
-add_line_if_not_exists_bash_profile 'export PATH="$PATH:`pwd`/flutter/bin"'
-add_line_if_not_exists_bash_profile '# 这里的路径即为Dart.Flutter.SDK名下的为bin目录（主要取决于你下载的SDK的绝对路径）'
-add_line_if_not_exists_bash_profile 'export PATH=/Users/admin/Documents/Github/Flutter.sdk/Flutter.sdk_last/bin:$PATH'
-add_line_if_not_exists_bash_profile '#【相关阅读：Flutter切换源】https://juejin.cn/post/7204285137047257148'
-add_line_if_not_exists_bash_profile '# 防止域名在中国大陆互联网环境下的被屏蔽'
-add_line_if_not_exists_bash_profile '# export PUB_HOSTED_URL=https://pub.flutter-io.cn # 告诉了 Dart.Flutter 和 Dart 的包管理器 pub 在执行 pub get 或 pub upgrade 命令时使用备用仓库而不是默认的官方仓库。'
-add_line_if_not_exists_bash_profile '# Flutter官方正版源（温馨提示：海外IP访问大陆源，不开VPN会拉取失败）'
-add_line_if_not_exists_bash_profile 'export PUB_HOSTED_URL=https://pub.dartlang.org'
-add_line_if_not_exists_bash_profile '# FLUTTER_STORAGE_BASE_URL 告诉了 Dart.Flutter SDK 在需要下载二进制文件或工具时从备用存储库获取，而不是从默认的 Google 存储库获取。'
-add_line_if_not_exists_bash_profile '# export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn # Flutter中国（七牛云）'
-add_line_if_not_exists_bash_profile 'export FLUTTER_STORAGE_BASE_URL=https://storage.googleapis.com # Flutter官方的 Google Cloud 存储库地址'
-# 配置终端打开的路径
-add_line_if_not_exists_bash_profile 'cd ./Desktop'
+add_line_if_not_exists_bash_profile 'export ANDROID_HOME=/Users/jobs/Library/Android/sdk # Android SDK 路径，Flutter 构建 Android 应用必须配置'
+add_line_if_not_exists_bash_profile 'export PATH=${PATH}:${ANDROID_HOME}/platform-tools # Android adb 工具路径'
+add_line_if_not_exists_bash_profile 'export PATH=${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin # Android 命令行工具路径'
 
-# 检查并添加 # source ~/.bash_profile
-if ! grep -qF '#source ~/.bash_profile' ~/.bash_profile; then
-    echo '' >> ~/.bash_profile # 写入之前，先进行提行
-    echo '#source ~/.bash_profile' >> ~/.bash_profile
-    print "添加到.bash_profile：" '#source ~/.bash_profile'
-else
-    print ".bash_profile中已存在" '#source ~/.bash_profile'
-fi
+add_line_if_not_exists_bash_profile 'export PATH="$PATH:`pwd`/flutter/bin" # 当前目录下 Flutter SDK 的 bin 路径，便于 flutter 命令调用'
+add_line_if_not_exists_bash_profile 'export PATH=/Users/admin/Documents/Github/Flutter.sdk/Flutter.sdk_last/bin:$PATH # 自定义 Flutter SDK 路径'
+add_line_if_not_exists_bash_profile 'export PUB_HOSTED_URL=https://pub.dartlang.org # Dart/Flutter 官方 pub 包源地址'
+add_line_if_not_exists_bash_profile 'export FLUTTER_STORAGE_BASE_URL=https://storage.googleapis.com # Flutter 官方 Google Cloud 存储源'
+add_line_if_not_exists_bash_profile 'export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin" # 配置 VSCode 的 code 命令'
+add_line_if_not_exists_bash_profile 'cd ./Desktop # 启动终端时进入桌面目录'
+add_line_if_not_exists_bash_profile '#source ~/.bash_profile # 如果需要自动加载配置，可以取消注释此行'
+
+# 可选：向 ~/.zshrc 添加内容（如有）
+# 示例：
+# add_line_if_not_exists_zshrc 'export PATH="$PATH:/some/zsh/path" # 示例注释'
 
 # 打开主目录和 .bash_profile 文件
 open ~/
 open ~/.bash_profile
-
-add_line_if_not_exists_zshrc
 
 # 重新加载 ~/.bash_profile
 echo "重新加载 ~/.bash_profile"
