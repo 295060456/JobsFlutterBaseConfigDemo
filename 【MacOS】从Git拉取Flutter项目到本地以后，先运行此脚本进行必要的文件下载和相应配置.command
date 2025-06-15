@@ -417,6 +417,30 @@ check_vscode(){
         _JobsPrint_Green "已将 VS Code 命令添加到 PATH。请重启终端或运行 'source ~/.zshrc' 使更改生效。"
     fi
 }
+# 检查安装 Xcode
+check_install_Xcode(){
+    _JobsPrint_Yellow "正在执行: ${funcstack[1]}()"
+    # 检查 xcodebuild 是否存在
+    if ! command -v xcodebuild &>/dev/null; then
+        echo "❗️未检测到 xcodebuild，尝试安装 Xcode 命令行工具..."
+        xcode-select --install
+        return
+    fi
+    # 检查当前 Xcode 路径是否正确
+    CURRENT_XCODE_PATH=$(xcode-select -p)
+    EXPECTED_XCODE_PATH="/Applications/Xcode.app/Contents/Developer"
+    if [[ "$CURRENT_XCODE_PATH" != "$EXPECTED_XCODE_PATH" ]]; then
+        echo "⚠️ 当前 Xcode 路径为 $CURRENT_XCODE_PATH，切换至标准路径..."
+        sudo xcode-select --switch /Applications/Xcode.app
+    fi
+    # 检查 Xcode license 是否接受
+    if ! xcodebuild -checkFirstLaunchStatus &>/dev/null; then
+        echo "📄 Xcode 许可协议尚未接受，正在接受许可..."
+        sudo xcodebuild -license accept
+    fi
+    # 最终验证
+    echo "✅ Xcode 配置完成，当前路径为：$(xcode-select -p)"
+}
 # 检查安装 FVM
 check_install_FVM(){
     _JobsPrint_Yellow "正在执行: ${funcstack[1]}()"
@@ -453,6 +477,7 @@ config_flutter(){
 cd $CURRENT_DIRECTORY
 jobs_logo # 打印 "Jobs" logo
 self_intro # 自述信息
+check_install_Xcode # 检查安装 Xcode
 check_install_FVM # 检查安装 FVM
 use_FVM # 使用 FVM
 config_flutter # 配置 flutter 工程
