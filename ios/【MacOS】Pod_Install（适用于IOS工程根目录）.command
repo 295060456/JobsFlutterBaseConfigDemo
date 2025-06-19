@@ -108,6 +108,19 @@ check_and_set_mirror() {
         _JobsPrint_Green "您不在中国大陆，将使用默认镜像。"
     fi
 }
+# 自动判断芯片架构并执行对应的 pod install
+pod_install_auto() {
+  echo "🔍 正在检测芯片架构..."
+  ARCH_NAME="$(uname -m)"
+  echo "✅ 当前架构: $ARCH_NAME"
+  if [[ "$ARCH_NAME" == "arm64" ]]; then
+    echo "🍎 检测到 Apple Silicon 芯片，使用 Rosetta 执行 pod install"
+    arch -x86_64 pod install --repo-update
+  else
+    echo "💻 检测到 Intel 芯片，直接执行 pod install"
+    pod install --repo-update
+  fi
+}
 # 运行 pod install
 run_pod_install() {
     _JobsPrint_Green "当前路径: $CURRENT_DIRECTORY"
@@ -116,11 +129,41 @@ run_pod_install() {
         _JobsPrint_Green "已找到 Podfile 文件，pod install 操作开始"
         # 切换到当前目录并运行 pod install 命令
         cd "$CURRENT_DIRECTORY"
-        pod install
+        rm -rf ~/Library/Developer/Xcode/DerivedData # 清理 Xcode 缓存并重启构建
+        rm -rf Pods
+        rm -rf Podfile.lock
+        pod deintegrate # 让 Xcode 项目回到没有使用 CocoaPods 之前的状态。
+        pod_install_auto # 自动判断芯片架构并执行对应的 pod install
         _JobsPrint_Green "显示依赖关系"
         cat Podfile.lock
     else
         _JobsPrint_Red "没找到 Podfile 文件，pod install 操作自动终止"
+    fi
+}
+# 将 .xcworkspace 文件快捷方式创建到桌面
+create_xcworkspace_shortcut_to_desktop() {
+    local desktop_path=~/Desktop
+    local found_any=false
+
+    for workspace in "$CURRENT_DIRECTORY"/*.xcworkspace; do
+        if [ -e "$workspace" ]; then
+            local basename=$(basename "$workspace")
+            local link_path="$desktop_path/$basename"
+
+            # 如果桌面上已经存在同名链接或文件，先删除
+            if [ -L "$link_path" ] || [ -e "$link_path" ]; then
+                _JobsPrint_Red "桌面已存在 $basename，将被覆盖..."
+                rm -rf "$link_path"
+            fi
+
+            ln -s "$workspace" "$link_path"
+            _JobsPrint_Green "已创建快捷方式：$basename → 桌面"
+            found_any=true
+        fi
+    done
+
+    if [ "$found_any" = false ]; then
+        _JobsPrint_Red "未找到任何 .xcworkspace 文件，未创建快捷方式。"
     fi
 }
 # 主流程
@@ -131,6 +174,7 @@ main() {
     install_or_upgrade_jq # HomeBrew 安装或升级 jq
     check_and_set_mirror # 检查和设置镜像
     run_pod_install # 运行 pod install
+    create_xcworkspace_shortcut_to_desktop # 将 .xcworkspace 文件快捷方式创建到桌面
 }
 # 调用主函数
 main
