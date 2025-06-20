@@ -10,12 +10,12 @@ echo "是否执行 flutter packages upgrade, flutter clean, flutter pub get --no
 read -r user_input
 
 if [ -n "$user_input" ]; then
-  flutter packages upgrade
-  flutter clean
-  flutter pub get --no-example
+  fvm flutter packages upgrade
+  fvm flutter clean
+  fvm flutter pub get --no-example
 else
   echo "跳过执行 flutter packages upgrade, flutter clean, flutter pub get --no-example"
 fi
 
 # 继续执行其他命令
-flutter pub run build_runner build
+fvm flutter pub run build_runner build

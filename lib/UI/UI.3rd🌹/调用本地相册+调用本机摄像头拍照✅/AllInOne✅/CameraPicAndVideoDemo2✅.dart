@@ -1,12 +1,14 @@
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:gallery_saver/gallery_saver.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 // 不跳转系统相机，就在当前页面，进行录像或者拍照，且显示拍摄的结果
 // 可以对拍摄的结果进行保存在本地相册（相册名：Jobs）
 
 // 真机运行如果出现空白页面的解决方案：
-// 方案1、在工程根目录下执行 flutter run --release 或者 
+// 方案1、在工程根目录下执行 flutter run --release 或者
 // 方案2、通过 flutter devices 拿到设备id，然后 flutter run -d 设备ID。比如
 // flutter run lib/调用本地相册+调用本机摄像头拍照（全部验证通过）/PicturesAndVideoAllInOne.dart -d 00008110-000625583EE3801E
 
@@ -74,11 +76,19 @@ class _CameraScreenState extends State<CameraScreen> {
     try {
       await _initializeControllerFuture;
       final image = await _controller.takePicture();
+      final File file = File(image.path);
+      final Uint8List bytes = await file.readAsBytes();
+
+      final result = await ImageGallerySaver.saveImage(
+        bytes,
+        name: 'Jobs_${DateTime.now().millisecondsSinceEpoch}',
+      );
+
       setState(() {
         _lastSavedMediaPath = image.path;
       });
-      await GallerySaver.saveImage(image.path, albumName: 'Jobs');
-      _showSnackBar('已保存到相册');
+
+      _showSnackBar('图片已保存到相册');
     } catch (e) {
       _showSnackBar('拍照失败: $e');
     }
@@ -99,12 +109,18 @@ class _CameraScreenState extends State<CameraScreen> {
   Future<void> _stopVideoRecording() async {
     try {
       final video = await _controller.stopVideoRecording();
+      final File file = File(video.path);
+      final result = await ImageGallerySaver.saveFile(
+        file.path,
+        name: 'Jobs_${DateTime.now().millisecondsSinceEpoch}',
+      );
+
       setState(() {
         _isRecording = false;
         _lastSavedMediaPath = video.path;
       });
-      await GallerySaver.saveVideo(video.path, albumName: 'Jobs');
-      _showSnackBar('已保存到相册');
+
+      _showSnackBar('视频已保存到相册');
     } catch (e) {
       _showSnackBar('停止录像失败: $e');
     }

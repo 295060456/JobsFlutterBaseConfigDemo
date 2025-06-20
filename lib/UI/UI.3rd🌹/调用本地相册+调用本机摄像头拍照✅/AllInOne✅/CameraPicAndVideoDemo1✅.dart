@@ -1,6 +1,7 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:gallery_saver/gallery_saver.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 import 'package:path_provider/path_provider.dart';
@@ -11,7 +12,7 @@ import 'package:path/path.dart' as path;
 // 可以对拍摄的结果进行保存在本地相册（相册名：Jobs）
 
 // 真机运行如果出现空白页面的解决方案：
-// 方案1、在工程根目录下执行 flutter run --release 或者 
+// 方案1、在工程根目录下执行 flutter run --release 或者
 // 方案2、通过 flutter devices 拿到设备id，然后 flutter run -d 设备ID。比如
 // flutter run lib/调用本地相册+调用本机摄像头拍照（全部验证通过）/CameraDemo2.dart -d 00008110-000625583EE3801E
 
@@ -91,12 +92,26 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     }
 
     bool success = false;
-    if (_media!.path.endsWith('.mp4')) {
-      success = await GallerySaver.saveVideo(_media!.path, albumName: 'Jobs') ?? false;
-    } else if (_media!.path.endsWith('.mov')) {
-      success = await GallerySaver.saveVideo(_media!.path, albumName: 'Jobs') ?? false;
-    } else {
-      success = await GallerySaver.saveImage(_media!.path, albumName: 'Jobs') ?? false;
+    final file = File(_media!.path);
+    final filename = 'Jobs_${DateTime.now().millisecondsSinceEpoch}';
+
+    try {
+      if (_media!.path.endsWith('.mp4') || _media!.path.endsWith('.mov')) {
+        final result = await ImageGallerySaver.saveFile(
+          file.path,
+          name: filename,
+        );
+        success = result['isSuccess'] == true;
+      } else {
+        final Uint8List bytes = await file.readAsBytes();
+        final result = await ImageGallerySaver.saveImage(
+          bytes,
+          name: filename,
+        );
+        success = result['isSuccess'] == true;
+      }
+    } catch (e) {
+      success = false;
     }
 
     if (success) {
@@ -111,10 +126,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   Future<File?> _convertMovToMp4(File movFile) async {
     final appDir = await getApplicationDocumentsDirectory();
-    final mp4FilePath = path.join(appDir.path, '${path.basenameWithoutExtension(movFile.path)}.mp4');
+    final mp4FilePath = path.join(
+        appDir.path, '${path.basenameWithoutExtension(movFile.path)}.mp4');
     final mp4File = File(mp4FilePath);
 
-    await FFmpegKit.execute('-i ${movFile.path} -vcodec h264 -acodec aac -strict -2 ${mp4File.path}');
+    await FFmpegKit.execute(
+        '-i ${movFile.path} -vcodec h264 -acodec aac -strict -2 ${mp4File.path}');
 
     if (await mp4File.exists()) {
       return mp4File;
@@ -163,17 +180,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       ),
       body: Center(
         child: _media == null
-          ? const Text('没有资源被选择...')
-          : _media!.path.endsWith('.mp4')
-            ? _controller == null
-              ? const CircularProgressIndicator()
-              : _controller!.value.isInitialized
-                ? AspectRatio(
-                    aspectRatio: _controller!.value.aspectRatio,
-                    child: VideoPlayer(_controller!),
-                  )
-                : const CircularProgressIndicator()
-            : Image.file(_media!),
+            ? const Text('没有资源被选择...')
+            : _media!.path.endsWith('.mp4')
+                ? _controller == null
+                    ? const CircularProgressIndicator()
+                    : _controller!.value.isInitialized
+                        ? AspectRatio(
+                            aspectRatio: _controller!.value.aspectRatio,
+                            child: VideoPlayer(_controller!),
+                          )
+                        : const CircularProgressIndicator()
+                : Image.file(_media!),
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,

@@ -6,4 +6,4 @@ echo $current_directory
 cd $current_directory
 
 # 真机运行
-flutter run --release
+fvm flutter run --release
