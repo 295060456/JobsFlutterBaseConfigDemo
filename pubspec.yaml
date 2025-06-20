@@ -12,7 +12,6 @@ environment:
 # 在dependencies部分中已经声明了某个包，就不需要在dev_dependencies部分重复声明了。
 dependencies: 
 # 核心库
-  ffi:
   flutter: 
     sdk: flutter
 # UI组件库
@@ -52,11 +51,11 @@ dependencies:
 # 图片处理
   wechat_assets_picker: # 用于选择微信相册中的图片(微信UI)
   wechat_camera_picker: # 用于拍照(微信UI)
-  image_gallery_saver: # 用于保存图片和视频到相册中
   image: # 用于处理图片
   transparent_image: # 用于网络图片的透明占位符
   flutter_svg: # 用于显示SVG图片
   flutter_native_image: # 用于处理原生图片
+  image_gallery_saver: # 用于保存图片到相册中
 # 数据处理
   equatable: # 用于定义值对象的相等性
   built_value: # 用于序列化/反序列化数据
@@ -71,7 +70,6 @@ dependencies:
   date_format: # 用于格式化日期
   encrypt: # 用于加密数据
   pointycastle: # 用于加密数据
-  # money2: # 用于金额格式化
   ffmpeg_kit_flutter: # 用于处理视频
   flutter_widget_from_html_core: # 用于解析HTML内容
 # 状态管理
@@ -108,7 +106,7 @@ dependencies:
   chewie: # 用于播放视频
   lottie: # 用于播放动画
 # 国际化
-  # intl: # 提供国际化和本地化设施，包括消息翻译、复数和性别、日期/数字格式和解析以及双向文本
+  intl: # 提供国际化和本地化设施，包括消息翻译、复数和性别、日期/数字格式和解析以及双向文本
 # 设备/应用相关
   device_info_plus: # 用于获取设备信息
   timezone: # 用于获取设备时区
@@ -132,7 +130,6 @@ dependencies:
     sdk: flutter
   geolocator: # 一个使用地图数据进行应用内定位的软件包
   google_maps_flutter: # 一个使用地图数据进行应用内定位的软件包
-  google_maps_webservice: # 用于使用Google Maps API
   google_maps_flutter_platform_interface: # 用于使用Google Maps API (platform interface)
   google_maps_flutter_web: # 用于使用Google Maps API (web)
 # 工具库
@@ -165,7 +162,6 @@ dev_dependencies:
   flutter_lints: ^4.0.0 # Flutter代码规范
   json_serializable: # 用于序列化/反序列化JSON数据
   build_runner: # 用于运行生成代码
-  flutter_local_notifications_linux: any
   
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

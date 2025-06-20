@@ -10,16 +10,12 @@
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		331C808B294A63AB00263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C807B294A618700263BE5 /* RunnerTests.swift */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
-		4EB17052704A8E8E67FA3895 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 23BD5BBB8287091FDA520344 /* Pods_Runner.framework */; };
 		5BD508AEB3CAC8C0BE41E461 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54572A3A8A9F28C813F6D051 /* Pods_RunnerTests.framework */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
-		C56350B72C25FE74009420D0 /* libexample_ios_arm64.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C56350B52C25FE74009420D0 /* libexample_ios_arm64.dylib */; };
-		C56350B82C25FE74009420D0 /* libexample_universal.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C56350B62C25FE74009420D0 /* libexample_universal.dylib */; };
-		C56350BB2C25FE85009420D0 /* libexample_ios_arm64.dylib in Resources */ = {isa = PBXBuildFile; fileRef = C56350B92C25FE84009420D0 /* libexample_ios_arm64.dylib */; };
-		C56350BC2C25FE85009420D0 /* libexample_universal.dylib in Resources */ = {isa = PBXBuildFile; fileRef = C56350BA2C25FE84009420D0 /* libexample_universal.dylib */; };
+		9DB64DFF4F6AC0D7B318BBB1 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 23BD5BBB8287091FDA520344 /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,11 +63,6 @@
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AD212B12EB6386C68C7114A2 /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
-		C56350B52C25FE74009420D0 /* libexample_ios_arm64.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libexample_ios_arm64.dylib; path = Frameworks/libexample_ios_arm64.dylib; sourceTree = "<group>"; };
-		C56350B62C25FE74009420D0 /* libexample_universal.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libexample_universal.dylib; path = Frameworks/libexample_universal.dylib; sourceTree = "<group>"; };
-		C56350B92C25FE84009420D0 /* libexample_ios_arm64.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libexample_ios_arm64.dylib; path = Frameworks/libexample_ios_arm64.dylib; sourceTree = "<group>"; };
-		C56350BA2C25FE84009420D0 /* libexample_universal.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libexample_universal.dylib; path = Frameworks/libexample_universal.dylib; sourceTree = "<group>"; };
-		C5C56C5B2C2370FF009F2290 /* Dart调用C.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Dart调用C.md"; sourceTree = "<group>"; };
 		F21D8B2A61099FCF598BB153 /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
 		FD14EF5B3ABB7B663FF2C13C /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -89,9 +80,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C56350B72C25FE74009420D0 /* libexample_ios_arm64.dylib in Frameworks */,
-				C56350B82C25FE74009420D0 /* libexample_universal.dylib in Frameworks */,
-				4EB17052704A8E8E67FA3895 /* Pods_Runner.framework in Frameworks */,
+				9DB64DFF4F6AC0D7B318BBB1 /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,8 +98,6 @@
 		934718E2AF32914E7524DC94 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				C56350B52C25FE74009420D0 /* libexample_ios_arm64.dylib */,
-				C56350B62C25FE74009420D0 /* libexample_universal.dylib */,
 				23BD5BBB8287091FDA520344 /* Pods_Runner.framework */,
 				54572A3A8A9F28C813F6D051 /* Pods_RunnerTests.framework */,
 			);
@@ -131,9 +118,6 @@
 		97C146E51CF9000F007C117D = {
 			isa = PBXGroup;
 			children = (
-				C56350B92C25FE84009420D0 /* libexample_ios_arm64.dylib */,
-				C56350BA2C25FE84009420D0 /* libexample_universal.dylib */,
-				C5C56C562C236F18009F2290 /* Dart调用C */,
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
 				97C146EF1CF9000F007C117D /* Products */,
@@ -178,14 +162,6 @@
 				7B43A7C817D637888794A05F /* Pods-RunnerTests.profile.xcconfig */,
 			);
 			path = Pods;
-			sourceTree = "<group>";
-		};
-		C5C56C562C236F18009F2290 /* Dart调用C */ = {
-			isa = PBXGroup;
-			children = (
-				C5C56C5B2C2370FF009F2290 /* Dart调用C.md */,
-			);
-			path = "Dart调用C";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -284,8 +260,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C56350BB2C25FE85009420D0 /* libexample_ios_arm64.dylib in Resources */,
-				C56350BC2C25FE85009420D0 /* libexample_universal.dylib in Resources */,
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
@@ -522,12 +496,6 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)",
-					"$(PROJECT_DIR)/Dart调用C",
-					"$(PROJECT_DIR)/Frameworks",
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.jobsFlutterBaseConfig;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -544,10 +512,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Frameworks",
-				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.jobsFlutterBaseConfig.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -566,10 +530,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Frameworks",
-				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.jobsFlutterBaseConfig.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -586,10 +546,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Frameworks",
-				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.jobsFlutterBaseConfig.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -724,12 +680,6 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)",
-					"$(PROJECT_DIR)/Dart调用C",
-					"$(PROJECT_DIR)/Frameworks",
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.jobsFlutterBaseConfig;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -753,12 +703,6 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
-				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)",
-					"$(PROJECT_DIR)/Dart调用C",
-					"$(PROJECT_DIR)/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.jobsFlutterBaseConfig;
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -78,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _overlayEntry?.remove();
     }
     _overlayEntry = _createOverlayEntry();
-    Overlay.of(context).insert(_overlayEntry!);
+    Overlay.of(context)?.insert(_overlayEntry!);
   }
 
   void _removeOverlay() {

@@ -1,13 +1,23 @@
-# Flutter 项目靶场
+# jobs_flutter_base_config
 
-[toc]
+- [jobs\_flutter\_base\_config](#jobs_flutter_base_config)
+  - [Getting Started](#getting-started)
+  - [项目文件（夹）功能](#项目文件夹功能)
 
-## 相关资料
+靶场（实验室）项目
 
-* [**Flutter 项目的配置**](https://github.com/295060456/JobsFlutterBaseConfig/blob/main/README.md)
-* [**Flutter 经验**](https://github.com/295060456/JobsFlutterBaseConfig/blob/main/FlutterDoc/FlutterDoc.md)
-* [**Flutter.UI （系统控件及其相关常用属性/方法）**](https://github.com/295060456/JobsFlutterBaseConfig/blob/main/FlutterDoc/Flutter.UI%20%EF%BC%88%E7%B3%BB%E7%BB%9F%E6%8E%A7%E4%BB%B6%E5%8F%8A%E5%85%B6%E7%9B%B8%E5%85%B3%E5%B8%B8%E7%94%A8%E5%B1%9E%E6%80%A7%3A%E6%96%B9%E6%B3%95%EF%BC%89.md)
-* [**LYM_Flutter_Demo**](https://github.com/295060456/LYM_Flutter_Demo)
+## Getting Started
+
+This project is a starting point for a Flutter application.
+
+A few resources to get you started if this is your first Flutter project:
+
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
 
 ## 项目文件（夹）功能
 
