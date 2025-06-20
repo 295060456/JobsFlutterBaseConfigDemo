@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/cupertino.dart';
+
 // Android 配置
 // 在 android/app/src/main/AndroidManifest.xml 文件中添加以下权限：
 // <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
@@ -28,7 +29,7 @@ import 'package:flutter/cupertino.dart';
 // import UIKit
 // import Flutter
 // import flutter_local_notifications
-
+//
 // @main
 // @objc class AppDelegate: FlutterAppDelegate {
 //   override func application(
@@ -50,9 +51,9 @@ import 'package:flutter/cupertino.dart';
 // #import "AppDelegate.h"
 // #import "GeneratedPluginRegistrant.h"
 // #import "FlutterLocalNotificationsPlugin.h"
-
+//
 // @implementation AppDelegate
-
+//
 // - (BOOL)application:(UIApplication *)application
 //     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 //   [GeneratedPluginRegistrant registerWithRegistry:self];
@@ -64,7 +65,7 @@ import 'package:flutter/cupertino.dart';
 //   }];
 //   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 // }
-
+//
 // @end
 
 void main() {
@@ -84,8 +85,12 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    initLocalNotifications();
+  }
 
+  Future<void> initLocalNotifications() async {
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
     // 在 AndroidInitializationSettings 构造函数中使用的 app_icon 是指 Android 项目中的应用图标资源。
     // iOS 项目，无需配置 app_icon。因为 iOS 通知会自动使用应用的主图标。
 
@@ -98,58 +103,66 @@ class _MyAppState extends State<MyApp> {
     // android/app/src/main/res/mipmap-xxhdpi/app_icon.png
     // android/app/src/main/res/mipmap-xxxhdpi/app_icon.png
     // 如果这些文件夹不存在，可以自行创建。
-    
+
     // 在 pubspec.yaml 中引用资源（可选）
     // 通常在 Android 项目中不需要在 pubspec.yaml 中显式引用这些资源，但为了完整性，可以确保资源文件夹结构正确。
 
-    const initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
+    const initializationSettingsAndroid =
+        AndroidInitializationSettings('app_icon');
     final initializationSettingsIOS = DarwinInitializationSettings(
-      onDidReceiveLocalNotification: onDidReceiveLocalNotification,
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
     );
+
     final initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
     );
 
-    flutterLocalNotificationsPlugin.initialize(
+    await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: onDidReceiveNotificationResponse,
+      onDidReceiveBackgroundNotificationResponse:
+          notificationTapBackground, // 可选：处理后台点击
     );
   }
 
+  // 处理通知响应
+  void onDidReceiveNotificationResponse(NotificationResponse response) {
+    if (response.payload != null) {
+      debugPrint('notification payload: ${response.payload}');
+    }
+    // 其他处理逻辑...
+  }
+
+  // 旧版本兼容 iOS 10 以下（几乎用不到了，但仍保留）
   void onDidReceiveLocalNotification(
-      int id, String? title, String? body, String? payload) {
-    // 展示一个对话框
+    int id,
+    String? title,
+    String? body,
+    String? payload,
+  ) {
     showDialog(
       context: context,
-      builder: (BuildContext context) => CupertinoAlertDialog(
-        title: Text(title ?? 'Notification'),
+      builder: (_) => CupertinoAlertDialog(
+        title: Text(title ?? '通知'),
         content: Text(body ?? ''),
         actions: [
           CupertinoDialogAction(
-            isDefaultAction: true,
-            child: const Text('Ok'),
+            child: const Text('OK'),
             onPressed: () {
               Navigator.of(context, rootNavigator: true).pop();
-              // 处理点击事件
             },
-          )
+          ),
         ],
       ),
     );
   }
 
-  void onDidReceiveNotificationResponse(NotificationResponse notificationResponse) {
-    // 处理通知响应
-    if (notificationResponse.payload != null) {
-      debugPrint('notification payload: ${notificationResponse.payload}');
-    }
-    // 其他处理逻辑
-  }
-
   Future<void> _showNotification() async {
     const androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'high_importance_channel',
+      'high_importance_channel', // 必须唯一
       'High Importance Notifications',
       channelDescription: 'This channel is used for important notifications',
       importance: Importance.max,
@@ -159,17 +172,21 @@ class _MyAppState extends State<MyApp> {
       groupAlertBehavior: GroupAlertBehavior.all,
       autoCancel: true,
       ongoing: false,
-      styleInformation: BigTextStyleInformation(''),
+      styleInformation: BigTextStyleInformation(
+        '这是一条非常重要的本地通知，用于展示完整的通知内容以及高优先级。',
+      ),
       color: Color(0xFF9D50DD),
       largeIcon: DrawableResourceAndroidBitmap('app_icon'),
       showWhen: true,
     );
 
     const iOSPlatformChannelSpecifics = DarwinNotificationDetails();
+
     const platformChannelSpecifics = NotificationDetails(
       android: androidPlatformChannelSpecifics,
       iOS: iOSPlatformChannelSpecifics,
     );
+
     await flutterLocalNotificationsPlugin.show(
       0,
       'Hello!',
@@ -195,4 +212,10 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
+}
+
+// 后台点击通知（可选）
+@pragma('vm:entry-point')
+void notificationTapBackground(NotificationResponse notificationResponse) {
+  debugPrint('通知后台点击: ${notificationResponse.payload}');
 }

@@ -2,18 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
-import 'package:path/path.dart' as path;
-// 仅调取相机进行录像，且播放
-// 真机运行如果出现空白页面的解决方案：
-// 方案1、在工程根目录下执行 flutter run --release 或者 
-// 方案2、通过 flutter devices 拿到设备id，然后 flutter run -d 设备ID。比如
-// flutter run lib/调用本地相册+调用本机摄像头拍照（全部验证通过）/CameraDemo2.dart -d 00008110-000625583EE3801E
+import 'package:video_compress/video_compress.dart';
 
-// 权限问题：Flutter代码不配置设备权限。配置权限需要进入特定的代码里面，按照设备所属的代码规范进行配置。比如：
-// iOS进入`info.plist`里面进行配置
-// Android通常只涉及两个主要文件：`AndroidManifest.xml` 和 `build.gradle`
 void main() {
   runApp(const VideoPlayerApp());
 }
@@ -41,8 +31,14 @@ class VideoPlayerScreen extends StatefulWidget {
 }
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
-  VideoPlayerController? _controller;
   final picker = ImagePicker();
+  VideoPlayerController? _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    VideoCompress.setLogLevel(0); // 关闭日志
+  }
 
   Future<void> getVideo() async {
     final pickedFile = await picker.pickVideo(source: ImageSource.camera);
@@ -53,21 +49,26 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         _initializeVideoPlayer(mp4File);
       }
     } else {
-      _showSnackBar('No video selected.');
+      _showSnackBar('还没有选择视频资源...');
     }
   }
 
   Future<File?> _convertMovToMp4(File movFile) async {
-    final appDir = await getApplicationDocumentsDirectory();
-    final mp4FilePath = path.join(appDir.path, '${path.basenameWithoutExtension(movFile.path)}.mp4');
-    final mp4File = File(mp4FilePath);
+    try {
+      final info = await VideoCompress.compressVideo(
+        movFile.path,
+        quality: VideoQuality.MediumQuality,
+        deleteOrigin: false,
+      );
 
-    await FFmpegKit.execute('-i ${movFile.path} -vcodec h264 -acodec aac -strict -2 ${mp4File.path}');
-
-    if (await mp4File.exists()) {
-      return mp4File;
-    } else {
-      _showSnackBar('Failed to convert video.');
+      if (info != null && info.file != null) {
+        return info.file;
+      } else {
+        _showSnackBar('视频压缩失败...');
+        return null;
+      }
+    } catch (e) {
+      _showSnackBar('压缩出错: $e');
       return null;
     }
   }
@@ -76,52 +77,58 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     _controller?.dispose();
     _controller = VideoPlayerController.file(file)
       ..addListener(() {
-        if (_controller?.value.hasError == true) {
-          _showSnackBar('Error playing video: ${_controller?.value.errorDescription}');
+        if (_controller!.value.hasError) {
+          _showSnackBar('播放视频错误: ${_controller!.value.errorDescription}');
         }
       })
       ..setLooping(true)
       ..initialize().then((_) {
+        if (!mounted) return;
         setState(() {});
         _controller?.play();
       }).catchError((error) {
-        _showSnackBar('Error initializing video: $error');
+        _showSnackBar('初始化视频错误: $error');
       });
   }
 
   void _showSnackBar(String message) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      duration: const Duration(seconds: 2),
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+      ),
     );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   @override
   void dispose() {
     _controller?.dispose();
+    VideoCompress.dispose(); // 释放资源
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    Widget content;
+    if (_controller == null) {
+      content = const Text('还没有选择视频');
+    } else if (_controller!.value.isInitialized) {
+      content = AspectRatio(
+        aspectRatio: _controller!.value.aspectRatio,
+        child: VideoPlayer(_controller!),
+      );
+    } else {
+      content = const CircularProgressIndicator();
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Video Player Demo'),
       ),
-      body: Center(
-        child: _controller == null
-            ? const Text('No video selected.')
-            : _controller!.value.isInitialized
-                ? AspectRatio(
-                    aspectRatio: _controller!.value.aspectRatio,
-                    child: VideoPlayer(_controller!),
-                  )
-                : const CircularProgressIndicator(),
-      ),
+      body: Center(child: content),
       floatingActionButton: FloatingActionButton(
         onPressed: getVideo,
-        tooltip: 'Pick Video',
+        tooltip: '录像',
         child: const Icon(Icons.videocam),
       ),
     );

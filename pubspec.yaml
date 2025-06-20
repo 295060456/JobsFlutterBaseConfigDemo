@@ -70,7 +70,7 @@ dependencies:
   date_format: # 用于格式化日期
   encrypt: # 用于加密数据
   pointycastle: # 用于加密数据
-  # ffmpeg_kit_flutter: # 用于处理视频
+  video_compress: # 用于处理视频
   flutter_widget_from_html_core: # 用于解析HTML内容
 # 状态管理
   get: # 用于管理应用状态
@@ -159,7 +159,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^6.0.0 # Flutter代码规范
+  flutter_lints: ^4.0.0 # Flutter代码规范
   json_serializable: # 用于序列化/反序列化JSON数据
   build_runner: # 用于运行生成代码
   
