@@ -46,7 +46,7 @@ class _CopyToClipboardWidgetState extends State<CopyToClipboardWidget> {
 
   void _showOverlay(BuildContext context, Offset offset, ArrowDirection direction) {
     _overlayEntry = _createOverlayEntry(context, offset, direction);
-    Overlay.of(context)?.insert(_overlayEntry!);
+    Overlay.of(context).insert(_overlayEntry!);
 
     Future.delayed(const Duration(seconds: 2), () {
       _overlayEntry?.remove();

@@ -109,13 +109,13 @@ class _MyAppState extends State<MyApp> {
 
     const initializationSettingsAndroid =
         AndroidInitializationSettings('app_icon');
-    final initializationSettingsIOS = DarwinInitializationSettings(
+    const initializationSettingsIOS = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
     );
 
-    final initializationSettings = InitializationSettings(
+    const initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
     );

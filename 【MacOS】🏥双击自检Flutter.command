@@ -149,9 +149,9 @@ flutter devices
 
 print_title "Flutter Doctor 输出"
 if command -v fvm >/dev/null 2>&1; then
-    fvm flutter doctor
+    fvm flutter doctor -v
 else
-    flutter doctor
+    flutter doctor -v
 fi
 
 echo ""
