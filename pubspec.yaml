@@ -99,7 +99,7 @@ dependencies:
   shared_preferences_platform_interface: # 用于存储键值对数据 (platform interface)
   flutter_secure_storage: # 用于存储敏感数据
   flutter_secure_storage_macos: # 用于存储敏感数据 (macOS)
-  firebase_core: # 用于使用Firebase
+  firebase_core: ^3.14.0 # 用于使用Firebase，兼容旧版 Xcode（intel芯片的mac官方停更系统，从而无法升级到最新的xcode）
   sqflite: # 用于本地数据库
 # 播放器
   video_player: # 用于播放视频

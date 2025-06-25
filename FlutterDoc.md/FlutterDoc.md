@@ -6385,14 +6385,12 @@ class _LoginPageState extends State<LoginPage> {
 * ```dart
   class LaunchScreen extends StatefulWidget {
     const LaunchScreen({super.key});
-  
     @override
     _LaunchScreenState createState() => _LaunchScreenState();
   }
   /// => 是 Dart 的简写语法（箭头函数）。等价写法
   class LaunchScreen extends StatefulWidget {
     const LaunchScreen({super.key});
-  
     @override
     _LaunchScreenState createState() {
       return _LaunchScreenState();
