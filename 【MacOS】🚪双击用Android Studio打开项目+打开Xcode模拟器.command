@@ -34,21 +34,25 @@ if [[ -z "$java_home" ]]; then
         echo "❌ 安装失败或 JAVA_HOME 未识别，请手动检查 Java 安装"
         exit 1
     else
-        echo "✅ Java 安装完成：$java_home"
+        echo "✅ Java 安装完成："
+        echo "$java_home"
     fi
 else
-    echo "✅ 已检测到 Java 安装：$java_home"
+    echo "✅ 已检测到 Java 安装："
+    echo "$java_home"
 fi
 
 export JAVA_HOME="$java_home"
-echo "☕️ JAVA_HOME 设置为: $JAVA_HOME"
+echo "☕️ JAVA_HOME 设置为："
+echo "$JAVA_HOME"
 
 ###########################
 # 📂 获取项目目录并切换至 android
 ###########################
 
 current_directory=$(cd "$(dirname "$0")"; pwd)
-echo "📂 当前项目目录: $current_directory"
+echo "📂 当前项目目录："
+echo "$current_directory"
 cd "$current_directory/android"
 
 ###########################
@@ -86,7 +90,8 @@ fi
 # 写入环境变量
 add_env_if_needed() {
     local file=$1
-    echo "📄 检查配置文件: $file"
+    echo "📄 检查配置文件："
+    echo "$file"   # ✅ 独占一行 ⌘+点击可用
     touch "$file"
 
     if ! grep -Fxq "$ANDROID_SDK_LINE" "$file"; then
