@@ -5,8 +5,8 @@ import 'package:sqflite/sqflite.dart';
 // dependencies:
 //   flutter:
 //     sdk: flutter
-//   sqflite: 
-//   path: 
+//   sqflite:
+//   path:
 
 void main() {
   runApp(const MyApp());
@@ -40,14 +40,18 @@ class _SqliteDemoState extends State<SqliteDemo> {
   @override
   void initState() {
     super.initState();
+    widget;
     _initDatabase();
   }
 
   Future<void> _initDatabase() async {
-    final databasePath = await getDatabasesPath();/// 获取数据库存储路径
+    final databasePath = await getDatabasesPath();
+
+    /// 获取数据库存储路径
     final path = join(databasePath, 'demo.db');
 
-    _database = await openDatabase(/// 打开数据库并创建 items 表
+    _database = await openDatabase(
+      /// 打开数据库并创建 items 表
       path,
       version: 1,
       onCreate: (db, version) async {
@@ -59,6 +63,7 @@ class _SqliteDemoState extends State<SqliteDemo> {
 
     _refreshRecords();
   }
+
   /// CRUD 操作：
   /// 查
   Future<void> _refreshRecords() async {
@@ -67,16 +72,20 @@ class _SqliteDemoState extends State<SqliteDemo> {
       _records = records;
     });
   }
+
   /// 增
   Future<void> _addItem(String name) async {
     await _database!.insert('items', {'name': name});
     _refreshRecords();
   }
+
   /// 改
   Future<void> _updateItem(int id, String newName) async {
-    await _database!.update('items', {'name': newName}, where: 'id = ?', whereArgs: [id]);
+    await _database!
+        .update('items', {'name': newName}, where: 'id = ?', whereArgs: [id]);
     _refreshRecords();
   }
+
   /// 删
   Future<void> _deleteItem(int id) async {
     await _database!.delete('items', where: 'id = ?', whereArgs: [id]);
@@ -105,7 +114,8 @@ class _SqliteDemoState extends State<SqliteDemo> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.edit),
-                        onPressed: () => _updateItem(record['id'], 'Updated Item'),
+                        onPressed: () =>
+                            _updateItem(record['id'], 'Updated Item'),
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete),

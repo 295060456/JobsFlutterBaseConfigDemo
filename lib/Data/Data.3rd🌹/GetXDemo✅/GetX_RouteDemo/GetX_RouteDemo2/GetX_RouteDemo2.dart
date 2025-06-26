@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 // 定义了如何注入HomeController
 // 利用GetX做路由管理
 void main() {
@@ -8,7 +9,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -24,7 +24,6 @@ class MyApp extends StatelessWidget {
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,7 +44,6 @@ class HomeScreen extends StatelessWidget {
 
 class DetailsScreen extends StatelessWidget {
   const DetailsScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

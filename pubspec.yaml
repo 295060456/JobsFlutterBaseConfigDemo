@@ -91,15 +91,15 @@ dependencies:
   web_socket_channel: # 用于WebSocket客户端
   pretty_dio_logger: # 用于打印网络请求日志
   mqtt_client: # 用于连接MQTT服务器
-  flutter_cache_manager_firebase: # 用于缓存网络请求 (Firebase)
-  flutter_cache_manager: # 用于缓存网络请求
+  # flutter_cache_manager_firebase: # 用于缓存网络请求 (Firebase)
+  # flutter_cache_manager: # 用于缓存网络请求
 # 本地存储
-  get_storage: # 用于存储键值对数据
-  shared_preferences_web: # 用于存储键值对数据 (web)
-  shared_preferences_platform_interface: # 用于存储键值对数据 (platform interface)
-  flutter_secure_storage: # 用于存储敏感数据
-  flutter_secure_storage_macos: # 用于存储敏感数据 (macOS)
-  firebase_core: ^3.14.0 # 用于使用Firebase，兼容旧版 Xcode（intel芯片的mac官方停更系统，从而无法升级到最新的xcode）
+  # get_storage: # 用于存储键值对数据
+  # shared_preferences_web: # 用于存储键值对数据 (web)
+  # shared_preferences_platform_interface: # 用于存储键值对数据 (platform interface)
+  # flutter_secure_storage: # 用于存储敏感数据
+  # flutter_secure_storage_macos: # 用于存储敏感数据 (macOS)
+  # firebase_core: # 用于使用Firebase
   sqflite: # 用于本地数据库
 # 播放器
   video_player: # 用于播放视频
