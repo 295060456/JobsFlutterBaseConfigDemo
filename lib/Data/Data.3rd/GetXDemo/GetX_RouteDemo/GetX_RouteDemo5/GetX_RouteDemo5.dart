@@ -187,7 +187,7 @@ class FinalPage extends StatelessWidget {
               children: [
                 // ✅ 图标：可换成自定义图
                 Image.asset(
-                  './assets/Images/flower.png',
+                  'assets/Images/flower.png',
                   width: 18,
                   height: 18,
                 ),
@@ -200,25 +200,6 @@ class FinalPage extends StatelessWidget {
             ),
           ),
         ),
-
-        // leading: Builder(
-        //   builder: (context) {
-        //     return InkWell(
-        //       onTap: () => _safeBack(context),
-        //       child: ConstrainedBox(
-        //         constraints: const BoxConstraints(maxWidth: 100),
-        //         child: Row(
-        //           mainAxisAlignment: MainAxisAlignment.start,
-        //           children: const [
-        //             SizedBox(width: 8),
-        //             Icon(Icons.arrow_back_ios, size: 18),
-        //             Text('返回', style: TextStyle(fontSize: 14)),
-        //           ],
-        //         ),
-        //       ),
-        //     );
-        //   },
-        // ),
       ),
       body: const Center(
         child: Text('这里是最终页面'),

@@ -174,7 +174,6 @@ flutter:
   assets: # 路径名不能有中文，否则可能无法正常读取
     - assets/
     - assets/Fonts/
-    - assets/fonts/
     - assets/HTML/
     - assets/i18n/
     - assets/Images/
