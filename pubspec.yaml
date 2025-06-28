@@ -133,6 +133,7 @@ dependencies:
   google_maps_flutter_platform_interface: # 用于使用Google Maps API (platform interface)
   google_maps_flutter_web: # 用于使用Google Maps API (web)
 # 工具库
+  file_picker: # 实现文件选择器功能，允许用户从本地文件系统中选择任意文件（如图片、PDF、文档、视频等），并获取路径用于上传等操作。
   connectivity_plus: # 用于检查设备网络连接状态
   overlay_support: # 用于显示遮罩层
   clipboard: # 用于复制内容到剪贴板

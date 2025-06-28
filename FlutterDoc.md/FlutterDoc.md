@@ -2207,6 +2207,46 @@ class MyApp extends StatelessWidget {
 * [***flutter_layout_grid***](https://github.com/shyndman/flutter_layout_grid): 这是一个类似于 `CSS Grid` 的库，允许您使用网格布局来排列子部件。您可以定义网格中的行和列，并使用简单的属性来指定子部件的位置和大小。
 * [***flutter_flow***](https://github.com/Darren-chenchen/flutter_flowermusic): 这个库提供了一种基于流式布局（Flow Layout）的方式来排列子部件。它允许您在水平和垂直方向上动态调整子部件的位置和大小，以适应不同的屏幕尺寸和方向。
 * [***flutter_sliver_grid***](https://github.com/himdeve/flutter-tutorials-1-9-gridview-slivergrid-gallery): 这是一个用于实现网格布局的库，可以与 ***SliverAppBar*** 和 ***CustomScrollView*** 一起使用，以创建具有自定义滚动效果的网格布局。
+### 约束
+
+> * Flutter 的 UI 控件是`内容为王`，布局依赖`外壳`
+>   * 在 Flutter 想“定大小”，就必须包
+>
+> * UIKit 是“控件为王”，内容和布局都掌控在控件自己手中
+
+| 特性                                 | UIKit (`UIView`)                            | Flutter (`Widget`)                                    |
+| ------------------------------------ | ------------------------------------------- | ----------------------------------------------------- |
+| 控件有无宽高属性                     | `UIView` 自带 `frame`，可以直接设置宽高     | `Text`、`Image` 等 widget 没有宽高属性                |
+| 控件是否可独立布局                   | `UIView` 可独立设置布局                     | `Widget` 必须依赖外部布局容器                         |
+| 控件是否是“重量级”（可响应生命周期） | 是，控件有生命周期、坐标系统等              | 否，大部分 widget 是轻量、声明式的                    |
+| 控件是否可直接设背景、圆角等         | `UIView` 直接支持 `backgroundColor` 等      | 需通过 `Container` 包裹实现                           |
+| 调整布局的方式                       | 修改 `frame` / 使用 AutoLayout / Masonry 等 | 嵌套 `Row`、`Column`、`Stack`、`Container` 等布局控件 |
+
+* 在屏幕(10、10)这个位置放一个(30、50)的**label**
+
+  ```dart
+  Stack(
+    children: [
+      Positioned(
+        left: 10,
+        top: 10,
+        child: SizedBox(
+          width: 30,
+          height: 50,
+          child: Container(
+            color: Colors.amberAccent, // 可选：背景色方便看清
+            alignment: Alignment.center,
+            child: const Text(
+              '标签',
+              style: TextStyle(fontSize: 12),
+            ),
+          ),
+        ),
+      ),
+    ],
+  )
+  ```
+
 ### 一些常用UI的创建 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 #### 参考资料
@@ -6048,41 +6088,49 @@ void main() {
 #### 快速入手：
 
 * 示例一：以下这三种方式等价
-```dart
-/// 用async和await
-void _incrementCounter()async{
-  await Future.delayed(Duration(seconds: 1));
-  setState(() {
-    _counter++;
-  });
-}
-/// 不用async和await，直接用函数包裹起来的形式
-void _incrementCounter() {
-  Future.delayed(Duration(seconds: 1),(){
+
+  ```dart
+  /// 用async和await
+  void _incrementCounter()async{
+    await Future.delayed(Duration(seconds: 1));
     setState(() {
       _counter++;
-  });
-});
-/// 不用async和await，直接用Future + then
-/// then会在Future执行完毕的瞬间（拿到处理结果）继续去执行
-void _incrementCounter() {
-  Future.delayed(Duration(seconds: 1)).then(
-    (value) => setState(() {
-      _counter++;
-    }),
-  );   
-}
-```
-* 示例二：
-```dart
-Future<String> getFuture(){
-  return Future(() => "Alice");//Future对象包裹字符串对象
-}
+    });
+  }
+  ```
 
-void _incrementCounter() {
-  getFuture().then((value) => debugPrint(value));//Future对象用then打开。这里的value就是String，也就是"Alice"
-}
-```
+  ```dart
+  /// 不用async和await，直接用函数包裹起来的形式
+  void _incrementCounter() {
+    Future.delayed(Duration(seconds: 1),(){
+      setState(() {
+        _counter++;
+    });
+  });
+  ```
+
+  ```dart
+  /// 不用async和await，直接用Future + then
+  /// then会在Future执行完毕的瞬间（拿到处理结果）继续去执行
+  void _incrementCounter() {
+    Future.delayed(Duration(seconds: 1)).then(
+      (value) => setState(() {
+        _counter++;
+      }),
+    );   
+  }
+  ```
+* 示例二：
+
+  ```dart
+  Future<String> getFuture(){
+    return Future(() => "Alice");/// Future对象包裹字符串对象
+  }
+  
+  void _incrementCounter() {
+    getFuture().then((value) => debugPrint(value));/// Future对象用then打开。这里的value就是String，也就是"Alice"
+  }
+  ```
 #### 异步操作的结果：
 
 * ***Future*** 代表一个异步操作的结果。当异步操作完成时，***Future*** 将会返回一个值（data）或一个错误（error）。*错误和值不可能同时出现*；
@@ -6091,113 +6139,117 @@ void _incrementCounter() {
 #### 代码执行优先级：
 
   * Dart代码直接Debug模式运行***立即执行的***
-  ```dart
-  import 'package:flutter/material.dart';
-  
-  void main() {
-    debugPrint("main1");
-    Future.sync(() => debugPrint("main2"));
-    Future.value(getName());// 已经确定一个字符串"bob",将他封装成Future
-    debugPrint("main2");
-  
-    runApp(const MyApp());
-  }
-  
-  String getName() {
-    debugPrint("get name");
-    return "bob";
-  }
-  // 运行结果
-  Launching lib/main.dart on iPhone Xs in debug mode...
-  Xcode build done.                                           17.3s
-  Connecting to VM Service at ws://127.0.0.1:58560/hTChdl8QhRw=/ws
-  flutter: main1
-  flutter: main2
-  flutter: get name
-  flutter: main2
-  ```
+
+    ```dart
+    import 'package:flutter/material.dart';
+    
+    void main() {
+      debugPrint("main1");
+      Future.sync(() => debugPrint("main2"));
+      Future.value(getName());// 已经确定一个字符串"bob",将他封装成Future
+      debugPrint("main2");
+    
+      runApp(const MyApp());
+    }
+    
+    String getName() {
+      debugPrint("get name");
+      return "bob";
+    }
+    // 运行结果
+    Launching lib/main.dart on iPhone Xs in debug mode...
+    Xcode build done.                                           17.3s
+    Connecting to VM Service at ws://127.0.0.1:58560/hTChdl8QhRw=/ws
+    flutter: main1
+    flutter: main2
+    flutter: get name
+    flutter: main2
+    ```
   * 代码加入到Microtask
-  ```dart
-  import 'dart:async';
-  import 'package:flutter/material.dart';
-  
-  void main() {
-    scheduleMicrotask(() => debugPrint("Microtask 1"));// 会自动导入asyn包，即：import 'dart:async';
-    Future.microtask(() => debugPrint("Microtask 2"));
-    Future.value(123).then((value) => debugPrint("Microtask 3"));
-  
-    debugPrint("main1");
-    Future.sync(() => debugPrint("sync 1"));
-    Future.value(getName());
-    debugPrint("main2");
-  
-    runApp(const MyApp());
-  }
-  
-  String getName() {
-    debugPrint("get name");
-    return "bob";
-  }
-  // 运行结果
-  Launching lib/main.dart on iPhone Xs in debug mode...
-  Xcode build done.                                            7.4s
-  Connecting to VM Service at ws://127.0.0.1:58560/hTChdl8QhRw=/ws
-  flutter: main1
-  flutter: sync 1
-  flutter: get name
-  flutter: main2
-  flutter: Microtask 1
-  flutter: Microtask 2
-  flutter: Microtask 3
-  ```
+
+    ```dart
+    import 'dart:async';
+    import 'package:flutter/material.dart';
+    
+    void main() {
+      scheduleMicrotask(() => debugPrint("Microtask 1"));// 会自动导入asyn包，即：import 'dart:async';
+      Future.microtask(() => debugPrint("Microtask 2"));
+      Future.value(123).then((value) => debugPrint("Microtask 3"));
+    
+      debugPrint("main1");
+      Future.sync(() => debugPrint("sync 1"));
+      Future.value(getName());
+      debugPrint("main2");
+    
+      runApp(const MyApp());
+    }
+    
+    String getName() {
+      debugPrint("get name");
+      return "bob";
+    }
+    // 运行结果
+    Launching lib/main.dart on iPhone Xs in debug mode...
+    Xcode build done.                                            7.4s
+    Connecting to VM Service at ws://127.0.0.1:58560/hTChdl8QhRw=/ws
+    flutter: main1
+    flutter: sync 1
+    flutter: get name
+    flutter: main2
+    flutter: Microtask 1
+    flutter: Microtask 2
+    flutter: Microtask 3
+    ```
   * 代码加入到Event
-  ```dart
-  import 'dart:async';
-  import 'package:flutter/material.dart';
-  
-  void main() {
-    Future.delayed(Duration(seconds: 1),()=>debugPrint("event 3"));
-    Future(()=>debugPrint("event 1"));
-    // 这里的时间，不是精确的时间，而是最短的等待时间
-    // 这里的Duration.zero不是立即执行，而是0秒以后，系统有机会尽快执行
-    // Future(()=>debugPrint("event 1")); 和 Future.delayed(Duration.zero,()=>debugPrint("event 2")); 都是等待0秒，谁在前，先执行谁
-    Future.delayed(Duration.zero,()=>debugPrint("event 2"));
-  
-    scheduleMicrotask(() => debugPrint("Microtask 1"));
-    Future.microtask(() => debugPrint("Microtask 2"));
-    Future.value(123).then((value) => debugPrint("Microtask 3"));
-  
-    debugPrint("main1");
-    Future.sync(() => debugPrint("sync 1"));
-    Future.value(getName());
-    debugPrint("main2");
-  
-    runApp(const MyApp());
-  }
-  
-  String getName() {
-    debugPrint("get name");
-    return "bob";
-  }
-  // 运行结果
-  Launching lib/main.dart on iPhone Xs in debug mode...
-  Xcode build done.                                            7.3s
-  Connecting to VM Service at ws://127.0.0.1:58560/hTChdl8QhRw=/ws
-  flutter: main1
-  flutter: sync 1
-  flutter: get name
-  flutter: main2
-  flutter: Microtask 1
-  flutter: Microtask 2
-  flutter: Microtask 3
-  flutter: event 1
-  flutter: event 2
-  flutter: event 3
-  ```
+
+    ```dart
+    import 'dart:async';
+    import 'package:flutter/material.dart';
+    
+    void main() {
+      Future.delayed(Duration(seconds: 1),()=>debugPrint("event 3"));
+      Future(()=>debugPrint("event 1"));
+      // 这里的时间，不是精确的时间，而是最短的等待时间
+      // 这里的Duration.zero不是立即执行，而是0秒以后，系统有机会尽快执行
+      // Future(()=>debugPrint("event 1")); 和 Future.delayed(Duration.zero,()=>debugPrint("event 2")); 都是等待0秒，谁在前，先执行谁
+      Future.delayed(Duration.zero,()=>debugPrint("event 2"));
+    
+      scheduleMicrotask(() => debugPrint("Microtask 1"));
+      Future.microtask(() => debugPrint("Microtask 2"));
+      Future.value(123).then((value) => debugPrint("Microtask 3"));
+    
+      debugPrint("main1");
+      Future.sync(() => debugPrint("sync 1"));
+      Future.value(getName());
+      debugPrint("main2");
+    
+      runApp(const MyApp());
+    }
+    
+    String getName() {
+      debugPrint("get name");
+      return "bob";
+    }
+    // 运行结果
+    Launching lib/main.dart on iPhone Xs in debug mode...
+    Xcode build done.                                            7.3s
+    Connecting to VM Service at ws://127.0.0.1:58560/hTChdl8QhRw=/ws
+    flutter: main1
+    flutter: sync 1
+    flutter: get name
+    flutter: main2
+    flutter: Microtask 1
+    flutter: Microtask 2
+    flutter: Microtask 3
+    flutter: event 1
+    flutter: event 2
+    flutter: event 3
+    ```
 #### `then()`方法
 
-* 你可以使用***Future对象的`then()`方法注册回调函数*** 
-* <font color="red">**在正常情况下，等待中的*Future*在完成时的瞬间，`then()`方法会被立即执行，而不会产生Microtask事件**</font>。
+> * 你可以使用***Future对象的`then()`方法注册回调函数*** 
+> * <font color="red">**在正常情况下，等待中的*Future*在完成时的瞬间，`then()`方法会被立即执行，而不会产生Microtask事件**</font>。
+
 ```dart
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -6221,8 +6273,9 @@ flutter: then
 flutter: then 2
 flutter: micro 
 ```
-* <font color="red">在已经完成的*Future*上使用`then()`，是会被添加到Microtask</font>；
-* `then()`方法接受两个可选参数：一个用于处理成功情况的回调函数和一个用于处理错误情况的回调函数；
+> * <font color="red">在已经完成的*Future*上使用`then()`，是会被添加到Microtask</font>；
+> * `then()`方法接受两个可选参数：一个用于处理成功情况的回调函数和一个用于处理错误情况的回调函数；
+
 ```dart
 import 'dart:async';
 
@@ -6268,22 +6321,29 @@ Error Fetching Number: Exception: Failed To Fetch Number
 ```
 #### ***Dart.async*** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 *以下3种写法等价*
+
 ```dart
 Future<int> getFuture(){
   return Future.value(100);
 }
+```
+
+```dart
 // ❤️async Function会直接包装函数的返回值，使之成为Future类型❤️
 Future<int> getFuture()async{
   return 100;
 }
+```
+
+```dart
 // 当然，也可以省略Future<int>，但是不能写成int
 getFuture(){
   return Future.value(100);
 }
 ```
 #### ***Dart***.<font color="red">*`await`*</font> 和 ***Dart***.<font color="red">*`async`*</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
-* 通过<font color="red">*`async`*</font>关键字标记的函数可以使用<font color="red">*`await`*</font>关键字来等待*Future*的完成，而不必使用`then()`方法注册回调函数
-*  <font color="red">***`await`是`async`的反义词***</font>
+> * 通过<font color="red">*`async`*</font>关键字标记的函数可以使用<font color="red">*`await`*</font>关键字来等待*Future*的完成，而不必使用`then()`方法注册回调函数
+> * <font color="red">***`await`是`async`的反义词***</font>
 
 ```dart
 Future<int> getFuture()async{
@@ -6374,84 +6434,85 @@ flutter: complete
 ```
 #### ***❤️Dart.Flutter.FutureBuilder*** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-*  *Future* 提供了一个名为 *FutureBuilder* 的*Widget*，<font color="red">***用于在Future完成后构建UI***</font>。使用 *FutureBuilder*，你可以轻松地根据 *Future* 的状态（未完成、完成并成功返回结果、完成但返回错误）来构建不同的UI；
-  
-  ```dart
-  import 'package:flutter/material.dart';
-  
-  void main() {
-    runApp(const MyApp());
+> *  *Future* 提供了一个名为 *FutureBuilder* 的*Widget*，<font color="red">***用于在Future完成后构建UI***</font>。
+> *  使用 *FutureBuilder*，你可以轻松地根据 *Future* 的状态（未完成、完成并成功返回结果、完成但返回错误）来构建不同的UI；
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    );
   }
-  
-  class MyApp extends StatelessWidget {
-    const MyApp({super.key});
-    @override
-    Widget build(BuildContext context) {
-      return MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        home: const MyHomePage(title: 'Flutter Demo Home Page'),
-      );
-    }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+  final String title;
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  int _counter = 0;
+
+  void _incrementCounter() {
+    setState(() {
+      _counter++;
+    });
   }
-  
-  class MyHomePage extends StatefulWidget {
-    const MyHomePage({super.key, required this.title});
-    final String title;
-    @override
-    State<MyHomePage> createState() => _MyHomePageState();
-  }
-  
-  class _MyHomePageState extends State<MyHomePage> {
-    int _counter = 0;
-  
-    void _incrementCounter() {
-      setState(() {
-        _counter++;
-      });
-    }
-    // 异步操作始终是围绕着：等待、正确、错误，三种状态进行的
-    @override
-    Widget build(BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(widget.title),
-        ),
-        // ❤️关键代码❤️
-        body: Center(
-          // 最大的好处是在 StatelessWidget里面就可以使用FutureBuilder
-          child: FutureBuilder(
-            initialData: 72, // 在异步操作开始之前，会使用这个初始值来构建 UI
-            future:
-                Future.delayed(const Duration(seconds: 2), () => throw ('oops')),
-            // snapshot就是这个Future最近的状态
-            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Text("${snapshot.data}",
+  // 异步操作始终是围绕着：等待、正确、错误，三种状态进行的
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
+      ),
+      // ❤️关键代码❤️
+      body: Center(
+        // 最大的好处是在 StatelessWidget里面就可以使用FutureBuilder
+        child: FutureBuilder(
+          initialData: 72, // 在异步操作开始之前，会使用这个初始值来构建 UI
+          future:
+              Future.delayed(const Duration(seconds: 2), () => throw ('oops')),
+          // snapshot就是这个Future最近的状态
+          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Text("${snapshot.data}",
+                style: const TextStyle(fontSize: 72));
+            }
+            // ConnectionState.done，这里的done只是完成，而不是正常完成。
+            // Future在没有完成的时候data和error都为空
+            if (snapshot.hasError) {
+              return const Icon(Icons.error, size: 80);
+            }
+            if (snapshot.hasData) {
+              return Text("${snapshot.data}",
                   style: const TextStyle(fontSize: 72));
-              }
-              // ConnectionState.done，这里的done只是完成，而不是正常完成。
-              // Future在没有完成的时候data和error都为空
-              if (snapshot.hasError) {
-                return const Icon(Icons.error, size: 80);
-              }
-              if (snapshot.hasData) {
-                return Text("${snapshot.data}",
-                    style: const TextStyle(fontSize: 72));
-              }
-              return const CircularProgressIndicator(); // 显示进度条
-            },
-          ),
+            }
+            return const CircularProgressIndicator(); // 显示进度条
+          },
         ),
-      );
-    }
+      ),
+    );
   }
-  // 运行效果：设备屏幕正中央，先出现72，等待2秒以后，出现错误图标
-  ```
+}
+// 运行效果：设备屏幕正中央，先出现72，等待2秒以后，出现错误图标
+```
 
 #### <font id="AsyncSnapshot">***Dart.Flutter.AsyncSnapshot***</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
