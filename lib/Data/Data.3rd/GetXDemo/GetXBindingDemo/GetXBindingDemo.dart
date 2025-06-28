@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'View.dart';
-import 'Binding.dart';
+import 'CounterPage.dart';
+import 'CounterBinding.dart';
 
 // 启动时注入 binding + view
 void main() {

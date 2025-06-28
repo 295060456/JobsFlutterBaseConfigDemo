@@ -76,14 +76,6 @@ class _CameraScreenState extends State<CameraScreen> {
     try {
       await _initializeControllerFuture;
       final image = await _controller.takePicture();
-      final File file = File(image.path);
-      final Uint8List bytes = await file.readAsBytes();
-
-      final result = await ImageGallerySaver.saveImage(
-        bytes,
-        name: 'Jobs_${DateTime.now().millisecondsSinceEpoch}',
-      );
-
       setState(() {
         _lastSavedMediaPath = image.path;
       });
@@ -109,11 +101,6 @@ class _CameraScreenState extends State<CameraScreen> {
   Future<void> _stopVideoRecording() async {
     try {
       final video = await _controller.stopVideoRecording();
-      final File file = File(video.path);
-      final result = await ImageGallerySaver.saveFile(
-        file.path,
-        name: 'Jobs_${DateTime.now().millisecondsSinceEpoch}',
-      );
 
       setState(() {
         _isRecording = false;

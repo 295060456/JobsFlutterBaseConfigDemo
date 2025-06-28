@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'Controller.dart';
+import 'CounterController.dart';
 
 /// 页面
 class CounterPage extends GetView<CounterController> {

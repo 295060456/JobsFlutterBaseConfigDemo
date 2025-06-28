@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'Controller.dart';
+import 'CounterController.dart';
 
 /// 注册 Controller
 class CounterBinding extends Bindings {
