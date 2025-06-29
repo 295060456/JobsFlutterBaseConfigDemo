@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'Pages/CupertinoAppDemo.dart' show CupertinoAppDemo;
-import 'Pages/DevicePreviewAppDemo.dart' show DevicePreviewAppDemo;
-import 'Pages/EasyLocalizationAppDemo.dart' show EasyLocalizationAppDemo;
-import 'Pages/GetMaterialAppDemo.dart' show GetMaterialAppDemo;
-import 'Pages/MaterialAppDemo.dart' show MaterialAppDemo;
-import 'Pages/PhoenixAppDemo.dart' show PhoenixAppDemo;
-import 'Pages/WidgetsAppDemo.dart' show WidgetsAppDemo;
+import 'Pages/Sys/CupertinoAppDemo.dart' show CupertinoAppDemo;
+import 'Pages/3rd/DevicePreviewAppDemo.dart' show DevicePreviewAppDemo;
+import 'Pages/3rd/EasyLocalizationAppDemo.dart' show EasyLocalizationAppDemo;
+import 'Pages/3rd/GetMaterialAppDemo.dart' show GetMaterialAppDemo;
+import 'Pages/Sys/MaterialAppDemo.dart' show MaterialAppDemo;
+import 'Pages/3rd/PhoenixAppDemo.dart' show PhoenixAppDemo;
+import 'Pages/3rd/WidgetsAppDemo.dart' show WidgetsAppDemo;
 
 void main() => runApp(const RootApp());
 
@@ -30,7 +30,8 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    return SafeArea(
+        child: ListView(
       padding: const EdgeInsets.all(16),
       children: [
         const SectionTitle('🧱 主结构（App 级别容器）'),
@@ -84,7 +85,7 @@ class HomePage extends StatelessWidget {
           ),
         ),
       ],
-    );
+    ));
   }
 }
 
