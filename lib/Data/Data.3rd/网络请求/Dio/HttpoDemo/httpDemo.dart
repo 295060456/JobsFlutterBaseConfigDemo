@@ -14,6 +14,7 @@ void main() {
 
 class HttpDemoPage extends StatefulWidget {
   const HttpDemoPage({super.key});
+  final String sss = '';
   @override
   State<HttpDemoPage> createState() => _HttpDemoPageState();
 }

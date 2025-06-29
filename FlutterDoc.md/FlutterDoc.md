@@ -256,9 +256,17 @@ void main() {
                     break; // 匹配到后可跳出内层循环
                 }
             }
-        }return [result copy];
+        }return result.copy;
     }
     ```
+
+## ***Dart.import*** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+| 导入方式                       | 含义                                   |
+| ------------------------------ | -------------------------------------- |
+| `import 'xxx.dart';`           | 导入整个文件，所有 public 成员都可以用 |
+| `import 'xxx.dart' show A, B;` | 只导入 `A` 和 `B`                      |
+| `import 'xxx.dart' hide A;`    | 导入除 `A` 以外的所有成员              |
 
 ## ***Dart.abstract*** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -808,7 +816,77 @@ debugPrint(obj.x) // 输出: 10
 | `State`（控制状态）          | 控制器中的变量 + 方法                 |
 | `Widget` 构建的 UI           | `UIView` 及其子视图                   |
 
+```dart
+// 📁 lib/main.dart
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MaterialApp(
+    home: HttpDemoPage(BBB: '测试请求信息'),
+    debugShowCheckedModeBanner: false,
+  ));
+}
+
+class HttpDemoPage extends StatefulWidget {
+  final String BBB;
+  const HttpDemoPage({super.key, required this.BBB});
+  @override
+  State<HttpDemoPage> createState() => _HttpDemoPageState();
+}
+
+/// 如果这里不写 <HttpDemoPage> 而是写 <StatefulWidget>，则无法使用 widget.BBB
+class _HttpDemoPageState extends State<HttpDemoPage> {
+  void _sendRequest(String method) {
+    print('请求方法：$method');
+    print('请求信息：${widget.BBB}');
+  }
+
+  Widget _buildButton(String label, String method) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: () => _sendRequest(method),
+          style: ElevatedButton.styleFrom(minimumSize: const Size(0, 44)),
+          child: Text(label),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF6F6F6),
+      appBar: AppBar(
+        title: const Text('🧪 HTTP 全功能 Demo'),
+        backgroundColor: Colors.blueGrey.shade700,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildButton('GET 请求', 'GET'),
+              _buildButton('POST 请求', 'POST'),
+              _buildButton('PUT 请求', 'PUT'),
+              _buildButton('DELETE 请求', 'DELETE'),
+              _buildButton('PATCH 请求', 'PATCH'),
+              _buildButton('上传文件', 'UPLOAD'),
+              _buildButton('耗时请求统计', 'TIMING'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
 * ***Dart.Flutter.Widget 树***
+  
   * 有状态的*Widget*通常由两部分组成：
     * 一个是状态对象（State Object），用于存储和管理状态；
     * 另一个是小部件本身，用于构建UI；

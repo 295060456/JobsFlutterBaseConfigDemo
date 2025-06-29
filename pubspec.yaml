@@ -16,6 +16,9 @@ dependencies:
     sdk: flutter
 # UI组件库
   cupertino_icons: ^1.0.6
+  device_preview: # 多设备模拟器（外部包裹）
+  easy_localization: # 国际化根容器（外部包裹）
+  flutter_phoenix: # 热重启容器（外部包裹）
   screenshot: # 截屏操作
   vibration: # 震动
   fluttertoast: # 弹出提示框
