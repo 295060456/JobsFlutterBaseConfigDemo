@@ -7,14 +7,14 @@ class MaterialAppDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      /// 是否显示右上角的红色 DEBUG 标识（横幅）
       debugShowCheckedModeBanner: false,
 
-      /// 是否显示右上角的红色 DEBUG 标识（横幅）
       title: 'MaterialApp 示例',
       home: Scaffold(
         appBar: AppBar(title: const Text('MaterialApp 示例')),
         body: const Center(
-          child: const Text(
+          child: Text(
             '✅ MaterialApp 是 Flutter 默认入口容器\n'
             '• 提供主题管理、路由管理、首页指定\n'
             '• 配合 Navigator 实现传统页面跳转\n'
