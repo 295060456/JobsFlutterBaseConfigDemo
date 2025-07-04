@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import '../../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import '../../../TestBase/JobsComponentRunner.dart';
 import '../安全加载图片/JobsSafeImage.dart';
 
 class CustomAlertDialog extends StatefulWidget {
@@ -122,7 +122,7 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
     if (widget.actions != null && widget.actions!.isNotEmpty) {
       for (int i = 0; i < widget.actions!.length; i++) {
         actionButtons.add(
-          TextButton(
+          OutlinedButton(
             onPressed: () async {
               if (widget.actionCallbacks != null &&
                   i < widget.actionCallbacks!.length) {
@@ -133,6 +133,9 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
                 Navigator.of(context).pop();
               }
             },
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(color: Colors.white70),
+            ),
             child: DefaultTextStyle(
               style: widget.actionTextStyles != null &&
                       i < widget.actionTextStyles!.length
@@ -145,15 +148,21 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
       }
     } else {
       actionButtons = [
-        TextButton(
+        OutlinedButton(
           onPressed: () => Navigator.of(context).pop(),
+          style: OutlinedButton.styleFrom(
+            side: const BorderSide(color: Colors.white),
+          ),
           child: const Text(
             '取消',
             style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
           ),
         ),
-        TextButton(
+        OutlinedButton(
           onPressed: () => Navigator.of(context).pop(),
+          style: OutlinedButton.styleFrom(
+            side: const BorderSide(color: Colors.white),
+          ),
           child: const Text('确定'),
         ),
       ];
@@ -161,7 +170,7 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
 
     return AlertDialog(
       backgroundColor:
-          widget.backgroundColor ?? Colors.blueAccent.withValues(alpha: 0.8),
+          widget.backgroundColor ?? Colors.blueAccent.withOpacity(0.8),
       contentPadding: widget.contentPadding,
       shape: widget.shape,
       title: Column(
@@ -201,6 +210,7 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
 }
 
 /// 测试入口按钮
+/// 热重载（Hot Reload）不能改变 const 类的构造结构或字段列表。
 class MyButton extends StatelessWidget {
   final String label;
   const MyButton({super.key, this.label = '测试按钮'});
@@ -210,37 +220,23 @@ class MyButton extends StatelessWidget {
     return Center(
       child: ElevatedButton(
         onPressed: () {
-          // CustomAlertDialog.show(
-          //   context,
-          //   title: '温馨提示',
-          //   subtitle: '是否继续操作？',
-          //   autoDismiss: false,
-          //   barrierDismissible: true,
-          // );
           CustomAlertDialog.show(
             context,
             titleRichText: TextSpan(
               children: [
-                // 图片1（本地 asset）
                 WidgetSpan(
                   alignment: PlaceholderAlignment.middle,
                   child: JobsSafeImage(
-                    assetPath: 'assets/Images/flower.png', // 存在的图
-                    // assetPath: '../icon1.png', // 不存在的图
-                    width: 40,
-                    height: 40,
-                    fallback: const Icon(Icons.warning, color: Colors.orange),
+                    assetPath: 'assets/Images/flower.png',
+                    width: 32,
+                    height: 32,
+                    fallback: const Icon(Icons.warning),
                   ),
                 ),
                 const TextSpan(
                   text: ' 温馨提示 ',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                  style: TextStyle(fontSize: 20, color: Colors.white),
                 ),
-                // 图片2（网络图片）
                 WidgetSpan(
                   alignment: PlaceholderAlignment.middle,
                   child: Image.network(
@@ -253,12 +249,17 @@ class MyButton extends StatelessWidget {
             ),
             subtitleRichText: const TextSpan(
               children: [
+                WidgetSpan(
+                  alignment: PlaceholderAlignment.middle,
+                  child: Icon(Icons.info_outline, color: Colors.orange),
+                ),
                 TextSpan(
-                  text: '是否继续操作？',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white70,
-                  ),
+                  text: ' 是否继续操作？ ',
+                  style: TextStyle(fontSize: 16, color: Colors.white70),
+                ),
+                WidgetSpan(
+                  alignment: PlaceholderAlignment.middle,
+                  child: Icon(Icons.help, color: Colors.orange),
                 ),
               ],
             ),
@@ -266,7 +267,7 @@ class MyButton extends StatelessWidget {
             barrierDismissible: true,
           );
         },
-        child: Text(label),
+        child: const Text('显示对话框'),
       ),
     );
   }
