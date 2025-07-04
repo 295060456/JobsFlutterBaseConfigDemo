@@ -225,7 +225,8 @@ class MyButton extends StatelessWidget {
                 WidgetSpan(
                   alignment: PlaceholderAlignment.middle,
                   child: JobsSafeImage(
-                    assetPath: 'assets/images/icon1.png',
+                    assetPath: 'assets/Images/flower.png', // 存在的图
+                    // assetPath: '../icon1.png', // 不存在的图
                     width: 40,
                     height: 40,
                     fallback: const Icon(Icons.warning, color: Colors.orange),
