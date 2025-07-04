@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 /// 图片没有加载出来，有点问题
 void main() {
   runApp(const MyApp());
@@ -17,11 +18,14 @@ class MyApp extends StatelessWidget {
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-// 显示小数点后2位
+
+  /// 显示小数点后2位
   String formatNumber(double number) {
+    /// toStringAsFixed:把一个数字（double）转换为 保留 n 位小数 的字符串。
+    /// truncateToDouble:返回一个去掉小数部分后的 double 类型值，即 向零截断（不是四舍五入）。
     return number.toStringAsFixed(number.truncateToDouble() == number ? 1 : 2);
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,6 +52,8 @@ class HomeScreen extends StatelessWidget {
                 color: Colors.white,
                 border: Border.all(color: Colors.blue, width: 3.0),
                 borderRadius: BorderRadius.circular(15.0),
+
+                /// 支持多个阴影重叠叠加
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.5),
@@ -63,15 +69,13 @@ class HomeScreen extends StatelessWidget {
                 colorBlendMode: BlendMode.srcIn, // 设置混合模式
                 fit: BoxFit.contain,
                 // 当图片加载失败时，打印错误信息
-                errorBuilder: (
-                  BuildContext context, 
-                  Object exception, 
-                  StackTrace? stackTrace) {
-                    debugPrint('图片加载失败: $exception');
-                    return const Icon(
-                      Icons.error,
-                      color: Colors.red,
-                      size: 60.0,
+                errorBuilder: (BuildContext context, Object exception,
+                    StackTrace? stackTrace) {
+                  debugPrint('图片加载失败: $exception');
+                  return const Icon(
+                    Icons.error,
+                    color: Colors.red,
+                    size: 60.0,
                   );
                 },
               ),
@@ -101,15 +105,13 @@ class HomeScreen extends StatelessWidget {
                 'assets/Images/Others/share_icon.png',
                 fit: BoxFit.contain,
                 // 当图片加载失败时，打印错误信息
-                errorBuilder: (
-                  BuildContext context, 
-                  Object exception, 
-                  StackTrace? stackTrace) {
-                    debugPrint('图片加载失败: $exception');
-                    return const Icon(
-                      Icons.error,
-                      color: Colors.red,
-                      size: 60.0,
+                errorBuilder: (BuildContext context, Object exception,
+                    StackTrace? stackTrace) {
+                  debugPrint('图片加载失败: $exception');
+                  return const Icon(
+                    Icons.error,
+                    color: Colors.red,
+                    size: 60.0,
                   );
                 },
               ),

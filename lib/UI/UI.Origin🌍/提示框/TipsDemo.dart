@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'custom_alert_dialog.dart'; // 引入自定义弹窗文件
+import 'CustomAlertDialog.dart'; // 引入自定义弹窗文件
 
 void main() {
   runApp(const MyApp());
@@ -83,7 +83,8 @@ class HomeScreen extends StatelessWidget {
                     const Text('关闭'), // 自定义按钮
                   ],
                   actionTextStyles: [
-                    const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                    const TextStyle(
+                        color: Colors.red, fontWeight: FontWeight.bold),
                   ], // 自定义按钮文本样式
                   actionCallbacks: [
                     () {
@@ -120,9 +121,12 @@ class HomeScreen extends StatelessWidget {
                     const Text('自定义'),
                   ], // 自定义按钮数组
                   actionTextStyles: [
-                    const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-                    const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                    const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                    const TextStyle(
+                        color: Colors.red, fontWeight: FontWeight.bold),
+                    const TextStyle(
+                        color: Colors.green, fontWeight: FontWeight.bold),
+                    const TextStyle(
+                        color: Colors.blue, fontWeight: FontWeight.bold),
                   ], // 自定义按钮文本样式数组
                   actionCallbacks: [
                     () {
@@ -190,7 +194,8 @@ class HomeScreen extends StatelessWidget {
                     const Text('关闭'),
                   ], // 自定义按钮
                   actionTextStyles: [
-                    const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                    const TextStyle(
+                        color: Colors.red, fontWeight: FontWeight.bold),
                   ], // 自定义按钮文本样式
                   actionCallbacks: [
                     () {

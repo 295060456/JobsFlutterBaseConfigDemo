@@ -5,7 +5,6 @@ void main() => runApp(const CupertinoAppDemo());
 
 class CupertinoAppDemo extends StatelessWidget {
   const CupertinoAppDemo({super.key});
-
   @override
   Widget build(BuildContext context) {
     return const CupertinoApp(
@@ -19,7 +18,6 @@ class CupertinoAppDemo extends StatelessWidget {
 
 class CupertinoHomePage extends StatelessWidget {
   const CupertinoHomePage({super.key});
-
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
