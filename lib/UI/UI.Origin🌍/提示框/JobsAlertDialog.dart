@@ -3,7 +3,7 @@ import 'dart:async';
 import '../../../TestBase/JobsComponentRunner.dart';
 import '../安全加载图片/JobsSafeImage.dart';
 
-class CustomAlertDialog extends StatefulWidget {
+class JobsAlertDialog extends StatefulWidget {
   final bool autoDismiss;
   final int autoDismissDuration;
   final String title;
@@ -23,7 +23,7 @@ class CustomAlertDialog extends StatefulWidget {
   final EdgeInsets contentPadding;
   final ShapeBorder shape;
 
-  const CustomAlertDialog({
+  const JobsAlertDialog({
     super.key,
     this.autoDismiss = false,
     this.autoDismissDuration = 2,
@@ -74,7 +74,7 @@ class CustomAlertDialog extends StatefulWidget {
       context: context,
       barrierDismissible: barrierDismissible,
       builder: (dialogContext) {
-        return CustomAlertDialog(
+        return JobsAlertDialog(
           autoDismiss: autoDismiss,
           autoDismissDuration: autoDismissDuration,
           title: title,
@@ -99,10 +99,10 @@ class CustomAlertDialog extends StatefulWidget {
   }
 
   @override
-  State<CustomAlertDialog> createState() => _CustomAlertDialogState();
+  State<JobsAlertDialog> createState() => _CustomAlertDialogState();
 }
 
-class _CustomAlertDialogState extends State<CustomAlertDialog> {
+class _CustomAlertDialogState extends State<JobsAlertDialog> {
   bool isLoading = false;
 
   @override
@@ -220,7 +220,7 @@ class MyButton extends StatelessWidget {
     return Center(
       child: ElevatedButton(
         onPressed: () {
-          CustomAlertDialog.show(
+          JobsAlertDialog.show(
             context,
             titleRichText: TextSpan(
               children: [

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'CustomAlertDialog.dart'; // 引入自定义弹窗文件
+import 'JobsAlertDialog.dart'; // 引入自定义弹窗文件
 
 void main() {
   runApp(const MyApp());
@@ -31,7 +31,7 @@ class HomeScreen extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                CustomAlertDialog.show(
+                JobsAlertDialog.show(
                   context,
                   autoDismiss: true, // 自动消失
                   autoDismissDuration: 2, // 自动消失持续时间（2秒）
@@ -61,7 +61,7 @@ class HomeScreen extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                CustomAlertDialog.show(
+                JobsAlertDialog.show(
                   context,
                   autoDismiss: false, // 手动消失
                   title: '手动消失对话框', // 标题
@@ -97,7 +97,7 @@ class HomeScreen extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                CustomAlertDialog.show(
+                JobsAlertDialog.show(
                   context,
                   autoDismiss: false, // 手动消失
                   title: '自定义按钮对话框', // 标题
@@ -145,7 +145,7 @@ class HomeScreen extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                CustomAlertDialog.show(
+                JobsAlertDialog.show(
                   context,
                   autoDismiss: false, // 手动消失
                   titleRichText: const TextSpan(
