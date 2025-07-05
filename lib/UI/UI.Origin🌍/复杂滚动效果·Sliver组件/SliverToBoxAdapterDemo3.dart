@@ -1,19 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: StopAutoScrollDemo(),
-    );
-  }
-}
+void main() => runApp(const JobsComponentRunner(StopAutoScrollDemo()));
 
 class StopAutoScrollDemo extends StatefulWidget {
   const StopAutoScrollDemo({super.key});
@@ -46,7 +34,8 @@ class _StopAutoScrollDemoState extends State<StopAutoScrollDemo> {
         );
         await Future.delayed(const Duration(seconds: 1));
         _currentIndex++;
-        if (_currentIndex >= 40) { // Assuming there are 40 items in total
+        if (_currentIndex >= 40) {
+          // Assuming there are 40 items in total
           _currentIndex = 0;
           _scrollController.jumpTo(0);
         }

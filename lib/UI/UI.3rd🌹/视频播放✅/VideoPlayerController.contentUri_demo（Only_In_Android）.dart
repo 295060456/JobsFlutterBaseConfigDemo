@@ -1,37 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+
 // VideoPlayerController.contentUri 目前只支持Android平台。
 // 也就意味着，在iOS平台上，使用VideoPlayerController.contentUri会崩溃
 // _AssertionError ('package:video_player/video_player.dart': Failed assertion: line 340 pos 16: 'defaultTargetPlatform == TargetPlatform.android': VideoPlayerController.contentUri is only supported on Android.)
-
-void main() => runApp(const MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Video Player Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const VideoPlayerScreen(),
-    );
-  }
-}
+void main() => runApp(
+    const JobsComponentRunner(VideoPlayerScreen(), title: 'Video Player Demo'));
 
 class VideoPlayerScreen extends StatefulWidget {
   const VideoPlayerScreen({super.key});
-
   @override
   _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
 }
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   late VideoPlayerController _controller;
-  final String _videoUri = 'https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4'; // 替换为你的网络视频URI
-
+  final String _videoUri =
+      'https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4'; // 替换为你的网络视频URI
   @override
   void initState() {
     super.initState();
@@ -66,7 +52,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           setState(() {
-            _controller.value.isPlaying ? _controller.pause() : _controller.play();
+            _controller.value.isPlaying
+                ? _controller.pause()
+                : _controller.play();
           });
         },
         child: Icon(

@@ -1,25 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import '../../../UI/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: '本地数据存取',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const StorageDemo(),
-    );
-  }
-}
+void main() =>
+    runApp(const JobsComponentRunner(StorageDemo(), title: '本地数据存取'));
 
 class StorageDemo extends StatefulWidget {
   const StorageDemo({super.key});
@@ -49,8 +34,11 @@ class _StorageDemoState extends State<StorageDemo> {
     String? userInfoString = prefs.getString('userInfo');
     if (userInfoString != null) {
       Map<String, dynamic> userInfoMap = jsonDecode(userInfoString);
-      _nameController.text = userInfoMap['name'].toString().isEmpty ? "" :userInfoMap['name'];
-      _ageController.text = userInfoMap['age'].toString().isEmpty ? "" : userInfoMap['age'].toString();
+      _nameController.text =
+          userInfoMap['name'].toString().isEmpty ? "" : userInfoMap['name'];
+      _ageController.text = userInfoMap['age'].toString().isEmpty
+          ? ""
+          : userInfoMap['age'].toString();
     }
 
     _stringController.text = prefs.getString('stringValue') ?? '';
@@ -80,7 +68,8 @@ class _StorageDemoState extends State<StorageDemo> {
 
   Future<void> _saveBool() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('boolValue', _boolController.text.toLowerCase() == 'true');
+    await prefs.setBool(
+        'boolValue', _boolController.text.toLowerCase() == 'true');
     _showSuccessMessage('Dool值 ${_boolController.text} 存储成功');
   }
 
@@ -93,12 +82,12 @@ class _StorageDemoState extends State<StorageDemo> {
   Future<void> _saveUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    String userInfo; 
-    if(_ageController.text.isEmpty || _ageController.text is! int){
+    String userInfo;
+    if (_ageController.text.isEmpty || _ageController.text is! int) {
       userInfo = jsonEncode({
         'name': _nameController.text.isEmpty ? "" : _nameController.text,
-        });
-    }else{
+      });
+    } else {
       userInfo = jsonEncode({
         'name': _nameController.text.isEmpty ? "" : _nameController.text,
         'age': int.parse(_ageController.text),
@@ -106,10 +95,10 @@ class _StorageDemoState extends State<StorageDemo> {
     }
 
     await prefs.setString('userInfo', userInfo);
-   
-    if(_ageController.text.isEmpty || _ageController.text is! int){
+
+    if (_ageController.text.isEmpty || _ageController.text is! int) {
       _showSuccessMessage('Userinfo.姓名 ${_nameController.text} 存储成功');
-    }else{
+    } else {
       _showSuccessMessage('Userinfo.姓名 ${_nameController.text} 存储成功');
       _showSuccessMessage('Userinfo.年龄 ${_ageController.text} 存储成功');
     }
@@ -152,7 +141,8 @@ class _StorageDemoState extends State<StorageDemo> {
             _buildTextField('Integer Value', _intController, _saveInt),
             _buildTextField('Double Value', _doubleController, _saveDouble),
             _buildTextField('Boolean Value', _boolController, _saveBool),
-            _buildTextField('Date Time Value', _dateTimeController, _saveDateTime),
+            _buildTextField(
+                'Date Time Value', _dateTimeController, _saveDateTime),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _resetAll,
@@ -164,9 +154,8 @@ class _StorageDemoState extends State<StorageDemo> {
     );
   }
 
-  Widget _buildTextField(String label, 
-  TextEditingController controller, 
-  Future<void> Function() saveFunction) {
+  Widget _buildTextField(String label, TextEditingController controller,
+      Future<void> Function() saveFunction) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(

@@ -1,47 +1,31 @@
 import 'package:flutter/material.dart';
+import '../../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: ScrollViewWithScrollbar(),
-    );
-  }
-}
+void main() => runApp(const JobsComponentRunner(ScrollViewWithScrollbar(),
+    title: 'Scroll View with Scrollbar'));
 
 class ScrollViewWithScrollbar extends StatefulWidget {
   const ScrollViewWithScrollbar({super.key});
-
   @override
-  _ScrollViewWithScrollbarState createState() => _ScrollViewWithScrollbarState();
+  _ScrollViewWithScrollbarState createState() =>
+      _ScrollViewWithScrollbarState();
 }
 
 class _ScrollViewWithScrollbarState extends State<ScrollViewWithScrollbar> {
   final ScrollController _scrollController = ScrollController();
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Scroll View with Scrollbar'),
-      ),
-      body: RawScrollbar(
-          thumbColor: Colors.redAccent,
-          controller: _scrollController,
-          thumbVisibility: true, // 始终显示滚动条
-          child: SingleChildScrollView(
-            controller: _scrollController,
-            child: Column(
-              children: List.generate(50, (index) => ListTile(title: Text('Item $index'))),
-            ),
-          ),
+    return RawScrollbar(
+      thumbColor: Colors.redAccent,
+      controller: _scrollController,
+      thumbVisibility: true, // 始终显示滚动条
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        child: Column(
+          children: List.generate(
+              50, (index) => ListTile(title: Text('Item $index'))),
         ),
+      ),
     );
   }
 

@@ -1,26 +1,12 @@
 import 'package:flutter/material.dart';
+import '../../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+
 // Flexible 示例: 使用 Flexible 来让 Text 小部件在 Row 中自动换行。
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Flexible Demo')),
-        body: const Center(child: FlexibleDemo()),
-      ),
-    );
-  }
-}
+void main() =>
+    runApp(const JobsComponentRunner(FlexibleDemo(), title: 'Flexible Demo'));
 
 class FlexibleDemo extends StatelessWidget {
   const FlexibleDemo({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -38,7 +24,8 @@ class FlexibleDemo extends StatelessWidget {
           Flexible(
             child: Text(
               '这是一个长文本，如果超过屏幕宽度，它应该换行显示。文本应该正确换行并完全可见。',
-              style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
             ),
           ),
         ],

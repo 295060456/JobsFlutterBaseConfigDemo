@@ -1,20 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: HomePage(),
-    );
-  }
-}
+void main() =>
+    runApp(const JobsComponentRunner(HomePage(), title: 'InAppWebView Demo'));
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -51,7 +40,6 @@ class WebViewExample extends StatefulWidget {
 class _WebViewExampleState extends State<WebViewExample> {
   InAppWebViewController? webViewController;
   bool canPopWebView = true;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,8 +54,10 @@ class _WebViewExampleState extends State<WebViewExample> {
       ),
       body: PopScope(
         canPop: canPopWebView, // Determines whether back navigation is allowed
-        onPopInvokedWithResult: (didPop, result) async { // Called when back navigation is triggered
-          if (webViewController != null && await webViewController!.canGoBack()) {
+        onPopInvokedWithResult: (didPop, result) async {
+          // Called when back navigation is triggered
+          if (webViewController != null &&
+              await webViewController!.canGoBack()) {
             webViewController!.goBack();
             setState(() {
               canPopWebView = true;
@@ -79,7 +69,8 @@ class _WebViewExampleState extends State<WebViewExample> {
           }
         },
         child: InAppWebView(
-          initialUrlRequest: URLRequest(url: WebUri.uri(Uri.parse("https://www.google.com"))),
+          initialUrlRequest:
+              URLRequest(url: WebUri.uri(Uri.parse("https://www.google.com"))),
           onWebViewCreated: (controller) {
             webViewController = controller;
           },

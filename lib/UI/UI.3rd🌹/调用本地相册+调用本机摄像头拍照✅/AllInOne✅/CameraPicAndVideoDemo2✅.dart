@@ -1,8 +1,6 @@
-import 'dart:io';
-import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+import '../../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
 // 不跳转系统相机，就在当前页面，进行录像或者拍照，且显示拍摄的结果
 // 可以对拍摄的结果进行保存在本地相册（相册名：Jobs）
@@ -19,25 +17,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final cameras = await availableCameras();
   final firstCamera = cameras.first;
-
-  runApp(CameraDemo(camera: firstCamera));
-}
-
-class CameraDemo extends StatelessWidget {
-  final CameraDescription camera;
-
-  const CameraDemo({super.key, required this.camera});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Camera Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: CameraScreen(camera: camera),
-    );
-  }
+  runApp(JobsComponentRunner(CameraScreen(camera: firstCamera),
+      title: 'Camera Demo'));
 }
 
 class CameraScreen extends StatefulWidget {

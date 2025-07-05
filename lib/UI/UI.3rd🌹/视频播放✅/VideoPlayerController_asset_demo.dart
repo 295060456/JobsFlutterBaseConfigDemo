@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-// VideoPlayerController_asset_demo.dart
-
+import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 // 真机运行如果出现空白页面的解决方案：
-// 方案1、在工程根目录下执行 flutter run --release 或者 
+// 方案1、在工程根目录下执行 flutter run --release 或者
 // 方案2、通过 flutter devices 拿到设备id，然后 flutter run -d 设备ID
 
 // 视频资源位于项目跟目录下的：
@@ -12,30 +11,10 @@ import 'package:video_player/video_player.dart';
 // dependencies:
 //   flutter:
 //     sdk: flutter
-//   video_player: 
+//   video_player:
 
-void main() {
-  runApp(const VideoPlayerApp());
-}
-
-class VideoPlayerApp extends StatelessWidget {
-  const VideoPlayerApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Video Player Demo',
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Welcome Video'),
-        ),
-        body: const Center(
-          child: VideoPlayerScreen(),
-        ),
-      ),
-    );
-  }
-}
+void main() => runApp(
+    const JobsComponentRunner(VideoPlayerScreen(), title: 'Welcome Video'));
 
 class VideoPlayerScreen extends StatefulWidget {
   const VideoPlayerScreen({super.key});
@@ -52,7 +31,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   void initState() {
     super.initState();
     // 创建VideoPlayerController并加载本地视频文件
-    _controller = VideoPlayerController.asset('assets/Video/AppLaunchAssets/appLaunch_welcome.mp4');
+    _controller = VideoPlayerController.asset(
+        'assets/Video/AppLaunchAssets/appLaunch_welcome.mp4');
     // 初始化VideoPlayerController
     _initializeVideoPlayerFuture = _controller.initialize();
     // 循环播放视频

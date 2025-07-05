@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
-void main() {
-  runApp(const MyApp());
-}
+void main() =>
+    runApp(const JobsComponentRunner(MyHomePage(), title: 'Google Fonts Demo'));
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -14,7 +14,8 @@ class MyApp extends StatelessWidget {
       title: 'Google Fonts Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        textTheme: GoogleFonts.latoTextTheme( // 使用 Lato 字体
+        textTheme: GoogleFonts.latoTextTheme(
+          // 使用 Lato 字体
           Theme.of(context).textTheme,
         ),
       ),

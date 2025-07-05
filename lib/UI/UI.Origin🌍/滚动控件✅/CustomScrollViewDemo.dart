@@ -1,26 +1,14 @@
 import 'package:flutter/material.dart';
+import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+
 // 真机运行如果出现空白页面的解决方案：
-// 方案1、在工程根目录下执行 flutter run --release 或者 
+// 方案1、在工程根目录下执行 flutter run --release 或者
 // 方案2、通过 flutter devices 拿到设备id，然后 flutter run -d 设备ID
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'CustomScrollView Demo',
-      home: CustomScrollViewDemo(),
-    );
-  }
-}
+void main() => runApp(const JobsComponentRunner(CustomScrollViewDemo(),
+    title: 'CustomScrollView Demo'));
 
 class CustomScrollViewDemo extends StatelessWidget {
   const CustomScrollViewDemo({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,9 +77,7 @@ class CustomScrollViewDemo extends StatelessWidget {
 
 class DetailPage extends StatelessWidget {
   final int itemIndex;
-
   const DetailPage({super.key, required this.itemIndex});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

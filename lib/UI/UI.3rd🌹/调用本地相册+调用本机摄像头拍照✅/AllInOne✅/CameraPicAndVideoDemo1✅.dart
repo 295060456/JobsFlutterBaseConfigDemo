@@ -5,25 +5,11 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_compress/video_compress.dart';
+import '../../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
-void main() {
-  runApp(const VideoPlayerApp());
-}
-
-class VideoPlayerApp extends StatelessWidget {
-  const VideoPlayerApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: '拍照.录像.存相册',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const VideoPlayerScreen(imageSource: ImageSource.camera),
-    );
-  }
-}
+void main() => runApp(const JobsComponentRunner(
+    VideoPlayerScreen(imageSource: ImageSource.camera),
+    title: '拍照.录像.存相册'));
 
 class VideoPlayerScreen extends StatefulWidget {
   final ImageSource imageSource;

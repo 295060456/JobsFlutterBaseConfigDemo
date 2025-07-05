@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-import 'package:jobs_flutter_base_config/Tools.dart';
+import 'package:jobs_flutter_base_config/Others/Tools.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -53,9 +53,7 @@ Future<void> _loadData() async {
 
     var fruits = ['Apple', 'Banana', 'Orange'];
     JobsPrint(fruits);
-
   } catch (e) {
     JobsPrint('Error loading local JSON: $e');
   }
 }
-

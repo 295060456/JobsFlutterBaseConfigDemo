@@ -1,55 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:vibration/vibration.dart';
 import 'dart:math'; // 导入 dart:math 库
+import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Custom Shape Buttons'),
+void main() => runApp(JobsComponentRunner(
+    Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        CustomShapeButton(
+          shape: Shape.triangle,
+          onPressed: () {
+            debugPrint('我是三角形按钮');
+            Vibration.vibrate(duration: 200);
+          },
         ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              CustomShapeButton(
-                shape: Shape.triangle,
-                onPressed: () {
-                  debugPrint('我是三角形按钮');
-                  Vibration.vibrate(duration: 200);
-                },
-              ),
-              const SizedBox(height: 20),
-              CustomShapeButton(
-                shape: Shape.star,
-                onPressed: () {
-                  debugPrint('我是五角星按钮');
-                  Vibration.vibrate(duration: 200);
-                },
-              ),
-              const SizedBox(height: 20),
-              CustomShapeButton(
-                shape: Shape.parallelogram,
-                onPressed: () {
-                  debugPrint('我是平行四边形按钮');
-                  Vibration.vibrate(duration: 200);
-                },
-              ),
-            ],
-          ),
+        const SizedBox(height: 20),
+        CustomShapeButton(
+          shape: Shape.star,
+          onPressed: () {
+            debugPrint('我是五角星按钮');
+            Vibration.vibrate(duration: 200);
+          },
         ),
-      ),
-    );
-  }
-}
+        const SizedBox(height: 20),
+        CustomShapeButton(
+          shape: Shape.parallelogram,
+          onPressed: () {
+            debugPrint('我是平行四边形按钮');
+            Vibration.vibrate(duration: 200);
+          },
+        ),
+      ],
+    ),
+    title: 'Custom Shape Buttons'));
 
 enum Shape { triangle, star, parallelogram }
 
@@ -57,7 +40,8 @@ class CustomShapeButton extends StatefulWidget {
   final Shape shape;
   final VoidCallback onPressed;
 
-  const CustomShapeButton({super.key, required this.shape, required this.onPressed});
+  const CustomShapeButton(
+      {super.key, required this.shape, required this.onPressed});
 
   @override
   _CustomShapeButtonState createState() => _CustomShapeButtonState();

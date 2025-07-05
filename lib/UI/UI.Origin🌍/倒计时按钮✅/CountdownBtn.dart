@@ -1,6 +1,64 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+
+void main() => runApp(JobsComponentRunner(
+    Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // 水平布局、点击触发、步长2(计时器模式)
+          CountdownBtn(
+            textFront: '现在已经进行：',
+            textBack: '请做好准备。',
+            isVertical: false,
+            duration: 3600, // 1小时
+            textStyle: const TextStyle(fontSize: 16),
+            autoStart: false, // 点击触发
+            timeStep: 0.5,
+            initialTime: DateTime.now(),
+          ),
+          const SizedBox(height: 20),
+          // 垂直布局、自动触发、步长1(计时器模式)
+          CountdownBtn(
+            textFront: '现在已经进行：',
+            textBack: '请做好准备。',
+            isVertical: true,
+            duration: 3600, // 1小时
+            textStyle: const TextStyle(fontSize: 16),
+            autoStart: true, // 自动触发
+            timeStep: 1,
+            initialTime: DateTime.now(),
+          ),
+          const SizedBox(height: 20),
+          // 水平布局、点击触发、步长-2(倒计时模式)
+          CountdownBtn(
+            textFront: '现在距离倒计时结束还有：',
+            textBack: '请做好准备。',
+            isVertical: false,
+            duration: 3600, // 1小时
+            textStyle: const TextStyle(fontSize: 16),
+            autoStart: false, // 点击触发
+            timeStep: -2,
+            initialTime: DateTime.now(),
+          ),
+          const SizedBox(height: 20),
+          // 垂直布局、自动触发、步长-1(倒计时模式)
+          CountdownBtn(
+            textFront: '现在距离倒计时结束还有：',
+            textBack: '请做好准备。',
+            isVertical: true,
+            duration: 3600, // 1小时
+            textStyle: const TextStyle(fontSize: 16),
+            autoStart: true, // 自动触发
+            timeStep: -1,
+            initialTime: DateTime.now(),
+          ),
+        ],
+      ),
+    ),
+    title: '倒计时按钮示例✅'));
 
 class CountdownBtn extends StatefulWidget {
   final Color backgroundColor;
@@ -39,7 +97,8 @@ class _CountdownBtnState extends State<CountdownBtn> {
   @override
   void initState() {
     super.initState();
-    _remainingDuration = Duration(milliseconds: (widget.duration * 1000).toInt());
+    _remainingDuration =
+        Duration(milliseconds: (widget.duration * 1000).toInt());
     if (widget.autoStart) {
       _startCountdown();
     }
@@ -57,7 +116,9 @@ class _CountdownBtnState extends State<CountdownBtn> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(widget.textFront, style: widget.textStyle),
-                  RichText(text: _coloredTimeSpan(formatDuration(_remainingDuration))),
+                  RichText(
+                      text:
+                          _coloredTimeSpan(formatDuration(_remainingDuration))),
                   Text(widget.textBack, style: widget.textStyle),
                 ],
               )
@@ -65,7 +126,9 @@ class _CountdownBtnState extends State<CountdownBtn> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(widget.textFront, style: widget.textStyle),
-                  RichText(text: _coloredTimeSpan(formatDuration(_remainingDuration))),
+                  RichText(
+                      text:
+                          _coloredTimeSpan(formatDuration(_remainingDuration))),
                   Text(widget.textBack, style: widget.textStyle),
                 ],
               ),
@@ -105,11 +168,12 @@ class _CountdownBtnState extends State<CountdownBtn> {
       Duration(milliseconds: (widget.timeStep.abs() * 1000).toInt()), // 毫秒为单位
       (timer) {
         setState(() {
-          _remainingDuration -= Duration(milliseconds: (widget.timeStep * 1000).toInt()); // 更新剩余时间
+          _remainingDuration -= Duration(
+              milliseconds: (widget.timeStep * 1000).toInt()); // 更新剩余时间
           if (_remainingDuration <= Duration.zero) {
             if (timer.isActive) {
               timer.cancel();
-              }
+            }
             isCountingDown = false;
             _remainingDuration = Duration.zero;
           }
@@ -131,6 +195,7 @@ class _CountdownBtnState extends State<CountdownBtn> {
     }
     _playSound();
   }
+
   // 重启定时器
   void _resumeCountdown() {
     setState(() {
@@ -145,7 +210,8 @@ class _CountdownBtnState extends State<CountdownBtn> {
   }
 
   String formatDuration(Duration duration) {
-    debugPrint('打印duration: ${duration.inHours}时${duration.inMinutes.remainder(60)}分${duration.inSeconds.remainder(60)}秒');
+    debugPrint(
+        '打印duration: ${duration.inHours}时${duration.inMinutes.remainder(60)}分${duration.inSeconds.remainder(60)}秒');
     return '${duration.inHours}时${duration.inMinutes.remainder(60)}分${duration.inSeconds.remainder(60)}秒';
   }
 

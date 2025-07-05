@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -46,7 +48,7 @@ class HomePage extends StatelessWidget {
               'detail',
               arguments: {'message': 'Hello from HomePage!'},
               onBack: (result) {
-                print('👉 DetailPage 返回了：$result');
+                log('👉 DetailPage 返回了：$result' as num);
                 Get.snackbar('返回值', '$result');
               },
             );

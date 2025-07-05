@@ -1,25 +1,20 @@
 import 'package:flutter/material.dart';
+import '../../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+
 // FlutterLogoDecoration 是一个特殊的装饰类，用于显示 Flutter 的 logo
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(
+    const JobsComponentRunner(MyApp(), title: 'FlutterLogoDecoration Demo'));
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('FlutterLogoDecoration Demo')),
-        body: const Center(
-          child: DecoratedBox(
-            decoration: FlutterLogoDecoration(),
-            child: SizedBox(
-              width: 200,
-              height: 200,
-            ),
-          ),
+    return const Center(
+      child: DecoratedBox(
+        decoration: FlutterLogoDecoration(),
+        child: SizedBox(
+          width: 200,
+          height: 200,
         ),
       ),
     );

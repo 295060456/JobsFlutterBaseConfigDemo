@@ -1,28 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:easy_refresh/easy_refresh.dart';
+import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'EasyRefresh Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(),
-    );
-  }
-}
+void main() =>
+    runApp(const JobsComponentRunner(MyHomePage(), title: 'EasyRefresh Demo'));
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -31,11 +15,13 @@ class _MyHomePageState extends State<MyHomePage> {
   int _itemCount = 20;
   bool _hasMore = true;
   final EasyRefreshController _controller = EasyRefreshController(
-  // _AssertionError ('package:easy_refresh/src/controller/controller.dart': Failed assertion: line 206 pos 12: 'controlFinishLoad || force': Please set controlFinishLoad to true, then use. If you want to modify the result, you can set force to true.)
-  // _AssertionError ('package:easy_refresh/src/controller/controller.dart': Failed assertion: line 196 pos 12: 'controlFinishRefresh || force': Please set controlFinishRefresh to true, then use. If you want to modify the result, you can set force to true.)
-  controlFinishLoad: true,// 控制是否完成刷新，默认false，设置为true后，刷新完成后，不会再次刷新，除非设置force为true
-  controlFinishRefresh: true, // 控制是否完成加载，默认false，设置为true后，加载完成后，不会再次加载，除非设置force为true
-);
+    // _AssertionError ('package:easy_refresh/src/controller/controller.dart': Failed assertion: line 206 pos 12: 'controlFinishLoad || force': Please set controlFinishLoad to true, then use. If you want to modify the result, you can set force to true.)
+    // _AssertionError ('package:easy_refresh/src/controller/controller.dart': Failed assertion: line 196 pos 12: 'controlFinishRefresh || force': Please set controlFinishRefresh to true, then use. If you want to modify the result, you can set force to true.)
+    controlFinishLoad:
+        true, // 控制是否完成刷新，默认false，设置为true后，刷新完成后，不会再次刷新，除非设置force为true
+    controlFinishRefresh:
+        true, // 控制是否完成加载，默认false，设置为true后，加载完成后，不会再次加载，除非设置force为true
+  );
 
   Future<void> _onRefresh() async {
     await Future.delayed(const Duration(seconds: 2));

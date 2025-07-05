@@ -1,35 +1,17 @@
 import 'package:flutter/material.dart';
+import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(
+    const JobsComponentRunner(JobsOverlay(), title: 'Custom Overlay Demo'));
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Custom Overlay Demo'),
-        ),
-        body: const Center(
-          child: CustomOverlayDemo(),
-        ),
-      ),
-    );
-  }
-}
-
-class CustomOverlayDemo extends StatefulWidget {
-  const CustomOverlayDemo({super.key});
+class JobsOverlay extends StatefulWidget {
+  const JobsOverlay({super.key});
 
   @override
   _CustomOverlayDemoState createState() => _CustomOverlayDemoState();
 }
 
-class _CustomOverlayDemoState extends State<CustomOverlayDemo> {
+class _CustomOverlayDemoState extends State<JobsOverlay> {
   OverlayEntry? _overlayEntry;
 
   OverlayEntry _createOverlayEntry(ThemeData theme) {

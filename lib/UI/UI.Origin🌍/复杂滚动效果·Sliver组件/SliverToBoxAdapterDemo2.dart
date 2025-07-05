@@ -1,19 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+
 // 自动滚动+丝滑滚动
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: SmoothAutoScrollDemo(),
-    );
-  }
-}
+void main() => runApp(const JobsComponentRunner(SmoothAutoScrollDemo()));
 
 class SmoothAutoScrollDemo extends StatefulWidget {
   const SmoothAutoScrollDemo({super.key});
@@ -40,7 +29,8 @@ class _SmoothAutoScrollDemoState extends State<SmoothAutoScrollDemo> {
   }
 
   void _autoScroll() {
-    _scrollController.animateTo(
+    _scrollController
+        .animateTo(
       _scrollController.position.maxScrollExtent,
       duration: const Duration(seconds: 10),
       curve: Curves.linear,
@@ -63,7 +53,8 @@ class _SmoothAutoScrollDemoState extends State<SmoothAutoScrollDemo> {
       // decelerate:动画开始时较快，然后逐渐减速。适用于自然的减速效果。
       // fastLinearToSlowEaseIn:画开始时是线性速度，然后逐渐减速进入目标位置。
       // slowMiddle:动画开始和结束时较快，中间部分较慢。
-    ).then((_) {
+    )
+        .then((_) {
       _scrollController.jumpTo(0);
       _autoScroll();
     });

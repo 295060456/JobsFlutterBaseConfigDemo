@@ -1,26 +1,19 @@
 import 'package:flutter/material.dart';
+import '../../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+
 /// Wrap 示例: 使用 Wrap 来让子组件（例如 Icon 和 Text）自动换行。
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const JobsComponentRunner(MyApp(), title: 'Wrap Demo'));
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Wrap Demo')),
-        body: const Center(child: WrapDemo()),
-      ),
-    );
+    return const Center(child: WrapDemo());
   }
 }
 
 class WrapDemo extends StatelessWidget {
   const WrapDemo({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Container(

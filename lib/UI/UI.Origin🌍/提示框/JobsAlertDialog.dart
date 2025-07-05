@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import '../../../TestBase/JobsComponentRunner.dart';
+import '../../TestBase/JobsComponentRunner.dart';
 import '../安全加载图片/JobsSafeImage.dart';
 
 class JobsAlertDialog extends StatefulWidget {
@@ -70,6 +70,7 @@ class JobsAlertDialog extends StatefulWidget {
       borderRadius: BorderRadius.all(Radius.circular(15)),
     ),
   }) {
+    /// 通用弹窗机制，可以接收一个 widget（通常是 AlertDialog）并显示在屏幕正中间。
     showDialog(
       context: context,
       barrierDismissible: barrierDismissible,
@@ -109,7 +110,11 @@ class _CustomAlertDialogState extends State<JobsAlertDialog> {
   void initState() {
     super.initState();
     if (widget.autoDismiss) {
+      /// 延迟执行异步任务的方法
       Future.delayed(Duration(seconds: widget.autoDismissDuration), () {
+        /// mounted 是 State 类的属性。
+        /// 它表示当前 State 是否仍然处于 widget 树中。
+        /// 如果在 dispose() 之后尝试使用 context，会抛出异常。mounted 能避免这种问题。
         if (mounted) Navigator.of(context).pop();
       });
     }

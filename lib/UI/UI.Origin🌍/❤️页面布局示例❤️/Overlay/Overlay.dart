@@ -1,35 +1,19 @@
 import 'package:flutter/material.dart';
+import '../../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+
+void main() => runApp(
+    const JobsComponentRunner(MyHomePage(), title: 'Flutter Overlay Demo'));
+
 /// 在插入新的Overlay前，检查是否已有Overlay存在，如果存在则移除它。
 /// 这样就确保了每次点击按钮时，只会显示一个Overlay，并且关闭按钮可以正常工作。
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Overlay Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(),
-    );
-  }
-}
-
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   OverlayEntry? _overlayEntry;
-
   OverlayEntry _createOverlayEntry() {
     return OverlayEntry(
       builder: (context) => Positioned(
@@ -88,15 +72,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Flutter Overlay Demo'),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: _showOverlay,
-          child: const Text('Show Overlay'),
-        ),
+    return Center(
+      child: ElevatedButton(
+        onPressed: _showOverlay,
+        child: const Text('Show Overlay'),
       ),
     );
   }

@@ -1,66 +1,48 @@
 import 'package:flutter/material.dart';
+import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 // 演示了类似于iOS.UITableView的效果： ListView + 自定义Cell + 点击Cell跳转到DetailPage
 
 // 真机运行如果出现空白页面的解决方案：
-// 方案1、在工程根目录下执行 flutter run --release 或者 
+// 方案1、在工程根目录下执行 flutter run --release 或者
 // 方案2、通过 flutter devices 拿到设备id，然后 flutter run -d 设备ID
-void main() {
-  runApp(const MyApp());
-}
+void main() =>
+    runApp(const JobsComponentRunner(MyListView(), title: 'Flutter TableView'));
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: MyListView(),
-    );
-  }
-}
-
+/// UITableView
 class MyListView extends StatelessWidget {
   const MyListView({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Flutter TableView'),
-      ),
-      body: ListView.builder(
-        itemCount: 50, // 假设有50个项目
-        itemBuilder: (BuildContext context, int index) {
-          // 返回自定义的单元格
-          return MyCell(
-            index: index,
-            onTap: () {
-              // 点击单元格时，跳转到DetailPage
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DetailPage(index: index),
-                ),
-              );
-            },
-          );
-        },
-      ),
+    return ListView.builder(
+      itemCount: 50, // 假设有50个项目
+      itemBuilder: (BuildContext context, int index) {
+        // 返回自定义的单元格
+        return MyCell(
+          index: index,
+          onTap: () {
+            // 点击单元格时，跳转到DetailPage
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DetailPage(index: index),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
 
+/// UITableViewCell
 class MyCell extends StatelessWidget {
   final int index;
   final VoidCallback onTap;
-
   const MyCell({super.key, required this.index, required this.onTap});
-
   @override
   Widget build(BuildContext context) {
     // 自定义单元格的高度
     double cellHeight = 100.0;
-
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -91,11 +73,10 @@ class MyCell extends StatelessWidget {
   }
 }
 
+/// 子页面
 class DetailPage extends StatelessWidget {
   final int index;
-
   const DetailPage({super.key, required this.index});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

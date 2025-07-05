@@ -1,19 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+
 // 不自动滚动
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: SmoothScrollDemo(),
-    );
-  }
-}
+void main() => runApp(const JobsComponentRunner(SmoothScrollDemo()));
 
 class SmoothScrollDemo extends StatelessWidget {
   const SmoothScrollDemo({super.key});

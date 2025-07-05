@@ -1,5 +1,15 @@
 import 'package:flutter/material.dart';
 import 'dart:developer' as developer;
+import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+
+void main() => runApp(const JobsComponentRunner(
+    JobsSafeImage(
+      assetPath: 'assets/Images/flower.png',
+      width: 32,
+      height: 32,
+      fallback: Icon(Icons.warning),
+    ),
+    title: '安全加载图片'));
 
 class JobsSafeImage extends StatelessWidget {
   final String assetPath;

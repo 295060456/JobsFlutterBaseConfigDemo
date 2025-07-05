@@ -1,27 +1,13 @@
 import 'package:flutter/material.dart';
+import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+
 // 高仿iOC.UITabbarController
-
 // 真机运行如果出现空白页面的解决方案：
-// 方案1、在工程根目录下执行 flutter run --release 或者 
+// 方案1、在工程根目录下执行 flutter run --release 或者
 // 方案2、通过 flutter devices 拿到设备id，然后 flutter run -d 设备ID
-void main() {
-  runApp(const MyApp());
-}
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter TabBar Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(),
-    );
-  }
-}
+void main() => runApp(
+    const JobsComponentRunner(MyHomePage(), title: 'Flutter TabBar Demo'));
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -30,9 +16,9 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
-
   @override
   void initState() {
     super.initState();
@@ -77,7 +63,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
 class HomeTab extends StatelessWidget {
   const HomeTab({super.key});
-
   @override
   Widget build(BuildContext context) {
     return const Center(
@@ -88,7 +73,6 @@ class HomeTab extends StatelessWidget {
 
 class SearchTab extends StatelessWidget {
   const SearchTab({super.key});
-
   @override
   Widget build(BuildContext context) {
     return const Center(
@@ -99,7 +83,6 @@ class SearchTab extends StatelessWidget {
 
 class ProfileTab extends StatelessWidget {
   const ProfileTab({super.key});
-
   @override
   Widget build(BuildContext context) {
     return const Center(

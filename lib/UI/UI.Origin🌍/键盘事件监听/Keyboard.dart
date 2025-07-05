@@ -1,30 +1,20 @@
 import 'package:flutter/material.dart';
+import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+
 /// 利用WidgetsBindingObserver监听键盘事件
-void main() => runApp(const MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: KeyboardDemo(),
-    );
-  }
-}
+void main() => runApp(const JobsComponentRunner(KeyboardDemo(), title: 'XXX'));
 
 class KeyboardDemo extends StatefulWidget {
   const KeyboardDemo({super.key});
-
   @override
   _KeyboardDemoState createState() => _KeyboardDemoState();
 }
 
-class _KeyboardDemoState extends State<KeyboardDemo> with WidgetsBindingObserver {
+class _KeyboardDemoState extends State<KeyboardDemo>
+    with WidgetsBindingObserver {
   final TextEditingController _textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   double _keyboardHeight = 0.0;
-
   @override
   void initState() {
     super.initState();
@@ -48,44 +38,39 @@ class _KeyboardDemoState extends State<KeyboardDemo> with WidgetsBindingObserver
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Keyboard Demo'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _textController,
-              focusNode: _focusNode,
-              decoration: const InputDecoration(
-                hintText: 'Tap the buttons to show/hide keyboard',
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          TextField(
+            controller: _textController,
+            focusNode: _focusNode,
+            decoration: const InputDecoration(
+              hintText: 'Tap the buttons to show/hide keyboard',
+            ),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  FocusScope.of(context).requestFocus(_focusNode);
+                },
+                child: const Text('Show Keyboard'),
               ),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    FocusScope.of(context).requestFocus(_focusNode);
-                  },
-                  child: const Text('Show Keyboard'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    FocusScope.of(context).unfocus();
-                  },
-                  child: const Text('Hide Keyboard'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Text('Keyboard Height: $_keyboardHeight'),
-          ],
-        ),
+              ElevatedButton(
+                onPressed: () {
+                  FocusScope.of(context).unfocus();
+                },
+                child: const Text('Hide Keyboard'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Text('Keyboard Height: $_keyboardHeight'),
+        ],
       ),
     );
   }
