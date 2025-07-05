@@ -12,7 +12,6 @@ void main() {
 
 class DevicePreviewAppDemo extends StatelessWidget {
   const DevicePreviewAppDemo({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

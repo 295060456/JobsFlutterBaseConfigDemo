@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import '../../TestBase/JobsComponentRunner.dart';
 import '../安全加载图片/JobsSafeImage.dart';
+import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+
+void main() => runApp(const JobsComponentRunner(MyButton(), title: 'XXX'));
 
 class JobsAlertDialog extends StatefulWidget {
   final bool autoDismiss;
@@ -219,7 +221,6 @@ class _CustomAlertDialogState extends State<JobsAlertDialog> {
 class MyButton extends StatelessWidget {
   final String label;
   const MyButton({super.key, this.label = '测试按钮'});
-
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -277,5 +278,3 @@ class MyButton extends StatelessWidget {
     );
   }
 }
-
-void main() => runApp(const JobsComponentRunner(MyButton()));

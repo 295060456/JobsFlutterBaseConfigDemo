@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+
 // WidgetStateProperty 是一个用于根据 widget 的不同状态返回相应值的接口。
 // 在 Flutter 中，它可以用于处理 widget 的各种交互状态，如 hover、focus、pressed 等。
 // 以下是一个简单的示例，展示如何使用 WidgetStateProperty 来动态改变按钮的背景色。
@@ -25,32 +27,21 @@ import 'package:flutter/material.dart';
 // scrolledUnder：当 widget 的内容滚动到其他内容下面时的状态。
 // disabled：当 widget 被禁用时的状态。
 // error：当 widget 进入某种错误状态时的状态。
-
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(
+    const JobsComponentRunner(MyApp(), title: 'WidgetStateProperty Demo'));
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('WidgetStateProperty Demo'),
-        ),
-        body: const Center(
-          child: MyStatefulButton(),
-        ),
-      ),
+    return const Center(
+      child: MyStatefulButton(),
     );
   }
 }
 
 class MyStatefulButton extends StatefulWidget {
   const MyStatefulButton({super.key});
-
   @override
   _MyStatefulButtonState createState() => _MyStatefulButtonState();
 }

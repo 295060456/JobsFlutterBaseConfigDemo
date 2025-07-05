@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 /// 动态切换主题（例如从亮模式切换到暗模式）
 void main() {
   runApp(const MyApp());
@@ -35,7 +36,8 @@ class HomeScreen extends StatelessWidget {
   final bool isDarkMode;
   final VoidCallback onThemeToggle;
 
-  const HomeScreen({super.key, required this.isDarkMode, required this.onThemeToggle});
+  const HomeScreen(
+      {super.key, required this.isDarkMode, required this.onThemeToggle});
 
   @override
   Widget build(BuildContext context) {

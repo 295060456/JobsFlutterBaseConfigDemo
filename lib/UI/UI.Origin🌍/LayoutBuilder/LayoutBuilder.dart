@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+
 // 根据父小部件的大小动态构建布局：
 // LayoutBuilder 被用作 Container 的子小部件。
 // LayoutBuilder 的 builder 方法提供一个 BuildContext 和 BoxConstraints 对象。
@@ -7,60 +9,42 @@ import 'package:flutter/material.dart';
 // 如果 maxWidth 小于或等于 200，显示红色背景的 Container，并显示文本 "Small Container"。
 // 外层 Container 设置了宽度和高度为 300，用于测试目的。
 // 通过这种方式，您可以根据父小部件的大小动态地构建不同的布局。
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: LayoutBuilderDemo(),
-    );
-  }
-}
+void main() => runApp(const JobsComponentRunner(LayoutBuilderDemo(),
+    title: 'LayoutBuilder Demo'));
 
 class LayoutBuilderDemo extends StatelessWidget {
   const LayoutBuilderDemo({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('LayoutBuilder Demo'),
-      ),
-      body: Center(
-        child: Container(
-          width: 300,
-          height: 300,
-          color: Colors.grey[300],
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              if (constraints.maxWidth > 200) {
-                return Container(
-                  color: Colors.green,
-                  child: const Center(
-                    child: Text(
-                      'Large Container',
-                      style: TextStyle(color: Colors.white),
-                    ),
+    return Center(
+      child: Container(
+        width: 300,
+        height: 300,
+        color: Colors.grey[300],
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth > 200) {
+              return Container(
+                color: Colors.green,
+                child: const Center(
+                  child: Text(
+                    'Large Container',
+                    style: TextStyle(color: Colors.white),
                   ),
-                );
-              } else {
-                return Container(
-                  color: Colors.red,
-                  child: const Center(
-                    child: Text(
-                      'Small Container',
-                      style: TextStyle(color: Colors.white),
-                    ),
+                ),
+              );
+            } else {
+              return Container(
+                color: Colors.red,
+                child: const Center(
+                  child: Text(
+                    'Small Container',
+                    style: TextStyle(color: Colors.white),
                   ),
-                );
-              }
-            },
-          ),
+                ),
+              );
+            }
+          },
         ),
       ),
     );

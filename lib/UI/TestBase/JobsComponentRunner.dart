@@ -16,9 +16,25 @@ class JobsComponentRunner extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)
+            .copyWith(secondary: Colors.orange),
         textTheme: GoogleFonts.latoTextTheme(
           // 使用 Lato 字体
           Theme.of(context).textTheme,
+        ),
+        // textTheme:const TextTheme(
+        //   bodyLarge: TextStyle(color: Colors.black87, fontSize: 18),
+        //   bodyMedium: TextStyle(color: Colors.black54, fontSize: 16),
+        //   headlineLarge: TextStyle(color: Colors.blue, fontSize: 24, fontWeight: FontWeight.bold),
+        // ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue, // 这里使用 backgroundColor
+          ),
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.blue,
+          titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
         ),
       ),
       home: Scaffold(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
 // 1、画一个圆形按钮，初始位置在右下角（具体位置也可以手动设置）
 // 2、可以拖动，但有两种模式，可以在代码里面通过bool值进行改变
@@ -7,25 +8,11 @@ import 'package:flutter/material.dart';
 // 3、点击这个按钮会360度的旋转，再次点击会暂停旋转，再次点击会接着旋转
 // 4、长按这个按钮，会出现一个菜单，类似于UITableView，这个菜单会显示在这个页面更加宽阔的区域
 // 5、按钮上面有图，图就是一个环形的箭头，以表明显示旋转的方向
-void main() => runApp(const MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Draggable Button Example')),
-        body: const DraggableButton(),
-      ),
-    );
-  }
-}
+void main() => runApp(const JobsComponentRunner(DraggableButton(),
+    title: 'Draggable Button Example'));
 
 class DraggableButton extends StatefulWidget {
   const DraggableButton({super.key});
-
   @override
   _DraggableButtonState createState() => _DraggableButtonState();
 }

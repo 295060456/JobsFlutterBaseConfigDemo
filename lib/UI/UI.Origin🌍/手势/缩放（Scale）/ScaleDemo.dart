@@ -1,35 +1,27 @@
 import 'package:flutter/material.dart';
+import '../../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
-void main() {
-  runApp(const ScaleDemo());
-}
+void main() =>
+    runApp(const JobsComponentRunner(ScaleDemo(), title: 'Scale Gesture Demo'));
 
 class ScaleDemo extends StatelessWidget {
   const ScaleDemo({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Scale Gesture Demo')),
-        body: const Center(
-          child: ScaleWidget(),
-        ),
-      ),
+    return const Center(
+      child: ScaleWidget(),
     );
   }
 }
 
 class ScaleWidget extends StatefulWidget {
   const ScaleWidget({super.key});
-
   @override
   _ScaleWidgetState createState() => _ScaleWidgetState();
 }
 
 class _ScaleWidgetState extends State<ScaleWidget> {
   double _scale = 1.0;
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -51,7 +43,8 @@ class _ScaleWidgetState extends State<ScaleWidget> {
           color: Colors.red,
           width: 100,
           height: 100,
-          child: const Center(child: Text('Scale Me', style: TextStyle(color: Colors.white))),
+          child: const Center(
+              child: Text('Scale Me', style: TextStyle(color: Colors.white))),
         ),
       ),
     );

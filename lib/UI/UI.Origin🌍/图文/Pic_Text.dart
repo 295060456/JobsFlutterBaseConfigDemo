@@ -1,20 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
 /// 图片没有加载出来，有点问题
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: HomeScreen(),
-    );
-  }
-}
+void main() => runApp(const JobsComponentRunner(HomeScreen(), title: 'XXX'));
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

@@ -1,23 +1,9 @@
 import 'package:flutter/material.dart';
+import '../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 // 监听键盘实时的高度变化
-void main() {
-  runApp(const KeyboardHeightDemo());
-}
 
-class KeyboardHeightDemo extends StatelessWidget {
-  const KeyboardHeightDemo({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Keyboard Height Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const KeyboardHeightScreen(),
-    );
-  }
-}
+void main() => runApp(const JobsComponentRunner(KeyboardHeightScreen(),
+    title: 'Keyboard Height Demo'));
 
 class KeyboardHeightScreen extends StatefulWidget {
   const KeyboardHeightScreen({super.key});
@@ -28,24 +14,26 @@ class KeyboardHeightScreen extends StatefulWidget {
 
 class _KeyboardHeightScreenState extends State<KeyboardHeightScreen> {
   double _keyboardHeight = 0.0;
-
   @override
   void initState() {
     super.initState();
     // 监听键盘弹出事件
-    WidgetsBinding.instance.addObserver(_keyboardVisibilityObserver as WidgetsBindingObserver);
+    WidgetsBinding.instance
+        .addObserver(_keyboardVisibilityObserver as WidgetsBindingObserver);
   }
 
   @override
   void dispose() {
     // 移除监听
-    WidgetsBinding.instance.removeObserver(_keyboardVisibilityObserver as WidgetsBindingObserver);
+    WidgetsBinding.instance
+        .removeObserver(_keyboardVisibilityObserver as WidgetsBindingObserver);
     super.dispose();
   }
 
   void _keyboardVisibilityObserver() {
     final bool isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
-    final double keyboardHeight = isKeyboardVisible ? MediaQuery.of(context).viewInsets.bottom : 0.0;
+    final double keyboardHeight =
+        isKeyboardVisible ? MediaQuery.of(context).viewInsets.bottom : 0.0;
     setState(() {
       _keyboardHeight = keyboardHeight;
     });
