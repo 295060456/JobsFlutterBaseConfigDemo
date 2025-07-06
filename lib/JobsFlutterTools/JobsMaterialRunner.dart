@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart' show GoogleFonts;
 // import 'package:jobs_flutter_base_config/TestBase/JobsMaterialRunner.dart';// 公共测试器路径
 // void main() => runApp(const JobsMaterialRunner(CustomOverlayDemo(),title:'XXX'));
 
-/// 通用组件测试器，自动生成可运行页面
+/// 通用组件测试器(Android 风格)，自动生成可运行页面
 /// 通用组件测试器：支持 child 和 builder 两种形式
 class JobsMaterialRunner extends StatelessWidget {
   final Widget Function(BuildContext context)? builder;
@@ -22,6 +22,7 @@ class JobsMaterialRunner extends StatelessWidget {
       : this._internal(child: child, title: title, key: key);
 
   /// 支持 builder 模式（需要 context）
+  /// factory 构造函数可以不直接创建新对象，而是返回一个已有的对象、子类对象，或进行条件逻辑判断后返回不同对象。
   factory JobsMaterialRunner.builder({
     required Widget Function(BuildContext context) builder,
     String? title,
@@ -33,6 +34,7 @@ class JobsMaterialRunner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    /// Android
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
