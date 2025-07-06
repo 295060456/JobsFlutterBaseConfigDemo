@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
 // 此案例演示了利用carousel_slider实现轮播图效果。
 // 图片资源位于项目跟目录下的：

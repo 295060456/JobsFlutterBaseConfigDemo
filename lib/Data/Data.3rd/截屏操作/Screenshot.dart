@@ -1,37 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:screenshot/screenshot.dart';
+import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+
 // dependencies:
 //   flutter:
 //     sdk: flutter
 //   screenshot: # 截屏操作
-
 // 要在Flutter中监控截屏操作，确实需要在原生代码中进行一些改动
-void main() => runApp(const MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: ScreenshotDemo(),
-    );
-  }
-}
+void main() =>
+    runApp(const JobsComponentRunner(ScreenshotDemo(), title: 'XXX'));
 
 class ScreenshotDemo extends StatefulWidget {
   const ScreenshotDemo({super.key});
-
   @override
   _ScreenshotDemoState createState() => _ScreenshotDemoState();
 }
 
 class _ScreenshotDemoState extends State<ScreenshotDemo> {
   ScreenshotController screenshotController = ScreenshotController();
-  /// 通过 EventChannel 监听截屏事件，并在截屏时显示提示
-  static const EventChannel _screenshotChannel = EventChannel('screenshot_channel');
 
+  /// 通过 EventChannel 监听截屏事件，并在截屏时显示提示
+  static const EventChannel _screenshotChannel =
+      EventChannel('screenshot_channel');
   @override
   void initState() {
     super.initState();
@@ -190,7 +181,6 @@ class _ScreenshotDemoState extends State<ScreenshotDemo> {
 // }
 
 // @end
-
 
 // 在Android中，通过监听 MediaStore 内容变化来检测新截图文件。
 // 🌹Android.java🌹

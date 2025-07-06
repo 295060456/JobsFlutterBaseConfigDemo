@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'A_Widget.dart';
-import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
 void main() =>
     runApp(const JobsComponentRunner(MyApp(), title: 'Flutter Demo'));

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
 // Flexible 示例: 使用 Flexible 来让 Text 小部件在 Row 中自动换行。
 void main() =>

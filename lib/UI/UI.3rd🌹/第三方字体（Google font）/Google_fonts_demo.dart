@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
 void main() =>
     runApp(const JobsComponentRunner(MyHomePage(), title: 'Google Fonts Demo'));

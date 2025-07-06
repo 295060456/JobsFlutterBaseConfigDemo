@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_compress/video_compress.dart';
-import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
 void main() => runApp(
     const JobsComponentRunner(VideoPlayerScreen(), title: 'Video Player Demo'));

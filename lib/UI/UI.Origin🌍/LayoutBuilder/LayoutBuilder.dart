@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
 // 根据父小部件的大小动态构建布局：
 // LayoutBuilder 被用作 Container 的子小部件。

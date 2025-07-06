@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:flutter/services.dart' show ByteData, rootBundle;
 import 'package:path_provider/path_provider.dart';
-import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
 // VideoPlayerController_file_demo.dart
 // 视频资源位于项目跟目录下的：

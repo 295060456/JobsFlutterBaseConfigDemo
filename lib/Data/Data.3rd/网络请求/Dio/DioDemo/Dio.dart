@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+
 // dependencies:
 //   flutter:
 //     sdk: flutter
-//   dio: 
+//   dio:
 void main() {
   runApp(const MyApp());
 }
@@ -60,7 +62,8 @@ class HttpMethodsDemo extends StatelessWidget {
 
   void _getRequest() async {
     try {
-      final response = await _dio.get('https://jsonplaceholder.typicode.com/posts/1');
+      final response =
+          await _dio.get('https://jsonplaceholder.typicode.com/posts/1');
       debugPrint('GET Response: ${response.data}');
     } catch (e) {
       debugPrint('GET Error: $e');
@@ -69,12 +72,9 @@ class HttpMethodsDemo extends StatelessWidget {
 
   void _postRequest() async {
     try {
-      final response = await _dio.post('https://jsonplaceholder.typicode.com/posts',
-        data: {
-          'title': 'foo',
-         'body': 'bar', 
-         'userId': 1
-         },
+      final response = await _dio.post(
+        'https://jsonplaceholder.typicode.com/posts',
+        data: {'title': 'foo', 'body': 'bar', 'userId': 1},
       );
       debugPrint('POST Response: ${response.data}');
     } catch (e) {
@@ -84,7 +84,8 @@ class HttpMethodsDemo extends StatelessWidget {
 
   void _putRequest() async {
     try {
-      final response = await _dio.put('https://jsonplaceholder.typicode.com/posts/1',
+      final response = await _dio.put(
+        'https://jsonplaceholder.typicode.com/posts/1',
         data: {'id': 1, 'title': 'foo', 'body': 'bar', 'userId': 1},
       );
       debugPrint('PUT Response: ${response.data}');
@@ -95,7 +96,8 @@ class HttpMethodsDemo extends StatelessWidget {
 
   void _deleteRequest() async {
     try {
-      final response = await _dio.delete('https://jsonplaceholder.typicode.com/posts/1');
+      final response =
+          await _dio.delete('https://jsonplaceholder.typicode.com/posts/1');
       debugPrint('DELETE Response: ${response.data}');
     } catch (e) {
       debugPrint('DELETE Error: $e');
@@ -104,7 +106,8 @@ class HttpMethodsDemo extends StatelessWidget {
 
   void _patchRequest() async {
     try {
-      final response = await _dio.patch('https://jsonplaceholder.typicode.com/posts/1',
+      final response = await _dio.patch(
+        'https://jsonplaceholder.typicode.com/posts/1',
         data: {'title': 'foo patched'},
       );
       debugPrint('PATCH Response: ${response.data}');

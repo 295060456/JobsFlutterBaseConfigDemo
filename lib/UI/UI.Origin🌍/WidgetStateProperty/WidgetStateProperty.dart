@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
 // WidgetStateProperty 是一个用于根据 widget 的不同状态返回相应值的接口。
 // 在 Flutter 中，它可以用于处理 widget 的各种交互状态，如 hover、focus、pressed 等。

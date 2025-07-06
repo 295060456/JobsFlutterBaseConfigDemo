@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
 // ShapeDecoration 允许你使用特定的形状和渐变来装饰容器
 void main() =>

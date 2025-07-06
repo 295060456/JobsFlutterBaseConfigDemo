@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 // image_picker 插件只能分别调用拍照或录像功能，但不能直接调用系统相机应用的完整界面
 import 'package:image_picker/image_picker.dart';
-import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 // 仅调取相机进行拍照和回调显示
 // 真机运行如果出现空白页面的解决方案：
 // 方案1、在工程根目录下执行 flutter run --release 或者

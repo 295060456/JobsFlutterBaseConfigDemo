@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
 // GridView使用演示
 // 真机运行如果出现空白页面的解决方案：

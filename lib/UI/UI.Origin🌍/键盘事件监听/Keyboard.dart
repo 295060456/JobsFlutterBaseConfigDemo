@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
 /// 利用WidgetsBindingObserver监听键盘事件
 void main() => runApp(const JobsComponentRunner(KeyboardDemo(), title: 'XXX'));

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import '../../../UI/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
 void main() =>
     runApp(const JobsComponentRunner(StorageDemo(), title: '本地数据存取'));
 
 class StorageDemo extends StatefulWidget {
   const StorageDemo({super.key});
-
   @override
   _StorageDemoState createState() => _StorageDemoState();
 }
@@ -30,7 +29,6 @@ class _StorageDemoState extends State<StorageDemo> {
 
   Future<void> _loadStoredData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
     String? userInfoString = prefs.getString('userInfo');
     if (userInfoString != null) {
       Map<String, dynamic> userInfoMap = jsonDecode(userInfoString);

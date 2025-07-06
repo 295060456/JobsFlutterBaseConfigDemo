@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
 // dependencies:
 //   flutter:
@@ -8,23 +9,8 @@ import 'package:sqflite/sqflite.dart';
 //   sqflite:
 //   path:
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('SQLite Demo')),
-        body: const SqliteDemo(),
-      ),
-    );
-  }
-}
+void main() =>
+    runApp(const JobsComponentRunner(SqliteDemo(), title: 'SQLite Demo'));
 
 class SqliteDemo extends StatefulWidget {
   const SqliteDemo({super.key});
@@ -49,7 +35,6 @@ class _SqliteDemoState extends State<SqliteDemo> {
 
     /// 获取数据库存储路径
     final path = join(databasePath, 'demo.db');
-
     _database = await openDatabase(
       /// 打开数据库并创建 items 表
       path,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import '../../TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
 
 // VideoPlayerController.contentUri 目前只支持Android平台。
 // 也就意味着，在iOS平台上，使用VideoPlayerController.contentUri会崩溃

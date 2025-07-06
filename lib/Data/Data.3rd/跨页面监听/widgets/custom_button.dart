@@ -5,7 +5,8 @@ class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
   final RxBool isButtonEnabled;
 
-  const CustomButton({super.key, 
+  const CustomButton({
+    super.key,
     required this.onPressed,
     required this.isButtonEnabled,
   });
