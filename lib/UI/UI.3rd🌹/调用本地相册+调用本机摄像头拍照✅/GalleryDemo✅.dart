@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart'; // 公共测试器路径
 // 仅调取相册进行照片选取显示
 // 真机运行如果出现空白页面的解决方案：
 // 方案1、在工程根目录下执行 flutter run --release 或者

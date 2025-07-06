@@ -1,24 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart'; // 公共测试器路径
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: MyHomePage(),
-    );
-  }
-}
+void main() =>
+    runApp(const JobsMaterialRunner(MyHomePage(), title: 'Intl Demo'));
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
-
   @override
   Widget build(BuildContext context) {
     // 当前日期时间
@@ -27,8 +15,8 @@ class MyHomePage extends StatelessWidget {
     String formattedDate = DateFormat.yMMMMd().format(now);
     // 格式化货币
     double price = 1234.56;
-    String formattedPrice = NumberFormat.currency(locale: 'en_US', symbol: '\$').format(price);
-
+    String formattedPrice =
+        NumberFormat.currency(locale: 'en_US', symbol: '\$').format(price);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Intl Demo'),

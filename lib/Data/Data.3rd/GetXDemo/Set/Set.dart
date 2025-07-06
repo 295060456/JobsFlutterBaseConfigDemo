@@ -1,29 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart'; // 公共测试器路径
 
 void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
   final controller = Get.put(RotaryController()); // 注册控制器
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('CustomRxString Demo')),
-        body: Center(
-          child: Obx(() => Text('Currency ID: ${controller.currencyId.value}')),
-        ),
-      ),
-    );
-  }
+  runApp(JobsMaterialRunner.builder(
+    title: 'CustomRxString Demo',
+    builder: (ctx) {
+      return Center(
+        child: Obx(() => Text('Currency ID: ${controller.currencyId.value}')),
+      );
+    },
+  ));
 }
 
 class RotaryController extends GetxController {
   final currencyId = CustomRxString('701'); // 自定义的 RxString
-
   void someMethod() {
     currencyId.value = '702'; // 触发 setter 打印堆栈
   }
@@ -37,7 +29,6 @@ class RotaryController extends GetxController {
 
 class CustomRxString extends RxString {
   CustomRxString(super.initial);
-
   @override
   set value(dynamic val) {
     super.value = val;

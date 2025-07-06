@@ -4,22 +4,14 @@ import 'package:get/get.dart';
 // 定义了如何注入HomeController
 // 利用GetX做路由管理
 void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: 'Navigation Demo',
-      initialRoute: '/',
-      getPages: [
-        GetPage(name: '/', page: () => const HomeScreen()),
-        GetPage(name: '/details', page: () => const DetailsScreen()),
-      ],
-    );
-  }
+  runApp(GetMaterialApp(
+    title: 'Navigation Demo',
+    initialRoute: '/',
+    getPages: [
+      GetPage(name: '/', page: () => const HomeScreen()),
+      GetPage(name: '/details', page: () => const DetailsScreen()),
+    ],
+  ));
 }
 
 class HomeScreen extends StatelessWidget {

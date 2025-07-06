@@ -1,6 +1,17 @@
 import 'package:flutter/cupertino.dart';
-// import 'package:jobs_flutter_base_config/TestBase/JobsMaterialRunner.dart';// 公共测试器路径
-// void main() => runApp(const JobsMaterialRunner(CustomOverlayDemo(),title:'XXX'));
+// import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsRunners/JobsCupertinoRunner.dart'; // 公共测试器路径
+// void main() => runApp(const JobsCupertinoRunner(CustomOverlayDemo(),title:'XXX'));
+// void main() {
+//   runApp(JobsCupertinoRunner.builder(
+//     title: 'Flutter Bloc Demo',
+//     builder: (ctx) {
+//       return BlocProvider(
+//         create: (_) => CounterBloc(),
+//         child: const CounterPage(),
+//       );
+//     },
+//   ));
+// }
 
 /// 通用组件测试器(iOS 风格)，自动生成可运行页面
 /// 通用组件测试器：支持 child 和 builder 两种形式
@@ -17,6 +28,7 @@ class JobsCupertinoRunner extends StatelessWidget {
   });
 
   /// 原始构造函数：兼容 const + 旧用法
+  /// :（冒号）	表示进入初始化列表，或者重定向构造函数
   const JobsCupertinoRunner(Widget child, {String? title, Key? key})
       : this._internal(child: child, title: title, key: key);
 
@@ -40,6 +52,11 @@ class JobsCupertinoRunner extends StatelessWidget {
         textTheme: CupertinoTextThemeData(
           navTitleTextStyle: TextStyle(fontSize: 20),
         ),
+        // textTheme:const TextTheme(
+        //   bodyLarge: TextStyle(color: Colors.black87, fontSize: 18),
+        //   bodyMedium: TextStyle(color: Colors.black54, fontSize: 16),
+        //   headlineLarge: TextStyle(color: Colors.blue, fontSize: 24, fontWeight: FontWeight.bold),
+        // ),
       ),
       home: Builder(
         builder: (ctx) => CupertinoPageScaffold(

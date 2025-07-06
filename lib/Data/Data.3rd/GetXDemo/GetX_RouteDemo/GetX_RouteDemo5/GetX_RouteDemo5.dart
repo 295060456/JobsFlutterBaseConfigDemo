@@ -101,7 +101,6 @@ class HomePage extends StatelessWidget {
 // 普通页面
 class DetailPage extends StatelessWidget {
   const DetailPage({super.key});
-
   @override
   Widget build(BuildContext context) {
     final msg = Get.arguments?['msg'] ?? '无参数';
@@ -127,7 +126,6 @@ class DetailPage extends StatelessWidget {
 // 动态路由页面 /profile/:userId
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
-
   @override
   Widget build(BuildContext context) {
     final userId = Get.parameters['userId'] ?? '未知';
@@ -144,7 +142,6 @@ class ProfilePage extends StatelessWidget {
 // 替换页面
 class ReplacePage extends StatelessWidget {
   const ReplacePage({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -162,7 +159,6 @@ class ReplacePage extends StatelessWidget {
 // 最终页面(自定义返回键文字+图标，防止黑屏)
 class FinalPage extends StatelessWidget {
   const FinalPage({super.key});
-
   void _safeBack(BuildContext context) {
     if (Navigator.canPop(context)) {
       Navigator.pop(context);

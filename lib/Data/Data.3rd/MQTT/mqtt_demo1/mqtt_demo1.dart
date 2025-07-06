@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'mqtt_manager.dart';
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart'; // 公共测试器路径
 // MQTT (Message Queuing Telemetry Transport) 是一种轻量级的、基于发布/订阅模式的消息协议，专为低带宽和高延迟的网络环境设计
 // 广泛应用于物联网 (IoT) 设备之间的通信，如智能家居、智能车载系统、智能手机、智能穿戴设备等。
 
@@ -40,7 +41,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -58,13 +58,10 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatelessWidget {
   final TextEditingController _controller = TextEditingController();
-
   MyHomePage({super.key});
-
   @override
   Widget build(BuildContext context) {
     final mqttManager = Provider.of<MqttManager>(context);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('MQTT Client Demo'),

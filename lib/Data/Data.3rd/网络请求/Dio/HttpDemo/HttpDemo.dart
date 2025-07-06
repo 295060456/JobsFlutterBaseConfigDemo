@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'api_service.dart';
-import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
+import '../HttpDemo/api_service.dart';
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart'; // 公共测试器路径
 
 void main() =>
     runApp(const JobsMaterialRunner(HttpDemoPage(), title: 'HttpDemo'));

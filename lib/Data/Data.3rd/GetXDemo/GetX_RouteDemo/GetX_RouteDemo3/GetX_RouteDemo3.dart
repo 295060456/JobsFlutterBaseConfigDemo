@@ -7,29 +7,20 @@ import 'package:get/get.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // GetMaterialApp 本质上是 MaterialApp 的增强版，它依然使用的是 Flutter 官方的导航系统（Navigator）
-    return GetMaterialApp(
-      title: 'Navigation Demo',
-      theme: ThemeData(
-        // AppBar 的背景色	✅ 会自动变蓝色
-        // FloatingActionButton 默认背景色	✅ 会变成主颜色
-        // Switch / Checkbox 激活状态颜色	✅ 会变成主颜色
-        // TextField 获得焦点时下划线颜色	✅ 会变成主颜色
-        // ProgressIndicator	✅ 默认用主颜色
-        primarySwatch: Colors.blue,
-      ),
-      navigatorKey: navigatorKey, // 使用全局的navigatorKey
-      home: const HomePage(),
-    );
-  }
+  // GetMaterialApp 本质上是 MaterialApp 的增强版，它依然使用的是 Flutter 官方的导航系统（Navigator）
+  runApp(GetMaterialApp(
+    title: 'Navigation Demo',
+    theme: ThemeData(
+      // AppBar 的背景色	✅ 会自动变蓝色
+      // FloatingActionButton 默认背景色	✅ 会变成主颜色
+      // Switch / Checkbox 激活状态颜色	✅ 会变成主颜色
+      // TextField 获得焦点时下划线颜色	✅ 会变成主颜色
+      // ProgressIndicator	✅ 默认用主颜色
+      primarySwatch: Colors.blue,
+    ),
+    navigatorKey: navigatorKey, // 使用全局的navigatorKey
+    home: const HomePage(),
+  ));
 }
 
 class HomePage extends StatelessWidget {

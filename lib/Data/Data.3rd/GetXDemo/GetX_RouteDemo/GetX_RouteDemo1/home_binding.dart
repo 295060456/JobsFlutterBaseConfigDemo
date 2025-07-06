@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-
 import 'home_controller.dart';
 
 // 定义了如何注入HomeController

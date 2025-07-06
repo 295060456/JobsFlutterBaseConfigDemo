@@ -20,7 +20,6 @@ void main() {
 
 class RotaryController extends GetxController with WidgetsBindingObserver {
   var isLoading = false.obs;
-
   @override
   void onInit() {
     super.onInit();
@@ -45,7 +44,6 @@ class RotaryController extends GetxController with WidgetsBindingObserver {
 
 class RotaryView extends GetView<RotaryController> {
   const RotaryView({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,5 +58,3 @@ class RotaryView extends GetView<RotaryController> {
     );
   }
 }
-
-

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../安全加载图片/JobsSafeImage.dart';
-import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart'; // 公共测试器路径
 
 void main() => runApp(const JobsMaterialRunner(MyButton(), title: 'XXX'));
 

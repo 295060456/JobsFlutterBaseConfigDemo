@@ -1,30 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart'; // 公共测试器路径
+
 /// 页面IU和页面数据是一一对应的，一般情况下是不推荐页面没有进去，而页面对应的数据（Controller）先进栈。
 /// 如果在某些情况下，页面对应的数据（Controller）先进栈，那么需要在适当的时候进行移除，也就是涉及到Get.delete
 /// 否则当页面需要正常进入的时候，页面对应的数据（Controller）是不会正常走oninit()和onready()方法的
 void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const GetMaterialApp(
-      home: HomePage(),
-    );
-  }
+  runApp(JobsMaterialRunner.builder(
+    title: 'Flutter Bloc Demo',
+    builder: (ctx) {
+      return HomePage();
+    },
+  ));
 }
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
-
   @override
   Widget build(BuildContext context) {
     final CounterController counterController = Get.put(CounterController());
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Get.delete Demo'),
@@ -64,7 +58,6 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-
 
 class CounterController extends GetxController {
   var count = 0.obs;

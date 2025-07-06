@@ -5,7 +5,6 @@ import 'CounterController.dart';
 /// 页面
 class CounterPage extends GetView<CounterController> {
   const CounterPage({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
