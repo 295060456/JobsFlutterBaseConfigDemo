@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 // 在 Flutter 中，Text 控件可以通过 softWrap 和 overflow 属性来控制文字超出边界时的行为。
 // 如果你想要文字超出边界时换行显示，可以设置 softWrap 为 true。
@@ -8,7 +8,7 @@ import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 
 // softWrap: true 确保文本在边界处自动换行。
 // maxLines: 3 限制文本显示的最大行数，如果文本超出了这个行数，则会被截断。
 // overflow: TextOverflow.ellipsis 确保当文本被截断时，显示省略号。
-void main() => runApp(const JobsComponentRunner(MyApp(), title: 'Text 控件换行示例'));
+void main() => runApp(const JobsMaterialRunner(MyApp(), title: 'Text 控件换行示例'));
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

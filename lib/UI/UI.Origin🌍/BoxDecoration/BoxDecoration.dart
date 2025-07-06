@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 // 展示了如何为 Container 小部件添加背景颜色、边框、阴影和圆角等效果：
 // Container 使用了 BoxDecoration 来设置其外观。
@@ -9,8 +9,8 @@ import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 
 // boxShadow 属性添加了一个阴影效果。
 // gradient 属性设置了从蓝色到紫色的线性渐变背景。
 
-void main() => runApp(const JobsComponentRunner(BoxDecorationDemo(),
-    title: 'BoxDecoration Demo'));
+void main() => runApp(
+    const JobsMaterialRunner(BoxDecorationDemo(), title: 'BoxDecoration Demo'));
 
 class BoxDecorationDemo extends StatelessWidget {
   const BoxDecorationDemo({super.key});

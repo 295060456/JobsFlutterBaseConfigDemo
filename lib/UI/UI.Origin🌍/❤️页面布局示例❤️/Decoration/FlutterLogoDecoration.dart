@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 // FlutterLogoDecoration 是一个特殊的装饰类，用于显示 Flutter 的 logo
 void main() => runApp(
-    const JobsComponentRunner(MyApp(), title: 'FlutterLogoDecoration Demo'));
+    const JobsMaterialRunner(MyApp(), title: 'FlutterLogoDecoration Demo'));
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

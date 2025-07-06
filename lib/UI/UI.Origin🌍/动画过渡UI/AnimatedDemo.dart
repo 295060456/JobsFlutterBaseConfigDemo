@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 /// 创建一个点击后会“动画改变大小和位置”的按钮 Demo 页面
 /// 方便测试或展示 Flutter 中 AnimatedPositioned 和 AnimatedContainer 的组合使用效果。
-void main() => runApp(const JobsComponentRunner(HomePage(), title: 'XXX'));
+void main() => runApp(const JobsMaterialRunner(HomePage(), title: 'XXX'));
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

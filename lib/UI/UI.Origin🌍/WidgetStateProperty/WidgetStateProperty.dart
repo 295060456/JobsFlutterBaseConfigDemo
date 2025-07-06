@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 // WidgetStateProperty 是一个用于根据 widget 的不同状态返回相应值的接口。
 // 在 Flutter 中，它可以用于处理 widget 的各种交互状态，如 hover、focus、pressed 等。
@@ -28,7 +28,7 @@ import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 
 // disabled：当 widget 被禁用时的状态。
 // error：当 widget 进入某种错误状态时的状态。
 void main() => runApp(
-    const JobsComponentRunner(MyApp(), title: 'WidgetStateProperty Demo'));
+    const JobsMaterialRunner(MyApp(), title: 'WidgetStateProperty Demo'));
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

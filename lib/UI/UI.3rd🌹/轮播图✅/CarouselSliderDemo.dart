@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 // 此案例演示了利用carousel_slider实现轮播图效果。
 // 图片资源位于项目跟目录下的：
 // 'assets/Images/CarouselAssets/slide1.png',
 // 'assets/Images/CarouselAssets/slide2.png',
 void main() =>
-    runApp(const JobsComponentRunner(CarouselDemo(), title: 'Carousel Demo'));
+    runApp(const JobsMaterialRunner(CarouselDemo(), title: 'Carousel Demo'));
 
 // 展示轮播图的页面
 class CarouselDemo extends StatelessWidget {

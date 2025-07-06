@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 // 根据父小部件的大小动态构建布局：
 // LayoutBuilder 被用作 Container 的子小部件。
@@ -9,8 +9,8 @@ import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 
 // 如果 maxWidth 小于或等于 200，显示红色背景的 Container，并显示文本 "Small Container"。
 // 外层 Container 设置了宽度和高度为 300，用于测试目的。
 // 通过这种方式，您可以根据父小部件的大小动态地构建不同的布局。
-void main() => runApp(const JobsComponentRunner(LayoutBuilderDemo(),
-    title: 'LayoutBuilder Demo'));
+void main() => runApp(
+    const JobsMaterialRunner(LayoutBuilderDemo(), title: 'LayoutBuilder Demo'));
 
 class LayoutBuilderDemo extends StatelessWidget {
   const LayoutBuilderDemo({super.key});

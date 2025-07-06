@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:screenshot/screenshot.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 // dependencies:
 //   flutter:
 //     sdk: flutter
 //   screenshot: # 截屏操作
 // 要在Flutter中监控截屏操作，确实需要在原生代码中进行一些改动
-void main() =>
-    runApp(const JobsComponentRunner(ScreenshotDemo(), title: 'XXX'));
+void main() => runApp(const JobsMaterialRunner(ScreenshotDemo(), title: 'XXX'));
 
 class ScreenshotDemo extends StatefulWidget {
   const ScreenshotDemo({super.key});

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:card_swiper/card_swiper.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 // 此案例演示了利用card_swiper做的轮播图效果，可以自定义样式，可以设置自动播放，可以设置指示器样式等。
 // 图片资源位于项目跟目录下的：
 // 'assets/Images/CarouselAssets/slide1.png',
 // 'assets/Images/CarouselAssets/slide2.png',
 void main() =>
-    runApp(const JobsComponentRunner(SwiperDemo(), title: 'Swiper Demo'));
+    runApp(const JobsMaterialRunner(SwiperDemo(), title: 'Swiper Demo'));
 
 class SwiperDemo extends StatelessWidget {
   static const List<String> imgList = [

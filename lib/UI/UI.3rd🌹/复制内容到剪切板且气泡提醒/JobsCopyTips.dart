@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 // 箭头不好看
 // dependencies:
@@ -13,7 +13,7 @@ import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 
 // 并且在点击复制按钮的任意方向（方向我可以自定义，默认上方），出现一个气泡，
 // 气泡内容为复制成功，2秒后气泡自动消失
 
-void main() => runApp(const JobsComponentRunner(CopyToClipboardWidget()));
+void main() => runApp(const JobsMaterialRunner(CopyToClipboardWidget()));
 
 class CopyToClipboardWidget extends StatefulWidget {
   const CopyToClipboardWidget({super.key});

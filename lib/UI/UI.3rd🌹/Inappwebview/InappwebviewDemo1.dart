@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 void main() =>
-    runApp(const JobsComponentRunner(HomePage(), title: 'InAppWebView Demo'));
+    runApp(const JobsMaterialRunner(HomePage(), title: 'InAppWebView Demo'));
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

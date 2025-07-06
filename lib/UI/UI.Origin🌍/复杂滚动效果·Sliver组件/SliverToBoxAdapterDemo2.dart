@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 // 自动滚动+丝滑滚动
-void main() => runApp(const JobsComponentRunner(SmoothAutoScrollDemo()));
+void main() => runApp(const JobsMaterialRunner(SmoothAutoScrollDemo()));
 
 class SmoothAutoScrollDemo extends StatefulWidget {
   const SmoothAutoScrollDemo({super.key});

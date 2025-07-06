@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:vibration/vibration.dart';
 import 'dart:math'; // 导入 dart:math 库
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
-void main() => runApp(JobsComponentRunner(
+void main() => runApp(JobsMaterialRunner(
     Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[

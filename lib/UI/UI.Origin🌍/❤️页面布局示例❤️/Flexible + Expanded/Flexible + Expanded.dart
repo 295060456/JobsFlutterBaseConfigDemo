@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 // Expanded 不能直接嵌套在 Flexible 中使用
 // Expanded 本身是一个 Flexible
 // 所以直接使用 Flexible 和 Expanded 的组合是多余的
 void main() =>
-    runApp(const JobsComponentRunner(FlexibleDemo(), title: 'Flexible Demo'));
+    runApp(const JobsMaterialRunner(FlexibleDemo(), title: 'Flexible Demo'));
 
 class FlexibleDemo extends StatelessWidget {
   const FlexibleDemo({super.key});

@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:flutter/services.dart' show ByteData, rootBundle;
 import 'package:path_provider/path_provider.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 // VideoPlayerController_file_demo.dart
 // 视频资源位于项目跟目录下的：
@@ -15,7 +15,7 @@ import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 
 //     sdk: flutter
 //   video_player:
 void main() => runApp(
-    const JobsComponentRunner(VideoPlayerScreen(), title: 'Video Player Demo'));
+    const JobsMaterialRunner(VideoPlayerScreen(), title: 'Video Player Demo'));
 
 class VideoPlayerScreen extends StatefulWidget {
   const VideoPlayerScreen({super.key});

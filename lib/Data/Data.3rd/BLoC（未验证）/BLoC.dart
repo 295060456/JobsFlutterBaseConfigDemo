@@ -1,13 +1,22 @@
 // main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 import 'CounterBloc.dart';
 import 'CounterEvent.dart';
 import 'CounterState.dart';
+
 // 演示了如何使用flutter_bloc库，实现一个计数器的功能。
 void main() {
-  runApp(const MyApp());
+  runApp(JobsMaterialRunner.builder(
+    title: 'Flutter Bloc Demo',
+    builder: (ctx) {
+      return BlocProvider(
+        create: (_) => CounterBloc(),
+        child: const CounterPage(),
+      );
+    },
+  ));
 }
 
 class MyApp extends StatelessWidget {

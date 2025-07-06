@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
-void main() => runApp(JobsComponentRunner(
+void main() => runApp(JobsMaterialRunner(
     Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

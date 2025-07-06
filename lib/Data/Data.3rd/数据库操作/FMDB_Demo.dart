@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 // dependencies:
 //   flutter:
@@ -10,7 +10,7 @@ import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 
 //   path:
 
 void main() =>
-    runApp(const JobsComponentRunner(SqliteDemo(), title: 'SQLite Demo'));
+    runApp(const JobsMaterialRunner(SqliteDemo(), title: 'SQLite Demo'));
 
 class SqliteDemo extends StatefulWidget {
   const SqliteDemo({super.key});

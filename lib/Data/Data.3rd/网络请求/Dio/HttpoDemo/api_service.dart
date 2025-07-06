@@ -6,7 +6,6 @@ import 'package:path_provider/path_provider.dart';
 
 class ApiService {
   static const String _defaultToken = 'Bearer sample_token_123';
-
   static Future<Map<String, dynamic>> request(
     String method,
     Uri uri, {

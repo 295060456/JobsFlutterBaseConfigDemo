@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 // VideoPlayerController.contentUri 目前只支持Android平台。
 // 也就意味着，在iOS平台上，使用VideoPlayerController.contentUri会崩溃
 // _AssertionError ('package:video_player/video_player.dart': Failed assertion: line 340 pos 16: 'defaultTargetPlatform == TargetPlatform.android': VideoPlayerController.contentUri is only supported on Android.)
 void main() => runApp(
-    const JobsComponentRunner(VideoPlayerScreen(), title: 'Video Player Demo'));
+    const JobsMaterialRunner(VideoPlayerScreen(), title: 'Video Player Demo'));
 
 class VideoPlayerScreen extends StatefulWidget {
   const VideoPlayerScreen({super.key});

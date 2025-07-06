@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 // 当前只读取本地资源作为App开屏页，后续可根据需求增加网络资源
 // 视频资源位于项目跟目录下的：
@@ -13,7 +13,7 @@ import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 
 // 视频资源Online地址：
 // https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4
 void main() =>
-    runApp(const JobsComponentRunner(LaunchScreen(), title: 'LaunchScreen'));
+    runApp(const JobsMaterialRunner(LaunchScreen(), title: 'LaunchScreen'));
 
 class LaunchScreen extends StatefulWidget {
   const LaunchScreen({super.key});

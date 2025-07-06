@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-import 'package:jobs_flutter_base_config/Others/Tools.dart';
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsCommonUtil.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;

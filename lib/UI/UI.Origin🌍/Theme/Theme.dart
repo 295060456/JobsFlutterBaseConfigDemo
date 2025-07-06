@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 // 在 Flutter 中，主题（Theme）是一个用于定义应用程序整体视觉外观和感觉的工具。
 // 通过主题，你可以定义应用程序的颜色、字体、图标样式等。
 // 使用主题可以使你的应用程序在不同页面和组件之间保持一致的视觉风格。
-void main() => runApp(const JobsComponentRunner(MyApp(), title: 'Home Screen'));
+void main() => runApp(const JobsMaterialRunner(MyApp(), title: 'Home Screen'));
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

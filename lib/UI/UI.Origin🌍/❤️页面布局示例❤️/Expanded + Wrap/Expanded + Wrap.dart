@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 // Row: 主容器，包含一个 Icon 和一个 Expanded 小部件。
 // Expanded: 允许子小部件（Wrap）在 Row 中扩展和收缩，从而实现文本换行。
 // Wrap: 确保文本在超过可用宽度时换行。
 // Text: 文本小部件，在必要时换行。
 // 这种设置确保了当文本超过屏幕宽度时，文本会自动换行，同时仍然是 Row 布局的一部分。
-void main() => runApp(const JobsComponentRunner(ExpandedWrapDemo(),
+void main() => runApp(const JobsMaterialRunner(ExpandedWrapDemo(),
     title: 'Expanded + Wrap Demo'));
 
 class ExpandedWrapDemo extends StatelessWidget {

@@ -1,31 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 // dependencies:
 //   flutter:
 //     sdk: flutter
 //   dio:
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: HttpMethodsDemo(),
-    );
-  }
-}
+void main() =>
+    runApp(JobsMaterialRunner(HttpMethodsDemo(), title: 'HTTP Methods Demo'));
 
 class HttpMethodsDemo extends StatelessWidget {
   final Dio _dio = Dio();
-
   HttpMethodsDemo({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

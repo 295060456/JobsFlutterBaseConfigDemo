@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 // GridView使用演示
 // 真机运行如果出现空白页面的解决方案：
 // 方案1、在工程根目录下执行 flutter run --release 或者
 // 方案2、通过 flutter devices 拿到设备id，然后 flutter run -d 设备ID
 void main() =>
-    runApp(const JobsComponentRunner(GridViewDemo(), title: 'GridView Demo'));
+    runApp(const JobsMaterialRunner(GridViewDemo(), title: 'GridView Demo'));
 
 class GridViewDemo extends StatelessWidget {
   const GridViewDemo({super.key});

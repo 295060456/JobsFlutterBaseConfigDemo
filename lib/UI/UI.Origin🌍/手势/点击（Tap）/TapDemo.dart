@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 void main() =>
-    runApp(const JobsComponentRunner(TapDemo(), title: 'Tap Gesture Demo'));
+    runApp(const JobsMaterialRunner(TapDemo(), title: 'Tap Gesture Demo'));
 
 class TapDemo extends StatelessWidget {
   const TapDemo({super.key});

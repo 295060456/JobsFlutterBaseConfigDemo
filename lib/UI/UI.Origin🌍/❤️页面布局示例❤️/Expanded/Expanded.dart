@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
 // 展示了如何在 Column 或 Row 中使用 Expanded 小部件来填充可用空间：
 // Column 包含三个 Container 小部件。
@@ -9,7 +9,7 @@ import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 
 // Expanded 小部件的作用是使其子小部件在主轴方向上填充所有可用的剩余空间。
 // 在这个例子中，绿色的 Container 将扩展以填充除红色和蓝色 Container 占用空间之外的所有剩余空间。\
 void main() =>
-    runApp(const JobsComponentRunner(ExpandedDemo(), title: 'Expanded Demo'));
+    runApp(const JobsMaterialRunner(ExpandedDemo(), title: 'Expanded Demo'));
 
 class ExpandedDemo extends StatelessWidget {
   const ExpandedDemo({super.key});

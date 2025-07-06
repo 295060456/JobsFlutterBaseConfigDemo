@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:developer' as developer;
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
-void main() => runApp(const JobsComponentRunner(
+void main() => runApp(const JobsMaterialRunner(
     JobsSafeImage(
       assetPath: 'assets/Images/flower.png',
       width: 32,

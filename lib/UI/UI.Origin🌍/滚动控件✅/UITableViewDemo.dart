@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 // 演示了类似于iOS.UITableView的效果： ListView + 自定义Cell + 点击Cell跳转到DetailPage
 
 // 真机运行如果出现空白页面的解决方案：
 // 方案1、在工程根目录下执行 flutter run --release 或者
 // 方案2、通过 flutter devices 拿到设备id，然后 flutter run -d 设备ID
 void main() =>
-    runApp(const JobsComponentRunner(MyListView(), title: 'Flutter TableView'));
+    runApp(const JobsMaterialRunner(MyListView(), title: 'Flutter TableView'));
 
 /// UITableView
 class MyListView extends StatelessWidget {

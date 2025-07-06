@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
-void main() => runApp(const JobsComponentRunner(A_Widget(),
+void main() => runApp(const JobsMaterialRunner(A_Widget(),
     title: 'Betting Casino My Bet List View'));
 
 // ignore: camel_case_types

@@ -5,9 +5,9 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_compress/video_compress.dart';
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
-void main() => runApp(const JobsComponentRunner(
+void main() => runApp(const JobsMaterialRunner(
     VideoPlayerScreen(imageSource: ImageSource.camera),
     title: '拍照.录像.存相册'));
 

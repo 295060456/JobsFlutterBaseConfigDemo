@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'JobsAlertDialog.dart'; // 引入自定义弹窗文件
-import 'package:jobs_flutter_base_config/TestBase/JobsComponentRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsMaterialRunner.dart'; // 公共测试器路径
 
-void main() => runApp(const JobsComponentRunner(HomeScreen(), title: 'XXX'));
+void main() => runApp(const JobsMaterialRunner(HomeScreen(), title: 'XXX'));
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
