@@ -1,44 +1,93 @@
-#! /bin/zsh
+#!/bin/zsh
 
-# 通用打印方法
+# ========= 通用输出 =========
 _JobsPrint() {
     local COLOR="$1"
-    local text="$2"
+    local TEXT="$2"
     local RESET="\033[0m"
-    echo "${COLOR}${text}${RESET}"
+    echo "${COLOR}${TEXT}${RESET}"
 }
-# 定义红色加粗输出方法
-_JobsPrint_Red() {
-    _JobsPrint "\033[1;31m" "$1"
-}
-# 定义绿色加粗输出方法
-_JobsPrint_Green() {
-    _JobsPrint "\033[1;32m" "$1"
-}
-# 打开系统配置文件
-open_files_if_enter() {
-    _JobsPrint_Green "按回车键打开所有配置文件，输入任意字符并回车跳过..."
-    read user_input
-    if [[ -z "$user_input" ]]; then
-        open "$HOME/.bash_profile"
-        open "$HOME/.bashrc"
-        open "$HOME/.zshrc"
-        open "$ZSH/oh-my-zsh.sh"
-    else
-        _JobsPrint_Red "跳过打开配置文件。"
+_JobsPrint_Red()    { _JobsPrint "\033[1;31m" "$1" }
+_JobsPrint_Green()  { _JobsPrint "\033[1;32m" "$1" }
+_JobsPrint_Yellow() { _JobsPrint "\033[1;33m" "$1" }
+
+# ========= 自述 =========
+show_intro() {
+    echo ""
+    _JobsPrint_Green "📜 脚本用途说明"
+    echo "--------------------------------------------"
+    echo "✅ 本脚本功能如下："
+    echo "1️⃣ 自动检测并安装 brew 与 fzf 工具（如未安装）"
+    echo "2️⃣ 通过 fzf 选择要打开的配置文件，支持多选"
+    echo "3️⃣ 默认回车代表“全部文件”，可按需选择"
+    echo "4️⃣ 自动打开文件，并自动执行 source 加载"
+    echo "--------------------------------------------"
+    echo ""
+    read "?👉 按回车开始，输入其他任意字符并回车退出： " go
+    if [[ -n "$go" ]]; then
+        _JobsPrint_Red "❌ 用户取消执行。已退出。"
+        exit 0
     fi
 }
-# 如果文件存在且非空，则执行source
-source_if_exists() {
-  local file="$1"
-  [[ -s "$file" ]] && source "$file"
+
+# ========= 工具检测 =========
+check_and_install_brew() {
+    if ! command -v brew >/dev/null 2>&1; then
+        _JobsPrint_Yellow "🔧 正在安装 Homebrew..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    else
+        _JobsPrint_Green "✅ Homebrew 已安装，正在升级..."
+        brew update && brew upgrade && brew cleanup
+    fi
 }
 
-open_files_if_enter
-source_if_exists "$HOME/.bash_profile"
-source_if_exists "$HOME/.bashrc"
-source_if_exists "$HOME/.zshrc"
-source_if_exists "$ZSH/oh-my-zsh.sh"
+check_and_install_fzf() {
+    if ! command -v fzf >/dev/null 2>&1; then
+        _JobsPrint_Yellow "🔧 正在通过 brew 安装 fzf..."
+        brew install fzf
+        /opt/homebrew/opt/fzf/install --all
+    else
+        _JobsPrint_Green "✅ fzf 已安装，正在升级..."
+        brew upgrade fzf && brew cleanup
+    fi
+}
+
+# ========= 自动 source =========
+source_if_exists() {
+    local file="$1"
+    [[ -s "$file" ]] && source "$file"
+}
+
+# ========= 主流程 =========
+main() {
+    show_intro
+    check_and_install_brew
+    check_and_install_fzf
+
+    local options=()
+    [[ -f "$HOME/.bash_profile" ]] && options+=("$HOME/.bash_profile")
+    [[ -f "$HOME/.bashrc" ]]       && options+=("$HOME/.bashrc")
+    [[ -f "$HOME/.zshrc" ]]        && options+=("$HOME/.zshrc")
+    [[ -f "$ZSH/oh-my-zsh.sh" ]]   && options+=("$ZSH/oh-my-zsh.sh")
+
+    if (( ${#options[@]} == 0 )); then
+        _JobsPrint_Red "❌ 没有找到任何配置文件。"
+        return
+    fi
+
+    _JobsPrint_Green "👇 请选择要打开的配置文件（支持多选，默认回车=全部）"
+
+    selected=("${(@f)$(printf '%s\n' "${options[@]}" | fzf --multi --prompt "配置文件> ")}")
+    [[ -z "$selected" ]] && selected=("${options[@]}")
+
+    for file in "${selected[@]}"; do
+        _JobsPrint_Yellow "🚀 正在打开：$file"
+        open "$file"
+        source_if_exists "$file"
+    done
+}
+
+main
 
 # ~/.bash_profile
 # ~/.bashrc
