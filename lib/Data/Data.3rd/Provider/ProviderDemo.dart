@@ -4,9 +4,7 @@ import 'package:provider/provider.dart';
 // 创建一个 CounterModel 类，表示计数器的状态
 class CounterModel extends ChangeNotifier {
   int _count = 0;
-
   int get count => _count;
-
   // 增加计数器的方法
   void increment() {
     _count++;
@@ -20,7 +18,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     // 使用 ChangeNotifierProvider 将 CounterModel 注入到整个应用程序中
@@ -36,7 +33,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,4 +58,3 @@ class MyHomePage extends StatelessWidget {
     );
   }
 }
-

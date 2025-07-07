@@ -7192,6 +7192,48 @@ class _LoginPageState extends State<LoginPage> {
 
 * 热更新插件：[**flutter_updater**](https://pub.dev/packages?q=flutter_updater)、[**flutter_hot_update**](https://pub.dev/packages?q=flutter_hot_update)
 
+## FAQ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+* 为什么承接Flutter网络数据解析的模型需要用代码自动生成，且有些会产生大量的中间代码，感觉非常冗余
+
+  > * 如果觉得 `json_serializable` 太麻烦，可以试试：`freezed` + `json_serializable`
+  >   - 用更简洁的方式定义模型（免去重复写构造、拷贝等）
+  >   - 可以生成 `copyWith`、`==` 重载等
+  >   - 需要跑 `build_runner`（缺点）
+  >
+  > ```dart
+  > @freezed
+  > class GameModel with _$GameModel {
+  >   const factory GameModel({
+  >     required int id,
+  >     required String name,
+  >   }) = _GameModel;
+  > 
+  >   factory GameModel.fromJson(Map<String, dynamic> json) =>
+  >       _$GameModelFromJson(json);
+  > }
+  > ```
+  >
+  > * 使用 `dynamic` + 手写赋值（最接近 OC 风格）
+  >   * 虽然不优雅，但你可以完全掌控，**无需代码生成**，最接近 iOS 开发体验。
+  >
+  > ```dart
+  > class GameModel {
+  >   int? id;
+  >   String? name;
+  > 
+  >   GameModel.fromJson(Map<String, dynamic> json) {
+  >     id = json['id'];
+  >     name = json['name'];
+  >   }
+  > }
+  
+  | 语言差异                           | 原因                                                         |
+  | ---------------------------------- | ------------------------------------------------------------ |
+  | Dart 是 AOT 优化语言               | 要在编译期就确定类型结构，便于 tree-shaking、优化运行时性能  |
+  | 没有反射（Flutter web/移动端限制） | 没法像 Objective-C 用 KVC 动态赋值，所以不能动态 map json    |
+  | 靠代码生成实现类型安全             | `json_serializable` 用生成代码的方式保障类型正确，避免运行时崩溃 |
+
 ## 其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * Dart 没有宏定义的概念

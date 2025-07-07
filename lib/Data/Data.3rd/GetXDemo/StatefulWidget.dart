@@ -77,7 +77,6 @@ class _RotaryViewState extends State<RotaryView> with WidgetsBindingObserver {
 
 class RotaryViewContent extends StatelessWidget {
   const RotaryViewContent({super.key});
-
   @override
   Widget build(BuildContext context) {
     return const Text('Rotary View Content');
