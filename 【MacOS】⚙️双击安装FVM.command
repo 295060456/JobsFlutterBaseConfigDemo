@@ -26,9 +26,9 @@ if ! is_flutter_project "$SCRIPT_DIR"; then
         echo ""
         echo "📁 请拖入一个 Flutter 项目文件夹，然后按回车："
         read "FLUTTER_DIR?路径："
-        FLUTTER_DIR=${FLUTTER_DIR//\\//}           # 处理反斜杠
-        FLUTTER_DIR=${FLUTTER_DIR//\"/}            # 去除引号
-        FLUTTER_DIR=$(eval "echo $FLUTTER_DIR")    # 解析空格等
+        FLUTTER_DIR=${FLUTTER_DIR//\\//}
+        FLUTTER_DIR=${FLUTTER_DIR//\"/}
+        FLUTTER_DIR=$(eval "echo $FLUTTER_DIR")
 
         if is_flutter_project "$FLUTTER_DIR"; then
             cd "$FLUTTER_DIR"
@@ -43,11 +43,23 @@ fi
 
 read "?⏳ 按【回车】继续，或 Ctrl+C 退出..."
 
+# ========== 获取工具全称 ==========
+get_tool_name() {
+    case "$1" in
+        brew) echo "Homebrew" ;;
+        fzf) echo "fzf (模糊查找器)" ;;
+        jq) echo "jq (JSON 解析工具)" ;;
+        dart) echo "Dart SDK" ;;
+        *) echo "$1" ;;
+    esac
+}
+
 # ========== 检查/安装/升级 工具 ==========
 check_install_tool() {
     local tool=$1
+    local toolName=$(get_tool_name "$tool")
     if ! command -v $tool &>/dev/null; then
-        yellow "🔧 未检测到 $tool，准备安装..."
+        yellow "🔧 未检测到 $toolName，准备安装..."
         case $tool in
             brew)
                 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -59,17 +71,20 @@ check_install_tool() {
                 ;;
         esac
         if ! command -v $tool &>/dev/null; then
-            red "❌ $tool 安装失败，请手动处理"
+            red "❌ $toolName 安装失败，请手动处理"
             exit 1
         fi
-        green "✅ $tool 安装完成"
+        green "✅ $toolName 安装完成"
     else
-        green "✅ 已安装 $tool，正在升级..."
         if [[ "$tool" == "brew" ]]; then
-            brew update
+            green "✅ 已安装 $toolName，正在执行更新流程..."
+            brew update && brew upgrade && brew cleanup
+            green "✅ $toolName 更新完成"
+        else
+            green "✅ 已安装 $toolName，正在升级..."
+            brew upgrade "$tool"
+            green "✅ $toolName 升级完成"
         fi
-        brew upgrade "$tool"
-        green "✅ $tool 升级完成"
     fi
 }
 
@@ -101,16 +116,31 @@ VERSIONS=$(fvm releases 2>/dev/null | sed 's/\x1B\[[0-9;]*[a-zA-Z]//g' | awk -F'
     print $2
 }' | sort -V | uniq | tac)
 
+# ========== 构建版本选择列表并标记当前 ==========
+if [[ -n $CONFIGURED_VERSION ]]; then
+    echo ""
+    green "📄 当前配置版本：$CONFIGURED_VERSION"
+    echo "⬇️ 请选择要使用的 Flutter 版本（当前版本已标记 ✅，回车保持当前）"
+    CHOICES=$(echo "$VERSIONS" | sed "s/^$CONFIGURED_VERSION$/✅ $CONFIGURED_VERSION/")
+else
+    echo ""
+    echo "⬇️ 可用 Flutter 稳定版本如下（回车默认选择最新）"
+    CHOICES="$VERSIONS"
+fi
+
 # ========== fzf 选择版本 ==========
-CHOICES=""
-[[ -n $CONFIGURED_VERSION ]] && CHOICES+="${CONFIGURED_VERSION}  ← 当前配置版本\n"
-CHOICES+="$VERSIONS"
+RAW_SELECTED_LINE=$(echo "$CHOICES" | \
+  fzf --prompt="🎯 选择要使用的 Flutter 版本：" \
+      --height=50% \
+      --border \
+      --ansi)
 
-SELECTED_VERSION=$(echo "$CHOICES" | fzf --prompt="🎯 选择要使用的 Flutter 版本：" \
-  --header="⬇️ fvm stable releases（回车保持当前）" --height=50% | awk '{print $1}')
+# 去除前缀并匹配版本号
+SELECTED_VERSION=$(echo "$RAW_SELECTED_LINE" | sed 's/^✅ //' | grep -Eo '^[0-9]+\.[0-9]+\.[0-9]+$')
 
-if [[ -z $SELECTED_VERSION ]]; then
-    if [[ -n $CONFIGURED_VERSION ]]; then
+# ========== fallback 合理处理 ==========
+if [[ -z "$SELECTED_VERSION" ]]; then
+    if [[ -n $CONFIGURED_VERSION && "$CONFIGURED_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
         SELECTED_VERSION=$CONFIGURED_VERSION
         yellow "📎 保持使用当前版本：$SELECTED_VERSION"
     else
@@ -134,7 +164,7 @@ if ! grep -q 'flutter()' ~/.zshrc; then
     green "✅ flutter 命令别名已写入 ~/.zshrc"
 fi
 
-# ========== 红色高亮打印版本 ==========
+# ========== 红色高亮打印版本信息 ==========
 echo ""
 red "=============================================="
 red "🎉 当前 Flutter 版本：$(cd "$SCRIPT_DIR" && fvm flutter --version | head -n1)"
