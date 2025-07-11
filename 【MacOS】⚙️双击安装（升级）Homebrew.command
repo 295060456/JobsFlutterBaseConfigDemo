@@ -85,5 +85,8 @@ brew install oclint
 brew install yarn
 brew install ruby
 
+brew install --cask flutter
+
+brew cleanup
 echo ""
 echo "✅ 所有软件安装完成！🎉"

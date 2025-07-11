@@ -56,21 +56,7 @@ done
 
 selected=($(echo "${selected[@]}" | tr ' ' '\n' | sort -n | uniq))
 
-# ✅ 检查并安装依赖
-install_brew_package_if_needed() {
-  local pkg=$1
-  if ! brew list --formula | grep -q "^${pkg}$"; then
-    print_warn "🍺 未安装 $pkg，正在安装..."
-    brew install "$pkg"
-    print_success "$pkg 安装完成"
-  else
-    print_info "$pkg 已安装"
-  fi
-}
-install_brew_package_if_needed ruby
-install_brew_package_if_needed curl
-
-# ✅ 添加配置块函数
+# ✅ 插入环境配置块函数
 append_block_if_not_exists() {
   local id=$1
   local header="$2"
@@ -79,74 +65,143 @@ append_block_if_not_exists() {
 
   if [[ " ${selected[@]} " =~ " ${id} " ]]; then
     if ! grep -Fq "$header" "$PROFILE_FILE"; then
-      if [[ -s "$PROFILE_FILE" ]]; then echo "" >> "$PROFILE_FILE"; fi
-      echo "$header" >> "$PROFILE_FILE"
-      for line in "${block[@]}"; do echo "$line" >> "$PROFILE_FILE"; done
-      print_success "已添加：$header"
+      if [[ $id == 10 ]]; then
+        sed -i '' '1i\
+'"${block[0]}"'
+' "$PROFILE_FILE"
+        print_success "已将『终端默认进入桌面目录』写入配置文件顶部"
+      else
+        echo "\n$header" >> "$PROFILE_FILE"
+        for line in "${block[@]}"; do echo "$line" >> "$PROFILE_FILE"; done
+        print_success "✅ 已添加：$header"
+      fi
     else
       print_info "📌 已存在：$header"
     fi
   fi
 }
 
-# ✅ 实际配置项
-append_block_if_not_exists 1 "# 配置 Rbenv.ruby 环境变量" \
-  'export PATH="$HOME/.rbenv/bin:$PATH"' \
-  'eval "$(rbenv init -)"' \
-  '# 配置 Ruby 环境变量（Homebrew 安装）' \
-  'export PATH="/usr/local/opt/ruby/bin:$PATH"' \
-  'export LDFLAGS="-L/usr/local/opt/ruby/lib"' \
-  'export CPPFLAGS="-I/usr/local/opt/ruby/include"' \
-  'export PKG_CONFIG_PATH="/usr/local/opt/ruby/lib/pkgconfig"'
+# ✅ cd ~/Desktop 永久插入顶部（不使用 sed 以避免兼容问题）
+if [[ " ${selected[@]} " =~ " 10 " ]]; then
+  if ! grep -Fxq 'cd "$HOME/Desktop"' "$PROFILE_FILE"; then
+    tmp_file=$(mktemp)
+    echo '# 每次打开终端默认进入桌面目录' >> "$tmp_file"
+    echo 'cd "$HOME/Desktop"' >> "$tmp_file"
+    echo '' >> "$tmp_file"
+    cat "$PROFILE_FILE" >> "$tmp_file"
+    mv "$tmp_file" "$PROFILE_FILE"
+    print_success "✅ 已将『cd ~/Desktop』插入配置文件顶部"
+  else
+    print_info "📌 配置文件中已存在 cd ~/Desktop"
+  fi
+fi
 
-append_block_if_not_exists 2 "# 配置 Curl 环境变量（Homebrew 安装）" \
-  'export PATH="/usr/local/opt/curl/bin:$PATH"' \
-  'export LDFLAGS="-L/usr/local/opt/curl/lib"' \
-  'export CPPFLAGS="-I/usr/local/opt/curl/include"' \
-  'export PKG_CONFIG_PATH="/usr/local/opt/curl/lib/pkgconfig"'
+# ✅ Rbenv + Ruby
+append_block_if_not_exists 1 "# 配置 Rbenv.ruby 环境变量（需安装 rbenv）" \
+  'if command -v rbenv &>/dev/null; then' \
+  '  export PATH="$HOME/.rbenv/bin:$PATH"' \
+  '  eval "$(rbenv init -)"' \
+  'else' \
+  '  echo "⚠️ 未检测到 rbenv，请执行 brew install rbenv 安装"' \
+  'fi' \
+  'if command -v ruby &>/dev/null; then' \
+  '  export PATH="/usr/local/opt/ruby/bin:$PATH"' \
+  '  export LDFLAGS="-L/usr/local/opt/ruby/lib"' \
+  '  export CPPFLAGS="-I/usr/local/opt/ruby/include"' \
+  '  export PKG_CONFIG_PATH="/usr/local/opt/ruby/lib/pkgconfig"' \
+  'else' \
+  '  echo "⚠️ 未检测到 ruby，建议执行 brew install ruby"' \
+  'fi'
 
-append_block_if_not_exists 3 "# 配置 VSCode 环境变量" \
-  'export PATH="$PATH":/usr/local/bin' \
-  'export PATH="$PATH":/usr/local/bin/code'
+# ✅ Curl
+append_block_if_not_exists 2 "# 配置 Curl 环境变量（需 Homebrew 安装）" \
+  'if command -v curl &>/dev/null; then' \
+  '  export PATH="/usr/local/opt/curl/bin:$PATH"' \
+  '  export LDFLAGS="-L/usr/local/opt/curl/lib"' \
+  '  export CPPFLAGS="-I/usr/local/opt/curl/include"' \
+  '  export PKG_CONFIG_PATH="/usr/local/opt/curl/lib/pkgconfig"' \
+  'else' \
+  '  echo "⚠️ curl 未通过 brew 安装，建议执行 brew install curl"' \
+  'fi'
 
+# ✅ VSCode
+append_block_if_not_exists 3 "# 配置 VSCode 命令行（code）" \
+  'if command -v code &>/dev/null; then' \
+  '  export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"' \
+  'else' \
+  '  echo "⚠️ 未检测到 code 命令，请打开 VSCode 后运行「Shell Command: Install code in PATH」"' \
+  'fi'
+
+# ✅ Flutter
 append_block_if_not_exists 4 "# 配置 Flutter 环境变量" \
-  '# 这里的路径请根据你本机SDK修改' \
-  'export PATH="$PATH:`pwd`/flutter/bin"' \
-  'export PATH=$HOME/Documents/GitHub.Jobs/Flutter.SDK/Flutter.SDK.last/bin:$PATH' \
-  '# Flutter 镜像设置' \
+  'if ! command -v fvm &>/dev/null; then' \
+  '  if [[ -d "/opt/homebrew/Caskroom/flutter/latest/flutter/bin" ]]; then' \
+  '    export PATH="/opt/homebrew/Caskroom/flutter/latest/flutter/bin:$PATH"' \
+  '  elif [[ -d "/usr/local/Caskroom/flutter/latest/flutter/bin" ]]; then' \
+  '    export PATH="/usr/local/Caskroom/flutter/latest/flutter/bin:$PATH"' \
+  '  elif [[ -d "$HOME/flutter/bin" ]]; then' \
+  '    export PATH="$HOME/flutter/bin:$PATH"' \
+  '  elif [[ -d "$HOME/Documents/GitHub.Jobs/Flutter.SDK/Flutter.SDK.last/bin" ]]; then' \
+  '    export PATH="$HOME/Documents/GitHub.Jobs/Flutter.SDK/Flutter.SDK.last/bin:$PATH"' \
+  '  else' \
+  '    echo "⚠️ 未找到 Flutter SDK，请手动配置路径"' \
+  '  fi' \
+  'fi' \
   'export PUB_HOSTED_URL=https://pub.dartlang.org' \
   'export FLUTTER_STORAGE_BASE_URL=https://storage.googleapis.com'
 
+# ✅ Android SDK
 append_block_if_not_exists 5 "# 配置 Android SDK 环境变量" \
-  'export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk' \
-  'export PATH=${PATH}:${ANDROID_SDK_ROOT}/platform-tools' \
-  'export PATH=${PATH}:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin' \
-  'export PATH=$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/tools/bin:$PATH'
+  'if [[ -d "$HOME/Library/Android/sdk" ]]; then' \
+  '  export ANDROID_SDK_ROOT="$HOME/Library/Android/sdk"' \
+  '  export PATH="$PATH:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/tools/bin"' \
+  'else' \
+  '  echo "⚠️ 未检测到 Android SDK，请安装 Android Studio 或配置 ANDROID_SDK_ROOT"' \
+  'fi'
 
+# ✅ FVM
 append_block_if_not_exists 6 "# 配置 FVM 环境变量" \
-  'export PATH="$HOME/.pub-cache/bin:$PATH"' \
-  'flutter() { fvm flutter "$@"; }'
+  'if command -v fvm &>/dev/null; then' \
+  '  export PATH="$HOME/.pub-cache/bin:$PATH"' \
+  '  flutter() { fvm flutter "$@"; }' \
+  'else' \
+  '  echo "⚠️ 未检测到 fvm，请执行 dart pub global activate fvm 安装"' \
+  'fi'
 
+# ✅ JDK / SDKMAN
 append_block_if_not_exists 7 "# 配置 JDK / OpenJDK / SDKMAN" \
-  'export JAVA_HOME=$(/usr/libexec/java_home)' \
-  'export PATH=$JAVA_HOME/bin:$PATH' \
-  'export SDKMAN_DIR="$HOME/.sdkman"' \
-  '[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"' \
-  '#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!'
+  'if /usr/libexec/java_home &>/dev/null; then' \
+  '  export JAVA_HOME=$(/usr/libexec/java_home)' \
+  '  export PATH="$JAVA_HOME/bin:$PATH"' \
+  'else' \
+  '  echo "⚠️ 未检测到 Java，请先安装 openjdk：brew install openjdk"' \
+  'fi' \
+  'if [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then' \
+  '  export SDKMAN_DIR="$HOME/.sdkman"' \
+  '  source "$HOME/.sdkman/bin/sdkman-init.sh"' \
+  'else' \
+  '  echo "⚠️ 未检测到 SDKMAN，请访问 https://sdkman.io 安装"' \
+  'fi'
 
+# ✅ Gradle
 append_block_if_not_exists 8 "# 配置 Gradle 环境变量" \
-  'export PATH="$HOME/Documents/Gradle/gradle-8.7/bin:$PATH"'
+  'if command -v gradle &>/dev/null; then' \
+  '  export PATH="$HOME/Documents/Gradle/gradle-8.7/bin:$PATH"' \
+  'else' \
+  '  echo "⚠️ 未检测到 gradle，建议执行 brew install gradle 安装"' \
+  'fi'
 
+# ✅ pipx
 append_block_if_not_exists 9 "# 配置 pipx 环境变量" \
-  'export PATH="$PATH:$HOME/.local/bin"'
-
-append_block_if_not_exists 10 "# 每次打开终端默认进入桌面目录" \
-  'cd ~/Desktop'
+  'if command -v pipx &>/dev/null; then' \
+  '  export PATH="$PATH:$HOME/.local/bin"' \
+  'else' \
+  '  echo "⚠️ pipx 未安装，建议执行 brew install pipx"' \
+  'fi'
 
 # ✅ 打开配置文件
 open "$PROFILE_FILE"
 
 # ✅ 尝试重新加载
-print_info "🔄 重新加载 $PROFILE_FILE"
+print_info "🔄 尝试重新加载配置文件：$PROFILE_FILE"
 [[ -s "$PROFILE_FILE" ]] && source "$PROFILE_FILE" || print_warn "⚠️ 配置文件为空，跳过 source"
-
