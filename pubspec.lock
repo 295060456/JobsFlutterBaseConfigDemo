@@ -261,10 +261,10 @@ packages:
     dependency: "direct main"
     description:
       name: chewie
-      sha256: "4d9554a8f87cc2dc6575dfd5ad20a4375015a29edd567fd6733febe6365e2566"
+      sha256: "19b93a1e60e4ba640a792208a6543f1c7d5b124d011ce0199e2f18802199d984"
       url: "https://pub.dev"
     source: hosted
-    version: "1.11.3"
+    version: "1.12.1"
   cli_config:
     dependency: transitive
     description:
@@ -373,10 +373,10 @@ packages:
     dependency: transitive
     description:
       name: coverage
-      sha256: aa07dbe5f2294c827b7edb9a87bba44a9c15a3cc81bc8da2ca19b37322d30080
+      sha256: "5da775aa218eaf2151c721b16c01c7676fbfdd99cebba2bf64e8b807a28ff94d"
       url: "https://pub.dev"
     source: hosted
-    version: "1.14.1"
+    version: "1.15.0"
   cross_file:
     dependency: transitive
     description:
@@ -437,10 +437,10 @@ packages:
     dependency: transitive
     description:
       name: device_frame
-      sha256: a58796a9a2efc0fd8a7903cee0eed2e2d111f4a7d81fa2319ab89430b020f624
+      sha256: "7b2ebb2a09d6cc0f086b51bd1412d7be83e0170056a7290349169be41164c86a"
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.0"
+    version: "1.4.0"
   device_info:
     dependency: "direct main"
     description:
@@ -477,10 +477,10 @@ packages:
     dependency: "direct main"
     description:
       name: device_preview
-      sha256: a694acdd3894b4c7d600f4ee413afc4ff917f76026b97ab06575fe886429ef19
+      sha256: "88aa1cc73ee9a8ec771b309dcbc4000cc66b5d8456b825980997640ab1195bf5"
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.0"
+    version: "1.3.1"
   dio:
     dependency: "direct main"
     description:
@@ -1057,18 +1057,18 @@ packages:
     dependency: "direct main"
     description:
       name: freezed
-      sha256: "59a584c24b3acdc5250bb856d0d3e9c0b798ed14a4af1ddb7dc1c7b41df91c9c"
+      sha256: "2d399f823b8849663744d2a9ddcce01c49268fb4170d0442a655bf6a2f47be22"
       url: "https://pub.dev"
     source: hosted
-    version: "2.5.8"
+    version: "3.1.0"
   freezed_annotation:
     dependency: "direct main"
     description:
       name: freezed_annotation
-      sha256: c2e2d632dd9b8a2b7751117abcfc2b4888ecfe181bd9fca7170d9ef02e595fe2
+      sha256: "7294967ff0a6d98638e7acb774aac3af2550777accd8149c90af5b014e6d44d8"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.4"
+    version: "3.1.0"
   frontend_server_client:
     dependency: transitive
     description:
@@ -1077,22 +1077,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.0"
+  geoclue:
+    dependency: transitive
+    description:
+      name: geoclue
+      sha256: c2a998c77474fc57aa00c6baa2928e58f4b267649057a1c76738656e9dbd2a7f
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.1"
   geolocator:
     dependency: "direct main"
     description:
       name: geolocator
-      sha256: ee2212a3df8292ec4c90b91183b8001d3f5a800823c974b570c5f9344ca320dc
+      sha256: "79939537046c9025be47ec645f35c8090ecadb6fe98eba146a0d25e8c1357516"
       url: "https://pub.dev"
     source: hosted
-    version: "14.0.1"
+    version: "14.0.2"
   geolocator_android:
     dependency: transitive
     description:
       name: geolocator_android
-      sha256: "114072db5d1dce0ec0b36af2697f55c133bc89a2c8dd513e137c0afe59696ed4"
+      sha256: "179c3cb66dfa674fc9ccbf2be872a02658724d1c067634e2c427cf6df7df901a"
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.1+1"
+    version: "5.0.2"
   geolocator_apple:
     dependency: transitive
     description:
@@ -1101,6 +1109,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.13"
+  geolocator_linux:
+    dependency: transitive
+    description:
+      name: geolocator_linux
+      sha256: c4e966f0a7a87e70049eac7a2617f9e16fd4c585a26e4330bdfc3a71e6a721f3
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.3"
   geolocator_platform_interface:
     dependency: transitive
     description:
@@ -1177,10 +1193,10 @@ packages:
     dependency: transitive
     description:
       name: google_maps_flutter_android
-      sha256: ab83128296fbeaa52e8f2b3bf53bcd895e64778edddcdc07bc8f33f4ea78076c
+      sha256: "356ee9c65f38a104f7c4988e6952e52addb3b6cb1601839dd2010d7a502afcf0"
       url: "https://pub.dev"
     source: hosted
-    version: "2.16.1"
+    version: "2.16.2"
   google_maps_flutter_ios:
     dependency: transitive
     description:
@@ -1209,26 +1225,26 @@ packages:
     dependency: "direct main"
     description:
       name: google_sign_in
-      sha256: dba1a1a79368d8ca464bf36ef94f528851efa9925e4a28bfc4aaefb1f5da2fc4
+      sha256: b15bff04ca1ba9c2900c9bf2ed9179f06a1eff8dad258b401a89da69491254fc
       url: "https://pub.dev"
     source: hosted
-    version: "7.0.0"
+    version: "7.1.0"
   google_sign_in_android:
     dependency: transitive
     description:
       name: google_sign_in_android
-      sha256: ac7cfb8216dc34d18221cc4ec9e0a07346a00420a37c548d151ac8ad49df0d7b
+      sha256: dc03996c6f95ef8191bae220006029f8cec6a83d6c03c43191ca8cd35e5bbbcb
       url: "https://pub.dev"
     source: hosted
-    version: "7.0.0"
+    version: "7.0.1"
   google_sign_in_ios:
     dependency: transitive
     description:
       name: google_sign_in_ios
-      sha256: "59937a674827540d12253415626ec24cc7e633bb785e2d2ca4f1580323e55a0c"
+      sha256: "44032e86ecff2d4ba4671f26f8dbecd2ca52cdbcc4458525191b8889b3b10ea3"
       url: "https://pub.dev"
     source: hosted
-    version: "6.0.0"
+    version: "6.0.1"
   google_sign_in_platform_interface:
     dependency: transitive
     description:
@@ -1253,6 +1269,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.2"
+  gsettings:
+    dependency: transitive
+    description:
+      name: gsettings
+      sha256: "1b0ce661f5436d2db1e51f3c4295a49849f03d304003a7ba177d01e3a858249c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.8"
   hotreloader:
     dependency: transitive
     description:
@@ -1569,10 +1593,10 @@ packages:
     dependency: transitive
     description:
       name: location_web
-      sha256: "744bdff53dc455a2dc9a34474c49cde364d4fbef2aee009f8b0b4b68570c27a1"
+      sha256: b8e3add5efe0d65c5e692b7a135d80a4015c580d3ea646fa71973e97668dd868
       url: "https://pub.dev"
     source: hosted
-    version: "6.0.0"
+    version: "6.0.1"
   logging:
     dependency: transitive
     description:
@@ -1633,10 +1657,10 @@ packages:
     dependency: "direct main"
     description:
       name: mqtt_client
-      sha256: "854a789a1c0f1336bea4a9edd57341aec13a4df077d6cc2693099dde6a8679e2"
+      sha256: "8c79275452446d0c767b4ce3c25d02570944b2cf70179f0eb197fea7d98c6056"
       url: "https://pub.dev"
     source: hosted
-    version: "10.9.2"
+    version: "10.10.0"
   msgpack_dart:
     dependency: "direct main"
     description:
@@ -1809,10 +1833,10 @@ packages:
     dependency: "direct main"
     description:
       name: permission_handler
-      sha256: "2d070d8684b68efb580a5997eb62f675e8a885ef0be6e754fb9ef489c177470f"
+      sha256: bc917da36261b00137bbc8896bf1482169cd76f866282368948f032c8c1caae1
       url: "https://pub.dev"
     source: hosted
-    version: "12.0.0+1"
+    version: "12.0.1"
   permission_handler_android:
     dependency: transitive
     description:
@@ -1977,10 +2001,10 @@ packages:
     dependency: transitive
     description:
       name: posix
-      sha256: f0d7856b6ca1887cfa6d1d394056a296ae33489db914e365e2044fdada449e62
+      sha256: "6323a5b0fa688b6a010df4905a56b00181479e6d10534cecfecede2aa55add61"
       url: "https://pub.dev"
     source: hosted
-    version: "6.0.2"
+    version: "6.0.3"
   pretty_dio_logger:
     dependency: "direct main"
     description:
@@ -2206,10 +2230,10 @@ packages:
     dependency: transitive
     description:
       name: source_helper
-      sha256: "86d247119aedce8e63f4751bd9626fc9613255935558447569ad42f9f5b48b3c"
+      sha256: "4f81479fe5194a622cdd1713fe1ecb683a6e6c85cd8cec8e2e35ee5ab3fdf2a1"
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.5"
+    version: "1.3.6"
   source_map_stack_trace:
     dependency: transitive
     description:
@@ -2318,10 +2342,10 @@ packages:
     dependency: transitive
     description:
       name: synchronized
-      sha256: "0669c70faae6270521ee4f05bffd2919892d42d1276e6c495be80174b6bc0ef6"
+      sha256: c254ade258ec8282947a0acbbc90b9575b4f19673533ee46f2f6e9b3aeefd7c0
       url: "https://pub.dev"
     source: hosted
-    version: "3.3.1"
+    version: "3.4.0"
   telnet:
     dependency: "direct main"
     description:
@@ -2406,10 +2430,10 @@ packages:
     dependency: "direct main"
     description:
       name: url_launcher
-      sha256: "9d06212b1362abc2f0f0d78e6f09f726608c74e3b9462e8368bb03314aa8d603"
+      sha256: f6a7e5c4835bb4e3026a04793a4199ca2d14c739ec378fdfe23fc8075d0439f8
       url: "https://pub.dev"
     source: hosted
-    version: "6.3.1"
+    version: "6.3.2"
   url_launcher_android:
     dependency: transitive
     description:
@@ -2550,26 +2574,26 @@ packages:
     dependency: transitive
     description:
       name: video_player_avfoundation
-      sha256: "9ee764e5cd2fc1e10911ae8ad588e1a19db3b6aa9a6eb53c127c42d3a3c3f22f"
+      sha256: "9fedd55023249f3a02738c195c906b4e530956191febf0838e37d0dac912f953"
       url: "https://pub.dev"
     source: hosted
-    version: "2.7.1"
+    version: "2.8.0"
   video_player_platform_interface:
     dependency: transitive
     description:
       name: video_player_platform_interface
-      sha256: df534476c341ab2c6a835078066fc681b8265048addd853a1e3c78740316a844
+      sha256: cf2a1d29a284db648fd66cbd18aacc157f9862d77d2cc790f6f9678a46c1db5a
       url: "https://pub.dev"
     source: hosted
-    version: "6.3.0"
+    version: "6.4.0"
   video_player_web:
     dependency: transitive
     description:
       name: video_player_web
-      sha256: e8bba2e5d1e159d5048c9a491bb2a7b29c535c612bb7d10c1e21107f5bd365ba
+      sha256: "9f3c00be2ef9b76a95d94ac5119fb843dca6f2c69e6c9968f6f2b6c9e7afbdeb"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.5"
+    version: "2.4.0"
   visibility_detector:
     dependency: "direct main"
     description:
@@ -2748,4 +2772,4 @@ packages:
     version: "3.1.3"
 sdks:
   dart: ">=3.8.0 <4.0.0"
-  flutter: ">=3.29.0"
+  flutter: ">=3.32.0"
