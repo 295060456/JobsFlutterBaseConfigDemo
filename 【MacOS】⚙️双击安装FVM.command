@@ -58,18 +58,20 @@ get_tool_name() {
 check_install_tool() {
     local tool=$1
     local toolName=$(get_tool_name "$tool")
+    local brewTool=$tool
+    [[ "$tool" == "dart" ]] && brewTool="dart-sdk"
+
     if ! command -v $tool &>/dev/null; then
         yellow "🔧 未检测到 $toolName，准备安装..."
-        case $tool in
-            brew)
-                /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-                echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
-                eval "$(/opt/homebrew/bin/brew shellenv)"
-                ;;
-            fzf|jq|dart)
-                brew install "$tool"
-                ;;
-        esac
+
+        if [[ "$brewTool" == "brew" ]]; then
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+            echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+        else
+            brew install "$brewTool"
+        fi
+
         if ! command -v $tool &>/dev/null; then
             red "❌ $toolName 安装失败，请手动处理"
             exit 1
@@ -81,9 +83,13 @@ check_install_tool() {
             brew update && brew upgrade && brew cleanup
             green "✅ $toolName 更新完成"
         else
-            green "✅ 已安装 $toolName，正在升级..."
-            brew upgrade "$tool"
-            green "✅ $toolName 升级完成"
+            green "✅ 已安装 $toolName，正在尝试升级..."
+            if brew list --formula | grep -q "^$brewTool\$"; then
+                brew upgrade "$brewTool"
+                green "✅ $toolName 升级完成"
+            else
+                yellow "⚠️ 检测到 $toolName 非 brew 安装，跳过升级"
+            fi
         fi
     fi
 }
@@ -99,7 +105,7 @@ export PATH="$HOME/.pub-cache/bin:$PATH"
 yellow "📦 安装/升级 FVM..."
 dart pub global activate fvm
 
-# ========== 读取或创建 flutterSdkVersion ==========
+# ========== 读取配置版本 ==========
 mkdir -p .fvm
 CONFIG_FILE=".fvm/fvm_config.json"
 CONFIGURED_VERSION=""
@@ -116,7 +122,6 @@ VERSIONS=$(fvm releases 2>/dev/null | sed 's/\x1B\[[0-9;]*[a-zA-Z]//g' | awk -F'
     print $2
 }' | sort -V | uniq | tac)
 
-# ========== 构建版本选择列表并标记当前 ==========
 if [[ -n $CONFIGURED_VERSION ]]; then
     echo ""
     green "📄 当前配置版本：$CONFIGURED_VERSION"
@@ -128,17 +133,16 @@ else
     CHOICES="$VERSIONS"
 fi
 
-# ========== fzf 选择版本 ==========
+# ========== 版本选择 ==========
 RAW_SELECTED_LINE=$(echo "$CHOICES" | \
   fzf --prompt="🎯 选择要使用的 Flutter 版本：" \
       --height=50% \
       --border \
       --ansi)
 
-# 去除前缀并匹配版本号
 SELECTED_VERSION=$(echo "$RAW_SELECTED_LINE" | sed 's/^✅ //' | grep -Eo '^[0-9]+\.[0-9]+\.[0-9]+$')
 
-# ========== fallback 合理处理 ==========
+# ========== fallback ==========
 if [[ -z "$SELECTED_VERSION" ]]; then
     if [[ -n $CONFIGURED_VERSION && "$CONFIGURED_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
         SELECTED_VERSION=$CONFIGURED_VERSION
@@ -157,14 +161,61 @@ green "📝 已写入配置：$CONFIG_FILE"
 fvm install "$SELECTED_VERSION"
 fvm use "$SELECTED_VERSION"
 
-# ========== 写入 flutter 命令别名 ==========
+# ========== flutter 命令别名 ==========
 if ! grep -q 'flutter()' ~/.zshrc; then
     echo '' >> ~/.zshrc
     echo 'flutter() { fvm flutter "$@"; }' >> ~/.zshrc
     green "✅ flutter 命令别名已写入 ~/.zshrc"
 fi
 
-# ========== 红色高亮打印版本信息 ==========
+# ========== 检查 flutter 项目关键文件 ==========
+echo ""
+if [[ -f .packages ]]; then
+    green "📁 已检测到 .packages 文件"
+else
+    yellow "⚠️ 未检测到 .packages 文件"
+fi
+
+if [[ -d .dart_tool ]]; then
+    green "📁 已检测到 .dart_tool 目录"
+else
+    yellow "⚠️ 未检测到 .dart_tool 目录"
+fi
+
+# ========== 用户交互开关函数 ==========
+ask_feature_toggle() {
+    local prompt="$1"
+    echo ""
+    echo "👉 $prompt"
+    echo "【按回车跳过，或按 空格 再回车 以启用】"
+    read -r -s -n1 key
+    if [[ "$key" == " " ]]; then
+        echo "✅ 已启用：$prompt"
+        return 0
+    else
+        echo "⏩ 已跳过：$prompt"
+        return 1
+    fi
+}
+
+# ========== 可选执行命令 ==========
+if ask_feature_toggle "是否执行 flutter clean？"; then
+    fvm flutter clean
+fi
+
+if ask_feature_toggle "是否执行 flutter pub get？"; then
+    fvm flutter pub get
+fi
+
+if ask_feature_toggle "是否执行 flutter doctor？"; then
+    fvm flutter doctor
+fi
+
+if ask_feature_toggle "是否执行 flutter analyze？"; then
+    fvm flutter analyze
+fi
+
+# ========== 版本输出 ==========
 echo ""
 red "=============================================="
 red "🎉 当前 Flutter 版本：$(cd "$SCRIPT_DIR" && fvm flutter --version | head -n1)"
