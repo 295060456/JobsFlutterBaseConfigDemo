@@ -193,3 +193,13 @@ samples, guidance on mobile development, and a full API reference.
   * 其他可能的配置文件和文件夹，比如代码模板、文件模板、版本控制配置等。
 
   总的来说，`.idea` 文件夹是 JetBrains IDE 用于存储项目配置和元数据的文件夹，它通常不应该被版本控制系统跟踪，因为这些配置文件通常是特定于开发者的，并且可能会因为 IDE 版本的不同而有所变化。
+
+## 其他
+
+* 安装[**fvm**]()的前提是先安装**dart**环境
+
+  ```dart
+  dart pub global activate fvm
+  ```
+
+  

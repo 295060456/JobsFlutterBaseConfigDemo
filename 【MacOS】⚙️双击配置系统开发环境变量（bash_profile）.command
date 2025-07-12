@@ -164,11 +164,11 @@ append_block_if_not_exists 5 "# 配置 Android SDK 环境变量" \
 
 # ✅ FVM
 append_block_if_not_exists 6 "# 配置 FVM 环境变量" \
+  'export PATH="$HOME/.pub-cache/bin:$PATH"' \
   'if command -v fvm &>/dev/null; then' \
-  '  export PATH="$HOME/.pub-cache/bin:$PATH"' \
   '  flutter() { fvm flutter "$@"; }' \
   'else' \
-  '  echo "⚠️ 未检测到 fvm，请执行 dart pub global activate fvm 安装"' \
+  '  echo "⚠️ 未检测到 fvm，请执行 flutter pub global activate fvm 安装"' \
   'fi'
 
 # ✅ JDK / SDKMAN（避免 PATH 重复，优雅 fallback）
@@ -204,9 +204,17 @@ append_block_if_not_exists 9 "# 配置 pipx 环境变量" \
   '  echo "⚠️ pipx 未安装，建议执行 brew install pipx"' \
   'fi'
 
-# ✅ 打开配置文件
+# ✅ 打开配置文件供用户查看
 open "$PROFILE_FILE"
 
-# ✅ 尝试重新加载
-print_info "🔄 尝试重新加载配置文件：$PROFILE_FILE"
-[[ -s "$PROFILE_FILE" ]] && source "$PROFILE_FILE" || print_warn "⚠️ 配置文件为空，跳过 source"
+# ✅ 提示用户手动 source，而不是在脚本中执行
+if [[ "$PROFILE_FILE" == "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]]; then
+  print_warn "⚠️ 你修改的是 oh-my-zsh 的主文件，请执行以下命令："
+  print_info "👉  source ~/.zshrc"
+else
+  print_success "✅ 环境变量已写入：$PROFILE_FILE"
+  print_warn "⚠️ 为使配置生效，请在终端中手动执行："
+  echo ""
+  echo "👉  source \"$PROFILE_FILE\""
+  echo ""
+fi

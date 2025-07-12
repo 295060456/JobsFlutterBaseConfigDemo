@@ -83,7 +83,7 @@ dependencies:
 # 用户权限处理
   permission_handler: # 用于处理权限
 # 网络请求
-  connectivity: # 用于检查设备网络连接状态
+  connectivity_plus: # 用于检查设备网络连接状态
   http: # 用于网络请求
   # Chopper: # 用于网络请求
   # FlutterHttpClient: # 用于网络请求
@@ -118,10 +118,7 @@ dependencies:
   package_info_plus: # 用于获取应用信息
   uuid: # 用于生成唯一标识符
   platform_device_id: # 用于获取设备唯一标识符
-  package_info: # 用于获取应用信息
-  device_info: # 用于获取设备信息
 # 分享功能
-  share: # 用于分享内容
   share_plus: # 用于分享内容
 # 账号登陆
   google_sign_in: # 用于登录Google账号
