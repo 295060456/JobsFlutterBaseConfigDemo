@@ -126,10 +126,13 @@ append_block_if_not_exists 2 "# 配置 Curl 环境变量（需 Homebrew 安装�
 
 # ✅ VSCode
 append_block_if_not_exists 3 "# 配置 VSCode 命令行（code）" \
-  'if command -v code &>/dev/null; then' \
+  'if [[ -d "/Applications/Visual Studio Code.app/Contents/Resources/app/bin" ]]; then' \
   '  export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"' \
+  '  if ! command -v code &>/dev/null; then' \
+  '    echo "⚠️ VSCode 已安装但未配置 code 命令，请在 VSCode 中运行：Shell Command: Install code in PATH"' \
+  '  fi' \
   'else' \
-  '  echo "⚠️ 未检测到 code 命令，请打开 VSCode 后运行「Shell Command: Install code in PATH」"' \
+  '  echo "⚠️ 未检测到 VSCode，请先安装 Visual Studio Code 后再运行本脚本"' \
   'fi'
 
 # ✅ Flutter
@@ -168,14 +171,16 @@ append_block_if_not_exists 6 "# 配置 FVM 环境变量" \
   '  echo "⚠️ 未检测到 fvm，请执行 dart pub global activate fvm 安装"' \
   'fi'
 
-# ✅ JDK / SDKMAN
+# ✅ JDK / SDKMAN（避免 PATH 重复，优雅 fallback）
 append_block_if_not_exists 7 "# 配置 JDK / OpenJDK / SDKMAN" \
+  'export JAVA_HOME="/opt/homebrew/opt/openjdk"  # 默认值（优先级最低）' \
   'if /usr/libexec/java_home &>/dev/null; then' \
   '  export JAVA_HOME=$(/usr/libexec/java_home)' \
-  '  export PATH="$JAVA_HOME/bin:$PATH"' \
-  'else' \
-  '  echo "⚠️ 未检测到 Java，请先安装 openjdk：brew install openjdk"' \
   'fi' \
+  'case ":$PATH:" in' \
+  '  *":$JAVA_HOME/bin:"*) ;;' \
+  '  *) export PATH="$JAVA_HOME/bin:$PATH" ;;' \
+  'esac' \
   'if [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then' \
   '  export SDKMAN_DIR="$HOME/.sdkman"' \
   '  source "$HOME/.sdkman/bin/sdkman-init.sh"' \
