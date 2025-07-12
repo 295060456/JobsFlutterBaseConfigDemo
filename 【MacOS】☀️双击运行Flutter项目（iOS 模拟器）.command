@@ -28,7 +28,6 @@ is_flutter_root() {
   [[ -f "$1/pubspec.yaml" && -d "$1/lib" ]]
 }
 
-# ✅ 强制脚本从自身路径开始判断
 flutter_root="$(cd "$(dirname "$0")" && pwd)"
 cd "$flutter_root" || exit 1
 
@@ -65,6 +64,25 @@ flutter_cmd="flutter"
 # ✅ 是否执行 pub get
 read "?📦 是否执行 flutter pub get？[空格+回车=执行, 回车=跳过] " run_get
 [[ "$run_get" =~ " " ]] && $flutter_cmd pub get
+
+# ✅ 彻底检测并修复 iOS 模拟器假后台状态
+_color_echo blue "🧪 检查 Simulator 状态..."
+sim_pid=$(pgrep -f "/Simulator.app/Contents/MacOS/Simulator")
+sim_win_count=$(osascript <<EOF
+tell application "System Events"
+  count (windows of application process "Simulator")
+end tell
+EOF
+)
+
+if [[ -n "$sim_pid" && "$sim_win_count" == "0" ]]; then
+  _color_echo yellow "⚠️ Simulator 假后台（进程存在但无窗口），执行强制退出..."
+  pkill -9 -f "/Simulator.app/Contents/MacOS/Simulator"
+  sleep 2
+fi
+
+open -a Simulator
+sleep 3
 
 # ✅ 获取模拟器列表
 _color_echo blue "🔍 正在获取 iOS 模拟器..."
