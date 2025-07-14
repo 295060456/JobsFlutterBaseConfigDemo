@@ -56,3 +56,42 @@ fi
 project_dir=$(dirname "$main_file")
 green "🚀 即将打开 Android Studio 项目：$project_dir"
 open -a "Android Studio" "$project_dir"
+
+# ========== 关闭 iOS 模拟器：彻底退出，防止假后台 ==========
+close_simulator_safely() {
+    yellow "🛑 正在关闭所有 iOS 模拟器..."
+    xcrun simctl shutdown all >/dev/null 2>&1
+    osascript -e 'quit app "Simulator"' >/dev/null 2>&1
+    sleep 1
+
+    if pgrep -f Simulator >/dev/null; then
+        pkill -f Simulator
+        sleep 1
+        green "✅ iOS 模拟器已彻底终止（包含假后台）"
+    else
+        green "✅ iOS 模拟器进程已正常关闭"
+    fi
+}
+
+# ========== 启动 iOS 模拟器 ==========
+echo ""
+close_simulator_safely
+
+echo ""
+read "?📱 按回车重新打开 iOS 模拟器，输入任意内容后回车跳过：" sim_input
+if [[ -z "$sim_input" ]]; then
+    open -a Simulator
+    green "✅ iOS 模拟器已重新打开"
+else
+    yellow "⏭️ 已跳过打开模拟器"
+fi
+
+#xcrun simctl shutdown all：
+#这是一个由苹果提供的命令行工具，用于与模拟器进行交互。
+#simctl是用于管理iOS模拟器的工具，可以执行各种操作，如启动、关闭、安装应用等。
+#shutdown all参数会关闭所有当前正在运行的iOS模拟器。
+
+#pkill -f 'Simulator'：
+#这是一个通用的Unix/Linux命令，用于根据进程名终止进程。
+#pkill会根据提供的模式（这里是'Simulator'）终止匹配的进程。
+#这个命令会终止包含"Simulator"字符串的所有进程，无论它们是何种进程（包括但不限于iOS模拟器）。

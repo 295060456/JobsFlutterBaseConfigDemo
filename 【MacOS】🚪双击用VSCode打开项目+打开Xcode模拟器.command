@@ -8,12 +8,26 @@ blue()   { echo "\033[1;34m$1\033[0m"; }
 
 # ========== 自述 ==========
 clear
-green "🛠️ 本脚本用于打开 VSCode 并运行 Flutter 项目到 iOS 模拟器"
+green "🛠️  Flutter 项目一键启动脚本（VSCode + iOS 模拟器）"
 green "===================================================================="
-green "👉 支持："
-green "   1. 拖入 Flutter 项目根目录（需包含 lib/main.dart 且含 void main）"
-green "   2. 拖入单个 Dart 文件（需包含 void main）"
+green "📌 脚本功能说明："
+green "   ➤ 自动打开 VSCode 并定位到指定的 Flutter 项目或 Dart 启动文件"
+green "   ➤ 自动关闭 iOS 模拟器（彻底退出，防止假后台进程）"
+green "   ➤ 可选是否重新打开 iOS 模拟器（支持 GUI 方式）"
+green ""
+green "📂 支持两种拖入路径："
+green "   1️⃣ Flutter 项目根目录（必须包含 lib/main.dart 且含 void main）"
+green "   2️⃣ 单个 Dart 文件（必须为有效启动文件，含未被注释的 void main）"
+green ""
+green "🔒 脚本内置多重校验，确保不会误打开无效文件"
 green "===================================================================="
+echo ""
+read "?🟢 按回车继续执行，输入任意字符后回车退出：" user_continue
+if [[ -n "$user_continue" ]]; then
+    red "❌ 已取消执行"
+    exit 0
+fi
+
 echo ""
 read "?🟢 按回车继续，任意键退出：" user_continue
 if [[ -n "$user_continue" ]]; then
@@ -57,11 +71,25 @@ project_dir=$(dirname "$main_file")
 green "🚀 即将使用 VSCode 打开项目：$project_dir"
 code "$project_dir"
 
+# ========== 关闭 iOS 模拟器：彻底退出，防止假后台 ==========
+close_simulator_safely() {
+    yellow "🛑 正在关闭所有 iOS 模拟器..."
+    xcrun simctl shutdown all >/dev/null 2>&1
+    osascript -e 'quit app "Simulator"' >/dev/null 2>&1
+    sleep 1
+
+    if pgrep -f Simulator >/dev/null; then
+        pkill -f Simulator
+        sleep 1
+        green "✅ iOS 模拟器已彻底终止（包含假后台）"
+    else
+        green "✅ iOS 模拟器进程已正常关闭"
+    fi
+}
+
 # ========== 启动 iOS 模拟器 ==========
 echo ""
-yellow "🛑 正在关闭所有 iOS 模拟器..."
-xcrun simctl shutdown all
-osascript -e 'quit app "Simulator"' && green "✅ iOS 模拟器进程已终止"
+close_simulator_safely
 
 echo ""
 read "?📱 按回车重新打开 iOS 模拟器，输入任意内容后回车跳过：" sim_input
