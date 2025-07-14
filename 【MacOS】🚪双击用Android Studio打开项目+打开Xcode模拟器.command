@@ -1,157 +1,58 @@
 #!/bin/zsh
 
-###########################
-# ☕️ 提前检测并安装 Java（OpenJDK）
-###########################
+# ========== 彩色输出 ==========
+red()    { echo "\033[1;31m$1\033[0m"; }
+green()  { echo "\033[1;32m$1\033[0m"; }
+yellow() { echo "\033[1;33m$1\033[0m"; }
+blue()   { echo "\033[1;34m$1\033[0m"; }
 
-java_home=$(/usr/libexec/java_home 2>/dev/null)
-
-if [[ -z "$java_home" ]]; then
-    echo ""
-    echo "❌ 未检测到 Java 环境"
-    echo "📦 可安装的 OpenJDK 版本如下（Adoptium Temurin）："
-    echo "1. temurin@8"
-    echo "2. temurin@11"
-    echo "3. temurin@17 ✅（默认推荐）"
-    echo "4. temurin@21"
-    echo ""
-    read "jdk_choice?请输入要安装的 JDK 版本（8/11/17/21，回车默认 17）："
-
-    case "$jdk_choice" in
-        8)  jdk_version="8" ;;
-        11) jdk_version="11" ;;
-        17|"") jdk_version="17" ;;  # 默认
-        21) jdk_version="21" ;;
-        *) echo "⚠️ 无效输入，默认安装 temurin@17" ; jdk_version="17" ;;
-    esac
-
-    echo "📥 使用 Homebrew 安装 OpenJDK: temurin@$jdk_version ..."
-    brew install --cask "temurin@$jdk_version"
-
-    java_home=$(/usr/libexec/java_home 2>/dev/null)
-
-    if [[ -z "$java_home" ]]; then
-        echo "❌ 安装失败或 JAVA_HOME 未识别，请手动检查 Java 安装"
-        exit 1
-    else
-        echo "✅ Java 安装完成："
-        echo "$java_home"
-    fi
-else
-    echo "✅ 已检测到 Java 安装："
-    echo "$java_home"
+# ========== 自述 ==========
+clear
+green "📦 本脚本用于打开 Android Studio 并定位到 Flutter 项目或 Dart 启动文件"
+green "===================================================================="
+green "👉 支持："
+green "   1. 拖入 Flutter 项目根目录（需包含 lib/main.dart 且有 void main）"
+green "   2. 拖入单个 Dart 文件（需包含 void main）"
+green "===================================================================="
+echo ""
+read "?🟢 按回车继续，任意键退出：" user_continue
+if [[ -n "$user_continue" ]]; then
+    red "❌ 已取消执行"
+    exit 0
 fi
 
-export JAVA_HOME="$java_home"
-echo "☕️ JAVA_HOME 设置为："
-echo "$JAVA_HOME"
+# ========== 判断输入路径 ==========
+target_path="$1"
 
-###########################
-# 📂 获取项目目录并切换至 android
-###########################
-
-current_directory=$(cd "$(dirname "$0")"; pwd)
-echo "📂 当前项目目录："
-echo "$current_directory"
-cd "$current_directory/android"
-
-###########################
-# 🧹 关闭并重启 iOS 模拟器
-###########################
-
-echo "🛑 正在关闭 iOS 模拟器..."
-xcrun simctl shutdown all
-osascript -e 'quit app "Simulator"' && echo "✅ iOS 模拟器进程已终止"
-open -a Simulator
-
-###########################
-# 🔧 设置 Android 环境变量（并写入配置）
-###########################
-
-SDK_DIR=~/Library/Android/sdk
-CMDLINE_TOOLS_DIR="$SDK_DIR/cmdline-tools"
-LATEST_DIR="$CMDLINE_TOOLS_DIR/latest"
-TOOLS_URL="https://dl.google.com/android/repository/commandlinetools-mac-10406996_latest.zip"
-
-ANDROID_SDK_LINE="export ANDROID_SDK_ROOT=$SDK_DIR"
-PATH_LINE="export PATH=\$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:\$PATH"
-JAVA_LINE='export JAVA_HOME=$(/usr/libexec/java_home)'
-
-CONFIG_FILES=(
-    "$HOME/.bash_profile"
-    "$HOME/.bashrc"
-    "$HOME/.zshrc"
-)
-
-if [[ -n "$ZSH" && -f "$ZSH/oh-my-zsh.sh" ]]; then
-    CONFIG_FILES+=("$ZSH/oh-my-zsh.sh")
-fi
-
-# 写入环境变量
-add_env_if_needed() {
-    local file=$1
-    echo "📄 检查配置文件："
-    echo "$file"   # ✅ 独占一行 ⌘+点击可用
-    touch "$file"
-
-    if ! grep -Fxq "$ANDROID_SDK_LINE" "$file"; then
-        echo "$ANDROID_SDK_LINE" >> "$file"
-        echo "✅ 添加 ANDROID_SDK_ROOT 到 $file"
-    fi
-
-    if ! grep -Fxq "$PATH_LINE" "$file"; then
-        echo "$PATH_LINE" >> "$file"
-        echo "✅ 添加 PATH 到 $file"
-    fi
-
-    if ! grep -Fxq "$JAVA_LINE" "$file"; then
-        echo "$JAVA_LINE" >> "$file"
-        echo "✅ 添加 JAVA_HOME 到 $file"
-    fi
-}
-
-echo "🔍 正在检查并写入环境变量..."
-for file in "${CONFIG_FILES[@]}"; do
-    add_env_if_needed "$file"
+while [[ ! -e "$target_path" ]]; do
+    echo ""
+    yellow "📂 当前目录不是 Flutter 项目，请拖入 Flutter 项目根目录或 Dart 启动文件："
+    read "target_path?👉 拖入路径："
+    target_path="${target_path/#\~/$HOME}"  # 展开 ~
+    target_path="${target_path%"${target_path##*[![:space:]]}"}" # 去尾部空格
+    target_path="${target_path//\\/}" # 移除反斜线
 done
 
-# 导出当前 shell 环境
-export ANDROID_SDK_ROOT="$SDK_DIR"
-export PATH="$LATEST_DIR/bin:$PATH"
-
-###########################
-# 🛠️ Android SDK 工具链自检
-###########################
-
-echo ""
-echo "🛠️ Android SDK 工具链自检"
-echo "👉 回车跳过，任意输入 + 回车执行修复"
-read "user_input?🔍 是否进行 SDK 自检："
-
-if [[ -z "$user_input" ]]; then
-    echo "⏭️ 已跳过 SDK 自检"
-else
-    echo "🔍 检查 cmdline-tools..."
-
-    if [[ -d "$LATEST_DIR" ]]; then
-        echo "✅ 已存在 cmdline-tools/latest"
-    else
-        echo "⬇️ 正在下载 cmdline-tools..."
-        mkdir -p "$CMDLINE_TOOLS_DIR"
-        curl -L -o "$CMDLINE_TOOLS_DIR/tools.zip" "$TOOLS_URL"
-        unzip -o "$CMDLINE_TOOLS_DIR/tools.zip" -d "$CMDLINE_TOOLS_DIR/tmp"
-        mv "$CMDLINE_TOOLS_DIR/tmp/cmdline-tools" "$LATEST_DIR"
-        rm -rf "$CMDLINE_TOOLS_DIR/tmp" "$CMDLINE_TOOLS_DIR/tools.zip"
-        echo "✅ cmdline-tools 安装完成"
+# ========== 判断 main.dart 或单文件 ==========
+if [[ -d "$target_path" ]]; then
+    # 是目录，尝试找 lib/main.dart
+    main_file="$target_path/lib/main.dart"
+    if [[ ! -f "$main_file" ]]; then
+        red "❌ 未找到 lib/main.dart，无法继续"
+        exit 1
     fi
-
-    echo "📋 当前 SDK 工具列表："
-    "$LATEST_DIR/bin/sdkmanager" --list
-    echo "✅ SDK 自检完成"
+else
+    # 是文件
+    main_file="$target_path"
 fi
 
-###########################
-# 🚀 启动 Android Studio
-###########################
+# ========== 检查是否含 void main ==========
+if ! grep -qE '^\s*void\s+main\s*\(\s*\)' "$main_file"; then
+    red "❌ 文件中未找到未被注释的 void main()，不是有效启动文件"
+    exit 1
+fi
 
-open -a "Android Studio" "$current_directory"
+# ========== 打开 Android Studio ==========
+project_dir=$(dirname "$main_file")
+green "🚀 即将打开 Android Studio 项目：$project_dir"
+open -a "Android Studio" "$project_dir"

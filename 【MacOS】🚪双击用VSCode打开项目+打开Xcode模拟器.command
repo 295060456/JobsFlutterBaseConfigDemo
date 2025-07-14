@@ -1,25 +1,76 @@
-#! /bin/sh
+#!/bin/zsh
 
-# 获取当前脚本文件的目录
-current_directory=$(dirname "$(readlink -f "$0")")
-echo $current_directory
-cd $current_directory
+# ========== 彩色输出 ==========
+red()    { echo "\033[1;31m$1\033[0m"; }
+green()  { echo "\033[1;32m$1\033[0m"; }
+yellow() { echo "\033[1;33m$1\033[0m"; }
+blue()   { echo "\033[1;34m$1\033[0m"; }
 
-# 关闭所有iOS模拟器
-xcrun simctl shutdown all
-# 检查是否有iOS模拟器进程存在(存在即杀进程)
-if pgrep -f 'Simulator' >/dev/null; then
-    # 如果有，则会杀死所有包含"Simulator"字符串的进程
-    osascript -e 'quit app "Simulator"'
-    echo "iOS模拟器进程已终止"
-else
-    echo "没有找到iOS模拟器进程"
+# ========== 自述 ==========
+clear
+green "🛠️ 本脚本用于打开 VSCode 并运行 Flutter 项目到 iOS 模拟器"
+green "===================================================================="
+green "👉 支持："
+green "   1. 拖入 Flutter 项目根目录（需包含 lib/main.dart 且含 void main）"
+green "   2. 拖入单个 Dart 文件（需包含 void main）"
+green "===================================================================="
+echo ""
+read "?🟢 按回车继续，任意键退出：" user_continue
+if [[ -n "$user_continue" ]]; then
+    red "❌ 已取消执行"
+    exit 0
 fi
 
-# 打开xcode模拟器
-open -a Simulator
-# 打开VSCode
-code .
+# ========== 判断输入路径 ==========
+target_path="$1"
+
+while [[ ! -e "$target_path" ]]; do
+    echo ""
+    yellow "📂 当前目录不是 Flutter 项目，请拖入 Flutter 项目根目录或 Dart 启动文件："
+    read "target_path?👉 拖入路径："
+    target_path="${target_path/#\~/$HOME}"  # 展开 ~
+    target_path="${target_path%"${target_path##*[![:space:]]}"}" # 去尾部空格
+    target_path="${target_path//\\/}" # 移除反斜线
+done
+
+# ========== 判断 main.dart 或单文件 ==========
+if [[ -d "$target_path" ]]; then
+    # 是目录，尝试找 lib/main.dart
+    main_file="$target_path/lib/main.dart"
+    if [[ ! -f "$main_file" ]]; then
+        red "❌ 未找到 lib/main.dart，无法继续"
+        exit 1
+    fi
+else
+    # 是文件
+    main_file="$target_path"
+fi
+
+# ========== 检查是否含 void main ==========
+if ! grep -qE '^\s*void\s+main\s*\(\s*\)' "$main_file"; then
+    red "❌ 文件中未找到未被注释的 void main()，不是有效启动文件"
+    exit 1
+fi
+
+# ========== 打开 VSCode ==========
+project_dir=$(dirname "$main_file")
+green "🚀 即将使用 VSCode 打开项目：$project_dir"
+code "$project_dir"
+
+# ========== 启动 iOS 模拟器 ==========
+echo ""
+yellow "🛑 正在关闭所有 iOS 模拟器..."
+xcrun simctl shutdown all
+osascript -e 'quit app "Simulator"' && green "✅ iOS 模拟器进程已终止"
+
+echo ""
+read "?📱 按回车重新打开 iOS 模拟器，输入任意内容后回车跳过：" sim_input
+if [[ -z "$sim_input" ]]; then
+    open -a Simulator
+    green "✅ iOS 模拟器已重新打开"
+else
+    yellow "⏭️ 已跳过打开模拟器"
+fi
 
 #xcrun simctl shutdown all：
 #这是一个由苹果提供的命令行工具，用于与模拟器进行交互。
