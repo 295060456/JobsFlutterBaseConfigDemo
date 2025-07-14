@@ -83,7 +83,6 @@ dependencies:
 # 用户权限处理
   permission_handler: # 用于处理权限
 # 网络请求
-  connectivity_plus: # 用于检查设备网络连接状态
   http: # 用于网络请求
   # Chopper: # 用于网络请求
   # FlutterHttpClient: # 用于网络请求

@@ -845,23 +845,7 @@ class SpUtil {
 }
 ```
 
-### 9、Comparable <font color=red><b>&lt;T&gt;</b></font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
-
-> 1️⃣ Dart 中的一个接口（mixin），表示 **“可比较”类型**
->
-> 2️⃣ 用于支持排序、查找、比较等操作
->
-> 3️⃣ 触发`compareTo()`的几个方式：<u>使用 `List.sort()` 排序</u>、<u>使用 `<`、`>`, `<=`, `>=`</u>、<u>`Comparable.compare(a, b)`</u>、<u>显示调用</u>
-
-  ```dart
-  Comparable.compare(a, b)
-  ```
-
-  * 返回 **负数**：表示 `a < b`
-
-  * 返回 **0**：表示 `a == b`
-
-  * 返回 **正数**：表示 `a > b`
+### 9、
 
 ### 10、[**EasyLoading**](https://pub.dev/documentation/flutter_easyloading/latest/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -931,7 +915,7 @@ dependencies:
   flutter_plugin_engagelab: ^1.2.4
 ```
 
-### 12、[**OpenInstall**](https://www.openinstallglobal.com/)：移动端的安装/拉新/渠道统计 SDK
+### 12、[**OpenInstall**](https://www.openinstallglobal.com/)：移动端的安装/拉新/渠道统计 SDK <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 Future<void> initOpeninstall() async {
@@ -1255,6 +1239,148 @@ String getNowTime() {
 
     总的来说，`.idea` 文件夹是 JetBrains IDE 用于存储项目配置和元数据的文件夹，它通常不应该被版本控制系统跟踪，因为这些配置文件通常是特定于开发者的，并且可能会因为 IDE 版本的不同而有所变化。
     
+  * <font color=red>注解（以`@JsonSerializable() `为例） vs OC 分类（Category）</font>
+
+    * 确实都达到了**在不改动原类结构下，增加功能**的目的
+
+      📌 相同点
+
+      | 特点                          | @JsonSerializable()（Flutter） | Category（Objective-C） |
+      | ----------------------------- | ------------------------------ | ----------------------- |
+      | ✅ 不改动类的核心逻辑          | 是                             | 是                      |
+      | ✅ 给类“加功能”                | 是（加上了 JSON 能力）         | 是（加方法或属性）      |
+      | ✅ 使用时像“声明一个注解/扩展” | 是                             | 是                      |
+      | ✅ 开发者不用手写大量样板代码  | 是                             | 是                      |
+
+      ❌ 不同点（本质机制不一样）
+
+      | 特点           | @JsonSerializable()（Dart）    | Category（Obj-C）               |
+      | -------------- | ------------------------------ | ------------------------------- |
+      | ⚙️ 本质         | 靠代码生成器自动生成 Dart 代码 | 运行时动态将方法加入类          |
+      | 📦 产物         | 编译阶段生成 `.g.dart` 文件    | 运行时加入新方法映射表          |
+      | 🔧 工作时机     | 编译阶段（build_runner）       | 运行时（Objective-C runtime）   |
+      | 🧠 类型系统影响 | 有静态类型检查                 | 无类型检查，靠 runtime dispatch |
+      | 📄 新增文件     | 会生成新文件                   | 不会生成新文件                  |
+
+  * Dart 中的抽象类可以定义 `factory` 构造函数，它不能直接被实例化，但可以通过这个 `factory` 返回子类对象或其他实例，从而起到**工厂方法（类方法）+ 构造器**的双重作用。
+
+  * Dart.Flutter单例的全部写法
+
+    | 使用场景            | 推荐写法                           |
+    | ------------------- | ---------------------------------- |
+    | 简单工具类          | `factory` + 私有构造函数懒汉式     |
+    | 资源敏感/要懒加载   | `factory` + `??=` 初始化           |
+    | 大型项目 / 解耦依赖 | 使用 `GetIt` / `riverpod` 管理单例 |
+    | 多类型缓存管理      | 泛型单例封装模板                   |
+
+    * ✅ 最推荐写法（懒汉式 + 工厂构造）
+
+      ```dart
+      class Singleton {
+        static Singleton? _instance;
+      
+        Singleton._internal(); // 私有构造函数
+      
+        factory Singleton() {
+          return _instance ??= Singleton._internal();
+        }
+      
+        void doSomething() {
+          print('Doing something...');
+        }
+      }
+      ```
+
+    * 📌 饿汉式（类加载就创建）
+
+      ```dart
+      class Singleton {
+        static final Singleton _instance = Singleton._internal();
+      
+        Singleton._internal();
+      
+        factory Singleton() => _instance;
+      }
+      ```
+
+    * 📌 静态变量初始化（等效饿汉）
+
+      ```dart
+      class Singleton {
+        Singleton._(); // 私有构造
+      
+        static final Singleton instance = Singleton._();
+      
+        void foo() => print('Singleton foo');
+      }
+      ```
+
+      ```dart
+      Singleton.instance.foo();
+      ```
+
+    * 📌 懒汉式 getter（懒加载写法）
+
+      ```dart
+      class Singleton {
+        static Singleton? _instance;
+      
+        Singleton._();
+      
+        static Singleton get instance {
+          return _instance ??= Singleton._();
+        }
+      }
+      ```
+
+    * 📌 Dart 单例完整封装模板（带线程安全/泛型支持）
+
+      ```dart
+      class Singleton<T> {
+        static final Map<Type, Object> _cache = {};
+      
+        Singleton._();
+      
+        static T getInstance<T>(T Function() creator) {
+          if (_cache.containsKey(T)) return _cache[T] as T;
+          final instance = creator();
+          _cache[T] = instance as Object;
+          return instance;
+        }
+      }
+      ```
+
+      ```dart
+      class MyService {
+        void sayHi() => print("Hi");
+      }
+      
+      final service = Singleton.getInstance(() => MyService());
+      ```
+
+    * 📌 使用 GetIt 实现全局单例（推荐用于大型项目）
+
+      ```dart
+      import 'package:get_it/get_it.dart';
+      
+      final getIt = GetIt.instance;
+      
+      class MyService {
+        void doWork() => print("Working...");
+      }
+      
+      void setup() {
+        getIt.registerLazySingleton(() => MyService());
+      }
+      ```
+
+      ```dart
+      // 使用：
+      void example() {
+        getIt<MyService>().doWork();
+      }
+      ```
+
   * <font color=red>**abstract**</font>
 
     > 1️⃣ 防止被实例化
@@ -1262,6 +1388,24 @@ String getNowTime() {
     > 2️⃣ 不能背继承
     >
     > 常用于**纯静态工具类或常量容器类**的定义。提升代码的可读性和语义安全性，是一种更严谨的推荐写法
+
+* Comparable <font color=red><b>&lt;T&gt;</b></font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+  > 1️⃣ Dart 中的一个接口（mixin），表示 **“可比较”类型**
+  >
+  > 2️⃣ 用于支持排序、查找、比较等操作
+  >
+  > 3️⃣ 触发`compareTo()`的几个方式：<u>使用 `List.sort()` 排序</u>、<u>使用 `<`、`>`, `<=`, `>=`</u>、<u>`Comparable.compare(a, b)`</u>、<u>显示调用</u>
+
+    ```dart
+  Comparable.compare(a, b)
+    ```
+
+    * 返回 **负数**：表示 `a < b`
+
+    * 返回 **0**：表示 `a == b`
+
+    * 返回 **正数**：表示 `a > b`
 
 * **纯静态类** 的（常见）写法
 
@@ -1332,4 +1476,51 @@ String getNowTime() {
       static const version = '1.0.0';
     }
     ```
+
+## 四、FAQ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+* 为什么Dart.Flutter禁止反射机制？
+
+  👉 是为了保证 **更快启动、更小体积、更高性能的移动应用体验**，这是设计上的取舍
+
+  * **AOT 无法支持动态反射**
+
+    [官方文档说明](https://github.com/flutter/flutter/issues/2072)：“We have no plans to support dart:mirrors in Flutter.”
+  
+    ```dart
+    import 'dart:mirrors'; // ❌ 直接报错：Unsupported in Flutter
+    ```
+
+    反射意味着：
+  
+    - 动态调用方法（通过字符串方法名）
+    - 动态创建对象（通过类名字符串）
+    - 动态读取字段（通过字符串字段名）
+
+    这要求 Dart 在运行时 **保留所有类型信息** 和 **方法表**，但 AOT 编译时会：
+    
+    - ✅ **去掉未用代码（Tree Shaking）**
+    - ✅ **剥离类型信息来压缩包体积**
+    - ✅ **只保留被静态调用的代码路径**
+    
+    ➡️ 所以 **反射需要的运行时信息根本就被编译器优化掉了**。
+    
+  * **`dart:mirrors` 会极大增加体积和启动时间**
+  
+    * Flutter 官方测试显示：
+       **启用 dart:mirrors 会增加几 MB 的包大小**（尤其是 iOS）
+    * 启动速度也会明显变慢，因为要加载大量元信息
+  
+  * 替代反射
+  
+    <font color=red>用的这些 `@JsonSerializable()`、`build_runner` 代码生成，其实就是“用静态代码生成”来**替代反射能做的那些事**。</font>
+  
+    | 目的        | Flutter 推荐做法                        |
+    | ----------- | --------------------------------------- |
+    | JSON 转换   | 用 `json_serializable` 生成代码代替反射 |
+    | 路由注册    | 用静态表 / 自动生成路由注册             |
+    | AOP（切面） | 用 codegen 或封装中间件实现             |
+    | 服务定位    | 用 `GetIt` 或 `provider` 的静态注入机制 |
+  
+  
 
