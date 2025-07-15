@@ -364,7 +364,7 @@ SystemChrome.setPreferredOrientations([
 
 #### 4.4、**`GetxService`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> `GetxService` 是 GetX 提供的**专门用于全局单例管理的服务类**，适合放一些只需要创建一次，整个 App 生命周期中都不释放的“后台服务”
+> `GetxService` 是 [**`GetX`**](https://pub.dev/packages/get)  提供的**专门用于全局单例管理的服务类**，适合放一些只需要创建一次，整个 App 生命周期中都不释放的“后台服务”
 
 | 特性             | GetxController           | GetxService                    |
 | ---------------- | ------------------------ | ------------------------------ |
@@ -410,7 +410,7 @@ SystemChrome.setPreferredOrientations([
   print(authService.token);
   ```
 
-#### 4.5、**`GetPage`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 4.5、**`GetPage()`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ 用于在 `GetMaterialApp` 中注册页面，它包含了页面路径、页面构造函数、绑定依赖、转场动画等信息。
 >
@@ -554,7 +554,140 @@ GetPage(
   Get.offAllNamed('/splash');
   ```
 
-#### 4.7、基于[**`GetX`**](https://pub.dev/packages/get) 最佳实践的完整项目结构模板（项目名为：`getx_demo`） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 4.7、**`Get.dialog()`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> `Get.dialog()` 默认用当前上下文找 Navigator
+
+[**`GetX`**](https://pub.dev/packages/get) 框架提供的弹窗方法
+
+| 参数名               | 类型       | 说明                                           |
+| -------------------- | ---------- | ---------------------------------------------- |
+| `barrierDismissible` | `bool`     | 是否点击背景关闭弹窗，默认 `true`              |
+| `useSafeArea`        | `bool`     | 是否使用 SafeArea，默认 `true`                 |
+| `name`               | `String?`  | 给弹窗设置一个路由名（可选）                   |
+| `transitionDuration` | `Duration` | 动画持续时间，默认 200ms                       |
+| `transitionCurve`    | `Curve`    | 动画曲线，如 `Curves.easeInOut`                |
+| `opaque`             | `bool`     | 是否完全遮挡，默认 `false`                     |
+| `barrierColor`       | `Color`    | 背景颜色，默认 `Colors.black.withOpacity(0.5)` |
+
+```dart
+ElevatedButton(
+  onPressed: () async {
+    final result = await Get.dialog<String>(
+      _CustomDialogContent(),
+
+      barrierDismissible: true, // ✅ 点击弹窗外区域是否关闭弹窗（true = 可关闭）
+      barrierColor: Colors.black.withOpacity(0.5), // ✅ 弹窗背景遮罩颜色（通常为半透明黑色）
+      useSafeArea: true, // ✅ 是否自动避开状态栏/刘海/底部安全区（默认 true）
+
+      navigatorKey: Get.key, // ✅ 指定使用哪个 Navigator（默认用 Get.key 就行）
+      arguments: {'from': '按钮点击'}, // ✅ 向弹窗内部传递参数（可通过 Get.arguments 获取）
+
+      transitionDuration: Duration(milliseconds: 400), // ✅ 动画持续时间（默认 200ms）
+      transitionCurve: Curves.easeInOutBack, // ✅ 动画曲线（决定进出弹窗的运动方式）
+
+      name: '/custom-dialog', // ✅ 路由名称（可选，方便调试或拦截路由）
+      routeSettings: RouteSettings(name: '/custom-dialog-settings'), // ✅ 更完整的路由配置（配合导航系统）
+    );
+
+    if (result != null) {
+      Get.snackbar('返回结果', '你选择了: $result'); // ✅ 弹窗关闭后获取返回值
+    }
+  },
+  child: Text('打开自定义弹窗'),
+)
+```
+
+#### 4.8、**`Get.key` **<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> **`Get.key` 就是给全局 Navigator 打了个 tag（标签）**，即：**全局 Navigator Key**。[**`GetX`**](https://pub.dev/packages/get)  把它注册到自己的容器里，之后你所有（push、pop、dialog 等）相关操作都可以**不需要 context，直接通过这个 tag 找到并调用 Navigator 的功能。**（<font color=red>类似于iOS的**通知机制**</font>）
+
+| 传统 Flutter              | [**`GetX`**](https://pub.dev/packages/get)                   |
+| ------------------------- | ------------------------------------------------------------ |
+| Navigator.of(context)     | Get.key.currentState                                         |
+| 弹窗必须要 context        | `Get.dialog()` 无需 context                                  |
+| 每个页面要传 BuildContext | [**`GetX`**](https://pub.dev/packages/get)  容器中全局持有导航器 |
+| UI 和状态管理耦合严重     | UI/逻辑可分离，Controller 也能导航                           |
+
+✅ 场景：从非 UI 层（比如 Service/Controller）弹出一个 Dialog，而不依赖 `BuildContext`
+
+```dart
+void main() {
+  runApp(GetMaterialApp(
+    navigatorKey: Get.key, // ✅ 注册全局导航器 必须初始化时配置一次
+    home: MyHomePage(),
+  ));
+}
+
+class AuthService {
+  void checkLoginAndShowDialog() {
+    /// ✅ 不依赖 context 就能显示 UI
+    Get.dialog(
+      AlertDialog(
+        title: Text('未登录'),
+        content: Text('请先登录才能继续操作'),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text('取消'),
+          ),
+          TextButton(
+            onPressed: () {
+              Get.back();
+              Get.toNamed('/login'); // 可以继续跳转
+            },
+            child: Text('去登录'),
+          ),
+        ],
+      ),
+      navigatorKey: Get.key, // ✅ 关键点：指向全局 Navigator（此例里面可以不写）
+      barrierDismissible: false,
+    );
+  }
+}
+
+ElevatedButton(
+  onPressed: () {
+    AuthService().checkLoginAndShowDialog(); // ✅ 不用 context，也能弹窗
+  },
+  child: Text('执行需要登录的操作'),
+)
+```
+
+* ✅ 那什么时候 **必须写 `navigatorKey: Get.key`**？
+
+  * ❗ 场景1：页面还没加载完成（比如在 `initState` 或 `GetxController.onInit()` 里直接弹）
+  
+    ```dart
+    @override
+    void initState() {
+      super.initState();
+      Future.delayed(Duration.zero, () {
+        Get.dialog(AlertDialog(...)); // ❌ 可能找不到 Navigator.currentContext
+      });
+    }
+    ```
+  
+  * ❗ 场景2：用了嵌套的<a href="#Shell页面" style="font-size:17px; color:green;"><b> Shell页面</b></a> / 子<a href="#Navigator" style="font-size:17px; color:green;"><b> `Navigator`</b></a>   （如 `BottomNavigationBar` + `Tab`）
+  
+    ```dart
+    Scaffold(
+      body: Navigator( // 👈 嵌套 navigator，Get.dialog 找不到上层 Navigator
+        key: shellKey,
+        ...
+      ),
+    );
+    ```
+
+> 🧠 **`navigatorKey: Get.key` 是保险机制：**
+>  当你在 UI 按钮中弹窗，不写也可以；
+>  但如果你在“非 UI 上下文”或“嵌套导航结构”中调用弹窗，**就必须显式指定 `navigatorKey` 来避免找不到 Navigator 的错误。**
+>
+> **完全可以养成习惯：**
+>  👉 **任何时候用 `Get.dialog()`，都写上 `navigatorKey: Get.key`**，
+>  ✅ 兼容所有场景、生命周期、嵌套结构，绝对不翻车。
+
+#### 4.9、基于[**`GetX`**](https://pub.dev/packages/get) 最佳实践的完整项目结构模板（项目名为：`getx_demo`） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```bash
 lib/
@@ -845,7 +978,161 @@ class SpUtil {
 }
 ```
 
-### 9、
+### 9、Flutter标准 <a href="#模态" style="color:green; font-size:25px;"><b>模态</b></a> 弹窗组件（SDK自带的）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+Flutter SDK（系统自带）的模态弹窗汇总表（截至 2025）
+
+| 名称                        | 类型 | 用途说明                           | 所属库                           |
+| --------------------------- | ---- | ---------------------------------- | -------------------------------- |
+| `AlertDialog`               | 组件 | 标准提示对话框                     | `package:flutter/material.dart`  |
+| `SimpleDialog`              | 组件 | 简单选项对话框                     | `package:flutter/material.dart`  |
+| `Dialog`                    | 组件 | 可自定义内容                       | `package:flutter/material.dart`  |
+| `showDialog()`              | 方法 | 通用弹窗封装                       | `package:flutter/material.dart`  |
+| `showGeneralDialog()`       | 方法 | 自定义内容和动画的底层弹窗方法     | `package:flutter/material.dart`  |
+| `showModalBottomSheet()`    | 方法 | 弹出底部模态弹窗                   | `package:flutter/material.dart`  |
+| `showDatePicker()`          | 方法 | 弹出日期选择器                     | `package:flutter/material.dart`  |
+| `showTimePicker()`          | 方法 | 弹出时间选择器                     | `package:flutter/material.dart`  |
+| `showSearch()`              | 方法 | 弹出搜索页（全屏弹窗）             | `package:flutter/material.dart`  |
+| `showAboutDialog()`         | 方法 | 显示应用信息弹窗                   | `package:flutter/material.dart`  |
+| `showLicensePage()`         | 方法 | 显示 License 页面                  | `package:flutter/material.dart`  |
+| `LicensePage`               | 组件 | License 页面容器                   | `package:flutter/material.dart`  |
+| `showCupertinoDialog()`     | 方法 | 弹出 iOS 风格弹窗                  | `package:flutter/cupertino.dart` |
+| `CupertinoAlertDialog`      | 组件 | iOS 风格对话框组件                 | `package:flutter/cupertino.dart` |
+| `showCupertinoModalPopup()` | 方法 | 弹出 iOS 风格底部弹窗              | `package:flutter/cupertino.dart` |
+| `CupertinoActionSheet`      | 组件 | iOS 风格底部弹窗内容               | `package:flutter/cupertino.dart` |
+| `CupertinoPopupSurface`     | 组件 | 弹窗表面组件（用于自定义弹窗外观） | `package:flutter/cupertino.dart` |
+
+
+* `AlertDialog`（最常用）
+
+  ```dart
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text('提示'),
+        content: Text('你确定要删除吗？'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text('取消'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text('确定'),
+          ),
+        ],
+      );
+    },
+  );
+  ```
+
+* `SimpleDialog`
+
+  ```dart
+  /// 适合展示多个选项
+  showDialog(
+    context: context,
+    builder: (context) {
+      return SimpleDialog(
+        title: Text('请选择'),
+        children: [
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(context, 'A'),
+            child: Text('选项A'),
+          ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(context, 'B'),
+            child: Text('选项B'),
+          ),
+        ],
+      );
+    },
+  );
+  ```
+
+* `Dialog`
+
+  ```dart
+  /// 一个基础的对话框容器，通常用于自定义弹窗
+  showDialog(
+    context: context,
+    builder: (context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('自定义内容'),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('关闭'),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+  ```
+
+* `showDialog`
+
+  ```dart
+  /// 异步等待用户返回结果
+  bool? confirmed = await showDialog<bool>(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text('确认'),
+        content: Text('是否保存？'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('取消')),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: Text('确定')),
+        ],
+      );
+    },
+  );
+  if (confirmed == true) {
+    // 用户点击了确定
+  }
+  ```
+  
+* `showGeneralDialog`
+
+  ```dart
+  /// 完全自定义弹窗 + 动画
+  showGeneralDialog(
+    context: context,
+    barrierDismissible: true,
+    barrierLabel: '弹窗',
+    barrierColor: Colors.black54,
+    transitionDuration: Duration(milliseconds: 300),
+    pageBuilder: (_, __, ___) {
+      return Center(
+        child: Container(
+          width: 250,
+          height: 150,
+          padding: EdgeInsets.all(20),
+          color: Colors.white,
+          child: Text('自定义弹窗内容'),
+        ),
+      );
+    },
+    transitionBuilder: (_, animation, __, child) {
+      return ScaleTransition(
+        scale: animation,
+        child: child,
+      );
+    },
+  );
+  ```
+  
+  ...demo未完待补充
+
 
 ### 10、[**EasyLoading**](https://pub.dev/documentation/flutter_easyloading/latest/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -1010,39 +1297,73 @@ String getNowTime() {
   | `k` / `kk` | 24小时制（1–24）         | `24`（不会是 0）                    |
   | `K` / `KK` | 12小时制（0–11）         | `0` 表示 12点                       |
 
+### 14、 <font id=Navigator>✅Navigator</font>
+
+> 1️⃣ 在 Flutter 中，每一个 `Navigator` 都会有**自己的路由栈（Route Stack）**，并不是全局唯一的
+>
+> 2️⃣ 可以有多个 **Navigator**👇
+>
+> ```dart
+> MaterialApp → Navigator A （根）
+>              └── Scaffold → Navigator B （嵌套）
+> ```
+>
+> 3️⃣ 默认调用 `Navigator.of(context)`，是**从当前 context 向上查找最近的 Navigator**，**而不是找最上层的**
+
+### 15、🖥️屏幕适配[**flutter_screenutil**](https://pub.dev/packages/flutter_screenutil)
+
+```yaml
+dependencies:
+  flutter_screenutil:
+```
+
+```dart
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+```
+
+```dart
+ScreenUtilInit(
+  designSize: Size(375, 812), // 👈 指定设计稿尺寸
+);
+```
+
+```dart
+520.h     // 表示高度适配值
+300.w     // 表示宽度适配值
+16.sp     // 表示字体大小适配值
+```
+
+
 ## 三、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
-
-* **Getting Started**
-
-  This project is a starting point for a Flutter application.
-
-  A few resources to get you started if this is your first Flutter project:
-
-  - [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-  - [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-  For help getting started with Flutter development, view the
-  [online documentation](https://docs.flutter.dev/), which offers tutorials,
-  samples, guidance on mobile development, and a full API reference.
 
 * 安装[**fvm**]()的前提是先安装**dart**环境
 
   ```dart
   dart pub global activate fvm
   ```
-  
+
 * 如果[**VSCode**]()打开flutter项目以后没有办法通过`command`+`click`的形式点进去看，那么需要`command`+`shift`+`x` => 安装Dart/Flutter
 
   ![image-20250713101322760](./assets/README/image-20250713101322760.png)
 
   ![image-20250713101045523](./assets/README/image-20250713101045523.png)
-  
+
+* **package:**这种路径前缀只能用于 **`lib/` 目录下的 Dart 文件**。 表示从 `pubspec.yaml` 中定义的包或当前项目的 `lib/` 目录开始引用
+
+  ❌ **不能使用 `package:` 的情况**：
+
+  | ❌ 路径类型          | 原因说明                                                     |
+  | ------------------- | ------------------------------------------------------------ |
+  | `assets/`           | 用于加载资源，需通过 `AssetImage` 等方式加载                 |
+  | `lib/` 以外的文件夹 | 比如 `test/`、`bin/`、`web/`、`ios/`、`android/` 等不能被 `package:` 引用 |
+  | `lib/` 外 Dart 文件 | 比如 `tools/util.dart`，不是 `lib/` 下的无法被 `package:` 访问 |
+
 * [**Firebase**](https://firebase.google.com/?hl=zh-cn)：**Google 提供的一整套后端云服务平台**，专门为移动 App（Android/iOS）、Web 应用开发者提供“后端即服务”（BaaS）能力
 
   > 📦 一个不需要你自己搭服务器，就能拥有**推送通知、用户登录、数据库、文件存储、分析**等功能的一站式平台。
   >
   > <font>**虽然[**Firebase**](https://firebase.google.com/?hl=zh-cn)跨平台支持iOS，但是在Apple平台的推送都必须严格遵循苹果的标准设定（APNs）。即，在APNs上进行了二次封装**</font>
-  
+
   | 分类                                                         | 模块名称                                     | 功能说明                                |
   | ------------------------------------------------------------ | -------------------------------------------- | --------------------------------------- |
   | 🔔 推送通知                                                   | Firebase Cloud Messaging（FCM）              | 向 Android/iOS/Web 发送通知消息         |
@@ -1054,7 +1375,7 @@ String getNowTime() {
   | ☁️ 云函数                                                     | Firebase Cloud Functions                     | 写后端代码的 Serverless 平台            |
   | 🌐 托管                                                       | Firebase Hosting                             | 静态 Web 页面托管                       |
   | 🔎 A/B测试<br/>（通过对比两个版本（A 和 B）来找出哪一个效果更好的实验方法。） | Firebase Remote ConfigFirebase A/B Testing   | 远程动态配置，用户实验测试              |
-  
+
   | 平台    | 支持 [**Firebase**](https://firebase.google.com/?hl=zh-cn) 吗？ |
   | ------- | ------------------------------------------------------------ |
   | Android | ✅ 全面支持                                                   |
@@ -1063,7 +1384,7 @@ String getNowTime() {
   | Flutter | ✅ 有官方 SDK 支持                                            |
   | Unity   | ✅ 支持游戏开发                                               |
   | C++     | ✅ 支持部分模块                                               |
-  
+
 * **项目文件（夹）功能**
 
   * `analysis_options.yaml` 是一个与 Dart 语言开发相关的文件，它通常用于配置 Dart 代码的静态分析和代码风格检查工具；
@@ -1479,13 +1800,13 @@ String getNowTime() {
 
 ## 四、FAQ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-* 为什么Dart.Flutter禁止反射机制？
+* ✅为什么**Dart.Flutter**禁止反射机制？
 
   👉 是为了保证 **更快启动、更小体积、更高性能的移动应用体验**，这是设计上的取舍
 
   * **AOT 无法支持动态反射**
 
-    [官方文档说明](https://github.com/flutter/flutter/issues/2072)：“We have no plans to support dart:mirrors in Flutter.”
+    [官方文档说明](https://github.com/flutter/flutter/issues/2072)：“<u>We have no plans to support dart:mirrors in Flutter.</u>”
   
     ```dart
     import 'dart:mirrors'; // ❌ 直接报错：Unsupported in Flutter
@@ -1522,5 +1843,26 @@ String getNowTime() {
     | AOP（切面） | 用 codegen 或封装中间件实现             |
     | 服务定位    | 用 `GetIt` 或 `provider` 的静态注入机制 |
   
+* <font id=Shell页面>✅什么是**Shell**页面？</font>
+
+  > **Shell 页面就是你 App 的“主骨架页面”**，它负责承载内容、管理导航结构，而不是展示具体业务数据。
   
+  在 iOS 中等同于：
+  
+  - `UITabBarController`
+  - `UINavigationController`
+  - 或者你自定义的“主容器 + 内容页切换框架”
+  
+* <font id=模态>✅ 什么是**模态**？</font>
+
+  > 1️⃣ 指的是一种**强制用户完成某个操作或关闭弹窗之后，才能继续与页面其他部分交互**的界面方式。
+  >
+  > 2️⃣ 能防止用户误操作，也用于强调重要性
+  >
+  > 🔒 特点是：**阻断交互**。一旦出现模态界面：
+  >
+  > - 背后的内容变灰或被遮罩；
+  > - 用户无法点击、滚动、与其他界面交互；
+  > - 只能操作弹出的模态框（如“确定”或“取消”）；
+  > - 关闭弹窗后，才能回到原界面。
 

@@ -25,10 +25,8 @@ _color_echo cyan "88          88         88        88      88           88      
 _color_echo cyan "88          88         Y8a.    .a8P      88           88      88          88     \`8b   "
 _color_echo cyan "88          88888888888 \`\"Y8888Y\"'       88           88      88888888888 88      \`8b  "
 _color_echo cyan "                                                                                       "
-_color_echo cyan "                                                                                       "
 _color_echo yellow "                        🛠️ FLUTTER iOS 模拟器 启动脚本"
-
-#!/bin/zsh
+echo ""
 
 # ✅ 自述
 clear
@@ -44,11 +42,10 @@ _color_echo green "   6. 自动创建桌面 .command 快捷方式"
 _color_echo green "===================================================================="
 echo ""
 
-# ✅ 获取脚本路径
+# ✅ 项目路径判断
 script_path="$0"
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 
-# ✅ 判断是否为 Flutter 项目根目录
 is_flutter_root() {
   [[ -f "$1/pubspec.yaml" && -d "$1/lib" ]]
 }
@@ -67,13 +64,12 @@ done
 cd "$flutter_root" || exit 1
 _color_echo green "✅ 已识别 Flutter 项目根目录：$flutter_root"
 
-# ✅ 默认入口文件
+# ✅ main.dart 检查
 entry_file="$flutter_root/lib/main.dart"
 [[ ! -f "$entry_file" ]] && _color_echo red "❌ 缺少 lib/main.dart" && exit 1
 
-# ✅ 检查 lib/main.dart 是否含未注释的 void main()
 if ! grep -E '^\s*void\s+main\s*\(\s*\)' "$entry_file" | grep -v '^\s*//' >/dev/null; then
-  _color_echo red "❌ lib/main.dart 中未检测到未被注释的 void main()，无法作为入口"
+  _color_echo red "❌ lib/main.dart 中未检测到未被注释的 void main()"
   exit 1
 fi
 
@@ -88,15 +84,15 @@ _color_echo blue "🚧 请选择构建模式（debug / release / profile，默�
 read -r build_mode
 build_mode="${build_mode:-debug}"
 
-# ✅ FVM 支持
+# ✅ FVM 检测
 flutter_cmd="flutter"
 [[ -f "$flutter_root/.fvm/fvm_config.json" ]] && flutter_cmd="fvm flutter" && _color_echo yellow "🧩 使用 FVM"
 
-# ✅ 是否执行 pub get
+# ✅ pub get
 read "?📦 是否执行 flutter pub get？[空格+回车=执行, 回车=跳过] " run_get
 [[ "$run_get" =~ " " ]] && $flutter_cmd pub get
 
-# ✅ 关闭假后台模拟器
+# ✅ 模拟器彻底关闭
 _color_echo yellow "🛑 正在彻底关闭所有 iOS 模拟器..."
 xcrun simctl shutdown all >/dev/null 2>&1
 osascript -e 'quit app "Simulator"' >/dev/null 2>&1
@@ -107,93 +103,183 @@ pgrep -f Simulator >/dev/null && pkill -f Simulator && _color_echo green "✅ �
 read "?📱 按回车重新打开 iOS 模拟器，输入任意内容后回车跳过：" sim_input
 [[ -z "$sim_input" ]] && open -a Simulator && _color_echo green "✅ iOS 模拟器已重新打开" || _color_echo yellow "⏭️ 已跳过打开模拟器"
 
-# ✅ 等待模拟器设备
-booted_sim=""
-for i in {1..15}; do
-  booted_sim=$(xcrun simctl list devices booted | grep "iPhone")
-  [[ -n "$booted_sim" ]] && break
-  sleep 1
-done
+# ✅ 自动创建模拟器
+create_simulator_with_fzf() {
+  _color_echo blue "📦 获取可用设备类型..."
 
+  # 获取所有 iPhone 设备类型（显示名 | identifier）
+  local device_options=("${(@f)$(xcrun simctl list devicetypes |
+    grep '^iPhone' |
+    sed -E 's/^(.+) \((.+)\)$/📱 \1|\2/')}")
+
+  [[ ${#device_options[@]} -eq 0 ]] && _color_echo red "❌ 未找到可用设备类型" && return 1
+
+  # fzf 选择设备
+  local selected_device_display=$(printf "%s\n" "${device_options[@]}" |
+    cut -d'|' -f1 |
+    fzf --prompt="👉 选择设备型号 > " --height=40% --reverse)
+
+  [[ -z "$selected_device_display" ]] && _color_echo yellow "⚠️ 未选择设备" && return 1
+
+  # 获取设备 identifier
+  local selected_device_id=""
+  for entry in "${device_options[@]}"; do
+    local name="${entry%%|*}"
+    local id="${entry##*|}"
+    [[ "$name" == "$selected_device_display" ]] && selected_device_id="$id" && break
+  done
+
+  [[ -z "$selected_device_id" ]] && _color_echo red "❌ 无法匹配设备标识符" && return 1
+
+  _color_echo green "✅ 你选择的设备是：$selected_device_display"
+  _color_echo green "🔗 对应设备 ID：$selected_device_id"
+  echo ""
+
+  # ================== Runtime ==================
+  _color_echo blue "🧬 获取可用 iOS Runtime..."
+
+  local runtime_options=("${(@f)$(xcrun simctl list runtimes |
+    grep "iOS" |
+    grep -v "unavailable" |
+    sed -En 's/^.*(iOS [0-9.]+) \([^)]+\) - (com\.apple\.CoreSimulator\.SimRuntime\.[^)]+).*$/🧬 \1|\2/p')}")
+
+  [[ ${#runtime_options[@]} -eq 0 ]] && _color_echo red "❌ 未找到可用 Runtime" && return 1
+
+  # fzf 选择 Runtime
+  local selected_runtime_display=$(printf "%s\n" "${runtime_options[@]}" |
+    cut -d'|' -f1 |
+    fzf --prompt="👉 选择系统版本 > " --height=40% --reverse)
+
+  [[ -z "$selected_runtime_display" ]] && _color_echo yellow "⚠️ 未选择系统版本" && return 1
+
+  # 获取 Runtime identifier
+  local selected_runtime_id=""
+  for entry in "${runtime_options[@]}"; do
+    local name="${entry%%|*}"
+    local id="${entry##*|}"
+    [[ "$name" == "$selected_runtime_display" ]] && selected_runtime_id="$id" && break
+  done
+
+  [[ -z "$selected_runtime_id" ]] && _color_echo red "❌ 无法匹配系统版本标识符" && return 1
+
+  _color_echo green "🧬 你选择的系统版本是：$selected_runtime_display"
+  _color_echo green "🔗 对应 Runtime ID：$selected_runtime_id"
+  echo ""
+
+# ================== 创建模拟器 ==================
+    local sim_name="MySim_$(date +%s | tail -c 6)"
+    _color_echo blue "🚀 正在创建模拟器 $sim_name ..."
+    echo ""
+    _color_echo cyan "📤 执行命令：xcrun simctl create \"$sim_name\" \"$selected_device_id\" \"$selected_runtime_id\""
+
+    # ✅ 正确：create 成功会返回设备 ID
+    local sim_id=$(xcrun simctl create "$sim_name" "$selected_device_id" "$selected_runtime_id" 2>/dev/null)
+
+    if [[ -z "$sim_id" ]]; then
+      _color_echo red "❌ 模拟器创建失败"
+      return 1
+    fi
+
+    _color_echo green "✅ 模拟器创建成功：$sim_name"
+    _color_echo green "🆔 模拟器 ID：$sim_id"
+
+    # ✅ Boot 模拟器
+    _color_echo yellow "🚀 正在启动模拟器 $sim_name ..."
+    xcrun simctl boot "$sim_id" >/dev/null 2>&1
+
+    # ✅ 打开 Simulator.app
+    open -a Simulator
+
+    # ✅ 返回模拟器信息
+    echo "$sim_name|$sim_id"
+}
+
+# ✅ 模拟器检测与创建
+sim_name=""
+sim_id=""
 device_list=$($flutter_cmd devices | grep -i "simulator")
-should_create_simulator=false
+try_count=0
+max_try=3
 
-while [[ -z "$device_list" ]]; do
-  _color_echo yellow "⚠️ 未检测到模拟器，可能尚未加载完毕..."
-  echo "🔄 【回车】继续等待设备加载，或【输入任意字符+回车】进入模拟器创建流程："
+try_count=0
+max_try=3
+
+while [[ $try_count -lt $max_try ]]; do
+  device_list=$($flutter_cmd devices | grep -i "simulator")
+  [[ -n "$device_list" ]] && break
+
+  _color_echo yellow "⚠️ 未检测到模拟器（尝试第 $((try_count+1)) 次）"
+  echo "❓ 是否创建模拟器？输入 y 或 Y 回车创建，其它任意键跳过等待："
   read -r user_input
-  if [[ -z "$user_input" ]]; then
-    _color_echo blue "⏳ 等待中..."
-    sleep 2
-    device_list=$($flutter_cmd devices | grep -i "simulator")
-  else
-    should_create_simulator=true
+  if [[ "$user_input" == "y" || "$user_input" == "Y" ]]; then
+    result=$(create_simulator_with_fzf)
+    sim_name="${result%%|*}"
+    sim_id="${result##*|}"
     break
   fi
+
+  _color_echo cyan "⏳ 等待模拟器加载中..."
+  sleep 2
+  ((try_count++))
 done
 
-# ✅ 模拟器选择
-formatted_devices=()
-while IFS= read -r line; do
-  name=$(echo "$line" | awk -F '•' '{print $1}' | xargs)
-  id=$(echo "$line" | awk -F '•' '{print $2}' | xargs)
-  formatted_devices+=("$name（$id）")
-done <<< "$device_list"
-
-if [[ ${#formatted_devices[@]} -eq 1 ]]; then
-  selected_entry="${formatted_devices[1]}"
-else
-  selected_entry=$(printf "%s\n" "${formatted_devices[@]}" | fzf --prompt="👉 选择模拟器 > ")
-  [[ -z "$selected_entry" ]] && _color_echo red "❌ 未选择设备，退出" && exit 1
+if [[ -z "$device_list" && -z "$sim_id" ]]; then
+  _color_echo red "⏱️ 自动进入创建流程..."
+  result=$(create_simulator_with_fzf)
+  sim_name="${result%%|*}"
+  sim_id="${result##*|}"
 fi
 
-sim_name="${selected_entry%%（*}"
-sim_id="${selected_entry##*（}"
-sim_id="${sim_id%）}"
+# ✅ 若未设置 sim_id，则手动选择
+if [[ -z "$sim_id" ]]; then
+  formatted_devices=()
+  while IFS= read -r line; do
+    name=$(echo "$line" | awk -F '•' '{print $1}' | xargs)
+    id=$(echo "$line" | awk -F '•' '{print $2}' | xargs)
+    formatted_devices+=("$name（$id）")
+  done <<< "$device_list"
 
-# ✅ 构建 flutter run 命令
+  selected_entry=$(printf "%s\n" "${formatted_devices[@]}" | fzf --prompt="👉 选择模拟器 > ")
+  [[ -z "$selected_entry" ]] && _color_echo red "❌ 未选择设备，退出" && exit 1
+
+  sim_name="${selected_entry%%（*}"
+  sim_id="${selected_entry##*（}"
+  sim_id="${sim_id%）}"
+fi
+
+# ✅ flutter run 构建并运行
 run_cmd="$flutter_cmd run -d \"$sim_id\" -t \"$entry_file\" --$build_mode $flavor_param"
 
 _color_echo green "🚀 启动到模拟器：$sim_name ($sim_id)"
-_color_echo blue "🎯 是否后台运行 flutter run？直接回车 = 前台运行，输入任意字符 + 回车 = 后台运行："
+_color_echo blue "🎯 是否后台运行 flutter run？回车=前台，输入任意字符+回车=后台："
 read -r run_mode_input
 
 if [[ -z "$run_mode_input" ]]; then
-  _color_echo green "🚀 正在以【前台模式】运行 flutter run..."
   eval $run_cmd
 else
-  _color_echo green "🚀 正在以【后台模式】运行 flutter run..."
   eval $run_cmd > /tmp/flutter_run_log.txt 2>&1 &
   sleep 5
-  _color_echo green "✅ Flutter run 已在后台运行，日志保存至：/tmp/flutter_run_log.txt"
+  _color_echo green "✅ Flutter run 已在后台运行"
 
-  # ✅ 若日志中检测到异常自动修复 CocoaPods 并重试
   if grep -q "CocoaPods" /tmp/flutter_run_log.txt || grep -q "Error" /tmp/flutter_run_log.txt; then
-    _color_echo yellow "⚠️ flutter run 日志检测到异常，尝试自动修复 CocoaPods..."
-
-    if ! command -v pod &>/dev/null; then
-      _color_echo red "❌ 未安装 CocoaPods，请运行：sudo gem install cocoapods"
+    _color_echo yellow "⚠️ 检测到 CocoaPods 异常，尝试自动修复..."
+    command -v pod &>/dev/null || {
+      _color_echo red "❌ 未安装 CocoaPods：sudo gem install cocoapods"
       exit 1
-    fi
+    }
 
-    _color_echo blue "🧹 删除 Pods 和 Podfile.lock..."
     rm -rf ios/Pods ios/Podfile.lock
-
     cd ios || exit 1
-    _color_echo blue "📦 更新 CocoaPods 仓库..."
-    pod repo update
-    _color_echo blue "📦 执行 pod install..."
-    pod install
+    pod repo update && pod install
     cd .. || exit 1
 
     _color_echo yellow "♻️ 正在重新 flutter run（后台）..."
     eval $run_cmd > /tmp/flutter_run_log.txt 2>&1 &
     sleep 5
-    _color_echo green "✅ 已重新 flutter run（后台）"
   fi
 fi
 
-# ✅ 创建桌面快捷方式（只要没有就创建）
+# ✅ 创建桌面快捷方式
 project_name=$(grep -m1 '^name:' "$flutter_root/pubspec.yaml" | awk '{print $2}')
 desktop_path="$HOME/Desktop"
 shortcut_path="$desktop_path/${project_name}.command"
@@ -208,5 +294,5 @@ if [[ ! -L "$shortcut_path" || "$(readlink "$shortcut_path")" != "$script_path" 
   chmod +x "$shortcut_path"
   _color_echo green "✅ 已创建桌面快捷方式：$shortcut_path"
 else
-  _color_echo yellow "⚠️ 快捷方式已存在且已指向此脚本，跳过创建"
+  _color_echo yellow "⚠️ 快捷方式已存在，跳过创建"
 fi
