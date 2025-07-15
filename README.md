@@ -1297,7 +1297,7 @@ String getNowTime() {
   | `k` / `kk` | 24小时制（1–24）         | `24`（不会是 0）                    |
   | `K` / `KK` | 12小时制（0–11）         | `0` 表示 12点                       |
 
-### 14、 <font id=Navigator>✅Navigator</font>
+### 14、 <font id=Navigator>✅Navigator</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ 在 Flutter 中，每一个 `Navigator` 都会有**自己的路由栈（Route Stack）**，并不是全局唯一的
 >
@@ -1310,7 +1310,7 @@ String getNowTime() {
 >
 > 3️⃣ 默认调用 `Navigator.of(context)`，是**从当前 context 向上查找最近的 Navigator**，**而不是找最上层的**
 
-### 15、🖥️屏幕适配[**flutter_screenutil**](https://pub.dev/packages/flutter_screenutil)
+### 15、🖥️屏幕适配[**flutter_screenutil**](https://pub.dev/packages/flutter_screenutil) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```yaml
 dependencies:
@@ -1333,6 +1333,479 @@ ScreenUtilInit(
 16.sp     // 表示字体大小适配值
 ```
 
+### 16、Dart.Object <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> 在 Dart 中，**所有类最终都继承自 `Object`**，所以这些方法每个类都自动拥有
+
+| 方法                                  | 返回类型  | 作用                                                         | 是否常重写                  |
+| ------------------------------------- | --------- | ------------------------------------------------------------ | --------------------------- |
+| `toString()`                          | `String`  | 将对象转换为字符串，常用于打印、日志调试。                   | ✅ 经常重写，用于调试打印等  |
+| `operator ==(Object other)`           | `bool`    | 比较两个对象是否相等                                         | ✅ 自定义比较逻辑时必须重写  |
+| `get hashCode`                        | `int`     | 返回对象的哈希值，配合 `==` 使用<br>**在内存中快速定位/查找用的 ID** | ✅ 如果重写 `==`，必须重写它 |
+| `noSuchMethod(Invocation invocation)` | `dynamic` | 拦截未定义方法调用。<br>捕获未定义的方法调用（动态调用时），用于实现“代理”、“Mock”、“动态接口”等。 | ⚠️ 高级用法，较少用          |
+| `runtimeType`                         | `Type`    | 返回当前对象的运行时实际类型，常用于调试或类型判断           | ❌ 不能重写，只能调用        |
+| `identical(a, b)`                     | `bool`    | 判断两个对象是否为同一引用                                   | ❌ 静态方法，不可重写        |
+
+```dart
+class XXX{
+
+}
+/// 👆等价于👇：
+class XXX extends Object{
+
+}
+```
+
+### 17、Flutter中，支持<font color=red>**滑动**</font>的所有核心**`Widget`**
+
+* Flutter 原生SDK内置的滚动组件
+
+  | 类型       | Widget                                              | 说明                     |
+  | ---------- | --------------------------------------------------- | ------------------------ |
+  | 列表类     | `ListView`                                          | 常用线性滚动列表         |
+  | 网格类     | `GridView`                                          | 类似 `UICollectionView`  |
+  | 分页类     | `PageView`                                          | 左右滑动分页             |
+  | 单组件滚动 | `SingleChildScrollView`                             | 嵌套滚动或表单滑动常用   |
+  | 可重排列表 | `ReorderableListView`                               | 内置拖拽重排             |
+  | 组合滚动   | `CustomScrollView` + `SliverList` / `SliverGrid`    | 复杂结构滚动             |
+  | 多滚动嵌套 | `NestedScrollView`                                  | 滑动联动（如顶部折叠）   |
+  | 滚动增强   | `Scrollbar`、`RefreshIndicator`、`ScrollController` | 滚动条、刷新、跳转控制等 |
+
+  ```dart
+  /// ListView
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: 20, // 列表项数量
+      itemBuilder: (context, index) {
+        return ListTile(title: Text('Item $index'));
+      },
+      scrollDirection: Axis.vertical, // 滚动方向（默认垂直，可设置为 Axis.horizontal）
+      reverse: false, // 是否倒序显示列表项
+      controller: ScrollController(), // 滚动控制器，可用于跳转滚动位置
+      primary: false, // 是否使用主滚动区域（true时自动连接主 ScrollController）
+      physics: BouncingScrollPhysics(), // 滚动物理特性（惯性、回弹、滑动行为）
+      shrinkWrap: false, // 是否根据子组件内容自动收缩（true时适合嵌套）
+      padding: EdgeInsets.all(8), // 内容的内边距
+      cacheExtent: 100.0, // 预加载区域（列表滚动到临近位置时提前构建）
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual, 
+      // 键盘收起行为，可选 manual / onDrag
+      restorationId: 'listViewDemo', // 状态恢复用的 ID，用于记住滚动位置
+      clipBehavior: Clip.hardEdge, // 内容溢出裁剪方式
+    );
+  }
+  ```
+
+  ```dart
+  /// GridView
+  Widget build(BuildContext context) {
+    return GridView.count(
+      crossAxisCount: 3, // 每行几个格子
+      mainAxisSpacing: 10.0, // 主轴（垂直方向）间距
+      crossAxisSpacing: 10.0, // 横向间距
+      childAspectRatio: 1.0, // 宽高比，1.0 = 正方形
+      scrollDirection: Axis.vertical, // 默认垂直滚动
+      reverse: false, // 是否倒序显示
+      controller: ScrollController(), // 滚动控制器
+      physics: ClampingScrollPhysics(), // Android 风格滑动物理
+      shrinkWrap: false, // 是否自动收缩（适合嵌套）
+      padding: EdgeInsets.all(8), // 外边距
+      primary: false, // 是否占用主滚动视图
+      restorationId: 'gridViewDemo', // 状态恢复 ID
+      clipBehavior: Clip.hardEdge, // 内容裁剪
+      children: List.generate(
+        30,
+        (index) => Container(
+          color: Colors.blue,
+          child: Center(child: Text('Item $index')),
+        ),
+      ),
+    );
+  }
+  ```
+
+  ```dart
+  /// PageView
+  Widget build(BuildContext context) {
+    return PageView.builder(
+      itemCount: 5, // 页数
+      itemBuilder: (context, index) => Center(child: Text('Page $index')),
+  
+      scrollDirection: Axis.horizontal, // 横向或纵向滑动（默认水平）
+      reverse: false, // 是否反向滑动（右滑变成前一页）
+      controller: PageController(
+        initialPage: 0, // 初始页码
+        keepPage: true, // 是否保持滚动状态
+        viewportFraction: 1.0, // 页面占屏幕宽度比例（<1 时可显示部分下一页）
+      ),
+      physics: BouncingScrollPhysics(), // 滑动行为，支持弹性、惯性、回弹
+      pageSnapping: true, // 是否自动对齐整页（分页吸附）
+      onPageChanged: (index) {
+        print('页面切换到 $index');
+      },
+      allowImplicitScrolling: false, // 是否允许“懒加载下一页”（用于动画提前构建）
+      restorationId: 'pageViewDemo', // 状态恢复 ID（用于恢复页码）
+      clipBehavior: Clip.hardEdge, // 裁剪行为
+    );
+  }
+  ```
+
+  ```dart
+  /// SingleChildScrollView
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical, // 垂直或水平滚动
+      reverse: false, // 是否倒序显示（适合聊天界面）
+      padding: EdgeInsets.all(16), // 内容边距
+      primary: false, // 是否使用主滚动视图（如嵌套情况设为 false）
+      physics: AlwaysScrollableScrollPhysics(), // 滑动物理（允许空状态也能滑动）
+      controller: ScrollController(), // 控制器，可用于定位滚动
+      clipBehavior: Clip.hardEdge, // 内容超出裁剪方式
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      // 拖动时是否自动收起键盘（适合表单）
+      restorationId: 'singleChildScrollViewDemo', // 状态恢复 ID
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: List.generate(20, (i) => Text('Line $i')),
+      ),
+    );
+  }
+  ```
+
+  ```dart
+  /// ReorderableListView（支持拖拽排序）
+  Widget build(BuildContext context) {
+    return ReorderableListView(
+      onReorder: (oldIndex, newIndex) {
+        print('从 $oldIndex 拖动到 $newIndex');
+        // 拖动完成后需自己更新数据源，否则 UI 不会刷新
+      },
+  
+      children: List.generate(
+        10,
+        (index) => ListTile(
+          key: ValueKey(index), // 🔥 必须提供 Key，否则无法拖拽
+          title: Text('Item $index'),
+          leading: Icon(Icons.drag_handle), // 可拖动提示图标
+        ),
+      ),
+  
+      scrollDirection: Axis.vertical, // 滚动方向（默认垂直，可横向）
+      reverse: false, // 是否倒序显示
+      controller: ScrollController(), // 滚动控制器
+      padding: EdgeInsets.symmetric(vertical: 12), // 列表边距
+      physics: BouncingScrollPhysics(), // 滚动物理（弹性）
+      proxyDecorator: (child, index, animation) {
+        // 拖动时自定义拖拽视图样式
+        return Material(
+          elevation: 6,
+          child: child,
+        );
+      },
+      buildDefaultDragHandles: true, // 是否使用默认拖动手柄（设置 false 自定义）
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      clipBehavior: Clip.hardEdge,
+      restorationId: 'reorderListDemo',
+    );
+  }
+  ```
+
+  ```dart
+  /// CustomScrollView（组合多个 Sliver 的高级滚动结构）
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      scrollDirection: Axis.vertical, // 滚动方向
+      reverse: false, // 是否倒序滚动
+      controller: ScrollController(), // 滚动控制器
+      physics: ClampingScrollPhysics(), // 滚动物理（安卓风格）
+      primary: false,
+      shrinkWrap: false, // 是否根据内容自动收缩（通常为 false）
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
+      restorationId: 'customScrollViewDemo',
+      clipBehavior: Clip.hardEdge,
+  
+      slivers: [
+        SliverAppBar(
+          pinned: true, // 是否固定顶部（吸顶）
+          expandedHeight: 150.0,
+          flexibleSpace: FlexibleSpaceBar(
+            title: Text('SliverAppBar'),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Container(
+            height: 80,
+            color: Colors.amber,
+            child: Center(child: Text('普通内容')),
+          ),
+        ),
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) => ListTile(title: Text('Item $index')),
+            childCount: 10,
+          ),
+        ),
+        SliverGrid(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) => Container(
+              color: Colors.blue[100 * ((index % 8) + 1)],
+              child: Center(child: Text('Grid $index')),
+            ),
+            childCount: 8,
+          ),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, // 每行几个
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+            childAspectRatio: 1.2,
+          ),
+        ),
+      ],
+    );
+  }
+  ```
+
+  > `CustomScrollView` 是构建复杂滚动结构的核心框架，适合处理：
+  >
+  > - 吸顶 header（SliverAppBar）
+  > - 列表 + 网格混排
+  > - 内容自适应 + 滚动联动
+  > - 替代 `NestedScrollView` 解决性能问题
+
+  ```dart
+  /// SliverGrid 全属性示例（Flutter 原生 Sliver 网格）
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: EdgeInsets.all(8), // 外边距
+          sliver: SliverGrid(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                return Container(
+                  color: Colors.primaries[index % Colors.primaries.length],
+                  child: Center(child: Text('Item $index')),
+                );
+              },
+              childCount: 20, // 子项总数
+            ),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3, // 每行显示几个格子
+              mainAxisSpacing: 10.0, // 垂直方向格子之间的间距
+              crossAxisSpacing: 10.0, // 水平方向格子之间的间距
+              childAspectRatio: 1.2, // 宽高比（>1 表示更宽）
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+  ```
+
+  >  ❌ **`SliverGrid` 不能单独作为 Widget 返回**，因为它不是继承自 `Widget`，而是继承自 **`SliverMultiBoxAdaptorWidget`**，只能被放在 `CustomScrollView.slivers` 中使用。
+
+  ```dart
+  /// NestedScrollView（嵌套滚动视图）
+  Widget build(BuildContext context) {
+    return NestedScrollView(
+      controller: ScrollController(), // 外层滚动控制器
+      physics: BouncingScrollPhysics(), // 滚动物理
+      headerSliverBuilder: (context, innerBoxIsScrolled) => [
+        SliverAppBar(
+          pinned: true, // 固定顶部吸顶
+          expandedHeight: 200.0,
+          flexibleSpace: FlexibleSpaceBar(
+            title: Text('Nested Header'),
+          ),
+        ),
+      ],
+      body: ListView.builder(
+        itemCount: 30,
+        itemBuilder: (context, index) => ListTile(title: Text('Item $index')),
+      ),
+      floatHeaderSlivers: false, // header 是否浮动（和 SliverAppBar 的 floating 联动）
+      scrollDirection: Axis.vertical,
+      clipBehavior: Clip.hardEdge,
+      restorationId: 'nestedScrollViewDemo',
+    );
+  }
+  ```
+
+  ```dart
+  /// Scrollbar（添加滚动条）
+  Widget build(BuildContext context) {
+    return Scrollbar(
+      child: ListView.builder(
+        itemCount: 20,
+        itemBuilder: (context, index) => ListTile(title: Text('Item $index')),
+      ),
+  
+      thumbVisibility: true, // 始终显示滚动条（默认只在滚动时可见）
+      trackVisibility: true, // 显示滚动轨道
+      interactive: true, // 是否支持拖动滚动条进行滑动
+      thickness: 6.0, // 滚动条宽度
+      radius: Radius.circular(8), // 滚动条圆角
+      controller: ScrollController(), // 滚动控制器（与内部 ListView 保持一致）
+      scrollbarOrientation: ScrollbarOrientation.right, // 滚动条显示在右侧或左侧
+    );
+  }
+  ```
+
+  ```dart
+  /// 展示 RefreshIndicator 的全部属性用法（下拉刷新）
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+      // ✅ 下拉刷新触发回调（返回 Future）
+      onRefresh: () async {
+        await Future.delayed(Duration(seconds: 1));
+        print('刷新完成');
+      },
+  
+      // ✅ 刷新圈下拉的触发偏移（单位 px）
+      displacement: 60.0, // 默认是 40
+  
+      // ✅ 圈圈的颜色
+      color: Colors.blue,
+  
+      // ✅ 圈圈背景颜色（Material 风格）
+      backgroundColor: Colors.yellow[100],
+  
+      // ✅ 圈圈线条粗细
+      strokeWidth: 3.0,
+  
+      // ✅ 是否必须从“边缘”才能触发刷新（默认：onEdge）
+      triggerMode: RefreshIndicatorTriggerMode.any,
+      // onEdge = 必须从顶部边缘拖动
+      // any = 只要滚动组件内向下拖就可触发
+  
+      // ✅ 控制是否允许刷新触发（拦截器）
+      notificationPredicate: (ScrollNotification notification) {
+        print('滚动通知类型: ${notification.runtimeType}');
+        // 例如只允许在没有拖动时刷新
+        return notification is ScrollStartNotification;
+      },
+  
+      // ✅ 刷新区域（child 必须是可滚动组件）
+      child: ListView.builder(
+        physics: AlwaysScrollableScrollPhysics(), // 即使内容不足也可下拉
+        itemCount: 15,
+        itemBuilder: (context, index) => ListTile(title: Text('Item $index')),
+      ),
+    );
+  }
+  ```
+
+  ```dart
+  /// 组合 RefreshIndicator + ScrollController 实现上下拉完整体验（带分页）
+  class RefreshLoadMoreDemo extends StatefulWidget {
+    @override
+    _RefreshLoadMoreDemoState createState() => _RefreshLoadMoreDemoState();
+  }
+  
+  class _RefreshLoadMoreDemoState extends State<RefreshLoadMoreDemo> {
+    final ScrollController _scrollController = ScrollController();
+    List<int> _data = List.generate(20, (i) => i);
+    bool _isLoadingMore = false;
+  
+    @override
+    void initState() {
+      super.initState();
+  
+      // ✅ 监听滚动，触发上拉加载更多
+      _scrollController.addListener(() {
+        if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 50) {
+          _loadMore();
+        }
+      });
+    }
+  
+    // ✅ 下拉刷新逻辑
+    Future<void> _handleRefresh() async {
+      await Future.delayed(Duration(seconds: 1));
+      setState(() {
+        _data = List.generate(20, (i) => i);
+      });
+    }
+  
+    // ✅ 上拉加载更多逻辑
+    Future<void> _loadMore() async {
+      if (_isLoadingMore) return;
+      _isLoadingMore = true;
+  
+      await Future.delayed(Duration(seconds: 1));
+      setState(() {
+        int current = _data.length;
+        _data.addAll(List.generate(10, (i) => current + i));
+      });
+  
+      _isLoadingMore = false;
+    }
+  
+    @override
+    Widget build(BuildContext context) {
+      return RefreshIndicator(
+        onRefresh: _handleRefresh,
+        child: ListView.builder(
+          controller: _scrollController,
+          itemCount: _data.length + 1, // 最后一项是 loading 指示器
+          itemBuilder: (context, index) {
+            if (index < _data.length) {
+              return ListTile(title: Text('Item ${_data[index]}'));
+            } else {
+              return Padding(
+                padding: const EdgeInsets.all(16),
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+          },
+        ),
+      );
+    }
+  
+    @override
+    void dispose() {
+      _scrollController.dispose();
+      super.dispose();
+    }
+  }
+  ```
+
+  > 在iOS中没有专门的系统封装上拉加载、下拉刷新的控件（一般用MJRefresh）
+  >
+  > 但是在Flutter由系统给提供了`RefreshIndicator`
+
+  ```dart
+  /// DraggableScrollableSheet（可拖动底部弹出滑动面板）
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.3, // 初始高度（相对于父容器 0.0~1.0）
+      minChildSize: 0.2, // 最小高度
+      maxChildSize: 0.8, // 最大高度
+      expand: true, // 是否填满父组件（false = 按需布局）
+      builder: (context, scrollController) {
+        return Container(
+          color: Colors.grey[200],
+          child: ListView.builder(
+            controller: scrollController, // 控制滚动
+            itemCount: 20,
+            itemBuilder: (context, index) => ListTile(title: Text('Item $index')),
+          ),
+        );
+      },
+    );
+  }
+  ```
+
+* [**Flutter社区**](pub.dev)/第三方提供的滚动库
+
+  | 库                                   | 说明                                                         |
+  | ------------------------------------ | ------------------------------------------------------------ |
+  | `flutter_staggered_grid_view`        | 实现瀑布流 Masonry 布局                                      |
+  | `carousel_slider` / `flutter_swiper` | 高性能轮播组件（基于 PageView）                              |
+  | `infinite_scroll_pagination`         | 分页加载列表组件                                             |
+  | `extended_nested_scroll_view`        | 更强大的嵌套滚动支持，解决官方 NestedScrollView 滚动冲突问题 |
+  | `pull_to_refresh`                    | 下拉刷新/上拉加载的封装库                                    |
+  | `flutter_easyrefresh`（已停更）      | 曾经流行的刷新库（不推荐新项目用）                           |
 
 ## 三、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -1799,6 +2272,103 @@ ScreenUtilInit(
     ```
 
 ## 四、FAQ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+* ✅什么是`ScrollController`?
+
+  | 用途                                         | 说明                       |
+  | -------------------------------------------- | -------------------------- |
+  | **监听滚动位置**                             | 获取当前滚动 offset        |
+  | **跳转或动画滚动**                           | 滚动到指定位置             |
+  | **控制多个滚动同步**                         | 多个组件共享控制器实现联动 |
+  | **配合 Scrollbar / NestedScrollView 等使用** | 实现手动控制或高级联动     |
+
+  ```dart
+  /// 监听和滚动到某个位置
+  class ScrollControllerDemo extends StatefulWidget {
+    @override
+    _ScrollControllerDemoState createState() => _ScrollControllerDemoState();
+  }
+  
+  class _ScrollControllerDemoState extends State<ScrollControllerDemo> {
+    final ScrollController _controller = ScrollController();
+  
+    @override
+    void initState() {
+      super.initState();
+  
+      // ✅ 添加滚动监听
+      _controller.addListener(() {
+        print('当前滚动位置: ${_controller.offset}');
+      });
+    }
+  
+    @override
+    void dispose() {
+      _controller.dispose(); // ✅ 别忘了释放
+      super.dispose();
+    }
+  
+    void _scrollToTop() {
+      _controller.animateTo(
+        0.0, // 目标 offset
+        duration: Duration(milliseconds: 500),
+        curve: Curves.easeOut,
+      );
+    }
+  
+    void _scrollToBottom() {
+      _controller.animateTo(
+        _controller.position.maxScrollExtent, // 最大可滚动距离
+        duration: Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    }
+  
+    @override
+    Widget build(BuildContext context) {
+      return Scaffold(
+        appBar: AppBar(title: Text('ScrollController 示例')),
+        body: Column(
+          children: [
+            Row(
+              children: [
+                TextButton(onPressed: _scrollToTop, child: Text('回到顶部')),
+                TextButton(onPressed: _scrollToBottom, child: Text('滑到底部')),
+              ],
+            ),
+            Expanded(
+              child: ListView.builder(
+                controller: _controller, // ✅ 绑定控制器
+                itemCount: 50,
+                itemBuilder: (context, index) => ListTile(title: Text('Item $index')),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+  ```
+
+  ```dart
+  /// 多个组件同步滚动
+  final controller = ScrollController();
+  
+  Row(
+    children: [
+      Expanded(
+        child: ListView(controller: controller, ...),
+      ),
+      Expanded(
+        child: ListView(controller: controller, ...), // 同一个控制器！
+      ),
+    ],
+  )
+  ```
+
+* ✅什么是`external`?
+
+  > 这个方法没有在 Dart 层实现，而是由 Dart VM 或平台原生层提供实现。
 
 * ✅为什么**Dart.Flutter**禁止反射机制？
 
