@@ -40,6 +40,7 @@ _color_echo green "   4. 支持 fzf 模拟器选择与创建（设备 + 系统�
 _color_echo green "   5. flutter run 日志异常时自动修复 CocoaPods"
 _color_echo green "   6. 自动创建桌面 .command 快捷方式"
 _color_echo green "===================================================================="
+_color_echo red   "📌 如需运行断点调试，请移步 VSCode / Android Studio / Xcode 等 IDE，终端运行不支持断点功能。"
 echo ""
 
 # ✅ 项目路径判断
