@@ -59,7 +59,17 @@ SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
   ));
 ```
 
-### 3、<font color=red>**Flutter 项目中比较标准且完整的启动流程**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+###  3、配置首页入口 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+GetMaterialApp(
+  initialRoute: AppPages.INITIAL,      // 从哪个页面开始
+  initialBinding: MainBindings(),      // 启动前先注入哪些依赖
+  getPages: AppPages.routes,           // 有哪些页面能被跳转
+)
+```
+
+### 4、<font color=red>**Flutter 项目中比较标准且完整的启动流程**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ `SystemChrome` 限制方向
 >
@@ -122,9 +132,9 @@ SystemChrome.setPreferredOrientations([
   });
 ```
 
-### 4、[**`GetX`**](https://pub.dev/packages/get) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 5、[**`GetX`**](https://pub.dev/packages/get) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 4.1、[**`GetX`**](https://pub.dev/packages/get) （六种）依赖注册方式对比表 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 5.1、[**`GetX`**](https://pub.dev/packages/get) （六种）依赖注册方式对比表 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 在不设置 `permanent: true` 的默认情况下，Get.put()、Get.lazyPut()、Get.create() 所创建的对象，**生命周期都不会永久保留**，用完就“没了”或“会被释放”，只不过：
 >
@@ -289,7 +299,7 @@ SystemChrome.setPreferredOrientations([
 
 * **Get.replace()**
 
-#### 4.2、[**`GetX`**](https://pub.dev/packages/get) 的销毁机制 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 5.2、[**`GetX`**](https://pub.dev/packages/get) 的销毁机制 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ [**`GetX`**](https://pub.dev/packages/get)  中的依赖对象如果不是 `permanent: true`，默认在无人使用时可以被释放（或你手动释放）。
 >
@@ -306,7 +316,7 @@ SystemChrome.setPreferredOrientations([
 | `Get.reset()`              | 重置整个依赖管理系统（清空所有 Controller、Service、路由信息等） |
 | `Get.resetLazy<T>()`       | 重置指定类型的懒加载依赖（配合 `lazyPut`）                   |
 
-#### 4.3、**`GetxController`** 🆚 **`GetView<T>`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 5.3、**`GetxController`** 🆚 **`GetView<T>`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 项目                | `GetxController`                  | `GetView<T>`                                 |
 | ------------------- | --------------------------------- | -------------------------------------------- |
@@ -362,7 +372,7 @@ SystemChrome.setPreferredOrientations([
   }
   ```
 
-#### 4.4、**`GetxService`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 5.4、**`GetxService`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > `GetxService` 是 [**`GetX`**](https://pub.dev/packages/get)  提供的**专门用于全局单例管理的服务类**，适合放一些只需要创建一次，整个 App 生命周期中都不释放的“后台服务”
 
@@ -410,7 +420,7 @@ SystemChrome.setPreferredOrientations([
   print(authService.token);
   ```
 
-#### 4.5、**`GetPage()`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 5.5、**`GetPage()`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ 用于在 `GetMaterialApp` 中注册页面，它包含了页面路径、页面构造函数、绑定依赖、转场动画等信息。
 >
@@ -444,7 +454,7 @@ GetPage(
 )
 ```
 
-#### 4.6、[**`GetX`**](https://pub.dev/packages/get) 路由 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 5.6、[**`GetX`**](https://pub.dev/packages/get) 路由 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 >  [**`GetX`**](https://pub.dev/packages/get)  的路由系统是一套集命名路由、依赖注入、中间件、动画于一体的强大路由管理机制，推荐用 `GetPage` + 命名跳转方式为主线结构！
 
@@ -554,7 +564,7 @@ GetPage(
   Get.offAllNamed('/splash');
   ```
 
-#### 4.7、**`Get.dialog()`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 5.7、**`Get.dialog()`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > `Get.dialog()` 默认用当前上下文找 Navigator
 
@@ -598,7 +608,7 @@ ElevatedButton(
 )
 ```
 
-#### 4.8、**`Get.key` **<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 5.8、**`Get.key` **<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > **`Get.key` 就是给全局 Navigator 打了个 tag（标签）**，即：**全局 Navigator Key**。[**`GetX`**](https://pub.dev/packages/get)  把它注册到自己的容器里，之后你所有（push、pop、dialog 等）相关操作都可以**不需要 context，直接通过这个 tag 找到并调用 Navigator 的功能。**（<font color=red>类似于iOS的**通知机制**</font>）
 
@@ -687,7 +697,7 @@ ElevatedButton(
 >  👉 **任何时候用 `Get.dialog()`，都写上 `navigatorKey: Get.key`**，
 >  ✅ 兼容所有场景、生命周期、嵌套结构，绝对不翻车。
 
-#### 4.9、基于[**`GetX`**](https://pub.dev/packages/get) 最佳实践的完整项目结构模板（项目名为：`getx_demo`） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 5.9、基于[**`GetX`**](https://pub.dev/packages/get) 最佳实践的完整项目结构模板（项目名为：`getx_demo`） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```bash
 lib/
@@ -802,16 +812,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-```
-
-###  5、配置首页入口 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
-
-```dart
-GetMaterialApp(
-  initialRoute: AppPages.INITIAL,      // 从哪个页面开始
-  initialBinding: MainBindings(),      // 启动前先注入哪些依赖
-  getPages: AppPages.routes,           // 有哪些页面能被跳转
-)
 ```
 
 ### 6、`WidgetsFlutterBinding`确保 Flutter 框架与底层平台（如 MethodChannel、插件）之间的桥梁已完成初始化 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
@@ -978,7 +978,7 @@ class SpUtil {
 }
 ```
 
-### 9、Flutter标准 <a href="#模态" style="color:green; font-size:25px;"><b>模态</b></a> 弹窗组件（SDK自带的）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 9、Flutter标准<a href="#模态" style="color:green; font-size:25px;"><b>模态</b></a>弹窗组件（SDK自带的）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 Flutter SDK（系统自带）的模态弹窗汇总表（截至 2025）
 
@@ -1719,7 +1719,17 @@ String getNowTime() {
     Navigator.pop(context);
     ```
 
-### 15、🖥️屏幕适配[**flutter_screenutil**](https://pub.dev/packages/flutter_screenutil) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 15、🖥️Flutter屏幕适配方案 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+| 工具/方式            | 作用                       | 用法示例                                                     |
+| -------------------- | -------------------------- | ------------------------------------------------------------ |
+| `MediaQuery`         | 获取屏幕宽高/边距/键盘高度 | `MediaQuery.of(context).size.height`                         |
+| `SafeArea`           | 自动避开状态栏/导航栏      | `SafeArea(child: ...)`                                       |
+| `flutter_screenutil` | 屏幕尺寸适配（dp/sp统一）  | `20.w`, `14.sp`, `EdgeInsets.all(10.r)`                      |
+| `LayoutBuilder`      | 自适应布局大小判断         | `constraints.maxWidth < 600 ? PhoneLayout() : TabletLayout()` |
+| `KeyboardVisibility` | 键盘弹出监听，处理遮挡问题 | `KeyboardVisibilityController().onChange.listen(...)`        |
+
+#### 15.1、[**flutter_screenutil**](https://pub.dev/packages/flutter_screenutil)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```yaml
 dependencies:
@@ -1740,6 +1750,92 @@ ScreenUtilInit(
 520.h     // 表示高度适配值
 300.w     // 表示宽度适配值
 16.sp     // 表示字体大小适配值
+```
+
+#### 15.2、**SafeArea**：自动避开系统遮挡区域的**Widget**  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+* 系统遮挡区的定义👇
+
+  | 场景               | 说明                                             |
+  | ------------------ | ------------------------------------------------ |
+  | ⏫ 顶部状态栏       | iOS 顶部刘海、状态栏；Android 通知栏             |
+  | ⏬ 底部系统导航栏   | Android底部导航按钮区域（Back/Home/Recent）      |
+  | 🕳️ iPhone 刘海/下巴 | iPhone X/11/12/13/14/15 系列的“凹口”和“下巴”区域 |
+  | 🆘 横屏下的左右边缘 | 一些设备横屏时会有侧边手势栏                     |
+
+* Flutter 架构中，`SafeArea` 通常应该放在最外层（或接近最外层），且**全局只需要用一次**
+
+#### 15.3、📐 键盘遮挡通用处理方案  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+🌹类似于iOS里面的[**IQKeyboardManager**](https://github.com/hackiftekhar/IQKeyboardManager)，👉 **监听键盘的高度变化，动态将视图往上推这么多距离，避免输入控件被遮挡。**
+
+> **MediaQuery**.**of(context)**.**viewInsets**.**bottom**，是 Flutter 提供的一个<u> **动态值**</u>，表示：当前屏幕底部被“系统遮挡”的高度
+>
+> | 系统遮挡 | MediaQuery.of(context).viewInsets.bottom 值 |
+> | -------- | ------------------------------------------- |
+> | 没有遮挡 | 0                                           |
+> | 键盘弹出 | 键盘的实际高度（比如 300）                  |
+
+```dart
+/// ❌ 如果你什么都不处理：
+/// 键盘一弹出
+/// TextField 就会被 直接挡住
+/// 页面不能滑动，你根本看不到它了
+Scaffold(
+  body: Column(
+    children: [
+      Spacer(),
+      TextField(), // 输入框靠下
+    ],
+  ),
+)
+```
+
+```dart
+/// 键盘未弹出	页面正常显示
+/// 键盘弹出	被键盘挡住的区域会被 Padding 顶上来
+/// 内容超出	SingleChildScrollView 允许你滚动看到全部内容（即使被键盘挡住）
+/// 🔥 SafeArea + SingleChildScrollView + Padding
+SafeArea(
+  child: Scaffold(
+    resizeToAvoidBottomInset: true,
+    body: SingleChildScrollView(
+      child: Padding(
+        /// 在底部添加一个动态的 padding（内边距）
+        /// 它的值是：MediaQuery.of(context).viewInsets.bottom
+        /// 也就是把你的页面内容整体往上推这么多空间，避免输入框被键盘挡住。
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: Column(
+          children: [
+      			Spacer(),
+     			  TextField(), // 输入框靠下
+   			  ],
+        ),
+      ),
+    ),
+  ),
+)
+```
+
+* Flutter 没有像 iOS 那样原生的 `keyboardWillShow` 事件，但可以通过：
+
+  - `MediaQuery.of(context).viewInsets.bottom`
+  - 或者 `flutter_keyboard_visibility` 包来监听键盘状态变化
+
+  手动加 `ScrollView + Padding`，就等同于**Flutter 版 IQKeyboardManager**
+
+#### 15.4、🔄 响应式布局：根据宽度切换布局  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+LayoutBuilder(
+  builder: (context, constraints) {
+    if (constraints.maxWidth < 600) {
+      return PhoneLayout();
+    } else {
+      return TabletLayout();
+    }
+  },
+)
 ```
 
 ### 16、Dart.Object <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
@@ -2302,7 +2398,7 @@ class XXX extends Object{}
     | `Slider` / `RangeSlider` | 拖动滑块（拖拽 + tap）                        |
     | `Switch` / `Checkbox`    | 也支持手势（tap）但通常不直接作为手势组件使用 |
 
-### 19、Flutter中，涉及到布局的Widget  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 19、Flutter中，涉及到布局的`Widget`  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 类似 iOS 中的 [**Masonry**](https://github.com/SnapKit/Masonry) 或 AutoLayout
 
@@ -2453,6 +2549,43 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 }
 ```
 
+### 21、中间代码的生成工具 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+#### 21.1、[<font color=red>**build_runner**</font>](https://pub.dev/packages/build_runner)
+
+> **Dart 的代码生成引擎**，用于根据规则自动生成 Dart 代码
+>
+> 📦 它本身不生成代码，但**驱动其他插件去生成代码**。
+
+| 命令                                 | 作用                               |
+| ------------------------------------ | ---------------------------------- |
+| `flutter pub run build_runner build` | 一次性生成代码                     |
+| `flutter pub run build_runner watch` | 监听源码变化自动生成代码           |
+| `flutter pub run build_runner clean` | 清除 `.dart_tool` 中生成的缓存代码 |
+
+
+* `build_runner` 是建筑工人 🧱（实际干活的）
+* `json_serializable`、`flutter_gen_runner`、`freezed` 等是设计图 📐（告诉你该建什么）
+* `.g.dart`、`.gen.dart` 文件是建筑成果 🏠（自动生成的代码）
+
+#### 21.2、[**flutter_gen_runner**](https://pub.dev/packages/flutter_gen)
+
+> 根据你的 `pubspec.yaml` 中配置的资源文件，自动生成 assets.gen.dart 文件，让你用代码方式访问资源，更安全、方便。
+
+```yaml
+dev_dependencies:
+  flutter_gen_runner: ^5.3.1
+  build_runner: any
+
+flutter_gen:
+  output: lib/gen/ # 生成文件的目录
+```
+
+#### 21.3、[**json_serializable**](https://pub.dev/packages/json_serializable)
+
+> 用于序列化/反序列化JSON数据
+
+
 ## 三、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ### 1、关于iOS模拟器（最新版本XCode：16.4） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
@@ -2559,7 +2692,18 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 
   ![image-20250713101045523](./assets/README/image-20250713101045523.png)
 
-### 4、package <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 4、🎯 Dart 命名规则大全（官方风格指南） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+| 类型            | 命名规则                                                     | 格式示例                             | 是否允许下划线 `_`  | 是否允许 `$`                                         |
+| --------------- | ------------------------------------------------------------ | ------------------------------------ | ------------------- | ---------------------------------------------------- |
+| 类名 / 枚举     | **帕斯卡命名法** PascalCase：<br><font color=red>**首字母大写，<br/>每个单词首字母也大写，<br/>不要用下划线**</font> | `UserModel`, `MyApp`, `ActivityType` | ❌ 不能有 `_`        | ✅ 允许<br/>但<font color=red>**仅限生成代码**</font> |
+| 方法 / 函数     | **驼峰命名法** camelCase                                     | `fetchData()`, `onTap()`             | ❌ 不推荐            | ✅ 允许但少见                                         |
+| 变量 / 成员变量 | **驼峰命名法** camelCase                                     | `userName`, `isLoading`              | ✅ 允许 `_`（私有）  | ✅ 允许但少见                                         |
+| 常量（顶级）    | **全大写 + 下划线**                                          | `MAX_LENGTH`, `API_KEY`              | ✅ 推荐使用 `_` 分隔 | ❌ 不允许                                             |
+| 文件名 / 路径   | **蛇形命名法** snake_case：<br><font color=red>**每个空格皆以底线（_）取代的书写风格，<br/>且每个单字的第一个字母皆为小写**</font> | `user_model.dart`, `home_page.dart`  | ✅ 推荐              | ❌ 不推荐                                             |
+| 私有变量 / 方法 | 下划线开头<br>**只在当前 Dart 文件里能访问，其他文件即使导入了也访问不到** | `_user`, `_fetchData()`              | ✅ 必须用 `_`        | ❌ 不推荐                                             |
+
+### 5、package <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * **package:**这种路径前缀只能用于 **`lib/` 目录下的 Dart 文件**。 表示从 `pubspec.yaml` 中定义的包或当前项目的 `lib/` 目录开始引用
 
@@ -2571,7 +2715,7 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
   | `lib/` 以外的文件夹 | 比如 `test/`、`bin/`、`web/`、`ios/`、`android/` 等不能被 `package:` 引用 |
   | `lib/` 外 Dart 文件 | 比如 `tools/util.dart`，不是 `lib/` 下的无法被 `package:` 访问 |
 
-### 5、[**Firebase**](https://firebase.google.com/?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 6、[**Firebase**](https://firebase.google.com/?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * [**Firebase**](https://firebase.google.com/?hl=zh-cn)：**Google 提供的一整套后端云服务平台**，专门为移动 App（Android/iOS）、Web 应用开发者提供“后端即服务”（BaaS）能力
 
@@ -2600,7 +2744,7 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
   | Unity   | ✅ 支持游戏开发                                               |
   | C++     | ✅ 支持部分模块                                               |
 
-### 6、**项目文件（夹）功能** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 7、**项目文件（夹）功能** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
   * `analysis_options.yaml` 是一个与 Dart 语言开发相关的文件，它通常用于配置 Dart 代码的静态分析和代码风格检查工具；
     
@@ -2775,7 +2919,7 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 
     总的来说，`.idea` 文件夹是 JetBrains IDE 用于存储项目配置和元数据的文件夹，它通常不应该被版本控制系统跟踪，因为这些配置文件通常是特定于开发者的，并且可能会因为 IDE 版本的不同而有所变化。
     
-### 7、注解 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 8、注解 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 <font color=red>注解（以`@JsonSerializable() `为例） 🆚 OC 分类（Category）</font>
 
 * 确实都达到了**在不改动原类结构下，增加功能**的目的
@@ -2799,7 +2943,7 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
   | 🧠 类型系统影响 | 有静态类型检查                 | 无类型检查，靠 runtime dispatch |
   | 📄 新增文件     | 会生成新文件                   | 不会生成新文件                  |
 
-### 8、Dart抽象类+`factory` 构造函数 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 9、Dart抽象类+`factory` 构造函数 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > Dart 中的抽象类可以定义 `factory` 构造函数，它不能直接被实例化，但可以通过这个 `factory` 返回子类对象或其他实例，从而起到**工厂方法（类方法）+ 构造器**的双重作用。
 
@@ -2920,15 +3064,15 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
       }
       ```
 
-### 9、<font color=red>**abstract**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 10、<font color=red>**abstract**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-    > 1️⃣ 防止被实例化
-    >
-    > 2️⃣ 不能背继承
-    >
-    > 常用于**纯静态工具类或常量容器类**的定义。提升代码的可读性和语义安全性，是一种更严谨的推荐写法
+> 1️⃣ 防止被实例化
+>
+> 2️⃣ 不能背继承
+>
+> 常用于**纯静态工具类或常量容器类**的定义。提升代码的可读性和语义安全性，是一种更严谨的推荐写法
 
-### 10、Comparable <font color=red><b>&lt;T&gt;</b></font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 11、Comparable <font color=red><b>&lt;T&gt;</b></font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ Dart 中的一个接口（mixin），表示 **“可比较”类型**
 >
@@ -2946,7 +3090,7 @@ Comparable.compare(a, b)
 
   * 返回 **正数**：表示 `a > b`
 
-### 11、**纯静态类** 的（常见）写法 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 12、**纯静态类** 的（常见）写法 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ Dart.Flutter里面没有反射（尤其是 release 模式）根本不支持 `dart:mirrors`（导入报错）
 >
@@ -3018,6 +3162,36 @@ Comparable.compare(a, b)
 
 ## 四、FAQ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
+* **`call()`**
+
+  ```dart
+  void sayHello() {
+    print("Hello!");
+  }
+  
+  void main() {
+    var fn = sayHello;
+    fn();        // ✅ 传统写法：调用函数
+    fn.call();   // ✅ 等价写法：显式调用 call 方法
+  }
+  ```
+  
+  ```dart
+  /// 甚至可以重写 call 方法
+  class Greeter {
+    void call() {
+      print("Hi, I'm callable!");
+    }
+  }
+  
+  void main() {
+    var g = Greeter();
+  
+    g();        // ✅ 像函数一样调用
+    g.call();   // ✅ 等价写法
+  }
+  ```
+  
 * ✅什么是`ScrollController`?
 
   * ✅ Flutter 与 iOS 滚动控制对照总表
