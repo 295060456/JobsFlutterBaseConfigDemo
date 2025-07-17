@@ -3160,6 +3160,13 @@ Comparable.compare(a, b)
   }
   ```
 
+### 13、剪切板  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+| 操作                                     | 可同步剪贴板？ | 方向   |
+| ---------------------------------------- | -------------- | ------ |
+| 在 **macOS 上复制**，到 iOS 模拟器中粘贴 | ✅ 可以         | 💻 ➜ 📱  |
+| 在 **iOS 模拟器中复制**，到 macOS 上粘贴 | ❌ 不行         | 📱 🚫➜ 💻 |
+
 ## 四、FAQ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * **`call()`**

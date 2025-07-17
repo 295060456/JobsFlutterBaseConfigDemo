@@ -1,104 +1,180 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart'; // 公共测试器路径
+import 'dart:convert';
+import 'package:flutter/services.dart';
+import 'package:jobs_flutter_base_config/JobsFlutterTools/%E5%89%AA%E5%88%87%E6%9D%BF%E5%A4%8D%E5%88%B6/NativeClipboard.dart';
+import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart';
 
-// dependencies:
-//   flutter:
-//     sdk: flutter
-//   dio:
 void main() =>
     runApp(JobsMaterialRunner(HttpMethodsDemo(), title: 'HTTP Methods Demo'));
 
-class HttpMethodsDemo extends StatelessWidget {
-  final Dio _dio = Dio();
-  HttpMethodsDemo({super.key});
+class HttpMethodsDemo extends StatefulWidget {
+  const HttpMethodsDemo({super.key});
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('HTTP Methods Demo')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            ElevatedButton(
-              onPressed: _getRequest,
-              child: const Text('GET Request'),
-            ),
-            ElevatedButton(
-              onPressed: _postRequest,
-              child: const Text('POST Request'),
-            ),
-            ElevatedButton(
-              onPressed: _putRequest,
-              child: const Text('PUT Request'),
-            ),
-            ElevatedButton(
-              onPressed: _deleteRequest,
-              child: const Text('DELETE Request'),
-            ),
-            ElevatedButton(
-              onPressed: _patchRequest,
-              child: const Text('PATCH Request'),
-            ),
-          ],
-        ),
-      ),
+  State<HttpMethodsDemo> createState() => _HttpMethodsDemoState();
+}
+
+class _HttpMethodsDemoState extends State<HttpMethodsDemo> {
+  final Dio _dio = Dio(BaseOptions(
+    validateStatus: (status) => true,
+    headers: {
+      'User-Agent':
+          'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+      'Accept': 'application/json,text/html',
+      'Accept-Language': 'en-US,en;q=0.9',
+      'Referer': 'https://reqres.in/',
+      'Connection': 'keep-alive',
+    },
+  ));
+
+  String _result = '👉 请选择一个请求方法';
+
+  void _updateResult(String result) {
+    setState(() {
+      _result = result;
+    });
+  }
+
+  String _formatJson(dynamic data) {
+    try {
+      const encoder = JsonEncoder.withIndent('  ');
+      return encoder.convert(data);
+    } catch (_) {
+      return data.toString();
+    }
+  }
+
+  Future<void> _getRequest() async {
+    try {
+      final response = await _dio.get('https://reqres.in/api/users/2');
+      if (response.statusCode == 200) {
+        _updateResult('✅ GET Success:\n${_formatJson(response.data)}');
+      } else {
+        _updateResult(
+            '⚠️ GET Failed [${response.statusCode}]:\n${_formatJson(response.data)}');
+      }
+    } catch (e) {
+      _updateResult('❌ GET Exception: $e');
+    }
+  }
+
+  Future<void> _postRequest() async {
+    try {
+      final response = await _dio.post(
+        'https://reqres.in/api/users',
+        data: {'name': 'John', 'job': 'Developer'},
+      );
+      if (response.statusCode == 201) {
+        _updateResult('✅ POST Success:\n${_formatJson(response.data)}');
+      } else {
+        _updateResult(
+            '⚠️ POST Failed [${response.statusCode}]:\n${_formatJson(response.data)}');
+      }
+    } catch (e) {
+      _updateResult('❌ POST Exception: $e');
+    }
+  }
+
+  Future<void> _putRequest() async {
+    try {
+      final response = await _dio.put(
+        'https://reqres.in/api/users/2',
+        data: {'name': 'John', 'job': 'Manager'},
+      );
+      if (response.statusCode == 200) {
+        _updateResult('✅ PUT Success:\n${_formatJson(response.data)}');
+      } else {
+        _updateResult(
+            '⚠️ PUT Failed [${response.statusCode}]:\n${_formatJson(response.data)}');
+      }
+    } catch (e) {
+      _updateResult('❌ PUT Exception: $e');
+    }
+  }
+
+  Future<void> _deleteRequest() async {
+    try {
+      final response = await _dio.delete('https://reqres.in/api/users/2');
+      if (response.statusCode == 204) {
+        _updateResult('✅ DELETE Success (No Content)');
+      } else {
+        _updateResult(
+            '⚠️ DELETE Failed [${response.statusCode}]:\n${_formatJson(response.data)}');
+      }
+    } catch (e) {
+      _updateResult('❌ DELETE Exception: $e');
+    }
+  }
+
+  Future<void> _patchRequest() async {
+    try {
+      final response = await _dio.patch(
+        'https://reqres.in/api/users/2',
+        data: {'job': 'Lead Developer'},
+      );
+      if (response.statusCode == 200) {
+        _updateResult('✅ PATCH Success:\n${_formatJson(response.data)}');
+      } else {
+        _updateResult(
+            '⚠️ PATCH Failed [${response.statusCode}]:\n${_formatJson(response.data)}');
+      }
+    } catch (e) {
+      _updateResult('❌ PATCH Exception: $e');
+    }
+  }
+
+  Widget buildButton(String label, VoidCallback onPressed) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      child: Text(label, style: const TextStyle(color: Colors.white)),
     );
   }
 
-  void _getRequest() async {
-    try {
-      final response =
-          await _dio.get('https://jsonplaceholder.typicode.com/posts/1');
-      debugPrint('GET Response: ${response.data}');
-    } catch (e) {
-      debugPrint('GET Error: $e');
-    }
-  }
-
-  void _postRequest() async {
-    try {
-      final response = await _dio.post(
-        'https://jsonplaceholder.typicode.com/posts',
-        data: {'title': 'foo', 'body': 'bar', 'userId': 1},
-      );
-      debugPrint('POST Response: ${response.data}');
-    } catch (e) {
-      debugPrint('POST Error: $e');
-    }
-  }
-
-  void _putRequest() async {
-    try {
-      final response = await _dio.put(
-        'https://jsonplaceholder.typicode.com/posts/1',
-        data: {'id': 1, 'title': 'foo', 'body': 'bar', 'userId': 1},
-      );
-      debugPrint('PUT Response: ${response.data}');
-    } catch (e) {
-      debugPrint('PUT Error: $e');
-    }
-  }
-
-  void _deleteRequest() async {
-    try {
-      final response =
-          await _dio.delete('https://jsonplaceholder.typicode.com/posts/1');
-      debugPrint('DELETE Response: ${response.data}');
-    } catch (e) {
-      debugPrint('DELETE Error: $e');
-    }
-  }
-
-  void _patchRequest() async {
-    try {
-      final response = await _dio.patch(
-        'https://jsonplaceholder.typicode.com/posts/1',
-        data: {'title': 'foo patched'},
-      );
-      debugPrint('PATCH Response: ${response.data}');
-    } catch (e) {
-      debugPrint('PATCH Error: $e');
-    }
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              buildButton('GET', _getRequest),
+              buildButton('POST', _postRequest),
+              buildButton('PUT', _putRequest),
+              buildButton('DELETE', _deleteRequest),
+              buildButton('PATCH', _patchRequest),
+            ],
+          ),
+          const SizedBox(height: 10),
+          // ✅ 添加“复制全部”按钮
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton.icon(
+                onPressed: () {
+                  NativeClipboard.setText(_result);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('✅ 已使用原生方式复制')),
+                  );
+                },
+                icon: const Icon(Icons.copy, size: 16),
+                label: const Text('复制全部'),
+              ),
+            ],
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              child: SelectableText(
+                _result,
+                style: const TextStyle(fontSize: 14),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

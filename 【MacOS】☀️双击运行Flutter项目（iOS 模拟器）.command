@@ -14,7 +14,8 @@ _color_echo() {
   esac
 }
 
-# ✅ 开头 Logo（Flutter 飞鸟图标）
+# ✅ Logo + 自述
+clear
 _color_echo cyan "                                                                                       "
 _color_echo cyan "88888888888 88         88        88 888888888888 888888888888 88888888888 88888888ba   "
 _color_echo cyan "88          88         88        88      88           88      88          88      \"8b  "
@@ -27,9 +28,6 @@ _color_echo cyan "88          88888888888 \`\"Y8888Y\"'       88           88   
 _color_echo cyan "                                                                                       "
 _color_echo yellow "                        🛠️ FLUTTER iOS 模拟器 启动脚本"
 echo ""
-
-# ✅ 自述
-clear
 _color_echo green "🛠️ 本脚本用于将 Dart 或 Flutter 项目运行到 iOS 模拟器"
 _color_echo green "===================================================================="
 _color_echo green "👉 支持："
@@ -43,36 +41,44 @@ _color_echo green "=============================================================
 _color_echo red   "📌 如需运行断点调试，请移步 VSCode / Android Studio / Xcode 等 IDE，终端运行不支持断点功能。"
 echo ""
 
-# ✅ 项目路径判断
-script_path="$0"
-script_dir="$(cd "$(dirname "$0")" && pwd)"
-
-is_flutter_root() {
+# ✅ 判断函数
+is_flutter_project_root() {
   [[ -f "$1/pubspec.yaml" && -d "$1/lib" ]]
 }
 
-flutter_root="$script_dir"
-cd "$flutter_root" || exit 1
+is_dart_entry_file() {
+  [[ -f "$1" && "$1" == *.dart ]] && grep -E '^\s*void\s+main\s*\(\s*\)' "$1" | grep -v '^\s*//' >/dev/null
+}
 
-while ! is_flutter_root "$flutter_root"; do
-  _color_echo yellow "⚠️ 当前目录不是 Flutter 项目根目录"
-  echo "📂 请拖入 Flutter 项目根目录（必须包含 pubspec.yaml 和 lib/）："
+# ✅ 项目路径与入口识别
+entry_file=""
+flutter_root=""
+
+while true; do
+  _color_echo yellow "📂 请拖入 Flutter 项目根目录（含 pubspec.yaml 和 lib/）或 Dart 单文件（含 void main）路径："
   read -r user_input
   user_input=${user_input//\"/}
-  flutter_root="$user_input"
+
+  if [[ -d "$user_input" ]]; then
+    if is_flutter_project_root "$user_input"; then
+      flutter_root="$user_input"
+      entry_file="$flutter_root/lib/main.dart"
+      break
+    fi
+  elif [[ -f "$user_input" ]]; then
+    if is_dart_entry_file "$user_input"; then
+      entry_file="$user_input"
+      flutter_root=$(dirname "$entry_file")
+      break
+    fi
+  fi
+
+  _color_echo red "❌ 无效路径，请重新拖入 Flutter 根目录或 Dart 单文件"
 done
 
 cd "$flutter_root" || exit 1
-_color_echo green "✅ 已识别 Flutter 项目根目录：$flutter_root"
-
-# ✅ main.dart 检查
-entry_file="$flutter_root/lib/main.dart"
-[[ ! -f "$entry_file" ]] && _color_echo red "❌ 缺少 lib/main.dart" && exit 1
-
-if ! grep -E '^\s*void\s+main\s*\(\s*\)' "$entry_file" | grep -v '^\s*//' >/dev/null; then
-  _color_echo red "❌ lib/main.dart 中未检测到未被注释的 void main()"
-  exit 1
-fi
+_color_echo green "✅ 项目路径：$flutter_root"
+_color_echo green "🎯 入口文件：$entry_file"
 
 # ✅ 构建参数
 echo ""
@@ -93,7 +99,7 @@ flutter_cmd="flutter"
 read "?📦 是否执行 flutter pub get？[空格+回车=执行, 回车=跳过] " run_get
 [[ "$run_get" =~ " " ]] && $flutter_cmd pub get
 
-# ✅ 模拟器彻底关闭
+# ✅ 模拟器彻底关闭（处理假后台）
 _color_echo yellow "🛑 正在彻底关闭所有 iOS 模拟器..."
 xcrun simctl shutdown all >/dev/null 2>&1
 osascript -e 'quit app "Simulator"' >/dev/null 2>&1

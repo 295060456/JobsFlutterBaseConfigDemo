@@ -11,9 +11,6 @@ PODS:
     - PromisesObjC (~> 2.4)
   - camera_avfoundation (0.0.1):
     - Flutter
-  - connectivity (0.0.1):
-    - Flutter
-    - Reachability
   - connectivity_plus (0.0.1):
     - Flutter
   - device_info (0.0.1):
@@ -152,8 +149,6 @@ PODS:
     - Mantle/extobjc (= 2.2.0)
   - Mantle/extobjc (2.2.0)
   - OrderedSet (6.0.3)
-  - package_info (0.0.1):
-    - Flutter
   - package_info_plus (0.4.5):
     - Flutter
   - path_provider_foundation (0.0.1):
@@ -167,7 +162,6 @@ PODS:
   - platform_device_id (0.0.1):
     - Flutter
   - PromisesObjC (2.4.0)
-  - Reachability (3.7.6)
   - SDWebImage (5.21.1):
     - SDWebImage/Core (= 5.21.1)
   - SDWebImage/Core (5.21.1)
@@ -175,8 +169,6 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
   - sensors_plus (0.0.1):
-    - Flutter
-  - share (0.0.1):
     - Flutter
   - share_plus (0.0.1):
     - Flutter
@@ -205,7 +197,6 @@ PODS:
 
 DEPENDENCIES:
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
-  - connectivity (from `.symlinks/plugins/connectivity/ios`)
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
   - device_info (from `.symlinks/plugins/device_info/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
@@ -230,14 +221,12 @@ DEPENDENCIES:
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - install_plugin (from `.symlinks/plugins/install_plugin/ios`)
   - location (from `.symlinks/plugins/location/ios`)
-  - package_info (from `.symlinks/plugins/package_info/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - photo_manager (from `.symlinks/plugins/photo_manager/ios`)
   - platform_device_id (from `.symlinks/plugins/platform_device_id/ios`)
   - sensors_plus (from `.symlinks/plugins/sensors_plus/ios`)
-  - share (from `.symlinks/plugins/share/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - sqflite_darwin (from `.symlinks/plugins/sqflite_darwin/darwin`)
@@ -264,7 +253,6 @@ SPEC REPOS:
     - Mantle
     - OrderedSet
     - PromisesObjC
-    - Reachability
     - SDWebImage
     - SDWebImageWebPCoder
     - SwiftyGif
@@ -273,8 +261,6 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   camera_avfoundation:
     :path: ".symlinks/plugins/camera_avfoundation/ios"
-  connectivity:
-    :path: ".symlinks/plugins/connectivity/ios"
   connectivity_plus:
     :path: ".symlinks/plugins/connectivity_plus/ios"
   device_info:
@@ -323,8 +309,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/install_plugin/ios"
   location:
     :path: ".symlinks/plugins/location/ios"
-  package_info:
-    :path: ".symlinks/plugins/package_info/ios"
   package_info_plus:
     :path: ".symlinks/plugins/package_info_plus/ios"
   path_provider_foundation:
@@ -337,8 +321,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/platform_device_id/ios"
   sensors_plus:
     :path: ".symlinks/plugins/sensors_plus/ios"
-  share:
-    :path: ".symlinks/plugins/share/ios"
   share_plus:
     :path: ".symlinks/plugins/share_plus/ios"
   shared_preferences_foundation:
@@ -362,7 +344,6 @@ SPEC CHECKSUMS:
   AppAuth: d4f13a8fe0baf391b2108511793e4b479691fb73
   AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
   camera_avfoundation: be3be85408cd4126f250386828e9b1dfa40ab436
-  connectivity: e7d9fd79099f39025737062855c00248b7afcdf0
   connectivity_plus: cb623214f4e1f6ef8fe7403d580fdad517d2f7dd
   device_info: 52e8c0c9c61def8d0a92bf175f5f500abbea04bc
   device_info_plus: 21fcca2080fbcd348be798aa36c3e5ed849eefbe
@@ -398,18 +379,15 @@ SPEC CHECKSUMS:
   location: 155caecf9da4f280ab5fe4a55f94ceccfab838f8
   Mantle: c5aa8794a29a022dfbbfc9799af95f477a69b62d
   OrderedSet: e539b66b644ff081c73a262d24ad552a69be3a94
-  package_info: cce50adca9873c79f931618469d2114b91d71189
   package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
   path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
   permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
   photo_manager: 1d80ae07a89a67dfbcae95953a1e5a24af7c3e62
   platform_device_id: e6c0710badeccbc647da332ebf14cd41a8dd6762
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
-  Reachability: fd0ecd23705e2599e4cceeb943222ae02296cbc6
   SDWebImage: f29024626962457f3470184232766516dee8dfea
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   sensors_plus: 6a11ed0c2e1d0bd0b20b4029d3bad27d96e0c65b
-  share: a34936589f3090d59481bcdc5c30cc9dd47c75f6
   share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
   shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
   sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0
