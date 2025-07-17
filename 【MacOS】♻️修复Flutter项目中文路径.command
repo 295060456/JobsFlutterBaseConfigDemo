@@ -87,7 +87,7 @@ find . -name "*.dart" | while read -r file; do
   if grep -q "import 'package:[^']*%[0-9A-Fa-f]\{2\}" "$file"; then
     echo "🔧 修复 import：$file"
     cp "$file" "$BACKUP_DIR/$(basename "$file")"
-    perl -i -pe 'use URI::Escape; s|(import\s+\'package:[^']*)|uri_unescape($1)|ge' "$file"
+    perl -i -pe "use URI::Escape; s|(import\\s+'package:[^']*)|uri_unescape(\$1)|ge" "$file"
   fi
 done
 

@@ -1,3 +1,4 @@
+/// 统一的构建/脚本任务配置。✅推荐加入Git管理
 {
     // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
@@ -6,7 +7,7 @@
         {
             "label": "StartDebuggingByJobs",
             "type": "shell",
-            "command":"echo hello"
+            "command": "echo hello"
             // "command": "flutter run lib/调用本地相册+调用本机摄像头拍照（全部验证通过）/CameraDemo.dart -v -d 00008110-000625583EE3801E"
         }
     ]

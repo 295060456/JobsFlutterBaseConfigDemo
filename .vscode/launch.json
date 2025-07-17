@@ -1,14 +1,15 @@
+/// 调试配置（如 Flutter 调试参数）。✅推荐加入Git管理
 {
-    // 使用 IntelliSense 了解相关属性。 
+    // 使用 IntelliSense 了解相关属性。
     // 悬停以查看现有属性的描述。
     // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "JobsFlutterBaseConfigDemo",// 调试配置名称
-            "request": "launch",// 调试器请求类型，通常为 "launch" 或 "attach"
-            "type": "dart",// 调试器类型，通常为 "dart" 或 "flutter"
-            "program": "lib/调用本地相册+调用本机摄像头拍照（全部验证通过）/CameraDemo.dart",// ❤️要调试的程序的入口点
+            "name": "JobsFlutterBaseConfigDemo", // 调试配置名称
+            "request": "launch", // 调试器请求类型，通常为 "launch" 或 "attach"
+            "type": "dart", // 调试器类型，通常为 "dart" 或 "flutter"
+            "program": "lib/调用本地相册+调用本机摄像头拍照（全部验证通过）/CameraDemo.dart", // ❤️要调试的程序的入口点
             "flutterMode": "debug"
         },
         // {

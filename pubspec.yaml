@@ -5,16 +5,16 @@
 
 name: jobs_flutter_base_config
 description: "A new Flutter project."
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 environment:
-  sdk: '>=3.3.1 <4.0.0'
+  sdk: ">=3.3.1 <4.0.0"
 # 在dependencies部分中已经声明了某个包，就不需要在dev_dependencies部分重复声明了。
-dependencies: 
-# 核心库
-  flutter: 
+dependencies:
+  # 核心库
+  flutter:
     sdk: flutter
-# UI组件库
+  # UI组件库
   cupertino_icons: ^1.0.6
   device_preview: any # 多设备模拟器（外部包裹）
   easy_localization: any # 国际化根容器（外部包裹）
@@ -47,11 +47,13 @@ dependencies:
   webview_flutter_wkwebview: any # 用于显示网页
   flutter_inappwebview: any # 用于显示网页 (iOS)
   flutter_webview_plugin: any # 用于显示网页 (Android)
+  flutter_fortune_wheel: any # 用于显示抽奖转盘
+  flutter_easyloading: any #
   # google_mobile_ads: any # 用于显示广告。初始化的时候必须要带 Key 否则程序崩溃
   cached_network_image: any # 用于显示网络图片
   flutter_inappwebview_platform_interface: any # 用于显示网页 (platform interface)
   flutter_inappwebview_web: any # 用于显示网页 (web)
-# 图片处理
+  # 图片处理
   wechat_assets_picker: any # 用于选择微信相册中的图片(微信UI)
   wechat_camera_picker: any # 用于拍照(微信UI)
   image: any # 用于处理图片
@@ -59,7 +61,7 @@ dependencies:
   flutter_svg: any # 用于显示SVG图片
   flutter_native_image: any # 用于处理原生图片
   image_gallery_saver: any # 用于保存图片到相册中
-# 数据处理
+  # 数据处理
   equatable: any # 用于定义值对象的相等性
   built_value: any # 用于序列化/反序列化数据
   built_value_generator: any # 用于生成序列化/反序列化代码
@@ -75,14 +77,16 @@ dependencies:
   pointycastle: any # 用于加密数据
   video_compress: any # 用于处理视频
   flutter_widget_from_html_core: any # 用于解析HTML内容
-# 状态管理
+  # 状态管理
   get: any # 用于管理应用状态
   provider: any # 用于管理应用状态
   bloc: any # 用于管理应用状态
   flutter_bloc: any # 用于管理应用状态
-# 用户权限处理
+  # 用户权限处理
   permission_handler: any # 用于处理权限
-# 网络请求
+  # 网络请求
+  dart_ping: any
+  dart_ping_ios: any
   http: any # 用于网络请求
   # Chopper: any # 用于网络请求
   # FlutterHttpClient: any # 用于网络请求
@@ -95,21 +99,22 @@ dependencies:
   mqtt_client: any # 用于连接MQTT服务器
   # flutter_cache_manager_firebase: any # 用于缓存网络请求 (Firebase)
   # flutter_cache_manager: any # 用于缓存网络请求
-# 本地存储
+  # 本地存储
   # get_storage: any # 用于存储键值对数据
   # shared_preferences_web: any # 用于存储键值对数据 (web)
   # shared_preferences_platform_interface: any # 用于存储键值对数据 (platform interface)
   # flutter_secure_storage: any # 用于存储敏感数据
   # flutter_secure_storage_macos: any # 用于存储敏感数据 (macOS)
-  # firebase_core: any # 用于使用Firebase
+  firebase_core: any # 用于使用Firebase
+  firebase_messaging: any
   sqflite: any # 用于本地数据库
-# 播放器
+  # 播放器
   video_player: any # 用于播放视频
   chewie: any # 用于播放视频
   lottie: any # 用于播放动画
-# 国际化
+  # 国际化
   intl: any # 提供国际化和本地化设施，包括消息翻译、复数和性别、日期/数字格式和解析以及双向文本
-# 设备/应用相关
+  # 设备/应用相关
   device_info_plus: any # 用于获取设备信息
   timezone: any # 用于获取设备时区
   flutter_native_timezone: any # 用于获取设备时区 (iOS)
@@ -117,21 +122,23 @@ dependencies:
   package_info_plus: any # 用于获取应用信息
   uuid: any # 用于生成唯一标识符
   platform_device_id: any # 用于获取设备唯一标识符
-# 分享功能
+  # 分享功能
   share_plus: any # 用于分享内容
-# 账号登陆
+  # 账号登陆
   google_sign_in: any # 用于登录Google账号
-# 键盘相关
+  # 键盘相关
   keyboard_actions: any # 用于处理键盘事件
   flutter_keyboard_visibility: any # 用于监听键盘是否显示
-# 地图相关
+  # 地图相关
   flutter_localizations: # 一个使用地图数据进行应用内定位的软件包
     sdk: flutter
   geolocator: any # 一个使用地图数据进行应用内定位的软件包
   google_maps_flutter: any # 一个使用地图数据进行应用内定位的软件包
   google_maps_flutter_platform_interface: any # 用于使用Google Maps API (platform interface)
   google_maps_flutter_web: any # 用于使用Google Maps API (web)
-# 工具库
+  # 工具库
+  wakelock_plus: any # 用于保持屏幕常亮
+  flutter_plugin_engagelab: any # 极光推送
   file_picker: any # 实现文件选择器功能，允许用户从本地文件系统中选择任意文件（如图片、PDF、文档、视频等），并获取路径用于上传等操作。
   connectivity_plus: any # 用于检查设备网络连接状态
   overlay_support: any # 用于显示遮罩层
@@ -151,10 +158,11 @@ dependencies:
   fluro: any # 用于管理应用路由
   murmur3: any #
   murmurhash: any #
-# 应用程序
+  # 应用程序
   flutter_plugin_android_lifecycle: any # 用于管理生命周期 (Android)
-# 日志调试
+  # 日志调试
   flutter_ulog: any # 用于打印日志
+  crypto: ^3.0.6
 
 dev_dependencies:
   flutter_test:
@@ -163,7 +171,7 @@ dev_dependencies:
   json_serializable: any # 用于序列化/反序列化JSON数据
   build_runner: any # 用于运行生成代码（any 表示 "用兼容的最新版"）
   flutter_gen_runner: any # 根据你的 pubspec.yaml 中配置的资源文件，自动生成 assets.gen.dart 文件，让你用代码方式访问资源，更安全、方便。
-  
+
 flutter_gen:
   output: lib/gen/ # 生成文件的目录
 # For information on the generic Dart part of this file, see the
@@ -186,15 +194,15 @@ flutter:
     - assets/README/
     - assets/SVG/
     - assets/Video/
-  
+
 # For details regarding fonts from package dependencies,
 # see https://flutter.dev/custom-fonts/#from-packages
-# 
+#
 # https://fonts.google.com/
 fonts:
   - family: Akrobat-Bold
-    fonts:      
-      - asset: assets/fonts/Akrobat-Bold.otf     
+    fonts:
+      - asset: assets/fonts/Akrobat-Bold.otf
   - family: Proximanova-bold
     fonts:
       - asset: assets/fonts/ProximaNovaBold.otf

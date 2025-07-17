@@ -24,20 +24,30 @@
 * **站在巨人的肩膀上，才能看得更远**
 * **面向信仰编程**
 
-## 一、🎯目的 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+## 一、🎯目的和功效 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-* 所有的项目根据这个根来进行统一配置和调用
-* 将它作为所有项目的基类，做到全局的统一
-* 千万要保证这个工程的编译通过，以后项目直接进行引用
-* 作为某些代码实践的靶场，是非常有必要的
+* 品控标准（只能严格的保证编译器正常，而不能完全保证运行时的不出错）
+  * 一定要保证这个工程的成功编译通过，方便以后项目直接进行引用，乃至开新版本
+  * <font color=blue>**示例Demo可能因为相关Api的升级，没有及时的覆盖处理，可能会出现闪退。修复即可**</font>
+* 自此以后，所有新开的项目都可以根据这个**根项目**来进行统一的调配和使用
+  * 将它作为所有项目的母版和基类，最大限度的做到全局的统一
+  * 日积月累的记录一些平时生产生活中萌发的一些优秀的想法、灵光一现的创意。包括但不仅限于：<u>语法糖的封装</u>、<u>方法的调用</u>，<u>第三方的选用</u>、以及一些心得体会
+* 作为某些代码**实践靶场**，在实际开发过程中，是非常有必要的
+  * 为我们快速且稳定的复现一些业务场景，作为代码实验室🧪，而搭建的一个平台
 * 作为代码笔记，记录一些常用的代码，方便查阅
-* 作为学习的资料，可以快速了解到一些常用的知识
-* 作为项目的参考，可以快速的了解到项目的架构，代码规范，以及一些设计模式
-* <font color=blue>**示例Demo可能因为相关Api的升级没有覆盖处理会出现闪退。修复即可**</font>
+  * 主要形式是可以运行的代码 + 文字性叙述 + 图文混编讲解
+  * 作为学习的资料，可以快速了解到一些常用的知识，大幅**降低学习成本**
+  * 作为其他项目的参考，可以快速的了解到项目的架构，代码规范，以及一些设计模式
+  * 这么一些优秀的成果，其来源不仅仅是来自于作者本身的持续付出与积累。更是这个领域大家庭中各路优秀作者的智慧结晶
+* 独立的测试单元
+  * 对于单个的**Flutter**工程文件（小Demo）可以利用[**运行脚本**](./【MacOS】☀️双击运行Flutter项目（iOS 模拟器）.command)，在MacOS的**终端**直接拖入进行运行和展示（终端运行不支持断点，只能输出日志）
+  * 为了保证各个Demo在形式上的独立性，所以尽可能的在单个`.dart`文件里面进行叙述。**每一个Flutter的Demo文件里，都会存在其程序的入口函数**
 
 ## 二、💥代码讲解 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-### 1、<a href="#极光原生推送" style="font-size:17px; color:green;"><b>极光原生推送</b></a>封装的全局打印（🧨强烈推荐）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 1、🖨️打印方式 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+#### 1.1、<a href="#极光原生推送" style="font-size:17px; color:green;"><b>极光原生推送</b></a>封装的全局打印（🧨强烈推荐）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 虽然这个方法原本是插件内部封装的，但它本质上是一个对 `print()` 的增强封装，用法通用、效果更强大。
 
@@ -52,6 +62,35 @@ FlutterPluginEngagelab.printMy(xxx);
 | ✅ 可加日志等级 / tag    | 比如 `[INFO]` `[ERROR]` |
 | ✅ 可屏蔽 Release 输出   | 保证线上不暴露调试信息  |
 | ✅ 日志更美观 / 可写文件 | 后期接入文件记录也方便  |
+
+#### 1.2、`debugPrint` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+debugPrint("XXX");
+```
+
+#### 1.3、`JobsPrint` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> 1️⃣ 日志打印输出文件和行
+>
+> 2️⃣ 如果要打印类的实例，需要在类中添加 Map<String, dynamic> toJson() 方法
+
+```dart
+import 'package:flutter_plugin_engagelab/flutter_plugin_engagelab.dart';
+
+void JobsPrint(Object? message) {
+  /// 获取当前调用栈，目的是找到谁调用了这个日志函数。
+  final StackTrace stackTrace = StackTrace.current;
+  /// 把堆栈信息按行切割为数组。每一行大概表示一个方法的调用栈帧。
+  final List<String> stackTraceLines = stackTrace.toString().split('\n');
+  /// 取第2行（stackTraceLines[1]）：因为第1行是当前函数本身的调用，第2行才是调用 JobsPrint() 的地方。
+  /// 然后传给 _formatStackTraceLine() 方法提取出文件和行号信息。
+  final String logLine = stackTraceLines.length > 1
+      ? _formatStackTraceLine(stackTraceLines[1])
+      : 'Unknown location';
+  FlutterPluginEngagelab.printMy('[$logLine] ${_messageToString(message)}');
+}
+```
 
 ### 2、`SystemChrome`常用于设置<u>**状态栏和系统底部导航栏样式**</u>的配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -711,7 +750,15 @@ ElevatedButton(
 >  👉 **任何时候用 `Get.dialog()`，都写上 `navigatorKey: Get.key`**，
 >  ✅ 兼容所有场景、生命周期、嵌套结构，绝对不翻车。
 
-#### 5.9、基于[**`GetX`**](https://pub.dev/packages/get) 最佳实践的完整项目结构模板（项目名为：`getx_demo`） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 5.9、[**`GetX`**](https://pub.dev/packages/get) 多语言化  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> 如果找不到对应 key，会 **原样返回原始字符串**（即 `"等待状态变化"`），不会报错或崩溃。
+
+```dart
+String status = "等待状态变化".tr;
+```
+
+#### 5.10、基于[**`GetX`**](https://pub.dev/packages/get) 最佳实践的完整项目结构模板（项目名为：`getx_demo`） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```bash
 lib/
@@ -899,13 +946,16 @@ WidgetsFlutterBinding.ensureInitialized();
     dart_ping_ios: ^4.0.0
     ```
 
-### 8、**SpUtil** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 8、利用**`SharedPreferences`**对数据进行存取 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> 1️⃣ 封装原生 SharedPreferences 支持的所有类型
+> 1️⃣ 封装原生 `SharedPreferences` 支持的所有类型
 >
 > 2️⃣ 额外支持了自定义对象（Bean）的存取
+>
+> 💥 Flutter.**`SharedPreferences`** == OC.**`NSUserDefaults`** == Swift.**`UserDefaults`**
 
 ```dart
+/// SpUtil.dart
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'app_json_serializable.dart';
@@ -2599,6 +2649,69 @@ flutter_gen:
 
 > 用于序列化/反序列化JSON数据
 
+### 22、👂监听 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+### 22.1、👂路由的监听 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> `RouteObserver` 是用于监听页面 push、pop、remove、replace 等 **路由事件**的类
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_plugin_engagelab/flutter_plugin_engagelab.dart';
+
+class AppNavigatorObserver extends RouteObserver<PageRoute<dynamic>> {
+  @override
+  void didPop(Route route, Route? previousRoute) {
+    super.didPop(route, previousRoute);
+    // 监听返回事件
+    if (route.settings.name != null && route.settings.name!.isNotEmpty) {
+      FlutterPluginEngagelab.printMy("页面返回了: ${route.settings.name}");
+    }
+  }
+}
+```
+
+```dart
+final AppNavigatorObserver appNavigatorObserver = AppNavigatorObserver();
+
+builder: (context, child) {
+          return GetMaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: '澳门新葡京',
+            navigatorObservers: [appNavigatorObserver],
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            // supportedLocales: supportedLocales,
+            // initialRoute: AppPages.INITIAL,
+            // initialBinding: MainBindings(),
+            // getPages: AppPages.routes,
+            // builder: EasyLoading.init(),
+            // translations: AppTranslations(),
+            locale: Locale(currentLanguage),
+            fallbackLocale: const Locale("en"),
+          );
+        }
+```
+
+#### 22.2、👂APP 生命周期的监听 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> 主要通过实现 `WidgetsBindingObserver` 接口来完成
+
+* App 前后台切换（如 iOS 的 `applicationDidEnterBackground` / `applicationDidBecomeActive`）
+* 屏幕尺寸变化（如旋转）
+* 语言切换
+* 内存压力警告等
+
+#### 22.3、👂滚动的监听 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+#### 22.4、👂数据变化通知的监听 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+#### 22.5、👂键盘（弹起/落下）的监听 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+#### 22.6、👂网络的监听 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ## 三、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -2700,11 +2813,35 @@ flutter_gen:
 
 ### 3、[**VSCode**](https://code.visualstudio.com/)配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-* 如果[**VSCode**]()打开flutter项目以后没有办法通过`command`+`click`的形式点进去看，那么需要`command`+`shift`+`x` => 安装Dart/Flutter
+* 如果[**VSCode**](https://code.visualstudio.com/)打开flutter项目以后没有办法通过`command`+`click`的形式点进去看，那么需要`command`+`shift`+`x` => 安装Dart/Flutter
 
   ![image-20250713101322760](./assets/README/image-20250713101322760.png)
 
   ![image-20250713101045523](./assets/README/image-20250713101045523.png)
+  
+  * [**VSCode**](https://code.visualstudio.com/)的配置文件
+  
+    ```
+    Flutter项目的根目录/
+    └── .vscode/
+        ├── extensions.json          ✅ 插件推荐列表（✅ 推荐加入 Git）
+        ├── launch.json              ▶️ 启动配置（如调试 main.dart）（✅ 推荐加入 Git）
+        ├── settings.json            ⚙️ 全局项目设置（⚠️ 视情况加入 Git，建议仅保留通用设置）
+        ├── settings.local.json      🧪 本地专属设置（❌ 不建议加入 Git，应添加至 .gitignore）
+        └── tasks.json               🔁 自定义任务（如自动构建、格式化）（✅ 推荐加入 Git）
+    ```
+  
+  * Git忽略文件`.gitignore`对于[**VSCode**](https://code.visualstudio.com/)的配置文件的处理
+  
+    ```plaintext
+    # The .vscode folder contains launch configuration and tasks you configure in
+    # VS Code which you may wish to be included in version control, so this line
+    # is commented out by default.
+    .vscode/settings.json
+    !.vscode/settings.local.json
+    ```
+    
+    
 
 ### 4、🎯 Dart 命名规则大全（官方风格指南） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
