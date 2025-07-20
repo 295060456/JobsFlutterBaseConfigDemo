@@ -2893,15 +2893,123 @@ Flutter 是跨平台框架，它的核心设计理念是“自己画 UI（Skia�
     > - 通常这个目录在未特殊使用挂载卷的模拟器中是空的。
     > - 可被清理，Xcode 会在需要时自动重新创建。
 
-### 2、[**FVM**](https://fvm.app/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 2、[**FVM**](https://fvm.app/) = <font color=red>F</font>lutter <font color=red>V</font>ersion <font color=red>M</font>anagement <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 一个项目锁定该项目特有的Flutter.sdk环境，方便切换和调试
 
-* 安装[**FVM**]()的前提是先安装**dart**环境
+* 安装[**FVM**](https://fvm.app/)的前提是先安装**dart**环境
 
   ```dart
   dart pub global activate fvm
   ```
+  
+* 由[**FVM**](https://fvm.app/)锁定的版本信息，写入在**Flutter**项目根目录下的**`.fvm/fvm_config.json`**（隐藏文件夹）
+
+  ```json
+  {
+    "flutterSdkVersion": "3.13.9", /// 当前项目锁定使用的 Flutter 版本
+    "pinVersions": false /// 是否锁定精确版本（通常设为 false）
+  }
+  ```
+
+* 由[**FVM**](https://fvm.app/)管理的Flutter.SDK的缓存目录：`.fvm/flutter_sdk/`
+
+* 环境变量配置：`.bash_profile`
+
+  > 🌟全局定义了一个 shell 函数，把所有的 `flutter` 命令都转发给 `fvm` 
+  >
+  > 📌 那么 FVM 是怎么知道用哪个 Flutter SDK？
+  >
+  > * FVM 会优先查找**当前项目的 `.fvm/fvm_config.json`** 文件；
+  >
+  > * 如果你不在 Flutter 项目目录，FVM 会使用你设置的 **全局默认 Flutter SDK 版本**。
+  >
+  >   ```shell
+  >   ➜  Desktop fvm global
+  >   ? Select a version:  ›                                                          
+  >   ❯ stable                                                                        
+  >     3.32.6                                                                        
+  >     3.24.5    
+  >   ```
+  
+  ```shell
+  # 配置 FVM 环境变量
+  export PATH="$HOME/.pub-cache/bin:$PATH"
+  if command -v fvm &>/dev/null; then
+    flutter() { fvm flutter "$@"; }
+  else
+    echo "⚠️ 未检测到 fvm，请执行 flutter pub global activate fvm 安装"
+  fi
+  ```
+  
+  ```shell
+  ➜  Desktop which flutter                                    
+  
+  flutter () {
+  	fvm flutter "$@"
+  }
+  ```
+  
+* 🧰[**FVM**](https://fvm.app/)命令行使用方式：
+
+  * **查看当前 FVM 的全局默认版本**
+
+    ```shell
+    fvm global
+    ```
+
+  * **查看所有可用版本**
+
+    ```
+    fvm releases
+    ```
+
+  * **查看当前项目锁定版本**
+
+    ```shell
+    fvm flutter --version
+    ```
+  
+  * 查询可用**`channel`**
+  
+    ```shell
+    fvm flutter channel
+    ```
+  
+    ```shell
+    ➜  Desktop flutter channel
+    Flutter channels:
+      master (latest development branch, for contributors)
+      main (latest development branch, follows master channel)
+      beta (updated monthly, recommended for experienced users)
+    * stable (updated quarterly, for new users and for production app releases)
+    ```
+  
+    | channel  | 说明                                                         | 适用人群       |
+    | -------- | ------------------------------------------------------------ | -------------- |
+    | `stable` | **稳定发布，适合生产环境**                                   | 普通开发者 ✅   |
+    | `beta`   | **新功能预览版，较稳定**                                     | 有经验的开发者 |
+    | `main`   | **主开发分支，功能最前沿**<br>从 **Flutter 3.22 开始**，Flutter 团队对 channel 进行了重构，**废弃了 `dev` channel 的独立维护**，其功能完全被 `main` 取代。 | 需体验最新特性 |
+    | `master` | **Flutter 引擎贡献者使用**                                   | 深度参与者     |
+  
+  * 升级（切换）由[**FVM**](https://fvm.app/)管理的Flutter.SDK
+  
+    ```shell
+    # 如果有必要，需要先切换channel，再upgrade
+    fvm flutter channel main
+    fvm flutter upgrade
+    ```
+  
+    | 命令                 | 含义                                                         | 是否修改项目配置                |
+    | -------------------- | ------------------------------------------------------------ | ------------------------------- |
+    | `fvm install stable` | 安装**最新稳定版本**到本地缓存                               | ❌                               |
+    | `fvm use stable`     | 设置当前项目使用最新稳定版本                                 | ✅                               |
+    | `fvm global stable`  | 设置全局默认版本                                             | ✅（全局）                       |
+    | `fvm upgrade`        | 1️⃣ **获取当前项目 `.fvm/fvm_config.json` 中配置的 `flutterSdkVersion` 所属 channel（如 stable、beta、dev、master）**；<br>2️⃣ 然后从该 **channel** 中 **升级到该 channel 的最新版本** | ✅（更新版本但不换 **channel**） |
+  
+    
+
+ 
 
 ### 3、[**VSCode**](https://code.visualstudio.com/)配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
