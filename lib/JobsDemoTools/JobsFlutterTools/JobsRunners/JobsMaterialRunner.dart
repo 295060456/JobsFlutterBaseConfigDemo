@@ -49,6 +49,7 @@ class JobsMaterialRunner extends StatelessWidget {
     /// Android
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      title: title ?? (child?.runtimeType.toString() ?? 'Builder'),
       theme: ThemeData(
         primarySwatch: Colors.blue,
         colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)

@@ -59,8 +59,9 @@ _is_dart_entry_file() {
   local f="$1"
   local abs=$(_abs_path "$f") || return 1
   [[ $abs == *.dart ]] || return 1
-  # grep：移除 // 注释行；匹配 main()
-  if grep -Ev '^\s*//' "$abs" | grep -Eq '\b(Future<\s*void\s*>|void)?\s*main\s*\(\s*\)\s*(async\s*)?\{' ; then
+
+  # ✅ 支持 main() {...} 和 main() => ... 写法
+  if grep -Ev '^\s*//' "$abs" | grep -Eq '\b(Future\s*<\s*void\s*>|void)?\s*main\s*\(\s*\)\s*(async\s*)?(\{|=>)' ; then
     return 0
   fi
   return 1

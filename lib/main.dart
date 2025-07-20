@@ -24,6 +24,13 @@ import 'routes/app_pages.dart';
 import 'services/theme_service.dart';
 import 'utils/global_observer.dart';
 
+// Future<void> main() async{SystemChrome->}
+// runApp(MultiProvider.child(JobsApp(StatelessWidget)))->
+// GestureDetector->
+// Consumer<LocaleNotifier>->
+// GetMaterialApp->
+// SplashPage()
+
 Future<void> main() async {
   FlutterError.onError = (FlutterErrorDetails details) {
     // 打印错误到控制台
@@ -59,8 +66,7 @@ Future<void> main() async {
     WakelockPlus.enable();
     Get.put(AppLifecycleCtrl()); // 注册生命周期监听
 
-    String currentLanguage =
-        await SpUtil.getString("currentLanguageType") ?? "zh";
+    String currentLanguage = SpUtil.getString("currentLanguageType") ?? "zh";
     final AppNavigatorObserver appNavigatorObserver = AppNavigatorObserver();
 
     runZonedGuarded(() {
@@ -75,7 +81,7 @@ Future<void> main() async {
             builder: (context, child) {
               return GetMaterialApp(
                   debugShowCheckedModeBanner: false,
-                  title: '澳门新葡京'.tr,
+                  title: '澳门'.tr,
                   navigatorObservers: [appNavigatorObserver],
                   localizationsDelegates: const [
                     GlobalMaterialLocalizations.delegate,
@@ -120,7 +126,7 @@ Future<void> main() async {
         providers: [
           ChangeNotifierProvider(create: (_) => LocaleNotifier()),
         ],
-        child: const MyApp(),
+        child: const JobsApp(),
       ),
     );
   });
@@ -130,8 +136,8 @@ Future<void> main() async {
   FlutterPluginEngagelab.resetNotificationBadge();
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class JobsApp extends StatelessWidget {
+  const JobsApp({super.key});
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
