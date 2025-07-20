@@ -194,6 +194,7 @@ flutter:
     - assets/README/
     - assets/SVG/
     - assets/Video/
+    - lib/resource/
 
 # For details regarding fonts from package dependencies,
 # see https://flutter.dev/custom-fonts/#from-packages

@@ -3006,10 +3006,6 @@ Flutter 是跨平台框架，它的核心设计理念是“自己画 UI（Skia�
     | `fvm use stable`     | 设置当前项目使用最新稳定版本                                 | ✅                               |
     | `fvm global stable`  | 设置全局默认版本                                             | ✅（全局）                       |
     | `fvm upgrade`        | 1️⃣ **获取当前项目 `.fvm/fvm_config.json` 中配置的 `flutterSdkVersion` 所属 channel（如 stable、beta、dev、master）**；<br>2️⃣ 然后从该 **channel** 中 **升级到该 channel 的最新版本** | ✅（更新版本但不换 **channel**） |
-  
-    
-
- 
 
 ### 3、[**VSCode**](https://code.visualstudio.com/)配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
