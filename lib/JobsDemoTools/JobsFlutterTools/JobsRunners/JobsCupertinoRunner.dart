@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 // import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsRunners/JobsCupertinoRunner.dart'; // 公共测试器路径
 // void main() => runApp(const JobsCupertinoRunner(CustomOverlayDemo(),title:'XXX'));
 // void main() {
@@ -38,36 +40,38 @@ class JobsCupertinoRunner extends StatelessWidget {
     required Widget Function(BuildContext context) builder,
     String? title,
     Key? key,
-  }) {
-    return JobsCupertinoRunner._internal(
-        builder: builder, title: title, key: key);
-  }
+  }) =>
+      JobsCupertinoRunner._internal(builder: builder, title: title, key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return CupertinoApp(
-      debugShowCheckedModeBanner: false,
-      theme: const CupertinoThemeData(
-        primaryColor: CupertinoColors.activeBlue,
-        textTheme: CupertinoTextThemeData(
-          navTitleTextStyle: TextStyle(fontSize: 20),
-        ),
-        // textTheme:const TextTheme(
-        //   bodyLarge: TextStyle(color: Colors.black87, fontSize: 18),
-        //   bodyMedium: TextStyle(color: Colors.black54, fontSize: 16),
-        //   headlineLarge: TextStyle(color: Colors.blue, fontSize: 24, fontWeight: FontWeight.bold),
-        // ),
-      ),
-      home: Builder(
-        builder: (ctx) => CupertinoPageScaffold(
-          navigationBar: CupertinoNavigationBar(
-            middle: Text(title ?? (child?.runtimeType.toString() ?? 'Builder')),
-          ),
-          child: SafeArea(
-            child: builder != null ? builder!(ctx) : child!,
-          ),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => ScreenUtilInit(
+      designSize: const Size(1125, 2436),
+      minTextAdapt: true,
+      builder: (context, child) => CupertinoApp(
+            debugShowCheckedModeBanner: false,
+            theme: const CupertinoThemeData(
+              primaryColor: CupertinoColors.activeBlue,
+              textTheme: CupertinoTextThemeData(
+                navTitleTextStyle: TextStyle(fontSize: 20),
+              ),
+              // textTheme:const TextTheme(
+              //   bodyLarge: TextStyle(color: Colors.black87, fontSize: 18),
+              //   bodyMedium: TextStyle(color: Colors.black54, fontSize: 16),
+              //   headlineLarge: TextStyle(color: Colors.blue, fontSize: 24, fontWeight: FontWeight.bold),
+              // ),
+            ),
+            home: Builder(
+              builder: (ctx) => CupertinoPageScaffold(
+                navigationBar: CupertinoNavigationBar(
+                  middle: Text(
+                      title ?? (child?.runtimeType.toString() ?? 'Builder')),
+                ),
+                child: SafeArea(
+                  child: builder != null
+                      ? builder!(ctx)
+                      : child ?? Text('请传入 child 或 builder'.tr),
+                ),
+              ),
+            ),
+          ));
 }

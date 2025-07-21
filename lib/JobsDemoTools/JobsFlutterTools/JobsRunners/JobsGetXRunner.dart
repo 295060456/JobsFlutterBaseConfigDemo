@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 // import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsRunners/JobsGetXRunner.dart'; // 公共测试器路径
@@ -35,26 +36,29 @@ class JobsGetRunner extends StatelessWidget {
     required Widget Function(BuildContext context) builder,
     String? title,
     Key? key,
-  }) {
-    return JobsGetRunner._internal(builder: builder, title: title, key: key);
-  }
+  }) =>
+      JobsGetRunner._internal(builder: builder, title: title, key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: title ?? 'GetX Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Builder(
-        builder: (ctx) => Scaffold(
-          appBar: AppBar(
-            title: Text(title ?? (child?.runtimeType.toString() ?? 'Builder')),
-          ),
-          body: builder != null ? builder!(ctx) : child!,
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => ScreenUtilInit(
+      designSize: const Size(1125, 2436),
+      minTextAdapt: true,
+      builder: (context, child) => GetMaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: title ?? 'GetX Demo',
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+            ),
+            home: Builder(
+              builder: (ctx) => Scaffold(
+                appBar: AppBar(
+                  title: Text(
+                      title ?? (child?.runtimeType.toString() ?? 'Builder')),
+                ),
+                body: builder != null
+                    ? builder!(ctx)
+                    : child ?? Text('请传入 child 或 builder'.tr),
+              ),
+            ),
+          ));
 }

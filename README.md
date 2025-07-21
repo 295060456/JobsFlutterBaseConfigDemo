@@ -1795,26 +1795,63 @@ String getNowTime() {
 
 #### 15.1、[**flutter_screenutil**](https://pub.dev/packages/flutter_screenutil)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-```yaml
-dependencies:
-  flutter_screenutil:
-```
+* ‼️重要说明
 
-```dart
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-```
+  * [**ScreenUtilInit**](https://pub.dev/packages/flutter_screenutil).**builder** 后面的参数
 
-```dart
-ScreenUtilInit(
-  designSize: Size(375, 812), // 👈 指定设计稿尺寸
-);
-```
+    | App 类型                              | 是否支持                                  | 原因说明                                         |
+    | ------------------------------------- | ----------------------------------------- | ------------------------------------------------ |
+    | `MaterialApp`                         | ✅ 支持                                    | 官方推荐用法，内部已处理 context 初始化逻辑      |
+    | `CupertinoApp`                        | ❌ 不支持                                  | 无 `MediaQuery`，`ScreenUtil` 初始化失败或不完整 |
+    | `GetMaterialApp`                      | ❌ 不直接支持                              | 内部结构不同，`context` 获取时机不同             |
+    | `WidgetsApp`                          | ⚠️ 勉强支持                                | 需自己确保 `MediaQuery` 注入，使用受限           |
+    | `Builder` 包装 + 任意 App（如下所示） | ✅ <font color=red>**推荐替代方案**</font> | 手动传入 `context`，可兼容任何框架（包括 GetX）  |
 
-```dart
-520.h     // 表示高度适配值
-300.w     // 表示宽度适配值
-16.sp     // 表示字体大小适配值
-```
+  * `ScreenUtilInit` 内部依赖：
+
+    - `MediaQuery.of(context)` 初始化设备尺寸等；
+    - `WidgetsBinding.instance.window.physicalSize` 是兜底；
+    - 一般通过 `MaterialApp` 创建完整的 widget 树，包括 `MediaQuery`、`Localizations` 等。
+
+* 使用
+
+  ```yaml
+  dependencies:
+    flutter_screenutil:
+  ```
+
+  ```dart
+  import 'package:flutter_screenutil/flutter_screenutil.dart';
+  ```
+
+  ```dart
+  Widget build(BuildContext context) => ScreenUtilInit(
+      designSize: const Size(1125, 2436),// 👈 指定设计稿尺寸
+      minTextAdapt: true,
+      builder: (context, child) => GetMaterialApp(/// ← 可以替换成 CupertinoApp、WidgetsApp 等
+          debugShowCheckedModeBanner: false,
+          title: title ?? 'GetX Demo',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          home: Builder(
+            builder: (ctx) => Scaffold(
+              appBar: AppBar(
+                title:
+                    Text(title ?? (child?.runtimeType.toString() ?? 'Builder')),
+              ),
+              body: builder != null ? builder!(ctx) : child!,
+            ),
+          ),
+        )
+    );
+  ```
+
+  ```dart
+  520.h     // 表示高度适配值
+  300.w     // 表示宽度适配值
+  16.sp     // 表示字体大小适配值
+  ```
 
 #### 15.2、**SafeArea** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 

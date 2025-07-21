@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get_utils/src/extensions/export.dart';
 import 'package:google_fonts/google_fonts.dart' show GoogleFonts;
 // import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart'; // 公共测试器路径
 // void main() => runApp(const JobsMaterialRunner(CustomOverlayDemo(),title:'XXX'));
@@ -16,6 +18,7 @@ import 'package:google_fonts/google_fonts.dart' show GoogleFonts;
 
 /// 通用组件测试器(Android 风格)，自动生成可运行页面
 /// 通用组件测试器：支持 child 和 builder 两种形式
+/// ScreenUtilInit 只能搭配 MaterialApp 使用，不支持其他组件
 class JobsMaterialRunner extends StatelessWidget {
   final Widget Function(BuildContext context)? builder;
   final Widget? child;
@@ -28,56 +31,51 @@ class JobsMaterialRunner extends StatelessWidget {
     super.key,
   });
 
-  /// 原始构造函数：兼容 const + 旧用法
-  /// :（冒号）	表示进入初始化列表，或者重定向构造函数
   const JobsMaterialRunner(Widget child, {String? title, Key? key})
       : this._internal(child: child, title: title, key: key);
 
-  /// 支持 builder 模式（需要 context）
-  /// factory 构造函数可以不直接创建新对象，而是返回一个已有的对象、子类对象，或进行条件逻辑判断后返回不同对象。
   factory JobsMaterialRunner.builder({
     required Widget Function(BuildContext context) builder,
     String? title,
     Key? key,
-  }) {
-    return JobsMaterialRunner._internal(
-        builder: builder, title: title, key: key);
-  }
+  }) =>
+      JobsMaterialRunner._internal(builder: builder, title: title, key: key);
 
   @override
-  Widget build(BuildContext context) {
-    /// Android
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: title ?? (child?.runtimeType.toString() ?? 'Builder'),
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)
-            .copyWith(secondary: Colors.orange),
-        textTheme: GoogleFonts.latoTextTheme(Theme.of(context).textTheme),
-        // textTheme:const TextTheme(
-        //   bodyLarge: TextStyle(color: Colors.black87, fontSize: 18),
-        //   bodyMedium: TextStyle(color: Colors.black54, fontSize: 16),
-        //   headlineLarge: TextStyle(color: Colors.blue, fontSize: 24, fontWeight: FontWeight.bold),
-        // ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.blue,
-          titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
-        ),
-      ),
-      home: Builder(
-        builder: (ctx) => Scaffold(
-          appBar: AppBar(
-              title:
-                  Text(title ?? (child?.runtimeType.toString() ?? 'Builder'))),
-          body: Center(
-            child: builder != null ? builder!(ctx) : child!,
+  Widget build(BuildContext context) => ScreenUtilInit(
+        designSize: const Size(1125, 2436), // ← 设计稿尺寸
+        minTextAdapt: true, // ← 修复 _minTextAdapt 初始化报错
+        builder: (context, child) => MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: title ?? (child?.runtimeType.toString() ?? 'Builder'),
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+            colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)
+                .copyWith(secondary: Colors.orange),
+            textTheme: GoogleFonts.latoTextTheme(
+              Theme.of(context).textTheme,
+            ),
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+            ),
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Colors.blue,
+              titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          ),
+          home: Builder(
+            builder: (ctx) => Scaffold(
+              appBar: AppBar(
+                title:
+                    Text(title ?? (child?.runtimeType.toString() ?? 'Builder')),
+              ),
+              body: Center(
+                child: builder != null
+                    ? builder!(ctx)
+                    : child ?? Text('请传入 child 或 builder'.tr),
+              ),
+            ),
           ),
         ),
-      ),
-    );
-  }
+      );
 }
