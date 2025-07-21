@@ -758,7 +758,9 @@ ElevatedButton(
 String status = "等待状态变化".tr;
 ```
 
-#### 5.10、基于[**`GetX`**](https://pub.dev/packages/get) 最佳实践的完整项目结构模板（项目名为：`getx_demo`） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 5.10、[**`GetX`**](https://pub.dev/packages/get) 不用路由管理页面
+
+#### 5.11、基于[**`GetX`**](https://pub.dev/packages/get) 最佳实践的完整项目结构模板（项目名为：`getx_demo`） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```bash
 lib/
