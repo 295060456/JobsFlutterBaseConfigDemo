@@ -27,7 +27,7 @@ void main() => runApp(JobsMaterialRunner(
       LuckyWheelWidget(
         rewards: [
           RewardItem('一等奖', 0.05,
-              icon: const AssetImage('assets/images/award1.png')),
+              icon: const AssetImage('assets/Images/flower.png')),
           RewardItem('二等奖', 0.1,
               imageUrl:
                   'https://img.icons8.com/emoji/48/000000/smiling-face.png'),
