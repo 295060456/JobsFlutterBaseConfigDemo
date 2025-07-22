@@ -15,3 +15,9 @@ TextStyle normalTextStyle({
       fontWeight: fontWeight,
       decoration: TextDecoration.none,
     );
+
+void debugLog(Object? message) {
+  final trace = StackTrace.current.toString().split('\n')[1];
+  final location = trace.contains('(') ? trace.substring(trace.indexOf('('), trace.indexOf(')') + 1) : '';
+  debugPrint('🧭 $location 👉 $message');
+}

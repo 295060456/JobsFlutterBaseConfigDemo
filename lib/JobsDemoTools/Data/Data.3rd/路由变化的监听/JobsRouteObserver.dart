@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsGetXRunner.dart';
 import 'package:jobs_flutter_base_config/JobsDemoTools/UI/UI.Origin%F0%9F%8C%8D/TabBar%E5%88%87%E6%8D%A2/Common/MyTabCtrl.dart';
+import 'package:jobs_flutter_base_config/core/app_config.dart';
 import 'package:jobs_flutter_base_config/pages/Others/Pages.dart';
 
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
@@ -24,31 +25,31 @@ void main() => runApp(JobsGetRunner(
       ),
     ),
     navigatorObservers: [routeObserver],
-    title: '路由变化的监听测试'));
+    title: '路由变化的监听测试'.tr));
 
 /// 自定义路由监听器
 class JobsRouteObserver extends NavigatorObserver {
   @override
   void didPush(Route route, Route? previousRoute) {
     super.didPush(route, previousRoute);
-    debugPrint('🟢 Push -> ${route.settings.name}');
+    debugLog('🟢 Push -> ${route.settings.name}');
   }
 
   @override
   void didPop(Route route, Route? previousRoute) {
     super.didPop(route, previousRoute);
-    debugPrint('🔴 Pop <- ${route.settings.name}');
+    debugLog('🔴 Pop <- ${route.settings.name}');
   }
 
   @override
   void didRemove(Route route, Route? previousRoute) {
     super.didRemove(route, previousRoute);
-    debugPrint('🗑 Remove -> ${route.settings.name}');
+    debugLog('🗑 Remove -> ${route.settings.name}');
   }
 
   @override
   void didReplace({Route? newRoute, Route? oldRoute}) {
     super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
-    debugPrint('🔁 Replace -> ${newRoute?.settings.name}');
+    debugLog('🔁 Replace -> ${newRoute?.settings.name}');
   }
 }
