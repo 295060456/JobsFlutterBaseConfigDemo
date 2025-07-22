@@ -113,6 +113,7 @@ dependencies:
   video_player: any # 用于播放视频
   chewie: any # 用于播放视频
   lottie: any # 用于播放动画
+  audioplayers: any # 用于播放音频
   # 国际化
   intl: any # 提供国际化和本地化设施，包括消息翻译、复数和性别、日期/数字格式和解析以及双向文本
   # 设备/应用相关
@@ -194,6 +195,7 @@ flutter:
     - assets/Others/
     - assets/README/
     - assets/SVG/
+    - assets/Sounds/
     - assets/Video/
     - lib/resource/
 
