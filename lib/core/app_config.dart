@@ -6,7 +6,7 @@ class AppConfig {
 
 TextStyle normalTextStyle({
   double fontSize = 16,
-  Color color = Colors.yellow,
+  Color color = Colors.blue,
   FontWeight fontWeight = FontWeight.normal,
 }) =>
     TextStyle(
@@ -18,6 +18,8 @@ TextStyle normalTextStyle({
 
 void debugLog(Object? message) {
   final trace = StackTrace.current.toString().split('\n')[1];
-  final location = trace.contains('(') ? trace.substring(trace.indexOf('('), trace.indexOf(')') + 1) : '';
+  final location = trace.contains('(')
+      ? trace.substring(trace.indexOf('('), trace.indexOf(')') + 1)
+      : '';
   debugPrint('🧭 $location 👉 $message');
 }

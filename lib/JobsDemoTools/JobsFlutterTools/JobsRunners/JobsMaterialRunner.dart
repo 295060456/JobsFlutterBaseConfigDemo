@@ -46,7 +46,7 @@ class JobsMaterialRunner extends StatelessWidget {
   Widget build(BuildContext context) => ScreenUtilInit(
         designSize: const Size(1125, 2436), // ← 设计稿尺寸
         minTextAdapt: true, // ← 修复 _minTextAdapt 初始化报错
-        child: const SizedBox(), // ✅ 必须提供一个 child，否则会报错
+        child: child,
         builder: (context, _) => MaterialApp(
           debugShowCheckedModeBanner: false,
           title: title ?? (child?.runtimeType.toString() ?? 'Builder'),
