@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import '../pages/home/home_page.dart';
-import '../pages/splash/splash_view.dart';
+import '../pages/Home/home_page.dart';
+import '../pages/Splash/splash_view.dart';
 
 class AppPages {
   static const initial = '/';

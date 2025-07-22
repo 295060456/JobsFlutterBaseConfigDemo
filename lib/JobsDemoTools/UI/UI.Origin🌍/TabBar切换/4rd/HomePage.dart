@@ -1,32 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'home_controller.dart';
-import 'home_binding.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsGetXRunner.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/UI/UI.Origin%F0%9F%8C%8D/TabBar%E5%88%87%E6%8D%A2/Common/MyTabCtrl.dart';
+import '../Common/HomeBinding.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return GetMaterialApp(
-      initialBinding: HomeBinding(),
-      home: const HomePage(),
-    );
-  }
-}
+void main() => runApp(JobsGetRunner(HomePage(), bindings:HomeBinding(),title: '简单测试'.tr));
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    late final HomeController homeController;
-    if (Get.isRegistered<HomeController>()) {
-      homeController = Get.find<HomeController>();
+    late final MyTabCtrl homeController;
+    if (Get.isRegistered<MyTabCtrl>()) {
+      homeController = Get.find<MyTabCtrl>();
     }
     return Scaffold(
       body: Obx(() {

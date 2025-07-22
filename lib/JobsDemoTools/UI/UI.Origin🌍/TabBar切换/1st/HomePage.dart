@@ -1,27 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'my_tab_controller.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/UI/UI.Origin%F0%9F%8C%8D/TabBar%E5%88%87%E6%8D%A2/Common/MyTabCtrl.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsGetXRunner.dart'; // 公共测试器路径
+import 'package:jobs_flutter_base_config/pages/Others/Pages.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return GetMaterialApp(
-      home: HomePage(),
-    );
-  }
-}
+void main() => runApp(JobsGetRunner.builder(
+      title: '简单测试'.tr,
+      builder: (ctx) => HomePage(),
+    ));
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
-
-  final MyTabController tabController = Get.put(MyTabController());
-
+  final MyTabCtrl tabController = Get.put(MyTabCtrl());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,10 +30,11 @@ class HomePage extends StatelessWidget {
       bottomNavigationBar: Obx(() => BottomNavigationBar(
             currentIndex: tabController.currentIndex.value,
             onTap: tabController.changeTabIndex,
-            items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'A'),
-              BottomNavigationBarItem(icon: Icon(Icons.business), label: 'B'),
-              BottomNavigationBarItem(icon: Icon(Icons.school), label: 'C'),
+            items: [
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'A'.tr),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.business), label: 'B'.tr),
+              BottomNavigationBarItem(icon: Icon(Icons.school), label: 'C'.tr),
             ],
           )),
     );
@@ -52,9 +43,7 @@ class HomePage extends StatelessWidget {
 
 class LazyLoadWidget extends StatelessWidget {
   final String page;
-
   const LazyLoadWidget(this.page, {super.key});
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -68,45 +57,12 @@ class LazyLoadWidget extends StatelessWidget {
           } else if (page == 'PageC') {
             return const PageC();
           } else {
-            return const Center(child: Text('Unknown page'));
+            return Center(child: Text('Unknown page'.tr));
           }
         } else {
           return const Center(child: CircularProgressIndicator());
         }
       },
-    );
-  }
-}
-
-class PageA extends StatelessWidget {
-  const PageA({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Page A'),
-    );
-  }
-}
-
-class PageB extends StatelessWidget {
-  const PageB({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Page B'),
-    );
-  }
-}
-
-class PageC extends StatelessWidget {
-  const PageC({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Page C'),
     );
   }
 }

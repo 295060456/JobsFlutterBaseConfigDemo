@@ -80,6 +80,7 @@ dependencies:
   # 状态管理
   get: any # 用于管理应用状态
   provider: any # 用于管理应用状态
+  flutter_riverpod: any # 用于管理应用状态
   bloc: any # 用于管理应用状态
   flutter_bloc: any # 用于管理应用状态
   # 用户权限处理

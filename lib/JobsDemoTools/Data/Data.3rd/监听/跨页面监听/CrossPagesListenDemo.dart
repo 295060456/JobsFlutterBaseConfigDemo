@@ -13,7 +13,7 @@ import 'widgets/JobsTextField.dart';
 void main() {
   runApp(JobsGetRunner.builder(
     title: 'Obx 测试',
-    builder: (ctx) => HomeScreen(),
+    builder: (ctx) => HomeScreen(), bindings: null,
   ));
 }
 

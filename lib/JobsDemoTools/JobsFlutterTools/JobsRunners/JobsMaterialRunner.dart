@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_utils/src/extensions/export.dart';
 import 'package:google_fonts/google_fonts.dart' show GoogleFonts;
-// import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart'; // 公共测试器路径
+
+// import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart';// 公共测试器路径
 // void main() => runApp(const JobsMaterialRunner(CustomOverlayDemo(),title:'XXX'));
 // void main() {
 //   runApp(JobsMaterialRunner.builder(
@@ -45,7 +46,8 @@ class JobsMaterialRunner extends StatelessWidget {
   Widget build(BuildContext context) => ScreenUtilInit(
         designSize: const Size(1125, 2436), // ← 设计稿尺寸
         minTextAdapt: true, // ← 修复 _minTextAdapt 初始化报错
-        builder: (context, child) => MaterialApp(
+        child: const SizedBox(), // ✅ 必须提供一个 child，否则会报错
+        builder: (context, _) => MaterialApp(
           debugShowCheckedModeBanner: false,
           title: title ?? (child?.runtimeType.toString() ?? 'Builder'),
           theme: ThemeData(

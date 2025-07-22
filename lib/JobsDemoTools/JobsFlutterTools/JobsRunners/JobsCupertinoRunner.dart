@@ -1,7 +1,9 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-// import 'package:jobs_flutter_base_config/JobsFlutterTools/JobsRunners/JobsCupertinoRunner.dart'; // 公共测试器路径
+
+// import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsCupertinoRunner.dart';// 公共测试器路径
 // void main() => runApp(const JobsCupertinoRunner(CustomOverlayDemo(),title:'XXX'));
 // void main() {
 //   runApp(JobsCupertinoRunner.builder(
@@ -45,33 +47,28 @@ class JobsCupertinoRunner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ScreenUtilInit(
-      designSize: const Size(1125, 2436),
-      minTextAdapt: true,
-      builder: (context, child) => CupertinoApp(
-            debugShowCheckedModeBanner: false,
-            theme: const CupertinoThemeData(
-              primaryColor: CupertinoColors.activeBlue,
-              textTheme: CupertinoTextThemeData(
-                navTitleTextStyle: TextStyle(fontSize: 20),
-              ),
-              // textTheme:const TextTheme(
-              //   bodyLarge: TextStyle(color: Colors.black87, fontSize: 18),
-              //   bodyMedium: TextStyle(color: Colors.black54, fontSize: 16),
-              //   headlineLarge: TextStyle(color: Colors.blue, fontSize: 24, fontWeight: FontWeight.bold),
-              // ),
+        designSize: const Size(1125, 2436),
+        minTextAdapt: true,
+        child: child ?? const SizedBox(), // 👈 关键：这个 child 会传给 builder 的第二个参数
+        builder: (context, _) => CupertinoApp(
+          debugShowCheckedModeBanner: false,
+          theme: const CupertinoThemeData(
+            primaryColor: CupertinoColors.activeBlue,
+            textTheme: CupertinoTextThemeData(
+              navTitleTextStyle: TextStyle(fontSize: 20),
             ),
-            home: Builder(
-              builder: (ctx) => CupertinoPageScaffold(
-                navigationBar: CupertinoNavigationBar(
-                  middle: Text(
-                      title ?? (child?.runtimeType.toString() ?? 'Builder')),
-                ),
-                child: SafeArea(
-                  child: builder != null
-                      ? builder!(ctx)
-                      : child ?? Text('请传入 child 或 builder'.tr),
-                ),
+          ),
+          home: Builder(
+            builder: (ctx) => CupertinoPageScaffold(
+              navigationBar: CupertinoNavigationBar(
+                middle:
+                    Text(title ?? (child?.runtimeType.toString() ?? 'Builder')),
+              ),
+              child: SafeArea(
+                child: child ?? Text('请传入 child 或 builder'.tr),
               ),
             ),
-          ));
+          ),
+        ),
+      );
 }

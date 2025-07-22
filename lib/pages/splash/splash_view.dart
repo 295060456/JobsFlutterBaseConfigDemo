@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsSafeArea/JobsSafeArea.dart';
-import '../home/home_page.dart';
+import '../Home/home_page.dart';
 
 class SplashView extends StatelessWidget {
   const SplashView({super.key});

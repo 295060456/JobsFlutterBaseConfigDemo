@@ -1,27 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'my_tab_controller.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsGetXRunner.dart';
+import '../Common/MyTabCtrl.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return GetMaterialApp(
-      home: HomePage(),
-    );
-  }
-}
+void main() => runApp(JobsGetRunner(HomePage(), title: '简单测试'.tr));
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
-
-  final MyTabController tabController = Get.put(MyTabController());
-
+  final MyTabCtrl tabController = Get.put(MyTabCtrl());
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,10 +1,11 @@
 import 'package:flutter/cupertino.dart';
+import 'package:get/get.dart';
 import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsCupertinoRunner.dart';
 
 void main() => runApp(
-      const JobsCupertinoRunner(
+      JobsCupertinoRunner(
         MyCupertinoTabPage(),
-        title: 'Cupertino Tab 示例',
+        title: 'Cupertino Tab 示例'.tr,
       ),
     );
 
@@ -18,10 +19,10 @@ class MyCupertinoTabPage extends StatefulWidget {
 class _MyCupertinoTabPageState extends State<MyCupertinoTabPage> {
   int _currentIndex = 0;
 
-  final List<Widget> _tabs = const [
-    Center(child: Text('首页')),
-    Center(child: Text('搜索')),
-    Center(child: Text('我的')),
+  final List<Widget> _tabs = [
+    Center(child: Text('首页'.tr)),
+    Center(child: Text('搜索'.tr)),
+    Center(child: Text('我的'.tr)),
   ];
 
   @override
@@ -30,12 +31,13 @@ class _MyCupertinoTabPageState extends State<MyCupertinoTabPage> {
       tabBar: CupertinoTabBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(CupertinoIcons.home), label: '首页'),
+        items: [
           BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.search), label: '搜索'),
+              icon: Icon(CupertinoIcons.home), label: '首页'.tr),
           BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.person), label: '我的'),
+              icon: Icon(CupertinoIcons.search), label: '搜索'.tr),
+          BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.person), label: '我的'.tr),
         ],
       ),
       tabBuilder: (context, index) {

@@ -19,7 +19,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'core/app_initializer.dart';
 import 'notifier/locale_notifier.dart';
-import 'pages/splash/splash_page.dart';
+import 'pages/Splash/splash_page.dart';
 import 'routes/app_pages.dart';
 import 'services/theme_service.dart';
 import 'utils/global_observer.dart';

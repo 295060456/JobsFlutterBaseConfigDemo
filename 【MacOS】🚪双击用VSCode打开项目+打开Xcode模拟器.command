@@ -59,21 +59,6 @@ done
 cd "$flutter_root" || exit 1
 _color_echo green "✅ 已识别 Flutter 项目根目录：$flutter_root"
 
-# ✅ main.dart 检查
-entry_file="$flutter_root/lib/main.dart"
-[[ ! -f "$entry_file" ]] && _color_echo red "❌ 缺少 lib/main.dart" && exit 1
-
-if ! grep -E '^\s*void\s+main\s*\(\s*\)' "$entry_file" | grep -v '^\s*//' >/dev/null; then
-  _color_echo red "❌ lib/main.dart 中未检测到未被注释的 void main()"
-  exit 1
-fi
-
-# ========== 检查是否含有效 void main() ==========
-if ! grep -qE '^\s*void\s+main\s*\(\s*\)' "$entry_file"; then
-    _color_echo red "❌ 文件中未找到未被注释的 void main()，不是有效启动文件"
-    exit 1
-fi
-
 # ========== 打开 VSCode ==========
 _color_echo green "🚀 即将使用 VSCode 打开 Flutter 项目根目录：$flutter_root"
 code "$flutter_root"
