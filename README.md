@@ -1740,21 +1740,21 @@ String getNowTime() {
     ```dart
     import 'package:flutter/material.dart';
     import 'package:flutter_bloc/flutter_bloc.dart';
-  
+    
     void main() {
       runApp(BlocProvider(create: (_) => UserCubit(), child: MyApp()));
     }
-  
+    
     class UserCubit extends Cubit<String> {
       UserCubit() : super('默认名');
       void updateName(String newName) => emit(newName);
     }
-  
+    
     class MyApp extends StatelessWidget {
       @override
       Widget build(BuildContext context) => MaterialApp(home: HomePage());
     }
-  
+    
     class HomePage extends StatelessWidget {
       @override
       Widget build(BuildContext context) {
@@ -1773,7 +1773,7 @@ String getNowTime() {
         );
       }
     }
-  
+    
     class SecondPage extends StatelessWidget {
       @override
       Widget build(BuildContext context) {
@@ -3209,7 +3209,7 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
   xcrun simctl boot "iPhone 7"
   ```
 
-  ![image-20250716131840500](./assets/image-20250716131840500.png)
+  ![image-20250716131840500](./assets/README/image-20250716131840500.png)
 
 * 命令行唤起 iOS模拟器
 
@@ -4105,26 +4105,26 @@ Comparable.compare(a, b)
       @override
       _ScrollControllerDemoState createState() => _ScrollControllerDemoState();
     }
-  
+    
     class _ScrollControllerDemoState extends State<ScrollControllerDemo> {
       final ScrollController _controller = ScrollController();
-  
+    
       @override
       void initState() {
         super.initState();
-  
+    
         // ✅ 添加滚动监听
         _controller.addListener(() {
           print('当前滚动位置: ${_controller.offset}');
         });
       }
-  
+    
       @override
       void dispose() {
         _controller.dispose(); // ✅ 别忘了释放
         super.dispose();
       }
-  
+    
       void _scrollToTop() {
         _controller.animateTo(
           0.0, // 目标 offset
@@ -4132,7 +4132,7 @@ Comparable.compare(a, b)
           curve: Curves.easeOut,
         );
       }
-  
+    
       void _scrollToBottom() {
         _controller.animateTo(
           _controller.position.maxScrollExtent, // 最大可滚动距离
@@ -4140,7 +4140,7 @@ Comparable.compare(a, b)
           curve: Curves.easeInOut,
         );
       }
-  
+    
       @override
       Widget build(BuildContext context) {
         return Scaffold(
@@ -4170,7 +4170,7 @@ Comparable.compare(a, b)
     ```dart
     /// 多个组件同步滚动
     final controller = ScrollController();
-  
+    
     Row(
       children: [
         Expanded(
