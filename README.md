@@ -1996,80 +1996,119 @@ class XXX extends Object{}
 
 > 类似 iOS 中的 [**Masonry**](https://github.com/SnapKit/Masonry) 或 AutoLayout
 
-#### 19.1、🧱 线性布局（类似 iOS 的 `UIStackView`） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 19.1、<font id=线性布局>🧱</font>线性布局（类似 iOS 的 `UIStackView`） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> 
 
-| Widget         | 功能说明                                                     |
-| -------------- | ------------------------------------------------------------ |
-| `Row`          | 水平方向排列子组件                                           |
-| `Column`       | 垂直方向排列子组件                                           |
-| `Flex`         | 可指定主轴方向（横 / 竖）                                    |
-| **`Expanded`** | 1️⃣ **占据剩余空间，弹性伸缩**<br/>2️⃣ 只在 `Row` / `Column` / `Flex` 中起作用，用来自动填满多余的可用空间<br/>3️⃣ 不能用于 `Stack` / `Container` / `GridView` 等其他布局中<br/>4️⃣ 占用的是剩余空间，不能强行撑大父 **Widget** |
-| `Flexible`     | 弹性布局，可选择占不占满                                     |
-| `Spacer`       | 空间占位器，实质是 `Flexible` 封装                           |
-| `SizedBox`     | 固定尺寸或间距                                               |
+| Widget                                                       | 功能说明                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <a href="#Row" style="font-size:17px; color:green;"><b>`Row`</b></a> | 水平方向排列子组件                                           |
+| <a href="#Column" style="font-size:17px; color:green;"><b>`Column`</b></a> | 垂直方向排列子组件                                           |
+| <a href="#Row" style="font-size:17px; color:green;"><b>`Flex`</b></a> | 可指定主轴方向（横 / 竖）                                    |
+| <a href="#Expanded" style="font-size:17px; color:green;"><b>**`Expanded`**</b></a> | 1️⃣ **占据剩余空间，弹性伸缩**<br/>2️⃣ <font color=red>**只在 `Row` / `Column` / `Flex` 中起作用**</font>，用来自动填满多余的可用空间<br/>3️⃣ 不能用于 `Stack` / `Container` / `GridView` 等其他布局中<br/>4️⃣ 占用的是剩余空间，不能强行撑大父 **Widget** |
+| <a href="#Flexible" style="font-size:17px; color:green;"><b>`Flexible`</b></a> | 弹性布局，可选择占不占满                                     |
+| <a href="#Spacer" style="font-size:17px; color:green;"><b>`Spacer`</b></a> | 空间占位器，<font color=red>**实质是 `Flexible` 封装**</font> |
+| <a href="#SizedBox" style="font-size:17px; color:green;"><b>`SizedBox`</b></a> | 固定尺寸或间距                                               |
 
-`Expanded` 🆚 `Flexible`
+> `Expanded` 🆚 `Flexible`
+>
+> | 比较点   | `Expanded`                | `Flexible`                     |
+> | -------- | ------------------------- | ------------------------------ |
+> | 默认行为 | 强制填满剩余空间          | 可以填满，也可以由内容决定大小 |
+> | 常用场景 | 占满空间、均分            | 需要灵活控制内容大小时使用     |
+> | 包装效果 | 是 `Flexible(fit: tight)` | 可自定义 `fit: tight/loose`    |
 
-| 比较点   | `Expanded`                | `Flexible`                     |
-| -------- | ------------------------- | ------------------------------ |
-| 默认行为 | 强制填满剩余空间          | 可以填满，也可以由内容决定大小 |
-| 常用场景 | 占满空间、均分            | 需要灵活控制内容大小时使用     |
-| 包装效果 | 是 `Flexible(fit: tight)` | 可自定义 `fit: tight/loose`    |
+*  <font id=Row>`Row`</font>  <a href="#线性布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=Column>`Column`</font> <a href="#线性布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=Flex>`Flex`</font> <a href="#线性布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=Expanded>**`Expanded`**</font> <a href="#线性布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=Flexible>`Flexible`</font> <a href="#线性布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=Spacer>`Spacer`</font> <a href="#线性布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=SizedBox>`SizedBox`</font> <a href="#线性布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
 
-#### 19.2、🧱 层叠布局（类似 iOS 的 Frame 布局 + zIndex） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 19.2、<font id=层叠布局>🧱</font> 层叠布局（类似 iOS 的 Frame 布局 + zIndex） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-| Widget       | 功能说明                              |
-| ------------ | ------------------------------------- |
-| `Stack`      | 层叠布局（类似 iOS 的 `UIView` 叠加） |
-| `Positioned` | Stack 子元素定位                      |
-| `Align`      | 子组件对齐（用于 Stack、普通 Widget） |
-| `Center`     | 子组件居中                            |
+| Widget                                                       | 功能说明                              |
+| ------------------------------------------------------------ | ------------------------------------- |
+| <a href="#Stack" style="font-size:17px; color:green;"><b>`Stack`</b></a> | 层叠布局（类似 iOS 的 `UIView` 叠加） |
+| <a href="#Positioned" style="font-size:17px; color:green;"><b>`Positioned`</b></a> | Stack 子元素定位                      |
+| <a href="#Align" style="font-size:17px; color:green;"><b>`Align`</b></a> | 子组件对齐（用于 Stack、普通 Widget） |
+| <a href="#Center" style="font-size:17px; color:green;"><b>`Center`</b></a> | 子组件居中                            |
 
-#### 19.3、🧱 约束类布局（最接近 [**Masonry**](https://github.com/SnapKit/Masonry) 的思想） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+* <font id=Stack>`Stack`</font> <a href="#层叠布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=Positioned>`Positioned`</font> <a href="#层叠布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=Align>`Align`</font> <a href="#层叠布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=Align>`Center`</font> <a href="#层叠布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
 
-| Widget                 | 功能说明                 |
-| ---------------------- | ------------------------ |
-| `ConstrainedBox`       | 添加最小最大尺寸约束     |
-| `UnconstrainedBox`     | 移除父组件的约束         |
-| `SizedBox`             | 固定宽高尺寸             |
-| `FractionallySizedBox` | 根据父尺寸按比例设置宽高 |
-| `AspectRatio`          | 按宽高比自动调整尺寸     |
-| `LimitedBox`           | 超出最大尺寸时才应用限制 |
+#### 19.3、<font id=约束类布局>🧱</font> 约束类布局（最接近 [**Masonry**](https://github.com/SnapKit/Masonry) 的思想） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 19.4、🧱 自动换行 / 流式布局 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+| Widget                                                       | 功能说明                 |
+| ------------------------------------------------------------ | ------------------------ |
+| <a href="#ConstrainedBox" style="font-size:17px; color:green;"><b>`ConstrainedBox`</b></a> | 添加最小最大尺寸约束     |
+| <a href="#UnconstrainedBox" style="font-size:17px; color:green;"><b>`UnconstrainedBox`</b></a> | 移除父组件的约束         |
+| <a href="#SizedBox" style="font-size:17px; color:green;"><b>`SizedBox`</b></a> | 固定宽高尺寸             |
+| <a href="#FractionallySizedBox" style="font-size:17px; color:green;"><b>`FractionallySizedBox`</b></a> | 根据父尺寸按比例设置宽高 |
+| <a href="#AspectRatio" style="font-size:17px; color:green;"><b>`AspectRatio`</b></a> | 按宽高比自动调整尺寸     |
+| <a href="#LimitedBox" style="font-size:17px; color:green;"><b>`LimitedBox`</b></a> | 超出最大尺寸时才应用限制 |
 
-| Widget | 功能说明                               |
-| ------ | -------------------------------------- |
-| `Wrap` | 自动换行布局（类似 HTML 的 flex-wrap） |
-| `Flow` | 高级流式布局（需手动实现 delegate）    |
+* <font id=ConstrainedBox>`ConstrainedBox`</font> <a href="#约束类布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=UnconstrainedBox>`UnconstrainedBox`</font> <a href="#约束类布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=SizedBox>`SizedBox`</font> <a href="#约束类布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=FractionallySizedBox>`FractionallySizedBox`</font> <a href="#约束类布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=AspectRatio>`AspectRatio`</font> <a href="#约束类布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=LimitedBox>`LimitedBox`</font> <a href="#约束类布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
 
-#### 19.5、🧱 表格 / 网格布局 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 19.4、<font id=自动换行&流式布局>🧱</font> 自动换行&流式布局 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-| Widget       | 功能说明               |
-| ------------ | ---------------------- |
-| `Table`      | 类似 HTML 表格布局     |
-| `GridView`   | 网格布局（支持滚动）   |
-| `SliverGrid` | 滚动性能优化的网格布局 |
+| Widget                                                       | 功能说明                               |
+| ------------------------------------------------------------ | -------------------------------------- |
+| <a href="#Wrap" style="font-size:17px; color:green;"><b>`Wrap`</b></a> | 自动换行布局（类似 HTML 的 flex-wrap） |
+| <a href="#Flow" style="font-size:17px; color:green;"><b>`Flow`</b></a> | 高级流式布局（需手动实现 delegate）    |
 
-#### 19.6、🧱 边距 / 填充 / 对齐 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+* <font id=Wrap>`Wrap`</font> <a href="#自动换行&流式布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=Flow>`Flow`</font> <a href="#自动换行&流式布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
 
-| Widget      | 功能说明                                             |
-| ----------- | ---------------------------------------------------- |
-| `Padding`   | 添加内边距                                           |
-| `Margin`    | ❌ 无此 Widget，可用 `Padding + Container` 模拟外边距 |
-| `Container` | 可组合设置 `padding`, `margin`, `alignment`          |
-| `Align`     | 设置对齐方式                                         |
-| `Center`    | 子组件居中                                           |
-| `Baseline`  | 按基线对齐                                           |
+#### 19.5、<font id=表格&网格布局>🧱</font> 表格&网格布局 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 19.7、🧱  布局辅助 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+| Widget                                                       | 功能说明               |
+| ------------------------------------------------------------ | ---------------------- |
+| <a href="#Table" style="font-size:17px; color:green;"><b>`Table`</b></a> | 类似 HTML 表格布局     |
+| <a href="#GridView" style="font-size:17px; color:green;"><b>`GridView`</b></a> | 网格布局（支持滚动）   |
+| <a href="#SliverGrid" style="font-size:17px; color:green;"><b>`SliverGrid`</b></a> | 滚动性能优化的网格布局 |
 
-| Widget                                               | 功能说明                   |
-| ---------------------------------------------------- | -------------------------- |
-| `Offstage`                                           | 控制是否渲染但保留状态     |
-| `Visibility`                                         | 控制是否渲染并可动画       |
-| `LayoutBuilder`                                      | 可根据父约束动态构建子组件 |
-| `CustomSingleChildLayout` / `CustomMultiChildLayout` | 高级自定义布局逻辑         |
+* <font id=Table>`Table`</font> <a href="#表格&网格布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=GridView>`GridView`</font> <a href="#表格&网格布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=SliverGrid>`SliverGrid`</font> <a href="#表格&网格布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+#### 19.6、<font id=边距&填充&对齐>🧱</font> 边距&填充&对齐 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+| Widget                                                       | 功能说明                                             |
+| ------------------------------------------------------------ | ---------------------------------------------------- |
+| <a href="#Padding" style="font-size:17px; color:green;"><b>`Padding`</b></a> | 添加内边距                                           |
+| <a href="#Margin" style="font-size:17px; color:green;"><b>`Margin`</b></a> | ❌ 无此 Widget，可用 `Padding + Container` 模拟外边距 |
+| <a href="#Container" style="font-size:17px; color:green;"><b>`Container`</b></a> | 可组合设置 `padding`, `margin`, `alignment`          |
+| <a href="#Align" style="font-size:17px; color:green;"><b>`Align`</b></a> | 设置对齐方式                                         |
+| <a href="#Center" style="font-size:17px; color:green;"><b>`Center`</b></a> | 子组件居中                                           |
+| <a href="#Baseline" style="font-size:17px; color:green;"><b>`Baseline`</b></a> | 按基线对齐                                           |
+
+* <font id=Padding>`Padding`</font> <a href="#边距&填充&对齐" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=Margin>`Margin`</font> <a href="#边距&填充&对齐" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=Container>`Container`</font> <a href="#边距&填充&对齐" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=Align>`Align`</font> <a href="#边距&填充&对齐" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=Center>`Center`</font> <a href="#边距&填充&对齐" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=Baseline>`Baseline`</font> <a href="#边距&填充&对齐" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+#### 19.7、<font id=布局辅助>🧱</font> 布局辅助 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+| Widget                                                       | 功能说明                   |
+| ------------------------------------------------------------ | -------------------------- |
+| <a href="#Offstage" style="font-size:17px; color:green;"><b>`Offstage`</b></a> | 控制是否渲染但保留状态     |
+| <a href="#Visibility" style="font-size:17px; color:green;"><b>`Visibility`</b></a> | 控制是否渲染并可动画       |
+| <a href="#LayoutBuilder" style="font-size:17px; color:green;"><b>`LayoutBuilder`</b></a> | 可根据父约束动态构建子组件 |
+| <a href="#CustomSingleChildLayout/CustomMultiChildLayout" style="font-size:17px; color:green;"><b>`CustomSingleChildLayout` / `CustomMultiChildLayout`</b></a> | 高级自定义布局逻辑         |
+
+* <font id=Offstage>`Offstage`</font> <a href="#布局辅助" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=Visibility>`Visibility`</font> <a href="#布局辅助" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=LayoutBuilder>`LayoutBuilder`</font> <a href="#布局辅助" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* <font id=CustomSingleChildLayout/CustomMultiChildLayout>`CustomSingleChildLayout` / `CustomMultiChildLayout`</font> <a href="#布局辅助" style="font-size:17px; color:green;"><b>⬆️</b></a>
 
 ### 20、✅ Flutter 实现相对位置布局的几种方式 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -4172,12 +4211,65 @@ Comparable.compare(a, b)
   }
   ```
 
-### 16、剪切板  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 16、剪切板行为  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 操作                                     | 可同步剪贴板？ | 方向   |
 | ---------------------------------------- | -------------- | ------ |
 | 在 **macOS 上复制**，到 iOS 模拟器中粘贴 | ✅ 可以         | 💻 ➜ 📱  |
 | 在 **iOS 模拟器中复制**，到 macOS 上粘贴 | ❌ 不行         | 📱 🚫➜ 💻 |
+
+### 17、**Dart**.<font color=red>**`Symbol`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> 1️⃣ 写法为 `#标识符`。例如：`#name`, `#sayHello`, `#toString`
+>
+> 2️⃣ 类型是 `Symbol`：**不是 `String`，不能当作字符串用**
+>
+> 3️⃣ 常用于反射：动态访问对象的属性/方法
+>
+> 4️⃣ 编译期优化：**Symbol** 是 Dart 内部优化机制的一部分
+>
+> 5️⃣ **不能当颜色值使用**
+>
+> 6️⃣ ✅ **99.9% 的 Flutter 项目中你都用不到 `Symbol`**
+
+* 写法举例
+
+  | 写法         | 类型     | 举例              | 作用                     |
+  | ------------ | -------- | ----------------- | ------------------------ |
+  | `'abc'`      | `String` | `'myColor'`       | 表示字符串值             |
+  | `#abc`       | `Symbol` | `#myColor`        | 表示“名称”或“标识符”本身 |
+  | `Color(...)` | `Color`  | `Color(0xFF0000)` | 表示颜色值               |
+
+* 示例代码：
+
+  ```dart
+  import 'dart:mirrors';
+  
+  class Person {
+    String name = 'Jobs';
+    void sayHello() => print('Hello');
+  }
+  
+  void main() {
+    var p = Person();
+    var mirror = reflect(p);
+  
+    // 访问属性 name：
+    var nameValue = mirror.getField(#name).reflectee;
+    print(nameValue); // 输出：Jobs
+  
+    // 调用方法 sayHello：
+    mirror.invoke(#sayHello, []);
+  }
+  ```
+
+* 🧠 为什么要有 **`Symbol`**？和 **`String`** 有啥区别？
+
+  | Symbol                          | String              |
+  | ------------------------------- | ------------------- |
+  | 是“名字”或“符号”                | 是文字内容          |
+  | 用来告诉 Dart：我要操作这个名字 | 用来展示、存储内容  |
+  | Dart 编译时会优化 Symbol        | String 是运行时的值 |
 
 ## 四、FAQ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
