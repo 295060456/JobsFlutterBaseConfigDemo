@@ -629,7 +629,7 @@ Flutter SDK（系统自带）的模态弹窗汇总表（截至 2025）
   ...demo未完待补充
 
 
-### 9、[**EasyLoading**](https://pub.dev/documentation/flutter_easyloading/latest/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 9、[**`EasyLoading`**](https://pub.dev/documentation/flutter_easyloading/latest/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 类型       | 方法                                    | 说明                |
 | ---------- | --------------------------------------- | ------------------- |
@@ -3626,7 +3626,7 @@ class MyCustomCacheManager extends CacheManager {
 /// TODO
 ```
 
-#### 28.6、[**`FadeInImage`**](https://api.flutter.dev/flutter/widgets/FadeInImage-class.html) (from@<font color=red>**Flutter.SDK**</font>) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 28.6、[**`FadeInImage`**](https://api.flutter.dev/flutter/widgets/FadeInImage-class.html) (by@<font color=red>**Flutter.SDK**</font>) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 import 'package:flutter/material.dart';
@@ -3663,6 +3663,20 @@ class FadeInImageDemo extends StatelessWidget {
 }
 
 ```
+
+### 29、取整 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+| 表达式                             | 结果         | 返回类型 | 属于实例方法 | 说明                                                         |
+| ---------------------------------- | ------------ | -------- | ------------ | ------------------------------------------------------------ |
+| `3.7.toInt()`                      | `3`          | `int`    | ✅ 是         | double → int，截断小数部分                                   |
+| `3.toDouble()`                     | `3.0`        | `double` | ✅ 是         | int → double                                                 |
+| `3.7.toString()`                   | `"3.7"`      | `String` | ✅ 是         | 转为字符串                                                   |
+| `3.14159.toStringAsFixed(2)`       | `"3.14"`     | `String` | ✅ 是         | 四舍五入保留 2 位小数字符串                                  |
+| `3.14159.toStringAsPrecision(4)`   | `"3.142"`    | `String` | ✅ 是         | 保留 4 位有效数字的字符串                                    |
+| `314.159.toStringAsExponential(3)` | `"3.142e+2"` | `String` | ✅ 是         | 科学计数法字符串<br>🔹保留 3 位有效数字：`3.142`（四舍五入）<br>🔹指数是 `+2`（因为 `3.142 × 10² = 314.2`） |
+| `int.parse("42")`                  | `42`         | `int`    | ❌ 否         | String → int                                                 |
+| `double.parse("3.14")`             | `3.14`       | `double` | ❌ 否         | String → double                                              |
+| `num.parse("5.5")`                 | `5.5`        | `num`    | ❌ 否         | String → 自动识别 int 或 double                              |
 
 ## 三、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 

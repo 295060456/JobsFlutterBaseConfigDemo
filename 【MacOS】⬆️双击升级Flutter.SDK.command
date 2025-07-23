@@ -1,4 +1,6 @@
 #!/bin/zsh
+setopt +o nomatch
+export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/homebrew/bin:$PATH"
 
 # ---------------------- 彩色输出 ----------------------
 cecho() {
@@ -11,6 +13,17 @@ cecho() {
     blue) echo "\033[34m$text\033[0m" ;;
     *) echo "$text" ;;
   esac
+}
+
+# ---------------------- 环境命令依赖校验 ----------------------
+require_commands() {
+  local cmds=("grep" "awk" "xargs" "git" "curl")
+  for cmd in "${cmds[@]}"; do
+    if ! command -v "$cmd" >/dev/null; then
+      cecho red "❌ 缺少命令：$cmd，请先安装或修复 PATH"
+      exit 1
+    fi
+  done
 }
 
 # ---------------------- 自述说明 ----------------------
@@ -46,7 +59,7 @@ check_and_set_homebrew_mirror() {
   local test_url="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
   cecho yellow "🌐 正在测试 Homebrew 官方源可达性..."
 
-  if curl --connect-timeout 3 -s --head "$test_url" | grep -q "200 OK"; then
+  if curl --connect-timeout 3 -s --head "$test_url" | /usr/bin/grep -q "200 OK"; then
     cecho green "✅ Homebrew 官方源可访问，继续使用默认源"
   else
     cecho red "❌ 官方源访问失败，临时切换为清华镜像源"
@@ -83,52 +96,34 @@ ensure_fzf() {
 
 # ---------------------- 判断方法 ----------------------
 is_flutter_fvm_proxy() {
-  if type flutter | grep -q 'fvm flutter'; then
-    return 0
-  fi
-  local flutter_path
-  flutter_path=$(which flutter)
-  if [[ "$flutter_path" == *".fvm/"* ]]; then
-    return 0
-  fi
+  if type flutter | /usr/bin/grep -q 'fvm flutter'; then return 0; fi
+  [[ "$(which flutter)" == *".fvm/"* ]] && return 0
   return 1
 }
 
 get_sdk_path_from_fvm() {
-  fvm flutter --version --verbose 2>/dev/null | grep "Flutter root" | awk -F'at ' '{print $2}' | xargs || true
+  fvm flutter --version --verbose 2>/dev/null \
+    | /usr/bin/grep "Flutter root" \
+    | /usr/bin/awk -F'at ' '{print $2}' \
+    | /usr/bin/xargs || true
 }
 
 get_sdk_path_from_system() {
-  local path=""
-  path=$(flutter --version --verbose 2>/dev/null | grep "Flutter root" | awk -F'at ' '{print $2}' | xargs || true)
-
+  local path
+  path=$(flutter --version --verbose 2>/dev/null \
+    | /usr/bin/grep "Flutter root" \
+    | /usr/bin/awk -F'at ' '{print $2}' \
+    | /usr/bin/xargs || true)
   if [[ -z "$path" ]]; then
-    local fallback_paths=(
-      "/opt/homebrew/Caskroom/flutter/latest/flutter"
-      "/opt/homebrew/Caskroom/flutter/3.32.6/flutter"
-      "/usr/local/Caskroom/flutter/latest/flutter"
-    )
-    for p in "${fallback_paths[@]}"; do
-      if [[ -x "$p/bin/flutter" ]]; then
-        path="$p"
-        break
-      fi
+    for p in /opt/homebrew/Caskroom/flutter/*/flutter /usr/local/Caskroom/flutter/*/flutter; do
+      [[ -x "$p/bin/flutter" ]] && path="$p" && break
     done
   fi
-
   echo "$path"
 }
 
 check_sdk_git_changes() {
-  local sdk_path="$1"
-  if [[ -d "$sdk_path/.git" ]]; then
-    local changes
-    changes=$(cd "$sdk_path" && git status --porcelain)
-    if [[ -n "$changes" ]]; then
-      return 0
-    fi
-  fi
-  return 1
+  [[ -d "$1/.git" ]] && [[ -n "$(cd "$1" && git status --porcelain)" ]]
 }
 
 prompt_git_action() {
@@ -138,41 +133,24 @@ prompt_git_action() {
   git status -s
   echo ""
 
-  local choice=""
   while true; do
     cecho yellow "请选择如何处理这些修改："
     echo "1) git stash 后继续升级（推荐）"
     echo "2) 强制升级（--force，会清除本地修改）"
     echo "3) 取消升级"
     read "?👉 输入选项数字 (默认 1): " choice
-
-    # 默认值处理（回车）
     choice=${choice:-1}
-
     case "$choice" in
-      1)
-        cecho blue "📦 正在 stash 本地修改..."
-        git stash
-        return 0
-        ;;
-      2)
-        cecho yellow "🚨 将强制升级 Flutter SDK..."
-        return 2
-        ;;
-      3)
-        cecho red "🚫 已取消升级"
-        exit 0
-        ;;
-      *)
-        cecho red "❌ 无效输入，请重新输入 1 / 2 / 3（回车默认 1）"
-        ;;
+      1) cecho blue "📦 正在 stash 本地修改..." && git stash && return 0 ;;
+      2) cecho yellow "🚨 将强制升级 Flutter SDK..." && return 2 ;;
+      3) cecho red "🚫 已取消升级" && exit 0 ;;
+      *) cecho red "❌ 无效输入，请重新输入 1 / 2 / 3（回车默认 1）" ;;
     esac
   done
 }
 
 select_channel() {
-  local channels=("stable" "beta" "main" "master")
-  echo "${channels[@]}" | tr ' ' '\n' | fzf --prompt="切换 Channel > "
+  echo -e "stable\nbeta\nmain\nmaster" | fzf --prompt="切换 Channel > "
 }
 
 # ---------------------- 执行升级 ----------------------
@@ -195,17 +173,15 @@ perform_upgrade() {
   fi
 
   local channel=$(select_channel)
-  if [[ -n "$channel" ]]; then
-    "$sdk_cmd" channel "$channel"
-  fi
-
+  [[ -n "$channel" ]] && "$sdk_cmd" channel "$channel"
   cecho yellow "🚀 开始升级 Flutter SDK..."
   "$sdk_cmd" upgrade
 }
 
-# ---------------------- 主函数 ----------------------
+# ---------------------- 主函数入口 ----------------------
 main() {
   show_description
+  require_commands
   check_and_set_homebrew_mirror
   ensure_brew
   ensure_fzf
@@ -228,16 +204,14 @@ main() {
   if [[ -z "$sdk_path" ]]; then
     cecho red "❌ 无法识别 Flutter SDK 路径，尝试 fallback"
     sdk_path=$(get_sdk_path_from_fvm)
-    if [[ -n "$sdk_path" ]]; then
-      cecho green "✅ fallback 成功：$sdk_path"
-    else
+    [[ -n "$sdk_path" ]] && cecho green "✅ fallback 成功：$sdk_path" || {
       cecho red "❌ fallback 也失败，终止"
       cecho yellow "📋 flutter --version --verbose 输出如下（供调试）："
       echo "--------------------"
       flutter --version --verbose
       echo "--------------------"
       exit 1
-    fi
+    }
   fi
 
   cecho blue "📁 当前 Flutter SDK 路径：$sdk_path"

@@ -64,7 +64,7 @@ dependencies:
   flutter_advanced_networkimage_2: any # 用于处理网络图片(图片缓存 + 控制flutter_cache_manager)
   flutter_cache_manager: any # 用于处理网络图片(独立缓存控制)
   octo_image: any # 用于处理网络图片(多状态展示封装)
-  blurhash: ^0.1.1 # 用于处理图片的缩略图
+  blurhash: any # 用于处理图片的缩略图
   # 数据处理
   equatable: any # 用于定义值对象的相等性
   built_value: any # 用于序列化/反序列化数据
