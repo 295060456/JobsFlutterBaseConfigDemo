@@ -61,6 +61,10 @@ dependencies:
   flutter_svg: any # 用于显示SVG图片
   flutter_native_image: any # 用于处理原生图片
   image_gallery_saver: any # 用于保存图片到相册中
+  flutter_advanced_networkimage_2: any # 用于处理网络图片(图片缓存 + 控制flutter_cache_manager)
+  flutter_cache_manager: any # 用于处理网络图片(独立缓存控制)
+  octo_image: any # 用于处理网络图片(多状态展示封装)
+  blurhash: ^0.1.1 # 用于处理图片的缩略图
   # 数据处理
   equatable: any # 用于定义值对象的相等性
   built_value: any # 用于序列化/反序列化数据
@@ -99,7 +103,6 @@ dependencies:
   pretty_dio_logger: any # 用于打印网络请求日志
   mqtt_client: any # 用于连接MQTT服务器
   # flutter_cache_manager_firebase: any # 用于缓存网络请求 (Firebase)
-  # flutter_cache_manager: any # 用于缓存网络请求
   # 本地存储
   # get_storage: any # 用于存储键值对数据
   # shared_preferences_web: any # 用于存储键值对数据 (web)

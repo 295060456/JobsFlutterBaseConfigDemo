@@ -1434,7 +1434,7 @@ LayoutBuilder(
 )
 ```
 
-### 16、Dart.Object <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 16、Dart.**Object** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 在 Dart 中，**所有类最终都继承自 `Object`**，所以这些方法每个类都自动拥有
 
@@ -1996,9 +1996,9 @@ class XXX extends Object{}
 
 ### 19、Flutter中，涉及到布局的**`Widget`**  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> 类似 iOS 中的 [**Masonry**](https://github.com/SnapKit/Masonry) 或 AutoLayout
+> 🔹 布局类：**看不见的结构控制**（渲染、显示逻辑、动态构建...）。类似 iOS 中的 [**Masonry**](https://github.com/SnapKit/Masonry) 或 AutoLayout
 
-#### 19.1、<font id=线性布局>🧱</font>线性布局（类似 iOS 的 `UIStackView`） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> 
+#### 19.1、<font id=线性布局>🧱</font> 线性布局（类似 iOS 的 `UIStackView`） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> 
 
 | Widget                                                       | 功能说明                                                     |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -2082,14 +2082,14 @@ class XXX extends Object{}
 
 #### 19.6、<font id=边距&填充&对齐>🧱</font> 边距&填充&对齐 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-| Widget                                                       | 功能说明                                             |
-| ------------------------------------------------------------ | ---------------------------------------------------- |
-| <a href="#Padding" style="font-size:17px; color:green;"><b>`Padding`</b></a> | 添加内边距                                           |
-| <a href="#Margin" style="font-size:17px; color:green;"><b>`Margin`</b></a> | ❌ 无此 Widget，可用 `Padding + Container` 模拟外边距 |
-| <a href="#Container" style="font-size:17px; color:green;"><b>`Container`</b></a> | 可组合设置 `padding`, `margin`, `alignment`          |
-| <a href="#Align" style="font-size:17px; color:green;"><b>`Align`</b></a> | 设置对齐方式                                         |
-| <a href="#Center" style="font-size:17px; color:green;"><b>`Center`</b></a> | 子组件居中                                           |
-| <a href="#Baseline" style="font-size:17px; color:green;"><b>`Baseline`</b></a> | 按基线对齐                                           |
+| Widget                                                       | 功能说明                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <a href="#Padding" style="font-size:17px; color:green;"><b>`Padding`</b></a> | 添加内边距                                                   |
+| <a href="#Margin" style="font-size:17px; color:green;"><b>`Margin`</b></a> | ❌ 无此 Widget，可用 `Padding + Container` 模拟外边距         |
+| <a href="#Container" style="font-size:17px; color:Red;"><b>`Container`</b></a> | 可组合设置 `padding`, `margin`, `alignment`。<font color=red>**是装饰 + 布局一体的`容器`**</font> |
+| <a href="#Align" style="font-size:17px; color:green;"><b>`Align`</b></a> | 设置对齐方式                                                 |
+| <a href="#Center" style="font-size:17px; color:green;"><b>`Center`</b></a> | 子组件居中                                                   |
+| <a href="#Baseline" style="font-size:17px; color:green;"><b>`Baseline`</b></a> | 按基线对齐                                                   |
 
 * <font id=Padding>`Padding`</font> <a href="#边距&填充&对齐" style="font-size:17px; color:green;"><b>⬆️</b></a>
 * <font id=Margin>`Margin`</font> <a href="#边距&填充&对齐" style="font-size:17px; color:green;"><b>⬆️</b></a>
@@ -2112,9 +2112,67 @@ class XXX extends Object{}
 * <font id=LayoutBuilder>`LayoutBuilder`</font> <a href="#布局辅助" style="font-size:17px; color:green;"><b>⬆️</b></a>
 * <font id=CustomSingleChildLayout/CustomMultiChildLayout>`CustomSingleChildLayout` / `CustomMultiChildLayout`</font> <a href="#布局辅助" style="font-size:17px; color:green;"><b>⬆️</b></a>
 
-### 20、✅ Flutter 实现相对位置布局的几种方式 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 20、🎍Flutter中，涉及到装饰相关的**`Widget`**  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 20.1、使用 `Column` / `Row`（线性排列 + 间距控制）
+> 🔹 装饰类：**看得见的美化**（颜色、边框、阴影、裁剪...）
+
+#### 20.1、装饰容器组件（具备布局和装饰能力） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+| Widget / 类名            | 类型     | 功能说明                                          |
+| ------------------------ | -------- | ------------------------------------------------- |
+| `Container`              | `Widget` | ✅ 最常用的容器+装饰组合，支持 `decoration`        |
+| `DecoratedBox`           | `Widget` | 纯装饰容器，类似 `Container` 的 `decoration` 部分 |
+| `DecoratedBoxTransition` | `Widget` | 支持动画变化的装饰容器                            |
+| `Material`               | `Widget` | Material 风格容器，可设置阴影、圆角、颜色等       |
+| `Ink`                    | `Widget` | 与 `InkWell` 配合实现水波纹背景、圆角、装饰色等   |
+
+#### 20.2、装饰构建类（**`Decoration`** 体系） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+| 类名                    | 类型                      | 功能说明                                       |
+| ----------------------- | ------------------------- | ---------------------------------------------- |
+| `Decoration`            | 抽象类                    | Flutter 装饰体系核心抽象类                     |
+| `BoxDecoration`         | **`Decoration`**          | ✅ 最常用的装饰类（背景色、边框、圆角、阴影）   |
+| `ShapeDecoration`       | **`Decoration`**          | 支持复杂形状的装饰（如 `StadiumBorder`）       |
+| `UnderlineTabIndicator` | **`Decoration`**          | TabBar 下划线装饰                              |
+| `InputDecoration`       | 类（非 **`Decoration`**） | TextField 输入框样式结构，字段名相似但独立体系 |
+
+#### 20.3、装饰参数 / 协作类（**`Decoration`** 构成元素）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+| 类名                   | 类型                           | 功能说明                         |
+| ---------------------- | ------------------------------ | -------------------------------- |
+| `DecorationImage`      | 类                             | ✅ 设置背景图的样式、对齐、缩放等 |
+| `Gradient`             | 抽象类                         | 渐变基类                         |
+| ├─ `LinearGradient`    | Gradient                       | 线性渐变                         |
+| ├─ `RadialGradient`    | Gradient                       | 放射状渐变                       |
+| └─ `SweepGradient`     | Gradient                       | 扫描旋转渐变                     |
+| `BoxShadow`            | 类（extends `ui.Shadow`）      | ✅ 阴影配置类                     |
+| `BoxShape`             | 枚举                           | ✅ 设置矩形/圆形容器形状          |
+| `Border`               | extends `BoxBorder`            | ✅ 设置边框                       |
+| `BoxBorder`            | 抽象类                         | 边框抽象类                       |
+| `BorderSide`           | 类                             | 单边边框                         |
+| `BorderRadius`         | extends `BorderRadiusGeometry` | ✅ 圆角配置类                     |
+| `BorderRadiusGeometry` | 抽象类                         | 圆角抽象父类                     |
+| `BlendMode`            | 枚举                           | 图像混合模式（与 `color` 联用）  |
+| `FilterQuality`        | 枚举                           | 图片缩放质量选项                 |
+
+#### 20.4、视觉增强类（非 **`Decoration`**，但常用于装饰）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+| Widget / 类名     | 类型     | 功能说明                             |
+| ----------------- | -------- | ------------------------------------ |
+| `ClipRRect`       | `Widget` | ✅ 裁剪圆角矩形                       |
+| `ClipOval`        | `Widget` | 裁剪为椭圆                           |
+| `ClipPath`        | `Widget` | 裁剪为任意路径形状                   |
+| `ClipRect`        | `Widget` | 裁剪为矩形（基于子组件尺寸）         |
+| `Opacity`         | `Widget` | 控制透明度                           |
+| `BackdropFilter`  | `Widget` | ✅ 毛玻璃模糊效果                     |
+| `ShaderMask`      | `Widget` | 使用着色器（渐变遮罩）               |
+| `ColorFiltered`   | `Widget` | 对子组件颜色进行滤镜处理             |
+| `CustomPaint`     | `Widget` | 自定义绘制（绘图）                   |
+| `RepaintBoundary` | `Widget` | 性能优化：阻断重绘区域（不具装饰性） |
+
+### 21、✅ Flutter 实现相对位置布局的几种方式 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+#### 21.1、使用 `Column` / `Row`（线性排列 + 间距控制）
 
 ```dart
 Column(
@@ -2126,7 +2184,7 @@ Column(
 );
 ```
 
-#### 20.2、使用 `Stack + Positioned`（绝对锚点式）
+#### 21.2、使用 `Stack + Positioned`（绝对锚点式）
 
 ```dart
 Stack(
@@ -2145,7 +2203,7 @@ Stack(
 );
 ```
 
-#### 20.3、使用 `Align` + `FractionalOffset`
+#### 21.3、使用 `Align` + `FractionalOffset`
 
 > ✅ 适合相对父组件的对齐布局。相对“容器”对齐，但不能锚定某个兄弟控件
 
@@ -2156,7 +2214,7 @@ Align(
 );
 ```
 
-#### 20.4、使用 `CustomMultiChildLayout` 实现锚定兄弟 Widget
+#### 21.4、使用 `CustomMultiChildLayout` 实现锚定兄弟 Widget
 
 > Flutter 的高级布局 Widget，支持**通过 key 锚定某个子 Widget 的位置来放置另一个子 Widget**
 
@@ -2184,9 +2242,9 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 }
 ```
 
-### 21、中间代码的生成工具 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 22、中间代码的生成工具 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 21.1、[<font color=red>**build_runner**</font>](https://pub.dev/packages/build_runner)
+#### 22.1、[<font color=red>**build_runner**</font>](https://pub.dev/packages/build_runner)
 
 > **Dart 的代码生成引擎**，用于根据规则自动生成 Dart 代码
 >
@@ -2203,7 +2261,7 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 * `json_serializable`、`flutter_gen_runner`、`freezed` 等是设计图 📐（告诉你该建什么）
 * `.g.dart`、`.gen.dart` 文件是建筑成果 🏠（自动生成的代码）
 
-#### 21.2、[**flutter_gen_runner**](https://pub.dev/packages/flutter_gen)
+#### 22.2、[**flutter_gen_runner**](https://pub.dev/packages/flutter_gen)
 
 > 根据你的 `pubspec.yaml` 中配置的资源文件，自动生成 assets.gen.dart 文件，让你用代码方式访问资源，更安全、方便。
 
@@ -2216,13 +2274,13 @@ flutter_gen:
   output: lib/gen/ # 生成文件的目录
 ```
 
-#### 21.3、[**json_serializable**](https://pub.dev/packages/json_serializable)
+#### 22.3、[**json_serializable**](https://pub.dev/packages/json_serializable)
 
 > 用于序列化/反序列化JSON数据
 
-### 22、👂监听 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 23、👂监听 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 22.1、👂路由的监听：`NavigatorObserver` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 23.1、👂路由的监听：`NavigatorObserver` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ `class RouteObserver<R extends Route<dynamic>> extends NavigatorObserver `
 >
@@ -2271,7 +2329,7 @@ builder: (context, child) {
         }
 ```
 
-#### 22.2、👂APP 生命周期的监听：`WidgetsBindingObserver` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 23.2、👂APP 生命周期的监听：`WidgetsBindingObserver` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 主要通过实现 `WidgetsBindingObserver` 接口来完成
 
@@ -2280,17 +2338,17 @@ builder: (context, child) {
 * 语言切换
 * 内存压力警告等
 
-#### 22.3、👂滚动的监听（未完待续） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 23.3、👂滚动的监听（未完待续） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 22.4、👂数据变化通知的监听（未完待续） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 23.4、👂数据变化通知的监听（未完待续） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 22.5、👂键盘（弹起/落下）的监听（未完待续） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 23.5、👂键盘（弹起/落下）的监听（未完待续） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 22.6、👂网络的监听（未完待续） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 23.6、👂网络的监听（未完待续） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-### 23、富文本 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 24、富文本 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 23.1、🍎 **iOS** 🆚 🐦 **Flutter**
+#### 24.1、🍎 **iOS** 🆚 🐦 **Flutter**
 
 * 🍎 iOS 的富文本能力（`NSAttributedString`），几乎无所不能
 
@@ -2304,7 +2362,7 @@ builder: (context, child) {
   | ❌ 图片/WidgetSpan 兼容差  | 不能很好地与文字混排，溢出等问题                             |
   | ❌ 没有富文本输入控件      | iOS UITextView 自带，Flutter 需要用第三方                    |
 
-#### 23.2、🧠 为什么会这样？
+#### 24.2、🧠 为什么会这样？
 
 Flutter 是跨平台框架，它的核心设计理念是“自己画 UI（Skia）”，所有文本渲染都是**自绘**：
 
@@ -2313,7 +2371,7 @@ Flutter 是跨平台框架，它的核心设计理念是“自己画 UI（Skia�
 
 所以，Flutter 没办法像 iOS 那样“一行代码全搞定”。
 
-### 24、Tab切换：**`IndexedStack`**  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 25、Tab切换：**`IndexedStack`**  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 class HomePage extends StatefulWidget {
@@ -2381,7 +2439,7 @@ Obx(() => IndexedStack(
 
 ### 25、状态管理工具  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 25.1、[**`Provider`**](https://pub.dev/packages/provider)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 26.1、[**`Provider`**](https://pub.dev/packages/provider)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 by [**Rémi Rousselet**](https://github.com/rrousselGit)
 
@@ -2435,13 +2493,13 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
   myModel.notifyListeners();
   ```
 
-#### 25.2、[**`riverpod`**](https://riverpod.dev/)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 26.2、[**`riverpod`**](https://riverpod.dev/)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 by [**Rémi Rousselet**](https://github.com/rrousselGit)
 
 >  [**`Provider`**](https://pub.dev/packages/provider) 的升级（完全）重构版，解决了  [**`Provider`**](https://pub.dev/packages/provider)  的所有限制和设计缺陷，**推荐用于大型项目**
 
-#### 25.3、[**`flutter_bloc`**](https://pub.dev/packages/flutter_bloc) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 26.3、[**`flutter_bloc`**](https://pub.dev/packages/flutter_bloc) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ [**flutter_bloc**](https://pub.dev/packages/flutter_bloc) 是 Google 官方支持的 Flutter 状态管理库，基于 **BLoC**（<font color=red>**B**</font>usiness <font color=red>**Lo**</font>gic <font color=red>**C**</font>omponent） 思想封装，功能非常完整，尤其适合中大型项目。（不再手动管理 `StreamController`，代码更简洁）
 >
@@ -2476,9 +2534,9 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
 > | `context.watch<T>()`     | 方法   | 获取并监听 Bloc/Cubit，状态变化时触发 rebuild                |
 > | `context.select<T, R>()` | 方法   | 精准监听某个属性变化，避免无意义重建                         |
 
-#### 25.4、[**`GetX`**](https://pub.dev/packages/get) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 26.4、[**`GetX`**](https://pub.dev/packages/get) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-##### 25.4.1、[**`GetX`**](https://pub.dev/packages/get) （六种）依赖注册方式对比表 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 26.4.1、[**`GetX`**](https://pub.dev/packages/get) （六种）依赖注册方式对比表 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 在不设置 `permanent: true` 的默认情况下，**Get.put()**、**Get.lazyPut()**、**Get.create()** 所创建的对象，**生命周期都不会永久保留**，用完就“没了”或“会被释放”，只不过：
 >
@@ -2650,7 +2708,7 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
 
 * **Get.replace()**
 
-##### 25.4.2、[**`GetX`**](https://pub.dev/packages/get) 的销毁机制 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 26.4.2、[**`GetX`**](https://pub.dev/packages/get) 的销毁机制 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ [**`GetX`**](https://pub.dev/packages/get)  中的依赖对象如果不是 `permanent: true`，默认在无人使用时可以被释放（或你手动释放）。
 >
@@ -2667,7 +2725,7 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
 | `Get.reset()`              | 重置整个依赖管理系统（清空所有 Controller、Service、路由信息等） |
 | `Get.resetLazy<T>()`       | 重置指定类型的懒加载依赖（配合 `lazyPut`）                   |
 
-##### 25.4.3、**`GetxController`** 🆚 **`GetView<T>`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 26.4.3、**`GetxController`** 🆚 **`GetView<T>`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 项目                | `GetxController`                  | `GetView<T>`                                 |
 | ------------------- | --------------------------------- | -------------------------------------------- |
@@ -2725,7 +2783,7 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
   }
   ```
 
-##### 25.4.4、**`GetxService`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 26.4.4、**`GetxService`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > `GetxService` 是 [**`GetX`**](https://pub.dev/packages/get)  提供的**专门用于全局单例管理的服务类**，适合放一些只需要创建一次，整个 App 生命周期中都不释放的“后台服务”
 
@@ -2755,7 +2813,7 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
   }
   ```
 
-* 注册服务KKK
+* 注册服务
 
   ```dart
   Future<void> main() async {
@@ -2775,7 +2833,7 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
   print(authService.token);
   ```
 
-##### 25.4.5、📃<font id=GetPage>**`GetPage()`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> 
+##### 26.4.5、📃<font id=GetPage>**`GetPage()`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> 
 
 > 1️⃣ 用于在 `GetMaterialApp` 中注册页面，它包含了页面路径、页面构造函数、绑定依赖、转场动画等信息。
 >
@@ -2809,7 +2867,7 @@ GetPage(
 )
 ```
 
-##### 25.4.6、🧭[**`GetX`**](https://pub.dev/packages/get) 路由 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 26.4.6、🧭[**`GetX`**](https://pub.dev/packages/get) 路由 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 >  [**`GetX`**](https://pub.dev/packages/get)  的路由系统是一套集命名路由、依赖注入、中间件、动画于一体的强大路由管理机制，推荐用 `GetPage` + 命名跳转方式为主线结构！
 
@@ -2823,7 +2881,7 @@ GetPage(
 | 转场动画           | 复杂                  | 简单（内建 `Transition` 枚举）    |
 | 嵌套路由 / 子路由  | 较复杂                | ✅ 支持 children 嵌套路由          |
 
-###### 25.4.6.1、[**`GetX`**](https://pub.dev/packages/get) 免路由管理页面（直接跳 **`Widget`**） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+###### 26.4.6.1、[**`GetX`**](https://pub.dev/packages/get) 免路由管理页面（直接跳 **`Widget`**） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
   > ✅ 优点：不用提前注册页面
   > ❌ 缺点：不支持 **binding**、动画、中间件
@@ -2879,7 +2937,7 @@ Get.off(SettingsView());      // 替换当前页
 Get.offAll(LoginView());      // 清空栈后跳转
 ```
 
-###### 25.4.6.2、命名路由（推荐方式） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+###### 26.4.6.2、命名路由（推荐方式） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 需要配合<a href="#GetPage" style="font-size:17px; color:green;"><b>GetPage()</b></a> 注册 
 
@@ -2965,7 +3023,7 @@ Get.offAllNamed('/splash');
   ```
 
 
-#### 25.5、**`Get.dialog()`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 26.5、**`Get.dialog()`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > `Get.dialog()` 默认用当前上下文找 <a href="#Navigator" style="font-size:17px; color:green;"><b>Navigator</b></a>
 
@@ -3009,7 +3067,7 @@ ElevatedButton(
 )
 ```
 
-#### 25.6、🔑**`Get.key` **<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 26.6、🔑**`Get.key` **<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > **`Get.key` 就是给全局 Navigator 打了个 tag（标签）**，即：**全局 Navigator Key**。[**`GetX`**](https://pub.dev/packages/get)  把它注册到自己的容器里，之后你所有（push、pop、dialog 等）相关操作都可以**不需要 context，直接通过这个 tag 找到并调用 Navigator 的功能。**（<font color=red>类似于iOS的**通知机制**</font>）
 
@@ -3098,7 +3156,7 @@ ElevatedButton(
 > 👉 **任何时候用 `Get.dialog()`，都写上 `navigatorKey: Get.key`**，
 > ✅ 兼容所有场景、生命周期、嵌套结构，绝对不翻车。
 
-#### 25.7、[**`GetX`**](https://pub.dev/packages/get) 多语言化  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 26.7、[**`GetX`**](https://pub.dev/packages/get) 多语言化  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 如果找不到对应 key，会 **原样返回原始字符串**（即 `"等待状态变化"`），不会报错或崩溃。
 
@@ -3106,7 +3164,7 @@ ElevatedButton(
 String status = "等待状态变化".tr;
 ```
 
-#### 25.8、关于[**`GetX`**](https://pub.dev/packages/get) 的二次（语法糖🍬）封装  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 26.8、关于[**`GetX`**](https://pub.dev/packages/get) 的二次（语法糖🍬）封装  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 import 'package:get/get.dart';
@@ -3145,7 +3203,7 @@ T getOrLazyPut<T extends GetxController>(
 late final MyTabCtrl tabController = getOrPut(() => MyTabCtrl());
 ```
 
-#### 25.9、基于[**`GetX`**](https://pub.dev/packages/get) 最佳实践的完整项目结构模板（项目名为：`getx_demo`） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 26.9、基于[**`GetX`**](https://pub.dev/packages/get) 最佳实践的完整项目结构模板（项目名为：`getx_demo`） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```bash
 lib/
@@ -3262,7 +3320,7 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-### 26、导航栏左上角的返回按钮的<font color=red>**行为拦截和自定义**</font>  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 27、导航栏左上角的返回按钮的<font color=red>**行为拦截和自定义**</font>  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ 用户点击 iOS 的导航栏返回键（左上角）
 >
@@ -3271,6 +3329,340 @@ class MyApp extends StatelessWidget {
 > 3️⃣ iOS 上从屏幕左边缘滑动返回（手势返回）
 >
 > 💥 **根页面是没有返回键的**
+
+### 28、图片缓存框架 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+#### 28.1、[**CachedNetworkImage**](https://pub.dev/packages/cached_network_image)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+== [**iOS.SDWebimage**](https://github.com/SDWebImage/SDWebImage)
+
+* ```yaml
+  dependencies:
+    cached_network_image: any
+  ```
+
+  ```dart
+  import 'package:flutter/material.dart';
+  import 'package:cached_network_image/cached_network_image.dart';
+  import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+  import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsGetXRunner.dart';
+  
+  void main() => runApp(JobsGetRunner(const CachedNetworkImageDemo(),
+      title: 'CachedNetworkImage 全属性示例'));
+  
+  class CachedNetworkImageDemo extends StatelessWidget {
+    const CachedNetworkImageDemo({super.key});
+  
+    @override
+    Widget build(BuildContext context) {
+      return Center(
+        child: CachedNetworkImage(
+          imageUrl: 'https://via.placeholder.com/150', // ✅ 图片地址（必填）
+          httpHeaders: const {
+            'Authorization': 'Bearer YOUR_TOKEN', // ✅ 自定义 HTTP 请求头（可选）
+          },
+          cacheKey: 'custom_cache_key', // ✅ 自定义缓存 key（可手动管理缓存）
+  
+          placeholder: (context, url) =>
+              const CircularProgressIndicator(), // ✅ 加载中占位图
+          progressIndicatorBuilder: (context, url, progress) {
+            return Column(
+              // ✅ 显示加载进度（字节）
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const CircularProgressIndicator(),
+                const SizedBox(height: 10),
+                Text('${progress.downloaded} / ${progress.totalSize} bytes'),
+              ],
+            );
+          },
+  
+          errorWidget: (context, url, error) =>
+              const Icon(Icons.error), // ✅ 加载失败显示组件
+          errorListener: (error) =>
+              debugPrint('加载失败: $error'), // ✅ 错误监听器（不会 UI 显示，只打印）
+  
+          imageBuilder: (context, imageProvider) => Container(
+            // ✅ 成功加载后自定义展示方式
+            width: 200,
+            height: 200,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              image: DecorationImage(
+                image: imageProvider,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+  
+          fadeInDuration: const Duration(milliseconds: 500), // ✅ 图片淡入动画时间
+          fadeOutDuration: const Duration(milliseconds: 300), // ✅ 占位图淡出动画时间
+          fadeInCurve: Curves.easeIn, // ✅ 图片淡入动画曲线
+          fadeOutCurve: Curves.easeOut, // ✅ 占位图淡出动画曲线
+          placeholderFadeInDuration:
+              const Duration(milliseconds: 200), // ✅ 占位图淡入时间
+  
+          width: 200, // ✅ 图片宽度
+          height: 200, // ✅ 图片高度
+          fit: BoxFit.cover, // ✅ 图片填充方式
+          alignment: Alignment.center, // ✅ 对齐方式
+          repeat: ImageRepeat.noRepeat, // ✅ 是否重复图像
+          matchTextDirection: false, // ✅ 是否遵循文字方向（如 RTL）
+  
+          color: Colors.red.withValues(alpha: 0.2), // ✅ 与图片叠加的颜色
+          colorBlendMode: BlendMode.overlay, // ✅ 颜色叠加方式
+          filterQuality: FilterQuality.high, // ✅ 渲染质量（建议 high）
+  
+          memCacheWidth: 400, // ✅ 内存缓存图像最大宽度
+          memCacheHeight: 400, // ✅ 内存缓存图像最大高度
+          maxWidthDiskCache: 800, // ✅ 磁盘缓存图像最大宽度
+          maxHeightDiskCache: 800, // ✅ 磁盘缓存图像最大高度
+  
+          cacheManager: DefaultCacheManager(), // ✅ 使用自定义 CacheManager（可选）
+  
+          useOldImageOnUrlChange: true, // ✅ 当 URL 改变时是否保留旧图像直到新图加载完
+        ),
+      );
+    }
+  }
+  
+  class MyCustomCacheManager extends CacheManager {
+    static const String key = 'myCustomCache'; // 自定义缓存 key，用于标识缓存文件夹和数据库
+    static final MyCustomCacheManager _instance =
+        MyCustomCacheManager._internal(); // 单例实例，避免重复创建
+    factory MyCustomCacheManager() => _instance; // 工厂构造，外部调用只用这个
+    MyCustomCacheManager._internal() // 私有构造函数 + 自定义配置
+        : super(
+            Config(
+              key,
+              stalePeriod: const Duration(days: 3), // 超过 3 天视为“过期”
+              maxNrOfCacheObjects: 100, // 最多缓存 100 个文件
+              repo: JsonCacheInfoRepository(databaseName: key), // 使用默认 json 数据库存储
+              fileService: HttpFileService(), // 使用默认 http 下载器
+            ),
+          );
+  }
+  ```
+
+#### 28.2、[**`flutter_advanced_networkimage_2`**](https://pub.dev/packages/flutter_advanced_networkimage_2/versions)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+import 'dart:typed_data';
+import 'package:flutter/material.dart';
+import 'package:flutter_advanced_networkimage_2/provider.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsGetXRunner.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/JobsCommonUtil.dart';
+
+void main() => runApp(JobsGetRunner(const AdvancedNetworkImageDemo(),
+    title: 'AdvancedNetworkImage 全属性示例'));
+
+class AdvancedNetworkImageDemo extends StatelessWidget {
+  const AdvancedNetworkImageDemo({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Image(
+        image: AdvancedNetworkImage(
+          'https://via.placeholder.com/150', // ✅ 图片 URL
+
+          scale: 1.0, // ✅ 图片缩放因子，默认 1.0，通常不用改
+
+          width: 300, // ✅ 要缓存到内存中的图片宽度（像素）
+          height: 300, // ✅ 要缓存到内存中的图片高度（像素）
+
+          header: const {
+            'Authorization': 'Bearer YOUR_TOKEN', // ✅ HTTP 请求头，自定义认证或参数
+          },
+
+          useDiskCache: true, // ✅ 是否启用磁盘缓存，默认为 true
+
+          retryLimit: 3, // ✅ 下载失败最大重试次数
+          retryDuration: const Duration(seconds: 2), // ✅ 每次重试间隔
+          retryDurationFactor: 1.5, // ✅ 重试间隔因子（用于指数退避）
+
+          timeoutDuration: const Duration(seconds: 5), // ✅ 网络超时时间
+
+          loadedCallback: () {
+            JobsPrint("✅ 图片加载成功");
+          }, // ✅ 图片加载成功回调
+
+          loadFailedCallback: () {
+            JobsPrint("❌ 图片加载失败");
+          }, // ✅ 图片加载失败回调
+
+          loadedFromDiskCacheCallback: () {
+            JobsPrint("💾 从磁盘缓存加载");
+          }, // ✅ 从磁盘缓存加载时回调
+
+          fallbackAssetImage: 'assets/backup.png', // ✅ 加载失败时使用的 asset 图片（备选）
+
+          fallbackImage: Uint8List.fromList(
+              []), // ✅ 加载失败时使用的内存图片（优先级低于 fallbackAssetImage）
+
+          cacheRule: const CacheRule(
+            maxAge: Duration(days: 7), // ✅ 缓存有效时间
+            storeDirectory: StoreDirectoryType.document, // ✅ 缓存目录位置
+          ),
+
+          loadingProgress: (received, total) {
+            JobsPrint("📦 加载中：$received / $total");
+          }, // ✅ 实时加载进度（字节）
+
+          getRealUrl: () async {
+            JobsPrint("🔗 获取真实 URL");
+            return 'https://via.placeholder.com/150'; // ✅ 动态 URL 获取逻辑（重定向或加密）
+          },
+
+          preProcessing: (bytes) async {
+            JobsPrint("🧪 下载前处理");
+            return bytes; // ✅ 下载前可处理图片数据（如解密）
+          },
+
+          postProcessing: (bytes) async {
+            JobsPrint("🧼 存储前处理");
+            return bytes; // ✅ 存储前处理，比如加水印
+          },
+
+          printError: true, // ✅ 是否打印加载错误信息到控制台
+
+          skipRetryStatusCode: const [404, 403], // ✅ 遇到这些状态码就不再重试（节省资源）
+
+          id: 'custom_image_id', // ✅ 可选标识，用于跟踪、调试或手动控制缓存
+        ),
+
+        width: 200, // ✅ Widget 显示的宽度
+        height: 200, // ✅ Widget 显示的高度
+        fit: BoxFit.cover, // ✅ 填充方式
+      ),
+    );
+  }
+}
+```
+
+#### 28.4、[**`flutter_cache_manager`**](https://pub.dev/packages/flutter_cache_manager)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+`flutter_cache_manager` + `Image.file`
+
+```dart
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsGetXRunner.dart';
+
+void main() => runApp(JobsGetRunner(const FileImageCacheDemo(),
+    title: 'flutter_cache_manager + Image.file 示例'));
+
+class FileImageCacheDemo extends StatelessWidget {
+  const FileImageCacheDemo({super.key});
+
+  final String imageUrl = 'https://via.placeholder.com/150'; // ✅ 图片地址
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: FutureBuilder<File>(
+        future: MyCustomCacheManager().getSingleFile(imageUrl), // ✅ 获取缓存文件
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                CircularProgressIndicator(), // ✅ 加载中
+                SizedBox(height: 10),
+                Text('正在加载图片...'),
+              ],
+            );
+          } else if (snapshot.hasError) {
+            debugPrint('加载失败: ${snapshot.error}');
+            return const Icon(Icons.error); // ✅ 加载失败
+          } else if (snapshot.hasData) {
+            final file = snapshot.data!;
+            return Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                image: DecorationImage(
+                  image: FileImage(file), // ✅ 使用缓存文件显示图片
+                  fit: BoxFit.cover,
+                ),
+              ),
+            );
+          } else {
+            return const Text('无图片可显示');
+          }
+        },
+      ),
+    );
+  }
+}
+
+class MyCustomCacheManager extends CacheManager {
+  static const String key = 'myCustomCache';
+  static final MyCustomCacheManager _instance =
+      MyCustomCacheManager._internal();
+
+  factory MyCustomCacheManager() => _instance;
+
+  MyCustomCacheManager._internal()
+      : super(
+          Config(
+            key,
+            stalePeriod: const Duration(days: 3),
+            maxNrOfCacheObjects: 100,
+            repo: JsonCacheInfoRepository(databaseName: key),
+            fileService: HttpFileService(),
+          ),
+        );
+}
+
+```
+
+#### 28.5、[**`octo_image`**](https://pub.dev/packages/octo_image)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+/// TODO
+```
+
+#### 28.6、[**`FadeInImage`**](https://api.flutter.dev/flutter/widgets/FadeInImage-class.html) (from@<font color=red>**Flutter.SDK**</font>) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsGetXRunner.dart';
+/// FadeInImage是系统原生的SDK
+void main() => runApp(JobsGetRunner(const FadeInImageDemo(), title: 'FadeInImage 示例'));
+
+class FadeInImageDemo extends StatelessWidget {
+  const FadeInImageDemo({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: FadeInImage.assetNetwork(
+        placeholder: 'assets/loading.png',               // ✅ 本地占位图路径（需先在 pubspec.yaml 注册）
+        image: 'https://via.placeholder.com/300x200',     // ✅ 网络图片 URL
+
+        width: 300,                                       // ✅ 宽度
+        height: 200,                                      // ✅ 高度
+        fit: BoxFit.cover,                                // ✅ 图片填充方式
+
+        fadeInDuration: const Duration(milliseconds: 500), // ✅ 图片淡入时间
+        fadeOutDuration: const Duration(milliseconds: 300), // ✅ 占位图淡出时间
+
+        imageErrorBuilder: (context, error, stackTrace) => // ✅ 加载失败时显示的 Widget
+            const Icon(Icons.error, size: 48, color: Colors.red),
+
+        alignment: Alignment.center,                      // ✅ 图片对齐方式
+        repeat: ImageRepeat.noRepeat,                     // ✅ 是否重复图像
+        matchTextDirection: false,                        // ✅ 是否遵循文字方向（用于 RTL 语言）
+      ),
+    );
+  }
+}
+
+```
 
 ## 三、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -3286,7 +3678,7 @@ class MyApp extends StatelessWidget {
   ```
 
   ![image-20250716131840500](./assets/README/image-20250716131840500.png)
-
+  
 * 命令行唤起 iOS模拟器
 
   ```shell

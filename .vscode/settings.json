@@ -31,8 +31,4 @@
   "editor.bracketPairColorization.enabled": true,
   "__bracket_match_note": "✅ 始终高亮当前括号对，便于匹配括号位置",
   "editor.matchBrackets": "always",
-  "cSpell.words": [
-    "AARRGGBB",
-    "RRGGBBAA"
-  ],
 }
