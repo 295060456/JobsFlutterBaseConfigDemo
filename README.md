@@ -3453,8 +3453,106 @@ class MyApp extends StatelessWidget {
         └── tasks.json               🔁 自定义任务（如自动构建、格式化）（✅ 推荐加入 Git）
     ```
 
-  * Git忽略文件`.gitignore`对于[**VSCode**](https://code.visualstudio.com/)的配置文件的处理
+    * `extensions.json`
 
+      ```json
+      /// 推荐使用的插件清单（团队统一）✅推荐加入Git管理
+      {
+          "recommendations": [
+              // ✅ Flutter/Dart 支持
+              "dart-code.flutter", // Flutter 插件（包含 Dart 支持）
+              // ✅ 通用开发体验
+              "esbenp.prettier-vscode", // Prettier 格式化工具
+              "editorconfig.editorconfig", // 统一代码风格配置
+              "streetsidesoftware.code-spell-checker", // 拼写检查器（防错别字）
+              "gruntfuggly.todo-tree", // 高亮 TODO / FIXME 等标记
+              "formulahendry.auto-rename-tag", // 自动重命名 HTML/Widget 标签
+              "formulahendry.auto-close-tag", // 自动闭合标签（如 HTML）
+              // ✅ Git 支持增强
+              "eamodio.gitlens", // Git 历史高亮与增强
+              "github.vscode-pull-request-github", // GitHub PR 工具
+              // ✅ 国际化支持（如果你用到了 easy_localization 或 i18n）
+              "lokalise.i18n-ally", // i18n 文件辅助管理
+              // ✅ 中文语言包（可选）
+              "ms-ceintl.vscode-language-pack-zh-hans" // 中文语言支持（若为中文环境）
+          ]
+      }
+      ```
+  
+    * `launch.json`
+  
+      ```json
+      /// 调试配置（如 Flutter 调试参数）。✅推荐加入Git管理
+      {
+          // 使用 IntelliSense 了解相关属性。
+          // 悬停以查看现有属性的描述。
+          // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+          "version": "0.2.0",
+          "configurations": [
+              {
+                  "name": "JobsFlutterBaseConfigDemo", // 调试配置名称
+                  "request": "launch", // 调试器请求类型，通常为 "launch" 或 "attach"
+                  "type": "dart", // 调试器类型，通常为 "dart" 或 "flutter"
+                  "program": "lib/调用本地相册+调用本机摄像头拍照（全部验证通过）/CameraDemo.dart", // ❤️要调试的程序的入口点
+                  "flutterMode": "debug"
+              },
+              // {
+              //     "name": "JobsFlutterBaseConfigDemo (profile mode)",
+              //     "request": "launch",
+              //     "type": "dart",
+              //     "flutterMode": "profile"
+              // },
+              // {
+              //     "name": "JobsFlutterBaseConfigDemo (release mode)",
+              //     "request": "launch",
+              //     "type": "dart",
+              //     "flutterMode": "release"
+              // }
+          ]
+      }
+      ```
+  
+    * `settings.json`
+  
+      ```json
+      /// 个人本地设置配置。❌不推荐加入Git管理
+      {
+        "_comment": "🚫 本文件为个人本地 VS Code 设置，仅供自己使用，❌ 不推荐加入 Git 管理",
+        "__cmake_note": "✅ 指定 CMake 项目的源代码目录（用于 CMake 插件）",
+        "cmake.sourceDirectory": "/Users/jobs/Documents/GitHub/JobsFlutterBaseConfig/jobs_flutter_base_config/linux",
+        "__java_note": "✅ Java 编译时的空值分析模式（自动启用 null 安全检查）",
+        "java.compile.nullAnalysis.mode": "automatic",
+        "__dart_imports_note": "✅ Dart 编辑器：整理 import 时总是使用 package 引用风格",
+        "dart.editImports": "always_use_package_imports",
+        "__flutter_sdk_note": "✅ Flutter SDK 路径（使用 FVM 管理的版本路径）",
+        "dart.flutterSdkPath": ".fvm/versions/3.32.6",
+        "__format_note": "✅ 每次保存文件时自动格式化代码",
+        "editor.formatOnSave": true,
+        "__autosave_note": "✅ 当窗口失焦时自动保存",
+        "files.autoSave": "afterDelay",
+        "__autosave_delay_note": "✅ 自动保存延迟，100ms",
+        "files.autoSaveDelay": 100,
+        "__hot_exit_note": "✅ 关闭窗口时自动保存未保存文件（热退出）",
+        "files.hotExit": "onExitAndWindowClose",
+        "__trim_whitespace_note": "✅ 每次保存时自动移除每行末尾多余的空格",
+        "files.trimTrailingWhitespace": true,
+        "__final_newline_note": "✅ 文件末尾自动插入一个换行符，符合编码规范",
+        "files.insertFinalNewline": true,
+        "__save_conflict_note": "✅ 保存文件时如有冲突，自动覆盖磁盘上的版本（避免弹出冲突提示）",
+        "files.saveConflictResolution": "overwriteFileOnDisk",
+        "__restoreWindows_note": "✅ 启动时恢复上次打开的文件",
+        "window.restoreWindows": "all",
+        "__bracket_guides_note": "✅ 显示括号对的引导线，方便查看嵌套结构（active 表示仅在光标位于括号上时显示）",
+        "editor.guides.bracketPairs": "active",
+        "__bracket_colorization_note": "✅ 启用括号颜色匹配功能，为不同层级的括号着色",
+        "editor.bracketPairColorization.enabled": true,
+        "__bracket_match_note": "✅ 始终高亮当前括号对，便于匹配括号位置",
+        "editor.matchBrackets": "always",
+      }
+      ```
+  
+  * Git忽略文件`.gitignore`对于[**VSCode**](https://code.visualstudio.com/)的配置文件的处理
+  
     ```plaintext
     # The .vscode folder contains launch configuration and tasks you configure in
     # VS Code which you may wish to be included in version control, so this line
@@ -3462,6 +3560,12 @@ class MyApp extends StatelessWidget {
     .vscode/settings.json
     !.vscode/settings.local.json
     ```
+  
+* 安装插件
+
+  * **Select By Brackets**（默认快捷键：`option` + `A`）
+
+    > 选中括号内的内容以备操作
 
 
 ### 4、`/android/build.gradle`的配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
@@ -4288,3 +4392,8 @@ Comparable.compare(a, b)
   > - 只能操作弹出的模态框（如“确定”或“取消”）；
   > - 关闭弹窗后，才能回到原界面。
 
+* 实用快捷键
+
+  * 如果希望在某个**widget**外面包裹另一个**widget**：`command`+`.`
+
+    ![image-20250723010750938](./assets/README/image-20250723010750938.png)
