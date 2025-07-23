@@ -1,6 +1,6 @@
 {
-    "name": "jobs_flutter_base_config",
-    "short_name": "jobs_flutter_base_config",
+    "name": "jobs_flutter_base_config_demo",
+    "short_name": "jobs_flutter_base_config_demo",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

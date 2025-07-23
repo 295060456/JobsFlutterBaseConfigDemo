@@ -7,14 +7,6 @@
 
 # The following line activates a set of recommended lints for Flutter apps,
 # packages, and plugins designed to encourage good coding practices.
-analyzer:
-  errors:
-    # 忽略对代码中未使用的（即“死代码”）变量、函数或语句的检查，不给出相关的警告或者提示信息  
-    dead_code: ignore 
-    # 警告忽略：忽略文件名不符合命名约定的警告或错误
-    file_names: ignore
-    # 警告忽略：在公共 API 中使用私有类型
-    library_private_types_in_public_api: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:
