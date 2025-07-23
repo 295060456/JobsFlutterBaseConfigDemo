@@ -47,7 +47,7 @@
 
 ### 1、🖨️打印方式 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 1.1、<a href="#极光原生推送" style="font-size:17px; color:green;"><b>极光原生推送</b></a>封装的全局打印（🧨强烈推荐）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 1.1、 <font id=极光原生推送>🌌</font><a href="#极光原生推送" style="font-size:20px; color:green;"><b>极光原生推送</b></a>封装的全局打印（🧨强烈推荐）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> 
 
 > 虽然这个方法原本是插件内部封装的，但它本质上是一个对 `print()` 的增强封装，用法通用、效果更强大。
 
@@ -73,7 +73,9 @@ debugPrint("XXX");
 
 > 1️⃣ 日志打印输出文件和行
 >
-> 2️⃣ 如果要打印类的实例，需要在类中添加 Map<String, dynamic> toJson() 方法
+> 2️⃣ 如果要打印类的实例，需要在类中添加 `Map<String, dynamic> toJson() `方法
+>
+> 3️⃣ 对<a href="#极光原生推送" style="font-size:16px; color:green;"><b>极光原生推送</b></a>的一定程度的二次封装
 
 ```dart
 import 'package:flutter_plugin_engagelab/flutter_plugin_engagelab.dart';
@@ -663,7 +665,7 @@ dependencies:
   flutter_easyloading: ^3.0.5
 ```
 
-### 10、<font id=极光原生推送>[**极光原生推送**](https://www.engagelab.com/zh_CN)</font>：[FlutterPluginEngagelab](https://pub.dev/packages/flutter_plugin_engagelab) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 10、<font id=极光原生推送>[**极光原生推送**](https://www.engagelab.com/zh_CN)</font>：[**`FlutterPluginEngagelab`**](https://pub.dev/packages/flutter_plugin_engagelab) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 来自于：`package:flutter_plugin_engagelab/flutter_plugin_engagelab.dart`
 >
@@ -790,7 +792,7 @@ String getNowTime() {
   | `k` / `kk` | 24小时制（1–24）         | `24`（不会是 0）                    |
   | `K` / `KK` | 12小时制（0–11）         | `0` 表示 12点                       |
 
-### 13、 <font id=Navigator>✅Navigator</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 13、<font id=Navigator>✅**`Navigator`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ 在 Flutter 中，每一个 `Navigator` 都会有**自己的路由栈（Route Stack）**，并不是全局唯一的
 >
@@ -2288,7 +2290,7 @@ builder: (context, child) {
 
 ### 23、富文本 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 23.1、🍎 iOS 🆚 🐦 Flutter
+#### 23.1、🍎 **iOS** 🆚 🐦 **Flutter**
 
 * 🍎 iOS 的富文本能力（`NSAttributedString`），几乎无所不能
 
@@ -2965,7 +2967,7 @@ Get.offAllNamed('/splash');
 
 #### 25.5、**`Get.dialog()`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> `Get.dialog()` 默认用当前上下文找 Navigator
+> `Get.dialog()` 默认用当前上下文找 <a href="#Navigator" style="font-size:17px; color:green;"><b>Navigator</b></a>
 
 [**`GetX`**](https://pub.dev/packages/get) 框架提供的弹窗方法
 
