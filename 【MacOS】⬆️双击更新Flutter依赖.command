@@ -7,43 +7,81 @@ yellow() { echo "\033[1;33m$1\033[0m"; }
 
 # ========== 自述 ==========
 clear
-green "📦 Flutter 项目依赖升级助手（支持 FVM）"
+green "📦 Flutter 项目依赖升级助手（支持 FVM + fzf）"
 green "===================================================================="
 green "✅ 功能说明："
 green "   ➤ 自动检测 Flutter 项目目录（含 pubspec.yaml + lib/）"
-green "   ➤ 检查 dependencies、dev_dependencies、transitive dependencies"
-green "   ➤ 逐个确认是否升级 pubspec.yaml 中的版本号"
-green "   ➤ 跳过 git/path/sdk 类型依赖"
-green "   ➤ 自动 pub get，并再次验证 outdated 状态"
+green "   ➤ 自动检测并安装/升级 fzf"
+green "   ➤ 选择依赖升级方式：全清空 / 逐个升级"
+green "   ➤ 全清空仅重新拉包，不调用其他脚本"
 green "===================================================================="
 echo ""
-read "?🟢 按回车继续执行，输入任意字符后回车退出：" user_confirm
-if [[ -n "$user_confirm" ]]; then
-  red "❌ 已取消执行"
-  exit 0
+
+# ========== fzf 自检并安装/升级 ==========
+echo "🔍 正在检测 fzf..."
+if ! command -v fzf >/dev/null 2>&1; then
+  yellow "📦 未安装 fzf，正在安装..."
+  brew install fzf
+else
+  green "✅ fzf 已安装，尝试升级..."
+  brew upgrade fzf
 fi
 
-# ========== 检查 Flutter 项目根目录 ==========
-project_dir=$(cd "$(dirname "$0")" && pwd)
-
+# ========== 判断并获取 Flutter 项目根目录 ==========
 is_flutter_project() {
   [[ -f "$1/pubspec.yaml" && -d "$1/lib" ]]
 }
 
+project_dir="$(cd "$(dirname "$0")" && pwd)"
 while ! is_flutter_project "$project_dir"; do
   red "❌ 当前目录不是 Flutter 项目（缺少 pubspec.yaml 或 lib/）"
   echo ""
-  read "project_dir?📂 请拖入 Flutter 项目根目录："
-  project_dir="${project_dir/#\~/$HOME}"
-  project_dir="${project_dir%"${project_dir##*[![:space:]]}"}"
-  project_dir="${project_dir//\\/}"
+  read "input_path?📂 请拖入 Flutter 项目根目录（或直接回车使用当前路径）："
+  input_path="${input_path/#\~/$HOME}"
+  input_path="${input_path//\\/}"
+  input_path="${input_path%"${input_path##*[![:space:]]}"}"
+
+  if [[ -n "$input_path" ]]; then
+    project_dir="$input_path"
+  fi
 done
 
-cd "$project_dir" || exit 1
-export PATH="$HOME/.pub-cache/bin:$PATH"
+cd "$project_dir" || {
+  red "❌ 切换到目录失败：$project_dir"
+  exit 1
+}
 
+green "📁 已定位 Flutter 项目目录：$project_dir"
+
+# ========== fzf 选择升级方式 ==========
 echo ""
-green "📁 当前 Flutter 项目目录：$project_dir"
+green "🎯 请选择依赖升级策略："
+upgrade_strategy=$(printf "🧹 全量清空 .pub-cache 并重新拉取依赖（推荐）\n⚙️ 逐个升级 pubspec.yaml 中的依赖（当前逻辑）" | fzf --prompt="📦 选择升级方式 > " --height=10 --reverse)
+
+if [[ "$upgrade_strategy" == "🧹 全量清空 .pub-cache 并重新拉取依赖（推荐）" ]]; then
+  red "⚠️ 即将清空 ~/.pub-cache/hosted/pub.dev 目录（不影响项目代码）"
+  read "?🔁 是否继续执行？（输入 y 确认，其他跳过）" confirm_wipe
+  if [[ "$confirm_wipe" == "y" ]]; then
+    rm -rf ~/.pub-cache/hosted/pub.dev/*
+    green "✅ 已清空 pub.dev 缓存"
+
+    echo ""
+    green "📦 正在重新获取依赖..."
+    fvm flutter pub get
+
+    green "🎉 全量依赖升级流程完成！"
+    exit 0
+  else
+    yellow "⏭️ 取消清空缓存，回到原始脚本逻辑"
+  fi
+fi
+
+# ========== 用户确认继续 ==========
+read "?🟢 按回车继续执行逐个升级逻辑，输入任意字符后回车退出：" user_confirm
+if [[ -n "$user_confirm" ]]; then
+  red "❌ 已取消执行"
+  exit 0
+fi
 
 # ========== 显示 outdated 状态 ==========
 echo ""
@@ -63,9 +101,8 @@ fi
 dependencies=($(grep -A 1000 '^dependencies:' pubspec.yaml | grep -B 1000 '^dev_dependencies:' | grep -E '^\s*[a-zA-Z0-9_-]+:\s*\^?[0-9]' | awk -F: '{print $1}' | sed 's/^[ \t]*//'))
 dev_dependencies=($(grep -A 1000 '^dev_dependencies:' pubspec.yaml | grep -v 'flutter:' | grep -E '^\s*[a-zA-Z0-9_-]+:\s*\^?[0-9]' | awk -F: '{print $1}' | sed 's/^[ \t]*//'))
 
-# ========== 合并并标记来源 ==========
+# ========== 合并依赖来源 ==========
 declare -A dep_sources
-
 for pkg in "${dependencies[@]}"; do
   dep_sources["$pkg"]="dependencies"
 done
@@ -73,14 +110,12 @@ for pkg in "${dev_dependencies[@]}"; do
   dep_sources["$pkg"]="dev_dependencies"
 done
 
-# ========== 加入 transitive ==========
 transitives=$(fvm flutter pub outdated --json | grep -oE '"package":"[^"]+"' | cut -d'"' -f4)
 for pkg in $transitives; do
   if [[ -z "${dep_sources["$pkg"]}" ]]; then
     dep_sources["$pkg"]="transitive"
   fi
 done
-
 all_pkgs=("${(k)dep_sources}")
 
 # ========== 升级循环 ==========
@@ -107,7 +142,6 @@ for pkg in "${all_pkgs[@]}"; do
   echo "🔧 可解析版本（不改 pubspec.yaml）：$resolvable"
   echo "🆕 最新版本：$latest"
 
-  # 仅处理 direct dependencies
   if [[ "${dep_sources[$pkg]}" != "transitive" ]]; then
     read "?🚀 是否将 $pkg 升级为 ^$latest 并写入 pubspec.yaml？（y = 升级，回车跳过）" upgrade
     if [[ "$upgrade" == "y" ]]; then

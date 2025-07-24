@@ -8,11 +8,14 @@ plugins {
 android {
     namespace = "com.example.jobs_flutter_base_config_demo"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        // ✅ 开启 desugaring
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -20,25 +23,57 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.jobs_flutter_base_config_demo"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+            manifestPlaceholders.putAll(
+                mapOf(
+                    "ENGAGELAB_PRIVATES_CHANNEL" to "debug",
+                    "ENGAGELAB_PRIVATES_PROCESS" to ":push",
+                    "ENGAGELAB_PRIVATES_APPKEY" to "your_app_key",
+                    "APP_TCP_SSL" to "true",
+                    "APP_DEBUG" to "true",
+                    "COUNTRY_CODE" to "CN",
+
+                    "HONOR_APPID" to "xxx",
+                    "XIAOMI_APPID" to "xxx",
+                    "XIAOMI_APPKEY" to "xxx",
+                    "MEIZU_APPID" to "xxx",
+                    "MEIZU_APPKEY" to "xxx",
+                    "OPPO_APPID" to "xxx",
+                    "OPPO_APPKEY" to "xxx",
+                    "OPPO_APPSECRET" to "xxx",
+                    "VIVO_APPID" to "xxx",
+                    "VIVO_APPKEY" to "xxx"
+                )
+            )
     }
 
     buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+        release {   
             signingConfig = signingConfigs.getByName("debug")
         }
     }
 }
 
+dependencies {
+    // ✅ 添加 desugaring 支持库（必须写在外面）
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+}
+
 flutter {
     source = "../.."
+}
+
+android {
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }

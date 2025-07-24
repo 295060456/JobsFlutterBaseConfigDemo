@@ -38,7 +38,6 @@ dependencies:
   cached_network_image: any # 用于显示网络图片
   # 图片处理
   # flutter_native_image: any # 用于处理原生图片 🚨 打包失败
-  image_gallery_saver: any # 用于保存图片到相册中
   flutter_advanced_networkimage_2: any # 用于处理网络图片(图片缓存 + 控制flutter_cache_manager)
   flutter_cache_manager: any # 用于处理网络图片(独立缓存控制)
   # 数据处理
@@ -57,6 +56,7 @@ dependencies:
   flutter_bloc: any # 用于管理应用状态
   # 用户权限处理
   # 网络请求
+  dart_ping_ios: any # 
   http: any # 用于网络请求
   # Chopper: any # 用于网络请求
   # FlutterHttpClient: any # 用于网络请求
@@ -72,7 +72,7 @@ dependencies:
   sqflite: any # 用于本地数据库
   # 播放器
   video_player: any # 用于播放视频
-  audioplayers: any # 用于播放音频
+  audioplayers: ^5.2.1 # 用于播放音频
   # 国际化
   intl: any # 提供国际化和本地化设施，包括消息翻译、复数和性别、日期/数字格式和解析以及双向文本
   # 设备/应用相关
@@ -85,6 +85,7 @@ dependencies:
   flutter_localizations: # 一个使用地图数据进行应用内定位的软件包
     sdk: flutter
   # 工具库
+  wakelock_plus: any # 用于保持屏幕常亮
   flutter_plugin_engagelab: any # 极光推送
   file_picker: any # 实现文件选择器功能，允许用户从本地文件系统中选择任意文件（如图片、PDF、文档、视频等），并获取路径用于上传等操作。
   connectivity_plus: any # 用于检查设备网络连接状态

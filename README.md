@@ -3785,7 +3785,7 @@ class FadeInImageDemo extends StatelessWidget {
   }
   ```
 
-* 由[**FVM**](https://fvm.app/)管理的Flutter.SDK的缓存目录：`.fvm/flutter_sdk/`
+* 由[**FVM**](https://fvm.app/)管理的**Flutter.SDK**的缓存目录：`.fvm/flutter_sdk/`
 
 * 环境变量配置：`.bash_profile`
 
@@ -3823,6 +3823,18 @@ class FadeInImageDemo extends StatelessWidget {
   }
   ```
 
+* 🔒锁版本文件
+
+  ![image-20250724151315734](./assets/README/image-20250724151315734.png)
+
+  | 文件/路径                                                    | 位置               | 是否建议提交   | 作用                                                         | 备注说明                                                     |
+  | ------------------------------------------------------------ | ------------------ | -------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+  | `.fvmrc`                                                     | 项目根目录         | ✅ **建议提交** | 显式标记希望使用的 Flutter 版本（如 `3.32.6` 或 `stable`）方便团队协作、CI 自动读取 | 仅一行纯文本，不支持注释，适用于版本声明                     |
+  | `.fvm/fvm_config.json`                                       | 项目目录内 `.fvm/` | ❌ **建议忽略** | 实际执行时 FVM 内部记录的配置信息：包含 `flutterSdkVersion`、`channel`、`cachePath` 等 | [**FVM**](https://fvm.app/) 自动生成，用于代理和定位 SDK，不可手动编辑 |
+  | `.fvm/flutter_sdk`                                           | `.fvm/` 中软链接   | ❌ 忽略         | 指向你电脑上的实际 SDK 位置（`~/.fvm/versions/3.32.6`）      | 用于让 `fvm flutter` 命令生效，指向实际安装版本              |
+  | `~/.fvm/versions/<version>`                                  | 全局路径           | ✅ 本地缓存     | 实际安装的 SDK，供多个项目共用                               | 每个版本只安装一次，多项目共享此目录，无需提交               |
+  | `release` 文件<br>`.fvm/versions/<version>/version` 或 `release` | SDK 内部           | ❌ 不关心       | Flutter 官方 SDK 自带的版本描述文件，标识当前版本及 channel  | 可用于诊断或展示 SDK 内部信息，一般无需关心或操作            |
+  
 * 🧰[**FVM**](https://fvm.app/)命令行使用方式：
 
   * **查看当前 FVM 的全局默认版本**
@@ -3865,7 +3877,7 @@ class FadeInImageDemo extends StatelessWidget {
     | `main`   | **主开发分支，功能最前沿**<br>从 **Flutter 3.22 开始**，Flutter 团队对 channel 进行了重构，**废弃了 `dev` channel 的独立维护**，其功能完全被 `main` 取代。 | 需体验最新特性 |
     | `master` | **Flutter 引擎贡献者使用**                                   | 深度参与者     |
 
-  * 升级（切换）由[**FVM**](https://fvm.app/)管理的Flutter.SDK
+  * 升级（切换）由[**FVM**](https://fvm.app/)管理的**Flutter.SDK**
 
     ```shell
     # 如果有必要，需要先切换channel，再upgrade
@@ -4772,53 +4784,183 @@ Comparable.compare(a, b)
 > | 🛠 **构建命令**             | `flutter build apk --debug`                   | `flutter build apk --profile`   | `flutter build apk --release`      |
 > | 📁 **输出路径**             | `build/app/outputs/flutter-apk/app-debug.apk` | `.../app-profile.apk`           | `.../app-release.apk`              |
 
-#### 18.1、Flutter.Android
+#### 18.1、Flutter.Android <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-* **Flutter**打包**Android**包的流程图
+##### 18.1.1、 [**Gradle**](https://gradle.org/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-  ```mermaid
-  graph TD
-      A[Flutter Build] --> B[Dart Snapshot AOT Compile]
-      B --> C[assembleRelease.gradle compile native .so]
-      C --> D[Gradle compile Java/Kotlin]
-      D --> E[Merge Manifest / Resources / Assets]
-      E --> F[zipalign + apksigner]
-      F --> G[Generate final APK]
+> 一个高度可配置、插件化、现代化的自动化构建工具（平台无关）
+
+* 从 **Flutter 3.16 起**，[**Flutter**](https://flutter.dev/) 官方默认使用 [**Kotlin DSL**](https://docs.gradle.org/current/userguide/kotlin_dsl.html)作为 **Android** 构建脚本（为了更好支持类型提示和现代化 [**Gradle**](https://gradle.org/) 构建）
+
+* [**Gradle**](https://gradle.org/) 官方并<font color=red>**不支持**</font> iOS 构建
+
+  | 原因               | 说明                                                         |
+  | ------------------ | ------------------------------------------------------------ |
+  | 🍎 Apple 官方不支持 | Apple 的工具链是 **Xcode** / **xcodebuild** / [**fastlane**](https://fastlane.tools/)，[**Gradle**](https://gradle.org/) 无法完全替代 |
+  | 🔐 签名复杂         | iOS 构建涉及 :`代码签名`、`Provisioning Profile`、`Entitlements` 等，使用 [**Gradle**](https://gradle.org/)  不如 **Xcode** 原生工具顺畅 |
+  | 🔌 插件较少         | [**Gradle**](https://gradle.org/) 生态偏向 Java/Android，iOS 支持插件极少 |
+  | 👥 团队协作难       | 大部分 iOS 团队成员更熟悉  **Xcode** 原生工具顺畅，不习惯使用 [**Gradle**](https://gradle.org/) |
+
+  💡 例外情况：**Kotlin Multiplatform (KMM)**
+
+  如果使用 **Kotlin Multiplatform Mobile (KMM)** 开发 **iOS** + **Android** 双端代码：
+
+  - **Android**用 [**Gradle**](https://gradle.org/)  构建
+  - **iOS** 使用 [**Gradle**](https://gradle.org/)  生成共享模块（`.framework`），再由 **Xcode** 集成
+
+  📌 所以 **Gradle 可以参与构建 iOS 的一部分（共享逻辑），但最终生成和打包 IPA 仍然交给 Xcode 完成**。
+
+* [**Gradle**](https://gradle.org/)的优势
+
+  | 特性         | 优势说明                             |
+  | ------------ | ------------------------------------ |
+  | ⛓️ 依赖缓存   | 缓存依赖，避免重复下载，提高构建速度 |
+  | 🔁 增量构建   | 只编译修改的部分，加快构建时间       |
+  | 📜 自定义任务 | 你可以写任意脚本处理复杂构建流程     |
+  | 🧩 插件支持   | 社区插件和官方插件支持强大扩展性     |
+
+* 🧱  [**Gradle**](https://gradle.org/) 的基本组成
+
+  * **`build.gradle` 文件**：构建脚本，定义构建逻辑（Groovy 或 Kotlin 语法）
+  * **Project / Module 结构**：
+    - 每个项目有一个根目录的 `build.gradle`
+    - 每个模块（如 app）也有自己的 `build.gradle`
+
+* ```groovy
+  plugins {
+      id 'com.android.application'
+      id 'kotlin-android'
+  }
+  
+  android {
+      compileSdk 34
+  
+      defaultConfig {
+          applicationId "com.example.myapp"
+          minSdk 24
+          targetSdk 34
+          versionCode 1
+          versionName "1.0"
+      }
+  
+      buildTypes {
+          release {
+              minifyEnabled false
+          }
+      }
+  }
+  
+  dependencies {
+      implementation "androidx.core:core-ktx:1.12.0"
+      implementation "androidx.appcompat:appcompat:1.6.1"
+  }
   ```
 
-* 如何加快**Flutter**的打包速度？
+##### 18.1.2、**Android** 打包的产物 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-  | 优化方式                      | 操作说明                                                     |
-  | ----------------------------- | ------------------------------------------------------------ |
-  | ✅ **启用 Gradle 缓存**        | 使用 `--build-cache`，避免重复编译                           |
-  | ✅ **使用增量编译（debug）**   | 日常开发尽量用 `flutter run` 或 `--debug`                    |
-  | ✅ **开启 Gradle daemon**      | `~/.gradle/gradle.properties` 中加：`org.gradle.daemon=true` |
-  | ✅ **本地依赖缓存**            | 配置 Gradle 离线模式、镜像源（例如阿里云）                   |
-  | ✅ **避免清除 build/ 太频繁**  | 不要经常执行 `flutter clean`，除非必须                       |
-  | ✅ **使用 SSD 或清理磁盘空间** | 避免因 I/O 性能影响构建速度                                  |
-  | ✅ **设置构建线程数**          | Gradle 中设置：`org.gradle.parallel=true`                    |
-  | ✅ **Flutter 版本更新**        | 新版本通常对构建性能有优化                                   |
+| 项目                 | <font color=red>**A**</font>ndroid <font color=red>**p**</font>ac<font color=red>**k**</font>age | <font color=red>**A**</font>ndroid <font color=red>**a**</font>pp <font color=red>**b**</font>undle |
+| -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| **后缀名**           | `.apk`                                                       | `.aab`                                                       |
+| **构建命令**         | `flutter build apk --release`                                | `flutter build appbundle --release`                          |
+| **是否可安装**       | ✅ 直接安装到设备                                             | ❌ 不能直接安装（需使用 `bundletool` 生成 `.apk`）            |
+| **是否可发布**       | ✅ 可用于第三方渠道、内部测试                                 | ✅ 推荐用于 [**Google Play**](https://play.google.com/) 商店  |
+| **是否包含全部资源** | ✅ 是一个完整应用包，包含所有架构和资源                       | ❌ 不包含最终 `.apk`，需根据设备动态生成                      |
+| **大小**             | 一般比对应 `.aab` 更大（**包含所有资源**）                   | 更小（上传到  [**Play**](https://play.google.com/)  后分发**按需生成`.apk`**） |
+| **调试支持**         | ✅ 支持调试（**Debug**/**Release** 都可）                     | 🚫 不支持调试                                                 |
+| **生成后位置**       | `build/app/outputs/flutter-apk/app-release.apk`              | `build/app/outputs/bundle/release/app-release.aab`           |
+| **常见用途**         | 内部测试、第三方分发、安装包备份                             | 上传 [**Google Play**](https://play.google.com/) 商店        |
+| **是否推荐**         | ✅ 第三方或私有渠道使用                                       | ✅ [**Google**](https://www.google.com/) 官方推荐上传 [**Play**](https://play.google.com/) 商店使用 |
 
-* 构建指令
+##### 18.1.3、**Flutter**打包 **Android** 包的流程图 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-  | 模式      | 命令                                         | 简称说明             |
-  | --------- | -------------------------------------------- | -------------------- |
-  | `debug`   | `flutter build apk --debug` 或 `flutter run` | 开发调试用，功能全   |
-  | `release` | `flutter build apk --release`                | 发布用，高性能最小包 |
+```mermaid
+graph TD
+    A[Flutter Build] --> B[Dart Snapshot AOT Compile]
+    B --> C[assembleRelease.gradle compile native .so]
+    C --> D[Gradle compile Java/Kotlin]
+    D --> E[Merge Manifest / Resources / Assets]
+    E --> F[zipalign + apksigner]
+    F --> G[Generate final APK]
+```
+
+##### 18.1.5、如何加快**Flutter.Android**的打包速度？ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+| 优化方式                                            | 操作说明                                                     |
+| --------------------------------------------------- | ------------------------------------------------------------ |
+| ✅ **启用 Gradle 缓存**                              | 使用 `--build-cache`，避免重复编译                           |
+| ✅ **使用增量编译（debug）**                         | 日常开发尽量用 `flutter run` 或 `--debug`                    |
+| ✅ 开启 [**Gradle**](https://gradle.org/) **daemon** | `~/.gradle/gradle.properties` 中加：`org.gradle.daemon=true` |
+| ✅ **本地依赖缓存**                                  | 配置 [**Gradle**](https://gradle.org/) 离线模式、镜像源（例如阿里云） |
+| ✅ **避免清除 build/ 太频繁**                        | 不要经常执行 `flutter clean`，除非必须                       |
+| ✅ **使用 SSD 或清理磁盘空间**                       | 避免因 I/O 性能影响构建速度                                  |
+| ✅ **设置构建线程数**                                | [**Gradle**](https://gradle.org/) 中设置：`org.gradle.parallel=true` |
+| ✅ **Flutter 版本更新**                              | 新版本通常对构建性能有优化                                   |
+
+##### 18.1.6、构建指令 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+| 模式      | 命令                                         | 简称说明             |
+| --------- | -------------------------------------------- | -------------------- |
+| `debug`   | `flutter build apk --debug` 或 `flutter run` | 开发调试用，功能全   |
+| `release` | `flutter build apk --release`                | 发布用，高性能最小包 |
+
+##### 18.1.7
+
+**Flutter.Android** 项目在首次构建或执行 `flutter clean` 后会重新下载：
+
+| 资源                                                         | 说明                                                         |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [**Gradle Wrapper**](https://docs.gradle.org/current/userguide/gradle_wrapper.html) 和插件 | 如 `gradle-7.5-all.zip`、`com.android.tools.build:gradle`    |
+| [**Kotlin**](https://kotlinlang.org/)插件                    | 如 `org.jetbrains.kotlin:kotlin-gradle-plugin`               |
+| 支持库                                                       | 各种 `androidx.*`、`support.*` 等库                          |
+| 第三方依赖                                                   | 来自 [**pub.dev**](https://pub.dev/) 的插件中声明的 AAR/JAR，如 [`image_gallery_saver`](https://pub.dev/packages/image_gallery_saver)、[`engagelab`](https://pub.dev/packages?q=engagelab) |
+| [**Google Maven**](https://maven.google.com/web/index.html) / [**JCenter**](https://mvnrepository.com/repos/jcenter) / [**MavenCentral**](https://central.sonatype.com/) | 默认构建源，国内访问会慢                                     |
+
+##### 18.1.8、打包成品
+
+> [**Flutter**](https://flutter.dev/) 和 [**Gradle**](https://gradle.org/)  的构建系统默认会将最新产物**覆盖上一次的构建产物**
+
+![image-20250724174253656](./assets/README/image-20250724174253656.png)
+
+```
+📁 build
+└── 📁 app
+    └── 📁 outputs
+        ├── 📁 flutter-apk
+        │   ├── 📄 app-debug.apk         👈 Flutter 层生成的 APK，适用于 flutter install、调试部署
+        │   └── 📄 app-debug.apk.sha1    👈 SHA1 校验文件，用于验证 APK 完整性（Flutter 层产物）🔐
+        │
+        ├── 📁 apk
+        │   └── 📁 debug
+        │       ├── 📄 app-debug.apk      👈 Gradle 层标准构建产物，CI 系统读取、签名校验等使用
+        │       └── 📄 output-metadata.json 👈 包含构建产物的元信息（版本号、构建类型等）🧾
+        │
+        └── 📁 bundle
+            └── 📁 debug
+                ├── 📄 app.aab           👈 Android App Bundle 格式（适用于 Google Play 上架）📦
+                └── 📄 output-metadata.json 👈 构建元信息，记录构建时间、flavor 等信息
+```
+
+| 场景                                                | 应该使用                                                 |
+| --------------------------------------------------- | -------------------------------------------------------- |
+| 🔧 本地测试                                          | `flutter-apk/app-debug.apk` 或 `apk/debug/app-debug.apk` |
+| 🚀 提测/发包                                         | `apk/release/app-release.apk`（需签名）                  |
+| 🌐 上架  [**Google Play**](https://play.google.com/) | `bundle/release/app-release.aab`                         |
 
 #### 18.2、Flutter.iOS
 
+* iOS 项目主流是使用 **Xcode** + **Xcode build system** 来进行构建
+
 * 生成的包目录：`build/ios/iphoneos/Runner.app`
 
-  > 并非iOS工程文件下的Products/xxx.app ❓
+  > 并非iOS工程文件下的Products/xxx.app （未验证❓）
 
 * 必须要有苹果的开发者账号（普通账户充值）
 
 * 必须真机运行
 
-* 无法通过xcode直接编译**Flutter**项目。是因为其中的`Podfile`是通过**Flutter**进行唤起的，并非标准的iOS`Podfile`文件格式
+* 无法通过**xcode**直接编译**Flutter**项目。是因为其中的`Podfile`是通过**Flutter**进行唤起的，并非标准的iOS`Podfile`文件格式
 
-  > Flutter 会控制 Pod 的安装和版本，并写入：
+  > **Flutter 会控制 Pod 的安装和版本**，并写入：
   >
   > - `ios/Podfile`
   > - `ios/Podfile.lock`
@@ -4873,7 +5015,6 @@ Comparable.compare(a, b)
   end
   ```
 
-  
 
 ## 四、FAQ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 

@@ -10,6 +10,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    /// J0bs
     final localeNotifier = context.read<LocaleNotifier>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -24,6 +25,7 @@ class HomePage extends StatelessWidget {
                   ? const Locale('en')
                   : const Locale('zh');
               localeNotifier.updateLocale(newLocale);
+              /// J0bs
               Get.updateLocale(newLocale);
             },
           ),
