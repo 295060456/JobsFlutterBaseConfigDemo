@@ -4151,28 +4151,28 @@ class Person {
 
 #### 9.2、`~/.pub-cache/`
 
-| 路径                           | 说明                                                  | 是否可删                           |
-| ------------------------------ | ----------------------------------------------------- | ---------------------------------- |
-| `~/.pub-cache/hosted/pub.dev/` | 来自 pub.dev 的所有 Dart 包缓存                       | ✅ 可删，`pub get` 会自动恢复       |
-| `~/.pub-cache/git/`            | 通过 Git 安装的包                                     | ✅ 可删，自动恢复                   |
-| `~/.pub-cache/bin/`            | 全局安装的 Dart 命令行工具（如 `webdev`, `melos` 等） | ⚠️ 慎删，删了要重新 global activate |
-| `~/.pub-cache/_temp/`          | 临时下载缓存                                          | ✅ 安全清理                         |
+| 路径                           | 说明                                                  | 是否可删                             |
+| ------------------------------ | ----------------------------------------------------- | ------------------------------------ |
+| `~/.pub-cache/hosted/pub.dev/` | 来自 pub.dev 的所有 Dart 包缓存                       | ✅ 可删，`pub get` 会自动恢复         |
+| `~/.pub-cache/git/`            | 通过 Git 安装的包                                     | ✅ 可删，自动恢复                     |
+| `~/.pub-cache/bin/`            | 全局安装的 Dart 命令行工具（如 `webdev`, `melos` 等） | ⚠️ 慎删，删了要重新` global activate` |
+| `~/.pub-cache/_temp/`          | 临时下载缓存                                          | ✅ 安全清理                           |
 
 #### 9.3、`~/.flutter/`
 
-| 路径          | 说明                                            | 是否可删                            |
-| ------------- | ----------------------------------------------- | ----------------------------------- |
-| `~/.flutter/` | Flutter 工具缓存（例如 Flutter Web 的调试资源） | ✅ 可删，运行任何 flutter 命令会重建 |
+| 路径          | 说明                                                | 是否可删                              |
+| ------------- | --------------------------------------------------- | ------------------------------------- |
+| `~/.flutter/` | **Flutter** 工具缓存（例如 Flutter Web 的调试资源） | ✅ 可删，运行任何 `flutter` 命令会重建 |
 
 #### 9.4、`~/Library/Flutter/` （按需出现，非必备）
 
 > 这个目录只有在你满足以下条件时才会出现：
 >
-> | 条件                                       | 描述                                                |
-> | ------------------------------------------ | --------------------------------------------------- |
-> | 使用 macOS 且执行过 `flutter precache`     | 会拉取一些 Flutter tools 缓存到 `~/Library/Flutter` |
-> | 使用过 Flutter Web / Desktop               | 某些构建产物可能会缓存到这里                        |
-> | 安装了某些 Flutter 插件（如 Firebase CLI） | 可能写入配置文件                                    |
+> | 条件                                                         | 描述                                                |
+> | ------------------------------------------------------------ | --------------------------------------------------- |
+> | 使用 macOS 且执行过 `flutter precache`                       | 会拉取一些 Flutter tools 缓存到 `~/Library/Flutter` |
+> | 使用过 **Flutter** Web / Desktop                             | 某些构建产物可能会缓存到这里                        |
+> | 安装了某些 **Flutter** 插件（如 [**Firebase CLI**](https://firebase.google.com/docs/cli?hl=zh-cn)） | 可能写入配置文件                                    |
 >
 > 👉 **没使用或未触发以上行为，该路径就不会创建。**
 
@@ -4182,13 +4182,13 @@ class Person {
 
 #### 9.5、`~/.dart/`
 
-> Dart CLI 的缓存目录，只有在以下情况出现时才会生成：
+> **Dart** CLI 的缓存目录，只有在以下情况出现时才会生成：
 >
-> | 条件                                         | 描述                                |
-> | -------------------------------------------- | ----------------------------------- |
-> | 独立安装过 Dart SDK（非 Flutter 自带）       | 例如通过 `brew install dart`        |
-> | 使用 Dart CLI 创建项目或执行过 `dart pub`    | 如 `dart create`、`dart run` 等命令 |
-> | 使用 `dart pub global activate` 安装过全局包 | 如 `melos`、`webdev` 等工具         |
+> | 条件                                          | 描述                                |
+> | --------------------------------------------- | ----------------------------------- |
+> | 独立安装过 **Dart.SDK**（非 Flutter 自带）    | 例如通过 `brew install dart`        |
+> | 使用 **Dart** CLI 创建项目或执行过 `dart pub` | 如 `dart create`、`dart run` 等命令 |
+> | 使用 `dart pub global activate` 安装过全局包  | 如 `melos`、`webdev` 等工具         |
 >
 > 👉 **如果你是通过 Flutter 安装的 Dart，并且一直是用 `flutter pub`，那这个目录压根不会创建。**
 
@@ -4304,22 +4304,53 @@ class Person {
 
     * 一些实用命令
 
-      * ```shell
+      * 用于检查项目依赖中是否存在可更新的版本，但**排除掉开发依赖（`dev_dependencies`）**
+
+        ```shell
         pub outdated --no-dev-dependencies
         ```
 
-      * ```shell
-        /// 扫出 pubspec.yaml 里面暂时没有用到的包
-        dart pub global activate flutter_unused_packages
-        ```
+        > | 语法                    | 含义说明                                                     |
+        > | ----------------------- | ------------------------------------------------------------ |
+        > | `pub outdated`          | 显示所有依赖项（包括正常依赖、开发依赖、可选依赖）是否有更新版本。 |
+        > | `--no-dev-dependencies` | **不检查 `dev_dependencies` 中的包**。只检查 `dependencies`。 |
+
+      * 全局安装工具（不需要手动设置 PATH 等）
 
         ```shell
+        dart pub global activate <工具名>
+        ```
+        
+      * <font color=red>**安装和使用`flutter_unused_packages`**</font>
+        
+        > 当你的 `pubspec.yaml` 中依赖越来越多，想找出并清理不再使用的包时非常有用。
+        >
+        > 有助于减少编译体积、降低依赖复杂度，也有利于提升维护效率。
+        
+        ```shell
+        # 安装 flutter_unused_packages
+        dart pub global activate flutter_unused_packages
+        ```
+        
+        ```shell
+        # 在项目根目录下初始化配置（可选）📃analize_unused_packages.json 
+        flutter_unused_packages --init
+        ```
+        
+        ```shell
+        # 专门设计来分析 **Flutter** 项目，检测 `pubspec.yaml` 中未被使用的依赖包。
+        # 可交互地删除这些未使用的依赖，或自动清理它们。
         flutter_unused_packages --analyze
+        ```
+        
+        ```shell
+        # 自动清理被判定为未使用的依赖
+        flutter_unused_packages --fix
         ```
 
   * `pubspec.lock` 
 
-    >  是 Dart 项目中的自动生成文件，用于锁定项目依赖的版本信息。
+    >  是 **Dart** 项目中的自动生成文件，用于锁定项目依赖的版本信息。
     >
     > 1️⃣ 是 Dart 项目中的重要文件之一，通常由 Dart 包管理器 pub 自动生成，并且会随着你运行 `pub get` 或 `pub upgrade` 命令而更新。
     >
@@ -4374,7 +4405,6 @@ class Person {
     camera=plugins/camera/
     location=plugins/location/
     ```
-
 
   * `.flutter-plugins-dependencies` 
 
@@ -4778,8 +4808,72 @@ Comparable.compare(a, b)
 
 #### 18.2、Flutter.iOS
 
+* 生成的包目录：`build/ios/iphoneos/Runner.app`
+
+  > 并非iOS工程文件下的Products/xxx.app ❓
+
 * 必须要有苹果的开发者账号（普通账户充值）
+
 * 必须真机运行
+
+* 无法通过xcode直接编译**Flutter**项目。是因为其中的`Podfile`是通过**Flutter**进行唤起的，并非标准的iOS`Podfile`文件格式
+
+  > Flutter 会控制 Pod 的安装和版本，并写入：
+  >
+  > - `ios/Podfile`
+  > - `ios/Podfile.lock`
+  > - `.flutter-plugins`
+  > - `.flutter-plugins-dependencies`
+  >
+  > 任何试图手动运行 `pod install` 而未执行 `flutter build ios`，都会缺少 `Flutter.framework` 和 Pod 配置，导致如下报错：`Could not find Flutter.framework or Flutter.podspec`
+
+  ```ruby
+  # Uncomment this line to define a global platform for your project
+  # platform :ios, '12.0'
+  
+  # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+  ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+  
+  project 'Runner', {
+    'Debug' => :debug,
+    'Profile' => :release,
+    'Release' => :release,
+  }
+  
+  def flutter_root
+    generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+    unless File.exist?(generated_xcode_build_settings_path)
+      raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+    end
+  
+    File.foreach(generated_xcode_build_settings_path) do |line|
+      matches = line.match(/FLUTTER_ROOT\=(.*)/)
+      return matches[1].strip if matches
+    end
+    raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
+  end
+  
+  require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+  
+  flutter_ios_podfile_setup
+  
+  target 'Runner' do
+    use_frameworks!
+  
+    flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+    target 'RunnerTests' do
+      inherit! :search_paths
+    end
+  end
+  
+  post_install do |installer|
+    installer.pods_project.targets.each do |target|
+      flutter_additional_ios_build_settings(target)
+    end
+  end
+  ```
+
+  
 
 ## 四、FAQ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 

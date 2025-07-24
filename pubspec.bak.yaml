@@ -3,6 +3,11 @@
 # flutter pub outdated
 # open pub.dev
 
+# flutter pub get
+# flutter pub upgrade -major-versions # 更新Flutter项目的依赖包到major版本
+# flutter pub outdated
+# open pub.dev
+
 # dart pub global activate flutter_unused_packages # 安装 flutter_unused_packages
 # flutter_unused_packages --init # 在项目根目录下初始化配置（可选）📃analize_unused_packages.json
 # flutter_unused_packages --analyze # 分析项目中未使用的依赖
@@ -26,29 +31,66 @@ dependencies:
   flutter_phoenix: any # 热重启容器（外部包裹）
   screenshot: any # 截屏操作
   vibration: any # 震动
+  fluttertoast: any # 弹出提示框
+  shimmer: any # 用于显示占位符
   carousel_slider: any # 用于轮播图
   card_swiper: any # 用于轮播图
+  pin_code_fields: any # 用于输入验证码
+  fl_chart: any # 用于绘制图表
+  flutter_slidable: any # 可滑动的列表项
+  flutter_datetime_picker: any # 用于日期时间选择器
   easy_refresh: any # 用于下拉刷新
+  extended_text: any # 用于显示富文本
   camera: any # 用于拍照
+  image_cropper: any # 用于裁剪图片
+  image_editor: any # 用于编辑图片
+  photo_view: any # 用于查看图片
+  flutter_image_compress: any # 用于压缩图片
+  flutter_image_compress_platform_interface: any # 用于压缩图片 (platform interface)
+  flutter_image_compress_web: any # 用于压缩图片 (web)
+  font_awesome_flutter: any # 用于显示字体图标
   image_picker: any # image_picker 插件只能分别调用拍照或录像功能，但不能直接调用系统相机应用的完整界面
+  flutter_html: any # 用于显示HTML内容
+  flutter_native_splash: any # 用于生成启动页
+  flutter_native_view: any # 用于显示原生视图 (iOS)
+  webview_flutter: any # 用于显示网页
+  webview_flutter_wkwebview: any # 用于显示网页
   flutter_inappwebview: any # 用于显示网页 (iOS)
+  flutter_webview_plugin: any # 用于显示网页 (Android)
   flutter_fortune_wheel: any # 用于显示抽奖转盘
   flutter_easyloading: any #
   # google_mobile_ads: any # 用于显示广告。初始化的时候必须要带 Key 否则程序崩溃
   cached_network_image: any # 用于显示网络图片
+  flutter_inappwebview_platform_interface: any # 用于显示网页 (platform interface)
+  flutter_inappwebview_web: any # 用于显示网页 (web)
   # 图片处理
+  wechat_assets_picker: any # 用于选择微信相册中的图片(微信UI)
+  wechat_camera_picker: any # 用于拍照(微信UI)
+  image: any # 用于处理图片
+  transparent_image: any # 用于网络图片的透明占位符
+  flutter_svg: any # 用于显示SVG图片
   # flutter_native_image: any # 用于处理原生图片 🚨 打包失败
   image_gallery_saver: any # 用于保存图片到相册中
   flutter_advanced_networkimage_2: any # 用于处理网络图片(图片缓存 + 控制flutter_cache_manager)
   flutter_cache_manager: any # 用于处理网络图片(独立缓存控制)
+  octo_image: any # 用于处理网络图片(多状态展示封装)
+  blurhash: any # 用于处理图片的缩略图
   # 数据处理
   equatable: any # 用于定义值对象的相等性
   built_value: any # 用于序列化/反序列化数据
+  built_value_generator: any # 用于生成序列化/反序列化代码
   built_collection: any # 用于序列化/反序列化数据
+  freezed: any # 用于序列化/反序列化数据
+  freezed_annotation: any # 用于序列化/反序列化数据
+  msgpack_dart: any # 用于序列化/反序列化MessagePack数据
+  json_annotation: any # 用于序列化/反序列化JSON数据
+  messagepack: any # 用于序列化/反序列化MessagePack数据
   shared_preferences: any # 用于存储键值对数据
+  date_format: any # 用于格式化日期
   encrypt: any # 用于加密数据
   pointycastle: any # 用于加密数据
   video_compress: any # 用于处理视频
+  flutter_widget_from_html_core: any # 用于解析HTML内容
   # 状态管理
   get: any # 用于管理应用状态
   provider: any # 用于管理应用状态
@@ -56,11 +98,19 @@ dependencies:
   bloc: any # 用于管理应用状态
   flutter_bloc: any # 用于管理应用状态
   # 用户权限处理
+  permission_handler: any # 用于处理权限
   # 网络请求
+  dart_ping: any
+  dart_ping_ios: any
   http: any # 用于网络请求
   # Chopper: any # 用于网络请求
   # FlutterHttpClient: any # 用于网络请求
   dio: any # 用于网络请求
+  dio_cache_interceptor: any # 用于缓存网络请求
+  dio_cookie_manager: any # 用于管理Cookie
+  telnet: any # 用于Telnet客户端
+  web_socket_channel: any # 用于WebSocket客户端
+  pretty_dio_logger: any # 用于打印网络请求日志
   mqtt_client: any # 用于连接MQTT服务器
   # flutter_cache_manager_firebase: any # 用于缓存网络请求 (Firebase)
   # 本地存储
@@ -69,40 +119,73 @@ dependencies:
   # shared_preferences_platform_interface: any # 用于存储键值对数据 (platform interface)
   # flutter_secure_storage: any # 用于存储敏感数据
   # flutter_secure_storage_macos: any # 用于存储敏感数据 (macOS)
+  firebase_core: any # 用于使用Firebase
+  firebase_messaging: any
   sqflite: any # 用于本地数据库
   # 播放器
   video_player: any # 用于播放视频
+  chewie: any # 用于播放视频
+  lottie: any # 用于播放动画
   audioplayers: any # 用于播放音频
   # 国际化
   intl: any # 提供国际化和本地化设施，包括消息翻译、复数和性别、日期/数字格式和解析以及双向文本
   # 设备/应用相关
+  device_info_plus: any # 用于获取设备信息
   timezone: any # 用于获取设备时区
+  flutter_native_timezone: any # 用于获取设备时区 (iOS)
+  location: any # 用于获取设备位置
+  package_info_plus: any # 用于获取应用信息
+  uuid: any # 用于生成唯一标识符
   # platform_device_id: any # 用于获取设备唯一标识符 🚨用了device_info打包失败
   # 分享功能
+  share_plus: any # 用于分享内容
   # 账号登陆
+  google_sign_in: any # 用于登录Google账号
   # 键盘相关
+  keyboard_actions: any # 用于处理键盘事件
+  flutter_keyboard_visibility: any # 用于监听键盘是否显示
   # 地图相关
   flutter_localizations: # 一个使用地图数据进行应用内定位的软件包
     sdk: flutter
+  geolocator: any # 一个使用地图数据进行应用内定位的软件包
+  google_maps_flutter: any # 一个使用地图数据进行应用内定位的软件包
+  google_maps_flutter_platform_interface: any # 用于使用Google Maps API (platform interface)
+  google_maps_flutter_web: any # 用于使用Google Maps API (web)
   # 工具库
+  wakelock_plus: any # 用于保持屏幕常亮
   flutter_plugin_engagelab: any # 极光推送
   file_picker: any # 实现文件选择器功能，允许用户从本地文件系统中选择任意文件（如图片、PDF、文档、视频等），并获取路径用于上传等操作。
   connectivity_plus: any # 用于检查设备网络连接状态
+  overlay_support: any # 用于显示遮罩层
+  clipboard: any # 用于复制内容到剪贴板
+  install_plugin: any # 用于安装插件
+  visibility_detector: any # 用于监听可见性(判断页面是否显示在最上层)
+  flutter_downloader: any # 用于下载文件
   url_launcher: any # 用于在移动应用中打开 URLs，包括网页、电子邮件、电话等
+  qr_flutter: any # 用于生成二维码
   path: any # 用于处理文件路径
   path_provider: any # 用于获取文件路径
   google_fonts: any # 用于使用Google Fonts字体
   flutter_local_notifications: any # 用于显示本地通知
+  auto_route_generator: any # 用于生成路由代码
   auto_route: any # 用于管理应用路由
   flutter_screenutil: any # 用于屏幕适配
+  fluro: any # 用于管理应用路由
+  murmur3: any #
+  murmurhash: any #
   # 应用程序
+  flutter_plugin_android_lifecycle: any # 用于管理生命周期 (Android)
   # 日志调试
+  flutter_ulog: any # 用于打印日志
   crypto: ^3.0.6
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0 # Flutter代码规范
+  json_serializable: any # 用于序列化/反序列化JSON数据
+  build_runner: any # 用于运行生成代码（any 表示 "用兼容的最新版"）
+  flutter_gen_runner: any # 根据你的 pubspec.yaml 中配置的资源文件，自动生成 assets.gen.dart 文件，让你用代码方式访问资源，更安全、方便。
 
 flutter_gen:
   output: lib/gen/ # 生成文件的目录
