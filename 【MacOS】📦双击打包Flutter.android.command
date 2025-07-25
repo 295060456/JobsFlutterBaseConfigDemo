@@ -282,6 +282,21 @@ cd "$(cd "$(dirname "$0")" && pwd -P)"
 _check_homebrew_and_fzf
 _resolve_flutter_project_path
 _select_build_target
+
+# 设置构建产物目录打开条件
+case "$build_target" in
+  apk)
+    BUILD_APK=true
+    ;;
+  appbundle)
+    BUILD_AAB=true
+    ;;
+  all)
+    BUILD_APK=true
+    BUILD_AAB=true
+    ;;
+esac
+
 _prompt_flavor_and_mode
 _detect_flutter_cmd
 _configure_java_env
