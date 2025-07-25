@@ -1,5 +1,14 @@
 #!/bin/zsh
 
+# ✅ 临时添加 Android command line tools 到 PATH（仅当前脚本会话）
+export PATH="/opt/homebrew/share/android-commandlinetools/cmdline-tools/latest/bin:$PATH"
+
+# ✅ 手动初始化 jenv，保证脚本中也能用
+if [[ -d "$HOME/.jenv" ]]; then
+  export PATH="$HOME/.jenv/bin:$PATH"
+  eval "$(jenv init -)"
+fi
+
 # ------------------------ 彩色输出工具函数 ------------------------
 _color_echo() {
   local color="$1"; shift
@@ -14,28 +23,19 @@ _color_echo() {
   esac
 }
 
-# ------------------------ 路径判断函数 ------------------------
-_abs_path() {
-  local p="$1"
-  [[ -z "$p" ]] && return 1
-  p="${p//\"/}"
-  [[ "$p" != "/" ]] && p="${p%/}"
-  if [[ -d "$p" ]]; then
-    (cd "$p" 2>/dev/null && pwd -P)
-  elif [[ -f "$p" ]]; then
-    (cd "${p:h}" 2>/dev/null && printf "%s/%s\n" "$(pwd -P)" "${p:t}")
-  else
-    return 1
+# ------------------------ 修复 jenv 未注册的 JDK ------------------------
+_fix_jenv_java_version() {
+  local jdk_path="/opt/homebrew/opt/openjdk@17"
+  if command -v jenv >/dev/null 2>&1 && [[ -d "$jdk_path" ]]; then
+    jenv_versions=$(jenv versions --bare | grep "^17")
+    if [[ -z "$jenv_versions" ]]; then
+      _color_echo yellow "📦 openjdk@17 未注册到 jenv，尝试添加..."
+      jenv add "$jdk_path"
+    fi
   fi
 }
 
-_is_flutter_project_root() {
-  local p="$1"
-  local abs=$(_abs_path "$p") || return 1
-  [[ -f "$abs/pubspec.yaml" && -d "$abs/lib" ]]
-}
-
-# ------------------------ FVM / brew / fzf 检查 ------------------------
+# ------------------------ 检查 Homebrew 和 fzf ------------------------
 _check_homebrew_and_fzf() {
   if ! command -v brew >/dev/null 2>&1; then
     _color_echo red "❌ 未安装 Homebrew，正在安装..."
@@ -49,85 +49,134 @@ _check_homebrew_and_fzf() {
   fi
 }
 
-# ------------------------ Flutter 项目路径识别 ------------------------
+# ------------------------ 获取绝对路径 ------------------------
+_abs_path() {
+  local input="$1"
+  [[ -z "$input" ]] && return
+  if [[ -d "$input" ]]; then
+    cd "$input" && pwd -P
+  else
+    cd "$(dirname "$input")" && echo "$(pwd -P)/$(basename "$input")"
+  fi
+}
+
+# ------------------------ 判断是否为 Flutter 项目根目录 ------------------------
+_is_flutter_project_root() {
+  [[ -f "$1/pubspec.yaml" && -d "$1/lib" ]]
+}
+
+# ------------------------ 查找 Flutter 项目根路径 ------------------------
 _resolve_flutter_project_path() {
   local script_path=$(_abs_path "$0")
   local script_dir="${script_path:h}"
   local current_pwd="$(pwd -P)"
+
+  # 1. 脚本所在目录判断
   if _is_flutter_project_root "$script_dir"; then
     cd "$script_dir"
     flutter_root="$script_dir"
+    _color_echo cyan "📌 当前使用脚本所在目录作为项目根目录：$flutter_root"
     return
   fi
+
+  # 2. 当前目录判断
   if _is_flutter_project_root "$current_pwd"; then
     cd "$current_pwd"
     flutter_root="$current_pwd"
+    _color_echo cyan "📌 当前工作目录作为项目根目录：$flutter_root"
     return
   fi
+
+  # 3. 用户交互：拖入路径
   while true; do
     _color_echo yellow "📂 请拖入 Flutter 项目根目录（包含 pubspec.yaml + lib/）："
     read -r input_path
     input_path="${input_path//\"/}"
-    abs=$(_abs_path "$input_path") || { _color_echo red "❌ 无效路径"; continue }
+    abs=$(_abs_path "$input_path")
     if _is_flutter_project_root "$abs"; then
-      cd "$abs" || exit 1
+      cd "$abs"
       flutter_root="$abs"
-      break
-    else
-      _color_echo red "❌ 不是合法 Flutter 项目"
+      _color_echo cyan "📌 成功识别 Flutter 项目路径：$flutter_root"
+      return
     fi
+    _color_echo red "❌ 无效路径，请重试"
   done
 }
 
-# ------------------------ 打包参数选择 ------------------------
-_select_build_target() {
-  local choice=$(echo -e "📦 只打 AAB\n📦 只打 APK\n📦 同时打 APK + AAB（默认）" \
-    | fzf --prompt="📦 请选择打包方式：" --height=40% --border)
-  if [[ -z "$choice" || "$choice" == *"同时"* ]]; then
-    BUILD_APK=true
-    BUILD_AAB=true
-  elif [[ "$choice" == *"APK"* ]]; then
-    BUILD_APK=true
-    BUILD_AAB=false
-  else
-    BUILD_APK=false
-    BUILD_AAB=true
-  fi
-}
-
-_prompt_flavor_and_mode() {
-  _color_echo blue "🌶️ 请输入 flavor 名称（可空）:"
-  read -r flavor
-  if [[ -n "$flavor" ]]; then
-    flavor_args=(--flavor "$flavor")
-  else
-    flavor_args=()
-  fi
-  build_mode=$(printf "release\ndebug\nprofile" | fzf --prompt="👉 选择构建模式 > " --height=40%)
-  build_mode="${build_mode:-release}"
-}
-
+# ------------------------ fvm 检测 ------------------------
 _detect_flutter_cmd() {
-  if [[ -f "$flutter_root/.fvm/fvm_config.json" ]]; then
-    flutter_cmd=(fvm flutter)
+  if command -v fvm >/dev/null && [[ -f ".fvm/fvm_config.json" ]]; then
+    flutter_cmd=("fvm" "flutter")
+    _color_echo cyan "✅ 检测到使用 FVM：fvm flutter"
   else
-    flutter_cmd=(flutter)
+    flutter_cmd=("flutter")
+    _color_echo cyan "✅ 使用系统 flutter：flutter"
   fi
 }
 
-# ------------------------ AGP 版本输出 ------------------------
+# ------------------------ 选择构建目标 ------------------------
+_select_build_target() {
+  _color_echo yellow "📦 请选择构建类型："
+  local options=("只构建 APK" "只构建 AAB" "同时构建 APK 和 AAB")
+  local selected=$(printf '%s\n' "${options[@]}" | fzf)
+  case "$selected" in
+    "只构建 APK") build_target="apk" ;;
+    "只构建 AAB") build_target="appbundle" ;;  # 改为 Flutter 实际用的关键词
+    "同时构建 APK 和 AAB") build_target="all" ;;
+    *) build_target="apk" ;;
+  esac
+
+  _color_echo green "✅ 已选择构建类型：$selected"
+}
+
+# ------------------------ 选择 flavor 和模式 ------------------------
+_prompt_flavor_and_mode() {
+  read "flavor_name?📎 请输入构建的 flavor（可留空）: "
+  _color_echo yellow "📦 请选择构建模式："
+  local modes=("release" "debug" "profile")
+  build_mode=$(printf '%s\n' "${modes[@]}" | fzf)
+
+  _color_echo green "✅ 已选择构建模式：$build_mode"
+  [[ -n "$flavor_name" ]] && _color_echo green "✅ 使用 flavor：$flavor_name" || _color_echo cyan "📎 未使用 flavor"
+}
+
+# ------------------------ compileSdk / targetSdk / minSdk 检测增强 ------------------------
+_print_sdk_versions() {
+  local compile_sdk=""
+  local target_sdk=""
+  local min_sdk=""
+
+  local build_files=("android/app/build.gradle" "android/app/build.gradle.kts")
+  for file in "${build_files[@]}"; do
+    [[ -f "$file" ]] || continue
+
+    compile_sdk=$(grep -E "^\s*compileSdk\s*=\s*([0-9]+|[a-zA-Z.]+)" "$file" | head -n1 | awk -F= '{print $2}' | xargs)
+    target_sdk=$(grep -E "^\s*targetSdk\s*=\s*([0-9]+|[a-zA-Z.]+)" "$file" | head -n1 | awk -F= '{print $2}' | xargs)
+    min_sdk=$(grep -E "^\s*minSdk\s*=\s*([0-9]+|[a-zA-Z.]+)" "$file" | head -n1 | awk -F= '{print $2}' | xargs)
+
+    [[ -n "$compile_sdk" ]] && break
+  done
+
+  [[ -n "$compile_sdk" ]] && _color_echo green "📦 当前使用 compileSdk 版本：$compile_sdk" || _color_echo red "📦 未检测到 compileSdk"
+  [[ -n "$target_sdk" ]]  && _color_echo green "📦 当前使用 targetSdk 版本：$target_sdk"  || _color_echo red "📦 未检测到 targetSdk"
+  [[ -n "$min_sdk" ]]     && _color_echo green "📦 当前使用 minSdk 版本：$min_sdk"       || _color_echo red "📦 未检测到 minSdk"
+}
+
+# ------------------------ AGP 版本检测 ------------------------
 _print_agp_version() {
-  local build_file="./android/build.gradle"
-  if [[ -f "$build_file" ]]; then
-    local agp_version=$(grep -oE "com.android.tools.build:gradle:[0-9.]+" "$build_file" | head -n1 | cut -d: -f3)
-    if [[ -n "$agp_version" ]]; then
-      echo "$agp_version"
-    else
-      echo "未检测到 AGP 版本"
-    fi
-  else
-    echo "未找到 build.gradle 文件"
+  local agp_version=""
+  if [[ -f android/settings.gradle ]]; then
+    agp_version=$(grep -oE "com\\.android\\.application['\"]?\\s+version\\s+['\"]?[0-9.]+" android/settings.gradle |
+      head -n1 |
+      grep -oE "[0-9]+\\.[0-9]+(\\.[0-9]+)?")
   fi
+  if [[ -z "$agp_version" && -f android/build.gradle ]]; then
+    agp_version=$(grep -oE "com\\.android\\.tools\\.build:gradle:[0-9.]+" android/build.gradle |
+      head -n1 |
+      cut -d: -f3)
+  fi
+  [[ -n "$agp_version" ]] && _color_echo green "📦 当前使用 AGP（Android Gradle Plugin）版本：$agp_version" || \
+    _color_echo red "📦 未检测到 AGP 版本"
 }
 
 # ------------------------ Java 环境配置 ------------------------
@@ -165,21 +214,30 @@ _run_flutter_build() {
   rm -f "$log_file"
   local java_env_cmd=(env JAVA_HOME="$JAVA_HOME" PATH="$JAVA_HOME/bin:$PATH")
 
-  _color_echo blue "📦 当前使用 JDK 版本："
-  "${java_env_cmd[@]}" java -version
-  _color_echo blue "📦 当前使用 Gradle 版本："
-  "${java_env_cmd[@]}" ./android/gradlew -v
-  _color_echo blue "📦 当前使用 AGP（Android Gradle Plugin）版本："
-  _print_agp_version
+  _fix_jenv_java_version
 
-  if [[ $BUILD_APK == true ]]; then
-    _color_echo cyan "🚀 flutter build apk --$build_mode"
-    "${java_env_cmd[@]}" "${flutter_cmd[@]}" build apk --$build_mode "${flavor_args[@]}" | tee -a "$log_file"
-  fi
-  if [[ $BUILD_AAB == true ]]; then
-    _color_echo cyan "🚀 flutter build appbundle --$build_mode"
-    "${java_env_cmd[@]}" "${flutter_cmd[@]}" build appbundle --$build_mode "${flavor_args[@]}" | tee -a "$log_file"
-  fi
+  _color_echo blue "🩺 运行 flutter doctor -v 检查环境..."
+  "${flutter_cmd[@]}" doctor -v | tee -a "$log_file"
+
+  _color_echo blue "📦 当前使用 JDK 版本："
+  java -version 2>&1 | tee -a "$log_file"
+
+  _color_echo blue "📦 当前使用 Gradle 版本："
+  ./android/gradlew -v | tee -a "$log_file"
+
+  _color_echo blue "📦 当前使用 AGP（Android Gradle Plugin）版本："
+  _print_agp_version | tee -a "$log_file"
+
+  _print_sdk_versions | tee -a "$log_file"
+
+  _color_echo blue "📦 当前使用 sdkmanager 版本："
+  sdkmanager --list > /dev/null 2>&1 && sdkmanager --version | tee -a "$log_file" || _color_echo red "❌ sdkmanager 执行失败"
+
+  _color_echo blue "📦 sdkmanager 来源路径："
+  which sdkmanager | tee -a "$log_file"
+
+  _color_echo green "🚀 构建命令：${flutter_cmd[*]} build $build_target ${flavor_name:+--flavor $flavor_name} --$build_mode"
+  "${flutter_cmd[@]}" build $build_target ${flavor_name:+--flavor $flavor_name} --$build_mode | tee -a "$log_file"
 }
 
 _confirm_step() {
@@ -218,8 +276,9 @@ _color_echo yellow "👉 回车 = 执行默认 / 任意键 + 回车 = 跳过（�
 echo ""
 read "?📎 按回车开始："
 
-# ------------------------ 主流程 ------------------------
+# ------------------------ 主流程入口 ------------------------
 cd "$(cd "$(dirname "$0")" && pwd -P)"
+
 _check_homebrew_and_fzf
 _resolve_flutter_project_path
 _select_build_target
