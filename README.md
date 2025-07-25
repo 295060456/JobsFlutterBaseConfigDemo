@@ -3766,7 +3766,7 @@ class FadeInImageDemo extends StatelessWidget {
     > - 通常这个目录在未特殊使用挂载卷的模拟器中是空的。
     > - 可被清理，Xcode 会在需要时自动重新创建。
 
-### 2、[**FVM**](https://fvm.app/) = <font color=red>F</font>lutter <font color=red>V</font>ersion <font color=red>M</font>anagement <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 2、⚙️ [<font color=red>**FVM**</font>](https://fvm.app/) = <font color=red>F</font>lutter <font color=red>V</font>ersion <font color=red>M</font>anagement <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 一个项目锁定该项目特有的Flutter.sdk环境，方便切换和调试
 
@@ -4784,9 +4784,9 @@ Comparable.compare(a, b)
 > | 🛠 **构建命令**             | `flutter build apk --debug`                   | `flutter build apk --profile`   | `flutter build apk --release`      |
 > | 📁 **输出路径**             | `build/app/outputs/flutter-apk/app-debug.apk` | `.../app-profile.apk`           | `.../app-release.apk`              |
 
-#### 18.1、Flutter.Android <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 18.1、📦 Flutter.Android（较为复杂和繁琐） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-##### 18.1.1、 [**Gradle**](https://gradle.org/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 18.1.1、[**Gradle**](https://gradle.org/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 一个高度可配置、插件化、现代化的自动化构建工具（平台无关）
 
@@ -4794,12 +4794,12 @@ Comparable.compare(a, b)
 
 * [**Gradle**](https://gradle.org/) 官方并<font color=red>**不支持**</font> iOS 构建
 
-  | 原因               | 说明                                                         |
-  | ------------------ | ------------------------------------------------------------ |
-  | 🍎 Apple 官方不支持 | Apple 的工具链是 **Xcode** / **xcodebuild** / [**fastlane**](https://fastlane.tools/)，[**Gradle**](https://gradle.org/) 无法完全替代 |
-  | 🔐 签名复杂         | iOS 构建涉及 :`代码签名`、`Provisioning Profile`、`Entitlements` 等，使用 [**Gradle**](https://gradle.org/)  不如 **Xcode** 原生工具顺畅 |
-  | 🔌 插件较少         | [**Gradle**](https://gradle.org/) 生态偏向 Java/Android，iOS 支持插件极少 |
-  | 👥 团队协作难       | 大部分 iOS 团队成员更熟悉  **Xcode** 原生工具顺畅，不习惯使用 [**Gradle**](https://gradle.org/) |
+  | 原因                                           | 说明                                                         |
+  | ---------------------------------------------- | ------------------------------------------------------------ |
+  | [**🍎Apple**](https://www.apple.com/)官方不支持 | [**🍎Apple**](https://www.apple.com/) 的工具链是 **Xcode** / **xcodebuild** / [**fastlane**](https://fastlane.tools/)，[**Gradle**](https://gradle.org/) 无法完全替代 |
+  | 🔐 签名复杂                                     | **iOS** 构建涉及 :`代码签名`、`Provisioning Profile`、`Entitlements` 等，使用 [**Gradle**](https://gradle.org/)  不如 **Xcode** 原生工具顺畅 |
+  | 🔌 插件较少                                     | [**Gradle**](https://gradle.org/) 生态偏向 **Java**/**Android**，**iOS** 支持插件极少 |
+  | 👥 团队协作难                                   | 大部分 **iOS** 团队成员更熟悉  **Xcode** 原生工具顺畅，不习惯使用 [**Gradle**](https://gradle.org/) |
 
   💡 例外情况：**Kotlin Multiplatform (KMM)**
 
@@ -4821,7 +4821,7 @@ Comparable.compare(a, b)
 
 * 🧱  [**Gradle**](https://gradle.org/) 的基本组成
 
-  * **`build.gradle` 文件**：构建脚本，定义构建逻辑（Groovy 或 Kotlin 语法）
+  * **`build.gradle` 文件**：构建脚本，定义构建逻辑（**Groovy** 或 **Kotlin** 语法）
   * **Project / Module 结构**：
     - 每个项目有一个根目录的 `build.gradle`
     - 每个模块（如 app）也有自己的 `build.gradle`
@@ -4896,26 +4896,276 @@ graph TD
 | ✅ **设置构建线程数**                                | [**Gradle**](https://gradle.org/) 中设置：`org.gradle.parallel=true` |
 | ✅ **Flutter 版本更新**                              | 新版本通常对构建性能有优化                                   |
 
-##### 18.1.6、构建指令 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 18.1.6、<font color=red>**构建指令**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 模式      | 命令                                         | 简称说明             |
 | --------- | -------------------------------------------- | -------------------- |
 | `debug`   | `flutter build apk --debug` 或 `flutter run` | 开发调试用，功能全   |
 | `release` | `flutter build apk --release`                | 发布用，高性能最小包 |
 
-##### 18.1.7
+##### 18.1.7、⚙️ 相关配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-**Flutter.Android** 项目在首次构建或执行 `flutter clean` 后会重新下载：
+* **Flutter.Android**打包需要涉及到**Java**环境推荐使用[<font color=red>**openJDK**</font>](https://openjdk.org/)
 
-| 资源                                                         | 说明                                                         |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| [**Gradle Wrapper**](https://docs.gradle.org/current/userguide/gradle_wrapper.html) 和插件 | 如 `gradle-7.5-all.zip`、`com.android.tools.build:gradle`    |
-| [**Kotlin**](https://kotlinlang.org/)插件                    | 如 `org.jetbrains.kotlin:kotlin-gradle-plugin`               |
-| 支持库                                                       | 各种 `androidx.*`、`support.*` 等库                          |
-| 第三方依赖                                                   | 来自 [**pub.dev**](https://pub.dev/) 的插件中声明的 AAR/JAR，如 [`image_gallery_saver`](https://pub.dev/packages/image_gallery_saver)、[`engagelab`](https://pub.dev/packages?q=engagelab) |
-| [**Google Maven**](https://maven.google.com/web/index.html) / [**JCenter**](https://mvnrepository.com/repos/jcenter) / [**MavenCentral**](https://central.sonatype.com/) | 默认构建源，国内访问会慢                                     |
+* <font color=red>为了不污染系统的开发环境，推荐用[**HomeBrew**](https://brew.sh/)➕[**jenv**](https://formulae.brew.sh/formula/jenv)的形式。每个项目单独配置一个独属的**Java**环境</font>
 
-##### 18.1.8、打包成品
+  * 铆定的**Java**版本号📝记录于**Flutter**项目根目录下的：`.java-version`
+
+* **Flutter.Android** 项目在首次构建或执行 `flutter clean` 后会重新下载👇
+
+  | 资源                                                         | 说明                                                         |
+  | ------------------------------------------------------------ | ------------------------------------------------------------ |
+  | [**Gradle Wrapper**](https://docs.gradle.org/current/userguide/gradle_wrapper.html) 和插件 | 如 `gradle-7.5-all.zip`、`com.android.tools.build:gradle`    |
+  | [**Kotlin**](https://kotlinlang.org/)插件                    | 如 `org.jetbrains.kotlin:kotlin-gradle-plugin`               |
+  | 支持库                                                       | 各种 `androidx.*`、`support.*` 等库                          |
+  | 第三方依赖                                                   | 来自 [**pub.dev**](https://pub.dev/) 的插件中声明的 AAR/JAR，如 [`image_gallery_saver`](https://pub.dev/packages/image_gallery_saver)、[`engagelab`](https://pub.dev/packages?q=engagelab) |
+  | [**Google Maven**](https://maven.google.com/web/index.html) / [**JCenter**](https://mvnrepository.com/repos/jcenter) / [**MavenCentral**](https://central.sonatype.com/) | 默认构建源，国内访问会慢                                     |
+
+##### 18.1.8、📦 Flutter.Android 打包脚本（MacOS）
+
+```shell
+#!/bin/zsh
+
+# ------------------------ 彩色输出工具函数 ------------------------
+_color_echo() {
+  local color="$1"; shift
+  local text="$*"
+  case "$color" in
+    green)  printf "\033[32m%s\033[0m\n" "$text" ;;
+    red)    printf "\033[31m%s\033[0m\n" "$text" ;;
+    yellow) printf "\033[33m%s\033[0m\n" "$text" ;;
+    blue)   printf "\033[34m%s\033[0m\n" "$text" ;;
+    cyan)   printf "\033[36m%s\033[0m\n" "$text" ;;
+    *)      printf "%s\n" "$text" ;;
+  esac
+}
+
+# ------------------------ 路径判断函数 ------------------------
+_abs_path() {
+  local p="$1"
+  [[ -z "$p" ]] && return 1
+  p="${p//\"/}"
+  [[ "$p" != "/" ]] && p="${p%/}"
+  if [[ -d "$p" ]]; then
+    (cd "$p" 2>/dev/null && pwd -P)
+  elif [[ -f "$p" ]]; then
+    (cd "${p:h}" 2>/dev/null && printf "%s/%s\n" "$(pwd -P)" "${p:t}")
+  else
+    return 1
+  fi
+}
+
+_is_flutter_project_root() {
+  local p="$1"
+  local abs=$(_abs_path "$p") || return 1
+  [[ -f "$abs/pubspec.yaml" && -d "$abs/lib" ]]
+}
+
+# ------------------------ FVM / brew / fzf 检查 ------------------------
+_check_homebrew_and_fzf() {
+  if ! command -v brew >/dev/null 2>&1; then
+    _color_echo red "❌ 未安装 Homebrew，正在安装..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+  fi
+  if ! command -v fzf >/dev/null 2>&1; then
+    brew install fzf
+  else
+    brew upgrade fzf || true
+  fi
+}
+
+# ------------------------ Flutter 项目路径识别 ------------------------
+_resolve_flutter_project_path() {
+  local script_path=$(_abs_path "$0")
+  local script_dir="${script_path:h}"
+  local current_pwd="$(pwd -P)"
+  if _is_flutter_project_root "$script_dir"; then
+    cd "$script_dir"
+    flutter_root="$script_dir"
+    return
+  fi
+  if _is_flutter_project_root "$current_pwd"; then
+    cd "$current_pwd"
+    flutter_root="$current_pwd"
+    return
+  fi
+  while true; do
+    _color_echo yellow "📂 请拖入 Flutter 项目根目录（包含 pubspec.yaml + lib/）："
+    read -r input_path
+    input_path="${input_path//\"/}"
+    abs=$(_abs_path "$input_path") || { _color_echo red "❌ 无效路径"; continue }
+    if _is_flutter_project_root "$abs"; then
+      cd "$abs" || exit 1
+      flutter_root="$abs"
+      break
+    else
+      _color_echo red "❌ 不是合法 Flutter 项目"
+    fi
+  done
+}
+
+# ------------------------ 打包参数选择 ------------------------
+_select_build_target() {
+  local choice=$(echo -e "📦 只打 AAB\n📦 只打 APK\n📦 同时打 APK + AAB（默认）" \
+    | fzf --prompt="📦 请选择打包方式：" --height=40% --border)
+  if [[ -z "$choice" || "$choice" == *"同时"* ]]; then
+    BUILD_APK=true
+    BUILD_AAB=true
+  elif [[ "$choice" == *"APK"* ]]; then
+    BUILD_APK=true
+    BUILD_AAB=false
+  else
+    BUILD_APK=false
+    BUILD_AAB=true
+  fi
+}
+
+_prompt_flavor_and_mode() {
+  _color_echo blue "🌶️ 请输入 flavor 名称（可空）:"
+  read -r flavor
+  if [[ -n "$flavor" ]]; then
+    flavor_args=(--flavor "$flavor")
+  else
+    flavor_args=()
+  fi
+  build_mode=$(printf "release\ndebug\nprofile" | fzf --prompt="👉 选择构建模式 > " --height=40%)
+  build_mode="${build_mode:-release}"
+}
+
+_detect_flutter_cmd() {
+  if [[ -f "$flutter_root/.fvm/fvm_config.json" ]]; then
+    flutter_cmd=(fvm flutter)
+  else
+    flutter_cmd=(flutter)
+  fi
+}
+
+# ------------------------ AGP 版本输出 ------------------------
+_print_agp_version() {
+  local build_file="./android/build.gradle"
+  if [[ -f "$build_file" ]]; then
+    local agp_version=$(grep -oE "com.android.tools.build:gradle:[0-9.]+" "$build_file" | head -n1 | cut -d: -f3)
+    if [[ -n "$agp_version" ]]; then
+      echo "$agp_version"
+    else
+      echo "未检测到 AGP 版本"
+    fi
+  else
+    echo "未找到 build.gradle 文件"
+  fi
+}
+
+# ------------------------ Java 环境配置 ------------------------
+_configure_java_env() {
+  cd "$flutter_root" || exit 1
+  local record_file="$flutter_root/.java-version"
+  local last_used=""
+  [[ -f "$record_file" ]] && last_used=$(cat "$record_file")
+  local available_versions=$(brew search openjdk@ | grep -E '^openjdk@\d+$' | sort -Vr)
+  if [[ -z "$available_versions" ]]; then
+    _color_echo red "❌ 未找到任何 openjdk 版本"
+    exit 1
+  fi
+  if [[ -n "$last_used" && "$available_versions" == *"$last_used"* ]]; then
+    _color_echo green "📦 上次使用的 JDK：$last_used"
+    _color_echo blue "👉 是否继续使用？回车 = 是 / 任意键 + 回车 = 重新选择"
+    read -r confirm
+    [[ -z "$confirm" ]] && selected="$last_used"
+  fi
+  if [[ -z "$selected" ]]; then
+    selected=$(echo "$available_versions" | fzf --prompt="☑️ 选择 openjdk 版本：" --height=40%)
+    [[ -z "$selected" ]] && _color_echo red "❌ 未选择 JDK" && exit 1
+  fi
+  local version_number="${selected#*@}"
+  brew list --formula | grep -q "^$selected$" || brew install "$selected"
+  sudo ln -sfn "/opt/homebrew/opt/$selected/libexec/openjdk.jdk" "/Library/Java/JavaVirtualMachines/${selected}.jdk" 2>/dev/null
+  export JAVA_HOME=$(/usr/libexec/java_home -v"$version_number")
+  export PATH="$JAVA_HOME/bin:$PATH"
+  echo "$selected" > "$record_file"
+}
+
+# ------------------------ flutter build 执行 ------------------------
+_run_flutter_build() {
+  local log_file="/tmp/flutter_build_log.txt"
+  rm -f "$log_file"
+  local java_env_cmd=(env JAVA_HOME="$JAVA_HOME" PATH="$JAVA_HOME/bin:$PATH")
+
+  _color_echo blue "📦 当前使用 JDK 版本："
+  "${java_env_cmd[@]}" java -version
+  _color_echo blue "📦 当前使用 Gradle 版本："
+  "${java_env_cmd[@]}" ./android/gradlew -v
+  _color_echo blue "📦 当前使用 AGP（Android Gradle Plugin）版本："
+  _print_agp_version
+
+  if [[ $BUILD_APK == true ]]; then
+    _color_echo cyan "🚀 flutter build apk --$build_mode"
+    "${java_env_cmd[@]}" "${flutter_cmd[@]}" build apk --$build_mode "${flavor_args[@]}" | tee -a "$log_file"
+  fi
+  if [[ $BUILD_AAB == true ]]; then
+    _color_echo cyan "🚀 flutter build appbundle --$build_mode"
+    "${java_env_cmd[@]}" "${flutter_cmd[@]}" build appbundle --$build_mode "${flavor_args[@]}" | tee -a "$log_file"
+  fi
+}
+
+_confirm_step() {
+  local label="$1"
+  _color_echo blue "👉 是否执行 $label？回车 = 执行 / 任意键 + 回车 = 跳过"
+  read -r choice
+  [[ -z "$choice" ]] && return 0 || return 1
+}
+
+_open_output_folder() {
+  local base="build/app/outputs"
+  if [[ $BUILD_AAB == true ]]; then
+    open "$base/bundle/$build_mode" 2>/dev/null
+  elif [[ $BUILD_APK == true ]]; then
+    open "$base/flutter-apk" 2>/dev/null
+  fi
+}
+
+# ------------------------ 自述区块 ------------------------
+clear
+_color_echo cyan  "🛠️ Flutter Android 打包脚本（支持 FVM / fzf / flavor / JDK 选择）"
+echo ""
+_color_echo green "📌 功能说明："
+_color_echo green "1️⃣ 自动识别当前 Flutter 项目路径（或拖入路径）"
+_color_echo green "2️⃣ 自动检测是否使用 FVM，并用 fvm flutter 构建"
+_color_echo green "3️⃣ 支持选择构建类型（仅 APK、仅 AAB、同时构建）"
+_color_echo green "4️⃣ 支持 flavor 参数和构建模式（release/debug/profile）"
+_color_echo green "5️⃣ 自动检测并配置 Java（openjdk），可选择版本"
+_color_echo green "6️⃣ 自动记忆上次使用的 JDK（保存在 .java-version）"
+_color_echo green "7️⃣ 构建前输出 📦 JDK / 📦 Gradle / 📦 AGP 三个版本信息"
+_color_echo green "8️⃣ 构建后自动打开输出产物目录"
+_color_echo green "9️⃣ 所有命令均统一交互：回车 = 执行，任意键 + 回车 = 跳过"
+_color_echo green "🔟 构建日志自动保存到 /tmp/flutter_build_log.txt"
+echo ""
+_color_echo yellow "👉 回车 = 执行默认 / 任意键 + 回车 = 跳过（统一交互）"
+echo ""
+read "?📎 按回车开始："
+
+# ------------------------ 主流程 ------------------------
+cd "$(cd "$(dirname "$0")" && pwd -P)"
+_check_homebrew_and_fzf
+_resolve_flutter_project_path
+_select_build_target
+_prompt_flavor_and_mode
+_detect_flutter_cmd
+_configure_java_env
+
+if _confirm_step "flutter clean"; then
+  "${flutter_cmd[@]}" clean
+fi
+
+if _confirm_step "flutter pub get"; then
+  "${flutter_cmd[@]}" pub get
+fi
+
+_run_flutter_build
+_open_output_folder
+```
+
+##### 18.1.9、打包成品  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > [**Flutter**](https://flutter.dev/) 和 [**Gradle**](https://gradle.org/)  的构建系统默认会将最新产物**覆盖上一次的构建产物**
 
@@ -4946,7 +5196,7 @@ graph TD
 | 🚀 提测/发包                                         | `apk/release/app-release.apk`（需签名）                  |
 | 🌐 上架  [**Google Play**](https://play.google.com/) | `bundle/release/app-release.aab`                         |
 
-#### 18.2、Flutter.iOS
+#### 18.2、📦 Flutter.iOS（相对简单）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * iOS 项目主流是使用 **Xcode** + **Xcode build system** 来进行构建
 
@@ -4958,8 +5208,12 @@ graph TD
 
 * 必须真机运行
 
-* 无法通过**xcode**直接编译**Flutter**项目。是因为其中的`Podfile`是通过**Flutter**进行唤起的，并非标准的iOS`Podfile`文件格式
+* <font color=red>无法通过**xcode**直接编译**Flutter**项目</font>
 
+  > 是因为其中的`Podfile`是通过**Flutter**进行唤起的，并非标准的iOS `Podfile` 文件格式
+  >
+  > ====================================================================
+  >
   > **Flutter 会控制 Pod 的安装和版本**，并写入：
   >
   > - `ios/Podfile`
@@ -4968,7 +5222,7 @@ graph TD
   > - `.flutter-plugins-dependencies`
   >
   > 任何试图手动运行 `pod install` 而未执行 `flutter build ios`，都会缺少 `Flutter.framework` 和 Pod 配置，导致如下报错：`Could not find Flutter.framework or Flutter.podspec`
-
+  
   ```ruby
   # Uncomment this line to define a global platform for your project
   # platform :ios, '12.0'
@@ -5014,7 +5268,90 @@ graph TD
     end
   end
   ```
+  
+* ⚠️这是 iOS 原生包的打包脚本。**Flutter打包iOS的尚未验证**
 
+  ```shell
+  #!/bin/zsh
+  
+  # ✅ 彩色输出函数
+  print_color() {
+    local color="$1"
+    local msg="$2"
+    case "$color" in
+      green)  echo "\033[32m$msg\033[0m" ;;
+      red)    echo "\033[31m$msg\033[0m" ;;
+      yellow) echo "\033[33m$msg\033[0m" ;;
+      blue)   echo "\033[34m$msg\033[0m" ;;
+      *)      echo "$msg" ;;
+    esac
+  }
+  
+  # ✅ 功能说明
+  print_color green "🛠️ 脚本功能："
+  print_color green "1️⃣ 自动查找 Xcode 项目的 .app 文件"
+  print_color green "2️⃣ 复制 .app 至 Payload 并打包成 .ipa"
+  print_color green "📦 输出文件保存在桌面上"
+  echo ""
+  read "?👉 按下回车键继续执行，或按 Ctrl+C 取消..."
+  
+  # ✅ 当前目录
+  CURRENT_DIR=$(cd "$(dirname "$0")" && pwd)
+  print_color blue "📂 当前目录: $CURRENT_DIR"
+  
+  # ✅ 查找 .xcodeproj
+  PROJECT_FILES=($(find "$CURRENT_DIR" -maxdepth 1 -name "*.xcodeproj"))
+  if [[ ${#PROJECT_FILES[@]} -eq 0 ]]; then
+    print_color red "❌ 未找到 .xcodeproj 文件，请确保在项目目录下运行"
+    exit 1
+  elif [[ ${#PROJECT_FILES[@]} -gt 1 ]]; then
+    print_color red "❌ 检测到多个 .xcodeproj 文件，请确保目录下仅有一个"
+    for file in "${PROJECT_FILES[@]}"; do print_color yellow "⚠️ $file"; done
+    exit 1
+  fi
+  
+  # ✅ 项目名
+  PROJECT_NAME=$(basename "${PROJECT_FILES[1]}" .xcodeproj)
+  print_color green "✅ 发现 Xcode 项目: $PROJECT_NAME"
+  
+  # ✅ 当前用户
+  USER_NAME=$(whoami)
+  
+  # ✅ 查找最新 .app 路径
+  DERIVED_BASE="/Users/$USER_NAME/Library/Developer/Xcode/DerivedData"
+  APP_DIR=$(ls -td "$DERIVED_BASE/${PROJECT_NAME}-"*/Build/Products/Debug-iphoneos/*.app 2>/dev/null | head -n 1)
+  
+  if [[ ! -d "$APP_DIR" ]]; then
+    print_color red "❌ 未找到 .app 文件，请确认 Xcode 已构建成功"
+    exit 1
+  fi
+  
+  print_color green "✅ 找到 .app 文件: $APP_DIR"
+  
+  # ✅ 准备 Payload 目录
+  DESKTOP_PATH="/Users/$USER_NAME/Desktop"
+  PAYLOAD_PATH="$DESKTOP_PATH/Payload"
+  IPA_PATH="$DESKTOP_PATH/$PROJECT_NAME.ipa"
+  
+  if [[ -d "$PAYLOAD_PATH" ]]; then
+    print_color yellow "⚠️ 已存在 Payload 目录，正在删除..."
+    rm -rf "$PAYLOAD_PATH"
+  fi
+  
+  mkdir -p "$PAYLOAD_PATH"
+  print_color green "✅ 创建 Payload 文件夹"
+  
+  # ✅ 复制 .app
+  cp -R "$APP_DIR" "$PAYLOAD_PATH"
+  print_color green "✅ 复制 .app 到 Payload"
+  
+  # ✅ 打包 .ipa
+  cd "$DESKTOP_PATH" || exit 1
+  zip -qr "$PROJECT_NAME.ipa" Payload
+  rm -rf "$PAYLOAD_PATH"
+  print_color green "✅ 打包完成: $IPA_PATH"
+  
+  ```
 
 ## 四、FAQ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
