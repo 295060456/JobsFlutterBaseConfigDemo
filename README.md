@@ -1215,15 +1215,90 @@ String getNowTime() {
 
 ### 14、🔙 导航栏返回按钮的行为：监听+定义   <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-### 15、🖥️Flutter屏幕适配方案 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+```dart
+/// PageC
+class PageC extends RouteAwareStatefulPage {
+  const PageC({super.key, super.onTap, super.buttonChild})
+      : super(title: 'Page C');
 
-| 工具/方式            | 作用                       | 用法示例                                                     |
-| -------------------- | -------------------------- | ------------------------------------------------------------ |
-| `MediaQuery`         | 获取屏幕宽高/边距/键盘高度 | `MediaQuery.of(context).size.height`                         |
-| `SafeArea`           | 自动避开状态栏/导航栏      | `SafeArea(child: ...)`                                       |
-| `flutter_screenutil` | 屏幕尺寸适配（dp/sp统一）  | `20.w`, `14.sp`, `EdgeInsets.all(10.r)`                      |
-| `LayoutBuilder`      | 自适应布局大小判断         | `constraints.maxWidth < 600 ? PhoneLayout() : TabletLayout()` |
-| `KeyboardVisibility` | 键盘弹出监听，处理遮挡问题 | `KeyboardVisibilityController().onChange.listen(...)`        |
+  @override
+  State<PageC> createState() => _PageCState();
+}
+
+class _PageCState extends RouteAwareState<PageC> {}
+```
+
+```dart
+abstract class RouteAwareStatefulPage extends StatefulWidget {
+  final String title;
+  final VoidCallback? onTap;
+  final Widget? buttonChild;
+
+  const RouteAwareStatefulPage({
+    super.key,
+    required this.title,
+    this.onTap,
+    this.buttonChild,
+  });
+}
+
+abstract class RouteAwareState<T extends RouteAwareStatefulPage>
+    extends State<T> with RouteAware {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)! as PageRoute);
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPush() => debugPrint('📥 ${widget.title} pushed');
+  @override
+  void didPop() => debugPrint('📤 ${widget.title} popped');
+  @override
+  void didPopNext() => debugPrint('🔙 Return to ${widget.title}');
+  @override
+  void didPushNext() => debugPrint('➡️ Navigate away from ${widget.title}');
+
+  @override
+  Widget build(BuildContext context) {
+    return PopConfirmWrapper(
+      child: Scaffold(
+        appBar: AppBar(title: Text(widget.title)),
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('当前页面：${widget.title}'.tr,
+                  style: normalTextStyle(fontSize: 24)),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: widget.onTap,
+                child: widget.buttonChild ?? Text('点我'.tr),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+### 15、🖥️[**Flutter**](https://flutter.dev)屏幕适配方案 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+| 工具/方式            | 作用                              | 用法示例                                                     |
+| -------------------- | --------------------------------- | ------------------------------------------------------------ |
+| `MediaQuery`         | 获取屏幕宽高/边距/键盘高度        | `MediaQuery.of(context).size.height`                         |
+| `SafeArea`           | 自动避开状态栏/导航栏             | `SafeArea(child: ...)`                                       |
+| `flutter_screenutil` | 屏幕尺寸适配（**dp**/**sp**统一） | `20.w`, `14.sp`, `EdgeInsets.all(10.r)`                      |
+| `LayoutBuilder`      | 自适应布局大小判断                | `constraints.maxWidth < 600 ? PhoneLayout() : TabletLayout()` |
+| `KeyboardVisibility` | 键盘弹出监听，处理遮挡问题        | `KeyboardVisibilityController().onChange.listen(...)`        |
 
 #### 15.1、[**flutter_screenutil**](https://pub.dev/packages/flutter_screenutil)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -2258,7 +2333,7 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 
 ### 22、其他**`Widget`** 分类 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-### 22.1、交互类  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 22.1、交互类  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 提供用户输入、点击、拖拽、手势等功能
 
@@ -2269,7 +2344,7 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 | 滑动/拖动类 | `Slider`, `Switch`, `Draggable`, `Dismissible` |
 | 手势类      | `GestureDetector`, `InkWell`                   |
 
-### 22.2、导航 & 路由类 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 22.2、导航 & 路由类 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 用于构建页面跳转、Tab 切换等
 
@@ -2278,7 +2353,7 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 | 路由相关 | `Navigator`, `PageView`, `MaterialPageRoute`  |
 | Tab 切换 | `TabBar`, `TabBarView`, `BottomNavigationBar` |
 
-### 22.3、功能控制类 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 22.3、功能控制类 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 用于生命周期控制、可见性、构建逻辑等
 
@@ -2288,7 +2363,7 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 | 显隐控制     | `Visibility`, `Offstage`, `Opacity`             |
 | 占位/延迟    | `FutureBuilder`, `StreamBuilder`, `Placeholder` |
 
-### 22.4、内容展示类  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 22.4、内容展示类  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 用来呈现用户可见的内容：文字、图片、图标、视频等
 
@@ -2299,7 +2374,7 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 | 图标类   | `Icon`, `IconButton`                         |
 | 其他媒体 | `VideoPlayer`, `Canvas`, `CustomPaint`       |
 
-### 22.5、容器类  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 22.5、容器类  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 >  用来包裹内容并提供 **样式、装饰、边框、背景、阴影**
 
@@ -3838,7 +3913,7 @@ class FadeInImageDemo extends StatelessWidget {
 
 ## 三、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-### 1、关于iOS模拟器（最新版本XCode：16.4） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 1、📱关于iOS模拟器（最新版本XCode：16.4） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 老版本的iOS模拟器的兼容
 
@@ -5259,7 +5334,7 @@ graph TD
         > 2️⃣ **不影响运行系统版本**：它不会影响 App 能运行在哪些 **Android** 系统版本上，运行范围由 `minSdk` 和 `targetSdk` 控制。
         >
         > 3️⃣ **影响构建工具版本要求**：`compileSdk` 越高，所需的 <a href="#AGP" style="font-size:17px; color:green;"><b>**AGP**</b></a> 版本也必须越高，否则无法编译。
-      
+          
         ```groovy
         android {
           compileSdk = 34 /// 使用 Android SDK 34 来编译这个项目
