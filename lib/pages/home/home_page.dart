@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/Extensions/string_utils.dart';
 import 'package:provider/provider.dart';
 import '../../notifier/locale_notifier.dart';
 import '../../services/theme_service.dart';
@@ -16,8 +17,8 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("首页".tr),
-        actions: [
+        title: Text("首页".add("Jobs").tr),
+        actions: [ 
           IconButton(
             icon: const Icon(Icons.language),
             onPressed: () {

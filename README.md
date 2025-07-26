@@ -3678,6 +3678,18 @@ class FadeInImageDemo extends StatelessWidget {
 | `double.parse("3.14")`             | `3.14`       | `double` | ❌ 否         | String → double                                              |
 | `num.parse("5.5")`                 | `5.5`        | `num`    | ❌ 否         | String → 自动识别 int 或 double                              |
 
+### 30、字符串操作 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+* 字符串拼接
+
+  ```dart
+  extension StringAddExtension on String {
+    String add(String suffix) => this + suffix;
+  }
+  ```
+
+* 
+
 ## 三、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ### 1、关于iOS模拟器（最新版本XCode：16.4） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>

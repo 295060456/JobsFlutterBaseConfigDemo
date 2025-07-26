@@ -36,7 +36,6 @@ android {
                     "APP_TCP_SSL" to "true",
                     "APP_DEBUG" to "true",
                     "COUNTRY_CODE" to "CN",
-
                     "HONOR_APPID" to "xxx",
                     "XIAOMI_APPID" to "xxx",
                     "XIAOMI_APPKEY" to "xxx",
@@ -67,13 +66,13 @@ flutter {
     source = "../.."
 }
 
-android {
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
+// android {
+//     compileOptions {
+//         sourceCompatibility = JavaVersion.VERSION_17
+//         targetCompatibility = JavaVersion.VERSION_17
+//     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-}
+//     kotlinOptions {
+//         jvmTarget = "17"
+//     }
+// }
