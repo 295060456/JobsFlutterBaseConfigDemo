@@ -1,13 +1,8 @@
 import 'package:get/get.dart';
 
 class PageAControllers extends GetxController {
-
-  final ok = true.obs; 
-
-
-
-
-  void reverse (){
+  final ok = true.obs;
+  void reverse() {
     ok.value = !ok.value;
   }
 

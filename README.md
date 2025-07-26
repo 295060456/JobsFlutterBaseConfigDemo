@@ -3166,8 +3166,7 @@ Get.offAllNamed('/splash');
   Get.toNamed('/home');
   ```
 
-
-#### 27.5、**`Get.dialog()`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 27.4.7、**`Get.dialog()`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > `Get.dialog()` 默认用当前上下文找 <a href="#Navigator" style="font-size:17px; color:green;"><b>Navigator</b></a>
 
@@ -3211,7 +3210,7 @@ ElevatedButton(
 )
 ```
 
-#### 27.6、🔑**`Get.key` **<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 27.4.8、🔑**`Get.key` **<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > **`Get.key` 就是给全局 Navigator 打了个 tag（标签）**，即：**全局 Navigator Key**。[**`GetX`**](https://pub.dev/packages/get)  把它注册到自己的容器里，之后你所有（**push**、**pop**、**dialog** 等）相关操作都可以**不需要 context，直接通过这个 tag 找到并调用 Navigator 的功能。**（<font color=red>类似于iOS的**通知机制**</font>）
 
@@ -3300,7 +3299,7 @@ ElevatedButton(
 > 👉 **任何时候用 `Get.dialog()`，都写上 `navigatorKey: Get.key`**，
 > ✅ 兼容所有场景、生命周期、嵌套结构，绝对不翻车。
 
-#### 27.7、[**`GetX`**](https://pub.dev/packages/get) 多语言化  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 27.4.9、[**`GetX`**](https://pub.dev/packages/get) 多语言化  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 如果找不到对应 key，会 **原样返回原始字符串**（即 `"等待状态变化"`），不会报错或崩溃。
 
@@ -3308,7 +3307,7 @@ ElevatedButton(
 String status = "等待状态变化".tr;
 ```
 
-#### 27.8、关于[**`GetX`**](https://pub.dev/packages/get) 的二次（语法糖🍬）封装  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 27.4.10、关于[**`GetX`**](https://pub.dev/packages/get) 的二次（语法糖🍬）封装  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 import 'package:get/get.dart';
@@ -3347,7 +3346,7 @@ T getOrLazyPut<T extends GetxController>(
 late final MyTabCtrl tabController = getOrPut(() => MyTabCtrl());
 ```
 
-#### 27.9、基于[**`GetX`**](https://pub.dev/packages/get) 最佳实践的完整项目结构模板（项目名为：`getx_demo`） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 27.4.11、基于[**`GetX`**](https://pub.dev/packages/get) 最佳实践的完整项目结构模板（项目名为：`getx_demo`） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```bash
 lib/
@@ -3460,6 +3459,121 @@ class MyApp extends StatelessWidget {
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
     );
+  }
+}
+```
+
+##### 27.4.12、[**`GetX`**](https://pub.dev/packages/get) 值的双向绑定 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```
+lib/
+├── Counter/
+│   ├── jobs_binding.dart
+│   ├── jobs_controller.dart
+│   └── jobs_page.dart
+└── 💥GetX的值双向绑定.dart.dart
+```
+
+```dart
+/// 💥GetX的值双向绑定.dart
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/UI/UI.3rd%F0%9F%8C%B9/GetX/%F0%9F%92%A5GetX%E7%9A%84%E5%80%BC%E5%8F%8C%E5%90%91%E7%BB%91%E5%AE%9A/Counter/jobs_binding.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/UI/UI.3rd%F0%9F%8C%B9/GetX/%F0%9F%92%A5GetX%E7%9A%84%E5%80%BC%E5%8F%8C%E5%90%91%E7%BB%91%E5%AE%9A/Counter/jobs_page.dart';
+
+void main() {
+  runApp(
+    GetMaterialApp(
+      initialRoute: '/jobs',
+      getPages: [
+        GetPage(
+          name: '/jobs',
+          page: () => const JobsPage(),
+          binding: JobsBinding(),
+        ),
+      ],
+    ),
+  );
+}
+```
+
+```dart
+/// jobs_page.dart
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'jobs_controller.dart';
+
+class JobsPage extends GetView<JobsController> {
+  const JobsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final textCtrl1 = TextEditingController();
+    final textCtrl2 = TextEditingController();
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Jobs 双向绑定两个输入框')),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Obx(() {
+          // 更新 TextEditingController 的 text（防止无限循环）
+          if (textCtrl1.text != controller.text.value) {
+            textCtrl1.text = controller.text.value;
+            textCtrl1.selection = TextSelection.fromPosition(
+              TextPosition(offset: textCtrl1.text.length),
+            );
+          }
+
+          if (textCtrl2.text != controller.text.value) {
+            textCtrl2.text = controller.text.value;
+            textCtrl2.selection = TextSelection.fromPosition(
+              TextPosition(offset: textCtrl2.text.length),
+            );
+          }
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                controller: textCtrl1,
+                decoration: const InputDecoration(labelText: '输入框 1'),
+                onChanged: (v) => controller.text.value = v,
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: textCtrl2,
+                decoration: const InputDecoration(labelText: '输入框 2'),
+                onChanged: (v) => controller.text.value = v,
+              ),
+              const SizedBox(height: 20),
+              Text('你输入的是：${controller.text.value}'),
+            ],
+          );
+        }),
+      ),
+    );
+  }
+}
+```
+
+```dart
+/// jobs_controller.dart
+import 'package:get/get.dart';
+
+class JobsController extends GetxController {
+  final RxString text = ''.obs;
+}
+```
+
+```dart
+/// jobs_binding.dart
+import 'package:get/get.dart';
+import 'jobs_controller.dart';
+
+class JobsBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut(() => JobsController());
   }
 }
 ```
