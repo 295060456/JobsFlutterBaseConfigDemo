@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsGetXRunner.dart';
-import 'package:jobs_flutter_base_config/JobsDemoTools/UI/UI.3rd🌹/GetX/GetXTool.dart'
+import 'package:jobs_flutter_base_config/JobsDemoTools/UI/UI.3rd%F0%9F%8C%B9/GetX/GetXTool.dart'
     show getOrPut;
-import 'package:jobs_flutter_base_config/JobsDemoTools/UI/UI.Origin🌍/TabBar切换/Common/MyTabCtrl.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/UI/UI.Origin%F0%9F%8C%8D/TabBar%E5%88%87%E6%8D%A2/Common/MyTabCtrl.dart';
 
 void main() {
   runApp(JobsGetRunner.builder(

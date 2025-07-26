@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:jobs_flutter_base_config/JobsDemoTools/Data/Data.3rd/本地数据存取/sp_util.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/Data/Data.3rd/%E6%9C%AC%E5%9C%B0%E6%95%B0%E6%8D%AE%E5%AD%98%E5%8F%96/sp_util.dart';
 import 'package:vibration/vibration.dart';
 
 class AppManager {

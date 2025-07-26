@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsGetXRunner.dart';
-import 'package:jobs_flutter_base_config/JobsDemoTools/UI/UI.Origin%F0%9F%8C%8D/TabBar%E5%88%87%E6%8D%A2/Common/MyTabCtrl.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/UI/UI.Origin🌍/TabBar切换/Common/MyTabCtrl.dart';
 import '../Common/HomeBinding.dart';
 
 void main() => runApp(JobsGetRunner(HomePage(), bindings:HomeBinding(),title: '简单测试'.tr));

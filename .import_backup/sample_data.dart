@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart';
-import 'package:jobs_flutter_base_config/JobsDemoTools/UI/UI.Origin🌍/富文本/一般的富文本/attributed_model.dart';
-import 'package:jobs_flutter_base_config/JobsDemoTools/UI/UI.Origin🌍/富文本/一般的富文本/attributed_text_view.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/UI/UI.Origin%F0%9F%8C%8D/%E5%AF%8C%E6%96%87%E6%9C%AC/%E4%B8%80%E8%88%AC%E7%9A%84%E5%AF%8C%E6%96%87%E6%9C%AC/attributed_model.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/UI/UI.Origin%F0%9F%8C%8D/%E5%AF%8C%E6%96%87%E6%9C%AC/%E4%B8%80%E8%88%AC%E7%9A%84%E5%AF%8C%E6%96%87%E6%9C%AC/attributed_text_view.dart';
 
 void main() => runApp(JobsMaterialRunner(
       Padding(
