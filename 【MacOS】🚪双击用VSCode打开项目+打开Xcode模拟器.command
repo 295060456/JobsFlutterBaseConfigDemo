@@ -37,7 +37,6 @@ if [[ -n "$user_continue" ]]; then
 fi
 
 # ========== 检测路径 ==========
-script_path="$0"
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 _color_echo blue "📁 当前检测路径：$script_dir"
 
