@@ -40,8 +40,8 @@
   * 作为其他项目的参考，可以快速的了解到项目的架构，代码规范，以及一些设计模式
   * 这么一些优秀的成果，其来源不仅仅是来自于作者本身的持续付出与积累。更是这个领域大家庭中各路优秀作者的智慧结晶
 * 独立的测试单元
-  * 对于单个的**Flutter**工程文件（小Demo）可以利用[**运行脚本**](./【MacOS】☀️双击运行Flutter项目（iOS 模拟器）.command)，在MacOS的**终端**直接拖入进行运行和展示（终端运行不支持断点，只能输出日志）
-  * 为了保证各个Demo在形式上的独立性，所以尽可能的在单个`.dart`文件里面进行叙述。**每一个Flutter的Demo文件里，都会存在其程序的入口函数**
+  * 对于单个的[**Flutter**](https://flutter.dev/)工程文件（小Demo）可以利用[**运行脚本**](./【MacOS】☀️双击运行Flutter项目（iOS 模拟器）.command)，在**MacOS**的**终端**直接拖入进行运行和展示（终端运行不支持断点，只能输出日志）
+  * 为了保证各个**Demo**在形式上的独立性，所以尽可能的在单个`.dart`文件里面进行叙述。**每一个[Flutter](https://flutter.dev/)的Demo文件里，都会存在其程序的入口函数** 
 
 ## 二、💥代码讲解 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -114,9 +114,9 @@ SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
   ));
 ```
 
-###  3、配置入口 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+###  3、🚪配置入口 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 3.1、配置项目入口   <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 3.1、🚪配置项目入口   <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 Future<void> main() async{return runApp(XXX)};
@@ -178,9 +178,9 @@ void main() => runApp(XXX);
   }
   ```
 
-#### 3.2、配置页面的入口   <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 3.2、🚪配置页面的入口   <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-##### 3.2.1、配置首页入口   <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 3.2.1、🚪配置首页入口   <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 GetMaterialApp(
@@ -243,13 +243,13 @@ CupertinoApp(
 | **Phoenix**                               | `flutter_phoenix` | 用于“热重启”整个 app 的容器结构                              |
 | **DevicePreview**                         | `device_preview`  | 用于响应式预览，模拟不同设备的结构容器                       |
 
-### 4、<font color=red>**Flutter 项目中比较标准且完整的启动流程**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 4、[**Flutter**](https://flutter.dev/)<font color=red>**项目中比较标准且完整的启动流程**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ `SystemChrome` 限制方向
 >
 > 2️⃣ `WakelockPlus` 保持屏幕常亮
 >
-> 3️⃣ `GetX` 依赖注入、路由
+> 3️⃣ [**`GetX`**](https://pub.dev/packages/get)  依赖注入、路由
 >
 > 4️⃣ `SpUtil` 读取缓存
 >
@@ -334,7 +334,7 @@ WidgetsFlutterBinding.ensureInitialized();
 > Binding has not yet been initialized.
 > ```
 
-### 6、`DartPingIOS`在 iOS 上启用 native 层实现的 ping 功能 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 6、`DartPingIOS`在 iOS 上启用 native 层实现的 <font color=red>ping 功能</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1、因为 iOS 的网络权限和限制较多，`dart_ping` 需要通过原生插件配合实现 `ping`，所以需要先进行手动注册
 >
@@ -381,9 +381,9 @@ WidgetsFlutterBinding.ensureInitialized();
 
 > 1️⃣ 封装原生 `SharedPreferences` 支持的所有类型
 >
-> 2️⃣ 额外支持了自定义对象（Bean）的存取
+> 2️⃣ 额外支持了自定义对象（**Bean**）的存取
 >
-> 💥 Flutter.**`SharedPreferences`** == OC.**`NSUserDefaults`** == Swift.**`UserDefaults`**
+> 💥 [**Flutter**](https://flutter.dev/).**`SharedPreferences`** == OC.**`NSUserDefaults`** == Swift.**`UserDefaults`**
 
 ```dart
 /// SpUtil.dart
@@ -473,29 +473,30 @@ class SpUtil {
 }
 ```
 
-### 8、**Flutter**标准<a href="#模态" style="color:green; font-size:25px;"><b>模态</b></a>弹窗组件（SDK自带的）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 8、[**Flutter**](https://flutter.dev/).**SDK**标准<a href="#模态" style="color:green; font-size:25px;"><b>模态</b></a>弹窗组件（截至 2025）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-**Flutter.SDK**（系统自带）的模态弹窗汇总表（截至 2025）
+| 名称                            | 类型                        | 用途说明                       | 所属库                           |
+| ------------------------------- | --------------------------- | ------------------------------ | -------------------------------- |
+| **`showDialog()`**              | <font color=red>方法</font> | 通用弹窗封装                   | `package:flutter/material.dart`  |
+| **`showGeneralDialog()`**       | <font color=red>方法</font> | 自定义内容和动画的底层弹窗方法 | `package:flutter/material.dart`  |
+| **`showModalBottomSheet()`**    | <font color=red>方法</font> | 弹出底部模态弹窗               | `package:flutter/material.dart`  |
+| **`showDatePicker()`**          | <font color=red>方法</font> | 弹出日期选择器                 | `package:flutter/material.dart`  |
+| **`showTimePicker()`**          | <font color=red>方法</font> | 弹出时间选择器                 | `package:flutter/material.dart`  |
+| **`showSearch()`**              | <font color=red>方法</font> | 弹出搜索页（全屏弹窗）         | `package:flutter/material.dart`  |
+| **`showAboutDialog()`**         | <font color=red>方法</font> | 显示应用信息弹窗               | `package:flutter/material.dart`  |
+| **`showLicensePage()`**         | <font color=red>方法</font> | 显示 **License** 页面          | `package:flutter/material.dart`  |
+| **`showCupertinoDialog()`**     | <font color=red>方法</font> | 弹出 iOS 风格弹窗              | `package:flutter/cupertino.dart` |
+| **`showCupertinoModalPopup()`** | <font color=red>方法</font> | 弹出 iOS 风格底部弹窗          | `package:flutter/cupertino.dart` |
 
-| 名称                        | 类型 | 用途说明                           | 所属库                           |
-| --------------------------- | ---- | ---------------------------------- | -------------------------------- |
-| `AlertDialog`               | 组件 | 标准提示对话框                     | `package:flutter/material.dart`  |
-| `SimpleDialog`              | 组件 | 简单选项对话框                     | `package:flutter/material.dart`  |
-| `Dialog`                    | 组件 | 可自定义内容                       | `package:flutter/material.dart`  |
-| `showDialog()`              | 方法 | 通用弹窗封装                       | `package:flutter/material.dart`  |
-| `showGeneralDialog()`       | 方法 | 自定义内容和动画的底层弹窗方法     | `package:flutter/material.dart`  |
-| `showModalBottomSheet()`    | 方法 | 弹出底部模态弹窗                   | `package:flutter/material.dart`  |
-| `showDatePicker()`          | 方法 | 弹出日期选择器                     | `package:flutter/material.dart`  |
-| `showTimePicker()`          | 方法 | 弹出时间选择器                     | `package:flutter/material.dart`  |
-| `showSearch()`              | 方法 | 弹出搜索页（全屏弹窗）             | `package:flutter/material.dart`  |
-| `showAboutDialog()`         | 方法 | 显示应用信息弹窗                   | `package:flutter/material.dart`  |
-| `showLicensePage()`         | 方法 | 显示 License 页面                  | `package:flutter/material.dart`  |
-| `LicensePage`               | 组件 | License 页面容器                   | `package:flutter/material.dart`  |
-| `showCupertinoDialog()`     | 方法 | 弹出 iOS 风格弹窗                  | `package:flutter/cupertino.dart` |
-| `CupertinoAlertDialog`      | 组件 | iOS 风格对话框组件                 | `package:flutter/cupertino.dart` |
-| `showCupertinoModalPopup()` | 方法 | 弹出 iOS 风格底部弹窗              | `package:flutter/cupertino.dart` |
-| `CupertinoActionSheet`      | 组件 | iOS 风格底部弹窗内容               | `package:flutter/cupertino.dart` |
-| `CupertinoPopupSurface`     | 组件 | 弹窗表面组件（用于自定义弹窗外观） | `package:flutter/cupertino.dart` |
+| 名称                        | 类型                          | 用途说明                           | 所属库                           |
+| --------------------------- | ----------------------------- | ---------------------------------- | -------------------------------- |
+| **`AlertDialog`**           | <font color=green>组件</font> | 标准提示对话框                     | `package:flutter/material.dart`  |
+| **`SimpleDialog`**          | <font color=green>组件</font> | 简单选项对话框                     | `package:flutter/material.dart`  |
+| **`Dialog`**                | <font color=green>组件</font> | 可自定义内容                       | `package:flutter/material.dart`  |
+| **`LicensePage`**           | <font color=green>组件</font> | **License** 页面容器               | `package:flutter/material.dart`  |
+| **`CupertinoAlertDialog`**  | <font color=green>组件</font> | iOS 风格对话框组件                 | `package:flutter/cupertino.dart` |
+| **`CupertinoActionSheet`**  | <font color=green>组件</font> | iOS 风格底部弹窗内容               | `package:flutter/cupertino.dart` |
+| **`CupertinoPopupSurface`** | <font color=green>组件</font> | 弹窗表面组件（用于自定义弹窗外观） | `package:flutter/cupertino.dart` |
 
 
 * `AlertDialog`（最常用）
@@ -679,22 +680,22 @@ dependencies:
 >
 > 5️⃣ 设置调试模式等...
 
-| 方法                                      | 说明                                           |
-| ----------------------------------------- | ---------------------------------------------- |
-| `addEventHandler({ onMTCommonReceiver })` | 注册原生端发来的事件处理回调                   |
-| `getRegistrationId()`                     | 获取当前设备的 Registration ID（推送唯一标识） |
-| `initIos({appKey, channel})`              | 初始化 iOS 推送 SDK                            |
-| `initAndroid()`                           | 初始化 Android 推送 SDK                        |
-| `setNotificationBadge(int count)`         | 设置通知角标数（如：0）                        |
-| `resetNotificationBadge()`                | 重置角标                                       |
-| `printMy(String msg)`                     | 用于 debug 打印（SDK 内封装）                  |
-| `checkNotificationAuthorizationIos()`     | 检查 iOS 用户是否开启通知权限                  |
-| `configDebugMode(bool)`                   | 设置是否开启调试模式                           |
+| 方法                                          | 说明                                               |
+| --------------------------------------------- | -------------------------------------------------- |
+| **`addEventHandler({ onMTCommonReceiver })`** | 注册原生端发来的事件处理回调                       |
+| **`getRegistrationId()`**                     | 获取当前设备的 **Registration ID**（推送唯一标识） |
+| **`initIos({appKey, channel})`**              | 初始化 iOS 推送 SDK                                |
+| **`initAndroid()`**                           | 初始化 Android 推送 SDK                            |
+| **`setNotificationBadge(int count)`**         | 设置通知角标数（如：0）                            |
+| **`resetNotificationBadge()`**                | 重置角标                                           |
+| **`printMy(String msg)`**                     | 用于 **debug** 打印（SDK 内封装）                  |
+| **`checkNotificationAuthorizationIos()`**     | 检查 iOS 用户是否开启通知权限                      |
+| **`configDebugMode(bool)`**                   | 设置是否开启调试模式                               |
 
 ```dart
 /// pubspec.yaml
 dependencies:
-  flutter_plugin_engagelab: ^1.2.4
+  flutter_plugin_engagelab: any
 ```
 
 ### 11、[**`OpenInstall`**](https://www.openinstallglobal.com/)：移动端的安装/拉新/渠道统计 SDK <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
@@ -732,7 +733,7 @@ String getNowTime() {
 }
 ```
 
-* 📆 日期格式符（Date fields）
+* 📆 日期格式符
 
   | 格式符  | 含义             | 示例输出 | 说明                      |
   | ------- | ---------------- | -------- | ------------------------- |
@@ -768,7 +769,7 @@ String getNowTime() {
   | `S`    | 毫秒（1 位）         | `4`          | 可能输出一位、两位或三位 |
   | `SSS`  | 毫秒（三位）         | `004`        | 推荐用                   |
 
-* 🌍 时区（TimeZone）
+* 🌍 时区
 
   | 格式符 | 含义             | 示例输出              | 说明                   |
   | ------ | ---------------- | --------------------- | ---------------------- |
@@ -794,7 +795,7 @@ String getNowTime() {
 
 ### 13、<font id=Navigator>✅**`Navigator`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> 1️⃣ 在 Flutter 中，每一个 `Navigator` 都会有**自己的路由栈（Route Stack）**，并不是全局唯一的
+> 1️⃣ 在 [**Flutter**](https://flutter.dev/) 中，每一个 `Navigator` 都会有**自己的路由栈**，并不是全局唯一的
 >
 > 2️⃣ 可以有多个 **Navigator**👇
 >
@@ -1368,12 +1369,12 @@ abstract class RouteAwareState<T extends RouteAwareStatefulPage>
 
 * 系统遮挡区的定义👇
 
-  | 场景               | 说明                                                         |
-  | ------------------ | ------------------------------------------------------------ |
-  | ⏫ 顶部状态栏       | iOS 顶部刘海、状态栏；Android 通知栏                         |
-  | ⏬ 底部系统导航栏   | Android底部导航按钮区域（Back/Home/Recent）                  |
-  | 🕳️ iPhone 刘海/下巴 | iPhone **X**/**11**/**12**/**13**/**14**/**15** 系列的`凹口`和`下巴`区域 |
-  | 🆘 横屏下的左右边缘 | 一些设备横屏时会有侧边手势栏                                 |
+  | 场景                   | 说明                                                         |
+  | ---------------------- | ------------------------------------------------------------ |
+  | ⏫ 顶部状态栏           | iOS 顶部刘海、状态栏；Android 通知栏                         |
+  | ⏬ 底部系统导航栏       | **Android**底部导航按钮区域（Back/Home/Recent）              |
+  | 📱 **iPhone** 刘海/下巴 | **iPhone** **X**/**11**/**12**/**13**/**14**/**15** 系列的`凹口`和`下巴`区域 |
+  | 🆘 横屏下的左右边缘     | 一些设备横屏时会有侧边手势栏                                 |
 
 * 温馨提示
 
@@ -1528,7 +1529,7 @@ class XXX{}
 class XXX extends Object{}
 ```
 
-### 17、Flutter中，支持<font color=red>**滑动**</font>的所有核心**`Widget`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 17、在[**Flutter**](https://flutter.dev/)中，支持<font color=red>**滑动**</font>的所有核心**`Widget`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > Grid：网格
 
@@ -1544,7 +1545,7 @@ class XXX extends Object{}
     | **无法自定义**     | 样式和位置难以自定义，除非私有 API 或覆盖子视图（不推荐）    |
     | **滚动驱动指示器** | 滚动行为自动驱动指示器变化，无需开发者手动干预               |
 
-  * Flutter 滚动指示器是独立的 `Scrollbar` 组件
+  * [**Flutter**](https://flutter.dev/) 滚动指示器是独立的 `Scrollbar` 组件
 
     | 特点                    | 描述                                                         |
     | ----------------------- | ------------------------------------------------------------ |
@@ -1965,9 +1966,9 @@ class XXX extends Object{}
   }
   ```
 
-  > 在iOS中没有专门的系统封装上拉加载、下拉刷新的控件（一般用MJRefresh）
+  > 在iOS中没有专门的系统封装上拉加载、下拉刷新的控件（一般用[**MJRefresh**](https://github.com/CoderMJLee/MJRefresh)）
   >
-  > 但是在Flutter由系统给提供了`RefreshIndicator`
+  > 但是在[**Flutter**](https://flutter.dev/)由系统给提供了`RefreshIndicator`
 
   ```dart
   /// DraggableScrollableSheet（可拖动底部弹出滑动面板）
@@ -2004,7 +2005,7 @@ class XXX extends Object{}
 
 ### 18、👋手势 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> 虽然本质是响应用户输入（如点击、滑动、拖动、缩放等），但它们的使用方式**确实也是通过 Widget 实现的**
+> 虽然本质是响应用户输入（如点击、滑动、拖动、缩放等），但它们的使用方式**确实也是通过 `Widget` 实现的**
 >
 > ```
 > ┌────────────────────────────┐
@@ -2018,27 +2019,27 @@ class XXX extends Object{}
 > └────────────────────────────┘
 > ```
 
-* **Flutter** 中的手势系统本质（由三层机制组成）
+* [**Flutter**](https://flutter.dev/) 中的手势系统本质（由三层机制组成）
 
-  | 层级   | 名称                     | 说明                                               |
-  | ------ | ------------------------ | -------------------------------------------------- |
-  | 1️⃣ 底层 | `Listener`               | 原始事件监听（如 pointerDown、pointerMove）        |
-  | 2️⃣ 中层 | `GestureDetector`        | 对原始事件进行识别封装（如 tap、double tap、drag） |
-  | 3️⃣ 高层 | `InkWell`, `InkResponse` | 组件化的手势 + 视觉反馈（如水波纹）                |
+  | 层级   | 名称                     | 说明                                                         |
+  | ------ | ------------------------ | ------------------------------------------------------------ |
+  | 1️⃣ 底层 | `Listener`               | 原始事件监听（如 **pointerDown**、**pointerMove**）          |
+  | 2️⃣ 中层 | `GestureDetector`        | 对原始事件进行识别封装（如 **tap**、**double tap**、**drag**） |
+  | 3️⃣ 高层 | `InkWell`, `InkResponse` | 组件化的手势 + 视觉反馈（如水波纹）                          |
 
-* ✅ **Flutter** 中所有手势相关 **`Widget`** 一览（全量分类）
+* ✅[**Flutter**](https://flutter.dev/) 中所有手势相关 **`Widget`** 一览（全量分类）
 
-  * 🔹原始指针事件层（Pointer 级）：处理最底层的触摸事件（pointer down / move / up 等）
+  * 🔹原始指针事件层（Pointer 级）：处理最底层的触摸事件（**pointer down** / **move** / **up** 等）
 
     | Widget               | 说明                                                         |
     | -------------------- | ------------------------------------------------------------ |
-    | **`Listener`**       | 监听原始 Pointer 事件（触摸按下、移动、抬起、取消、进入、离开等） |
+    | **`Listener`**       | 监听原始 **Pointer** 事件（触摸按下、移动、抬起、取消、进入、离开等） |
     | `MouseRegion`        | 专门处理鼠标事件（进入、悬停、离开、位置）                   |
     | `RawGestureDetector` | 手动构建手势识别器，适合自定义复杂手势识别逻辑               |
-    | `IgnorePointer`      | 禁用子组件对 Pointer 事件的响应                              |
-    | `AbsorbPointer`      | 拦截 Pointer 事件（自身响应但不传递给子组件）                |
+    | `IgnorePointer`      | 禁用子组件对 **Pointer** 事件的响应                          |
+    | `AbsorbPointer`      | 拦截 **Pointer** 事件（自身响应但不传递给子组件）            |
 
-  * 🔹手势识别层（Gesture 级）：对原始 Pointer 的封装，负责识别出“点击/拖动/缩放”等语义手势
+  * 🔹手势识别层（Gesture 级）：对原始 **Pointer** 的封装，负责识别出“点击/拖动/缩放”等语义手势
 
     | Widget                                                       | 说明                                                         |
     | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -2337,18 +2338,18 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 
 > 提供用户输入、点击、拖拽、手势等功能
 
-| 类型        | 常见 Widget                                    |
+| 类型        | 常见 `Widget`                                  |
 | ----------- | ---------------------------------------------- |
 | 按钮类      | `ElevatedButton`, `TextButton`, `IconButton`   |
 | 输入类      | `TextField`, `Form`, `DropdownButton`          |
 | 滑动/拖动类 | `Slider`, `Switch`, `Draggable`, `Dismissible` |
 | 手势类      | `GestureDetector`, `InkWell`                   |
 
-#### 22.2、导航 & 路由类 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 22.2、🧭 导航 & 路由类 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 用于构建页面跳转、Tab 切换等
 
-| 类型     | 常见 Widget                                   |
+| 类型     | 常见 `Widget`                                 |
 | -------- | --------------------------------------------- |
 | 路由相关 | `Navigator`, `PageView`, `MaterialPageRoute`  |
 | Tab 切换 | `TabBar`, `TabBarView`, `BottomNavigationBar` |
@@ -2357,7 +2358,7 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 
 > 用于生命周期控制、可见性、构建逻辑等
 
-| 类型         | 常见 Widget                                     |
+| 类型         | 常见 `Widget`                                   |
 | ------------ | ----------------------------------------------- |
 | 生命周期相关 | `StatefulBuilder`, `Builder`                    |
 | 显隐控制     | `Visibility`, `Offstage`, `Opacity`             |
@@ -2367,7 +2368,7 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 
 > 用来呈现用户可见的内容：文字、图片、图标、视频等
 
-| 类型     | 常见 Widget                                  |
+| 类型     | 常见 `Widget`                                |
 | -------- | -------------------------------------------- |
 | 文本类   | `Text`, `RichText`, `SelectableText`         |
 | 图片类   | `Image`, `FadeInImage`, `CachedNetworkImage` |
@@ -2378,13 +2379,13 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 
 >  用来包裹内容并提供 **样式、装饰、边框、背景、阴影**
 
-| 常见例子        | 功能                                 |
-| --------------- | ------------------------------------ |
-| `Container`     | 最万能的容器（支持装饰、约束、对齐） |
-| `Card`          | 带圆角、阴影的容器                   |
-| `DecoratedBox`  | 单独提供 `BoxDecoration`             |
-| `PhysicalModel` | 控制阴影、抗锯齿、透明等底层视觉效果 |
-| `Material`      | 实现 material 效果（配合 Ink）       |
+| 常见例子        | 功能                                   |
+| --------------- | -------------------------------------- |
+| `Container`     | 最万能的容器（支持装饰、约束、对齐）   |
+| `Card`          | 带圆角、阴影的容器                     |
+| `DecoratedBox`  | 单独提供 `BoxDecoration`               |
+| `PhysicalModel` | 控制阴影、抗锯齿、透明等底层视觉效果   |
+| `Material`      | 实现 **material** 效果（配合 **Ink**） |
 
 ### 23、中间代码的生成工具 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -2407,11 +2408,11 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 
 #### 23.2、[**flutter_gen_runner**](https://pub.dev/packages/flutter_gen)
 
-> 根据你的 `pubspec.yaml` 中配置的资源文件，自动生成 assets.gen.dart 文件，让你用代码方式访问资源，更安全、方便。
+> 根据你的 `pubspec.yaml` 中配置的资源文件，自动生成 `assets.gen.dart` 文件，让你用代码方式访问资源，更安全、方便。
 
 ```yaml
 dev_dependencies:
-  flutter_gen_runner: ^5.3.1
+  flutter_gen_runner: any
   build_runner: any
 
 flutter_gen:
@@ -2500,7 +2501,7 @@ builder: (context, child) {
 
   | 问题点                       | 原因                                                         |
   | ---------------------------- | ------------------------------------------------------------ |
-  | ❌ 没有统一的富文本对象       | 没有类似 `NSAttributedString` 的官方结构，Flutter 用 `TextSpan` 来手动构建 |
+  | ❌ 没有统一的富文本对象       | 没有类似 `NSAttributedString` 的官方结构，[**Flutter**](https://flutter.dev/) 用 `TextSpan` 来手动构建 |
   | ❌ `Text` 只能显示简单样式    | 复杂样式需 `RichText` + `TextSpan`                           |
   | ❌ 没有原生点击行为           | 点击行为必须手动实现 `GestureRecognizer`                     |
   | ❌ 图片/**WidgetSpan** 兼容差 | 不能很好地与文字混排，溢出等问题                             |
@@ -2508,10 +2509,10 @@ builder: (context, child) {
 
 #### 25.2、🧠 为什么会这样？
 
-[**Flutter**](https://flutter.dev/) 是跨平台框架，它的核心设计理念是“自己画 UI（Skia）”，所有文本渲染都是**自绘**：
+[**Flutter**](https://flutter.dev/) 是跨平台框架，它的核心设计理念是“自己画 UI（**Skia**）”，所有文本渲染都是**自绘**：
 
-- iOS 原生：富文本由操作系统提供支持（UIKit + CoreText + WebKit）
-- [**Flutter**](https://flutter.dev/)：必须用 Dart 描述 → Skia 绘制 → 手动管理逻辑
+- **iOS（原生）**：富文本由操作系统提供支持（**UIKit** + **CoreText** + **WebKit**）
+- [**Flutter**](https://flutter.dev/)：必须用 **Dart** 描述 => **Skia** 绘制 => 手动管理逻辑
 
 所以，[**Flutter**](https://flutter.dev/) 没办法像 iOS 那样“一行代码全搞定”。
 
@@ -2587,11 +2588,11 @@ Obx(() => IndexedStack(
 
 by [**Rémi Rousselet**](https://github.com/rrousselGit)
 
-> 1️⃣ [**`Provider`**](https://pub.dev/packages/provider) 是 Flutter 中用于**管理和共享状态（数据）**的工具，可以 **在整个 widget 树中方便、安全地传递数据和状态**，并在数据变化时自动更新 UI。
+> 1️⃣ [**`Provider`**](https://pub.dev/packages/provider) 是 [**Flutter**](https://flutter.dev/) 中用于**管理和共享状态（数据）**的工具，可以 **在整个 `widget` 树中方便、安全地传递数据和状态**，并在数据变化时自动更新 UI。
 >
-> 2️⃣ 本质上是对 Flutter 原生的 `InheritedWidget` 和 `ChangeNotifier` 的封装，让状态共享变得更容易、更强大。
+> 2️⃣ 本质上是对 [**Flutter**](https://flutter.dev/) 原生的 `InheritedWidget` 和 `ChangeNotifier` 的封装，让状态共享变得更容易、更强大。
 >
-> 3️⃣ 是 Google 官方推荐的 Flutter 状态管理方式。
+> 3️⃣ 是 [**Google**](https://www.google.com/) 官方推荐的 [**Flutter**](https://flutter.dev/) 状态管理方式。
 
 | 组件名                   | 作用说明                                       |
 | ------------------------ | ---------------------------------------------- |
@@ -2649,7 +2650,7 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
 >
 > 2️⃣ 能做什么？
 >
-> ✅ 用于构建清晰的业务逻辑层（Bloc/Cubit）
+> ✅ 用于构建清晰的业务逻辑层（**Bloc**/**Cubit**）
 > ✅ 实现输入事件 → 输出状态流转
 > ✅ 组件化管理多个状态源
 > ✅ 自动更新 UI，避免手动 setState
@@ -2663,20 +2664,20 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
 >
 > 4️⃣  [**flutter_bloc**](https://pub.dev/packages/flutter_bloc) 提供的主要功能和类：
 >
-> | 类 / 方法名              | 类型   | 用途说明                                                     |
-> | ------------------------ | ------ | ------------------------------------------------------------ |
-> | `Bloc<Event, State>`     | 抽象类 | BLoC 的核心，处理事件并输出状态                              |
-> | `Cubit<State>`           | 抽象类 | 简化版 Bloc，去掉了 Event，只操作状态（轻量状态管理）        |
-> | `BlocProvider`           | Widget | 提供 Bloc/Cubit 实例给 widget 树使用（依赖注入）             |
-> | `MultiBlocProvider`      | Widget | 同时注册多个 BlocProvider                                    |
-> | `BlocBuilder`            | Widget | 根据状态变化构建 UI，类似于 `Consumer`                       |
-> | `BlocListener`           | Widget | 监听状态变化，执行副作用（如弹窗、跳转等）                   |
-> | `BlocConsumer`           | Widget | `BlocBuilder` + `BlocListener` 的组合体                      |
-> | `RepositoryProvider`     | Widget | 注入 Repository（如 API 服务类等，便于测试和解耦）           |
-> | `BlocObserver`           | 抽象类 | 全局监听 Bloc 生命周期：事件派发、状态变更、错误等（适合调试日志） |
-> | `context.read<T>()`      | 方法   | 获取 Bloc/Cubit 实例，不触发 rebuild                         |
-> | `context.watch<T>()`     | 方法   | 获取并监听 Bloc/Cubit，状态变化时触发 rebuild                |
-> | `context.select<T, R>()` | 方法   | 精准监听某个属性变化，避免无意义重建                         |
+> | 类 / 方法名                  | 类型   | 用途说明                                                     |
+> | ---------------------------- | ------ | ------------------------------------------------------------ |
+> | **`Bloc<Event, State>`**     | 抽象类 | **BLoC** 的核心，处理事件并输出状态                          |
+> | **`Cubit<State>`**           | 抽象类 | 简化版 **Bloc**，去掉了 **Event**，只操作状态（轻量状态管理） |
+> | **`BlocProvider`**           | 组件   | 提供 **Bloc**/**Cubit**实例给 **widget** 树使用（依赖注入）  |
+> | **`MultiBlocProvider`**      | 组件   | 同时注册多个 **BlocProvider**                                |
+> | **`BlocBuilder`**            | 组件   | 根据状态变化构建 UI，类似于 `Consumer`                       |
+> | **`BlocListener`**           | 组件   | 监听状态变化，执行副作用（如弹窗、跳转等）                   |
+> | **`BlocConsumer`**           | 组件   | `BlocBuilder` + `BlocListener` 的组合体                      |
+> | **`RepositoryProvider`**     | 组件   | 注入 **Repository**（如 API 服务类等，便于测试和解耦）       |
+> | **`BlocObserver`**           | 抽象类 | 全局监听 **Bloc** 生命周期：事件派发、状态变更、错误等（适合调试日志） |
+> | **`context.read<T>()`**      | 方法   | 获取 **Bloc**/**Cubit** 实例，不触发 **`rebuild`**           |
+> | **`context.watch<T>()`**     | 方法   | 获取并监听 **Bloc**/**Cubit**，状态变化时触发 **`rebuild`**  |
+> | **`context.select<T, R>()`** | 方法   | 精准监听某个属性变化，避免无意义重建                         |
 
 #### 27.4、[**`GetX`**](https://pub.dev/packages/get) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -2871,13 +2872,13 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
 
 ##### 27.4.3、**`GetxController`** 🆚 **`GetView<T>`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-| 项目                | `GetxController`                  | `GetView<T>`                                 |
-| ------------------- | --------------------------------- | -------------------------------------------- |
-| 作用                | 管理业务逻辑 & 状态               | 展示视图 + 自动注入 controller               |
-| 用于                | 编写逻辑类                        | 编写页面（StatelessWidget）                  |
-| 是否包含 UI         | ❌ 纯逻辑类                        | ✅ 包含 UI                                    |
-| 是否需要注册        | ✅ 需要手动注册 `Get.put()` 或绑定 | ✅ controller 需先注册，才能被 `GetView` 使用 |
-| controller 获取方式 | 自己写 `Get.find<>()` 获取        | 自动通过 `controller` 变量提供               |
+| 项目                    | `GetxController`                  | `GetView<T>`                                     |
+| ----------------------- | --------------------------------- | ------------------------------------------------ |
+| 作用                    | 管理业务逻辑 & 状态               | 展示视图 + 自动注入 **controller**               |
+| 用于                    | 编写逻辑类                        | 编写页面（**`StatelessWidget`**）                |
+| 是否包含 UI             | ❌ 纯逻辑类                        | ✅ 包含 UI                                        |
+| 是否需要注册            | ✅ 需要手动注册 `Get.put()` 或绑定 | ✅ **controller** 需先注册，才能被 `GetView` 使用 |
+| **controller** 获取方式 | 自己写 `Get.find<>()` 获取        | 自动通过 `controller` 变量提供                   |
 
 * `GetxController` 是一个继承自 `Controller` 的类，用于管理你的页面状态和业务逻辑。
 
@@ -2982,6 +2983,8 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
 > 1️⃣ 用于在 `GetMaterialApp` 中注册页面，它包含了页面路径、页面构造函数、绑定依赖、转场动画等信息。
 >
 > 2️⃣ 是专为 `GetMaterialApp.getPages` 服务
+>
+> 3️⃣ 每一个 `GetPage` 都表示一个路由页面的配置项。
 
 ```dart
 GetPage(
@@ -3166,51 +3169,93 @@ Get.offAllNamed('/splash');
   Get.toNamed('/home');
   ```
 
-##### 27.4.7、**`Get.dialog()`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 27.4.7、[**`GetX`**](https://pub.dev/packages/get)  具 UI 效果的函数方法（非 **`Widget`**） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> `Get.dialog()` 默认用当前上下文找 <a href="#Navigator" style="font-size:17px; color:green;"><b>Navigator</b></a>
+| 方法名                    | 用途/效果            | 说明                                                     |
+| ------------------------- | -------------------- | -------------------------------------------------------- |
+| **`Get.snackbar()`**      | 显示顶部/底部提示条  | 全局提示条，支持标题、内容、图标、自定义按钮、颜色等     |
+| **`Get.dialog()`**        | 弹出一个自定义弹窗   | 可传入任意 **`Widget`**，类似原生 **`showDialog`**       |
+| **`Get.defaultDialog()`** | 快速构建标准弹窗     | 内置标题、内容、确认/取消按钮，快速使用                  |
+| **`Get.bottomSheet()`**   | 显示底部弹出菜单     | 类似微信弹窗，传入任意 **`Widget`**，自带滑入动画        |
+| **`Get.generalDialog()`** | 自定义弹窗动画与内容 | 更底层的弹窗控制方式，可自定义动画效果和内容，控制更底层 |
+| **`Get.showOverlay()`**   | 显示全屏遮罩层       | 常用于显示 **loading**、**toast**、**blur** 效果         |
 
-[**`GetX`**](https://pub.dev/packages/get) 框架提供的弹窗方法
 
-| 参数名               | 类型       | 说明                                           |
-| -------------------- | ---------- | ---------------------------------------------- |
-| `barrierDismissible` | `bool`     | 是否点击背景关闭弹窗，默认 `true`              |
-| `useSafeArea`        | `bool`     | 是否使用 SafeArea，默认 `true`                 |
-| `name`               | `String?`  | 给弹窗设置一个路由名（可选）                   |
-| `transitionDuration` | `Duration` | 动画持续时间，默认 200ms                       |
-| `transitionCurve`    | `Curve`    | 动画曲线，如 `Curves.easeInOut`                |
-| `opaque`             | `bool`     | 是否完全遮挡，默认 `false`                     |
-| `barrierColor`       | `Color`    | 背景颜色，默认 `Colors.black.withOpacity(0.5)` |
+* **`Get.snackbar()`**
 
-```dart
-ElevatedButton(
-  onPressed: () async {
-    final result = await Get.dialog<String>(
-      _CustomDialogContent(),
+* **`Get.dialog()`**
 
-      barrierDismissible: true, // ✅ 点击弹窗外区域是否关闭弹窗（true = 可关闭）
-      barrierColor: Colors.black.withOpacity(0.5), // ✅ 弹窗背景遮罩颜色（通常为半透明黑色）
-      useSafeArea: true, // ✅ 是否自动避开状态栏/刘海/底部安全区（默认 true）
+  > **`Get.dialog()`** 默认用当前上下文找 <a href="#Navigator" style="font-size:17px; color:green;"><b>Navigator</b></a>
 
-      navigatorKey: Get.key, // ✅ 指定使用哪个 Navigator（默认用 Get.key 就行）
-      arguments: {'from': '按钮点击'}, // ✅ 向弹窗内部传递参数（可通过 Get.arguments 获取）
+  [**`GetX`**](https://pub.dev/packages/get) 框架提供的弹窗方法
 
-      transitionDuration: Duration(milliseconds: 400), // ✅ 动画持续时间（默认 200ms）
-      transitionCurve: Curves.easeInOutBack, // ✅ 动画曲线（决定进出弹窗的运动方式）
+  | 参数名                   | 类型       | 说明                                           |
+  | ------------------------ | ---------- | ---------------------------------------------- |
+  | **`barrierDismissible`** | `bool`     | 是否点击背景关闭弹窗，默认 `true`              |
+  | **`useSafeArea`**        | `bool`     | 是否使用 **SafeArea**，默认 `true`             |
+  | **`name`**               | `String?`  | 给弹窗设置一个路由名（可选）                   |
+  | **`transitionDuration`** | `Duration` | 动画持续时间，默认 200ms                       |
+  | **`transitionCurve`**    | `Curve`    | 动画曲线，如 `Curves.easeInOut`                |
+  | **`opaque`**             | `bool`     | 是否完全遮挡，默认 `false`                     |
+  | **`barrierColor`**       | `Color`    | 背景颜色，默认 `Colors.black.withOpacity(0.5)` |
 
-      name: '/custom-dialog', // ✅ 路由名称（可选，方便调试或拦截路由）
-      routeSettings: RouteSettings(name: '/custom-dialog-settings'), // ✅ 更完整的路由配置（配合导航系统）
-    );
+  ```dart
+  ElevatedButton(
+    onPressed: () async {
+      final result = await Get.dialog<String>(
+        _CustomDialogContent(),// 一个widget
+  
+        barrierDismissible: true, // ✅ 点击弹窗外区域是否关闭弹窗（true = 可关闭）
+        barrierColor: Colors.black.withOpacity(0.5), // ✅ 弹窗背景遮罩颜色（通常为半透明黑色）
+        useSafeArea: true, // ✅ 是否自动避开状态栏/刘海/底部安全区（默认 true）
+  
+        navigatorKey: Get.key, // ✅ 指定使用哪个 Navigator（默认用 Get.key 就行）
+        arguments: {'from': '按钮点击'}, // ✅ 向弹窗内部传递参数（可通过 Get.arguments 获取）
+  
+        transitionDuration: Duration(milliseconds: 400), // ✅ 动画持续时间（默认 200ms）
+        transitionCurve: Curves.easeInOutBack, // ✅ 动画曲线（决定进出弹窗的运动方式）
+  
+        name: '/custom-dialog', // ✅ 路由名称（可选，方便调试或拦截路由）
+        routeSettings: RouteSettings(name: '/custom-dialog-settings'), // ✅ 更完整的路由配置（配合导航系统）
+      );
+  
+      if (result != null) {
+        Get.snackbar('返回结果', '你选择了: $result'); // ✅ 弹窗关闭后获取返回值
+      }
+    },
+    child: Text('打开自定义弹窗'),
+  )
+  ```
 
-    if (result != null) {
-      Get.snackbar('返回结果', '你选择了: $result'); // ✅ 弹窗关闭后获取返回值
-    }
-  },
-  child: Text('打开自定义弹窗'),
-)
-```
+* **`Get.defaultDialog()`**
 
-##### 27.4.8、🔑**`Get.key` **<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+* **`Get.bottomSheet()`**
+
+* **`Get.generalDialog()`**
+
+* **`Get.showOverlay()`**
+
+##### 27.4.8、[**`GetX`**](https://pub.dev/packages/get) 的 UI 控制行为函数 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+| **方法名**                       | **行为描述**                                         | **说明**                                                     |
+| -------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------ |
+| **`Get.to()`**                   | 跳转到新页面                                         | 推入页面，可传 **`Widget`**、参数、动画等                    |
+| **`Get.toNamed()`**              | 跳转到命名路由页面                                   | 使用 `getPages` 中注册的路由名                               |
+| **`Get.off()`**                  | 替换当前页面                                         | 替代当前页面为目标 Widget 页面                               |
+| **`Get.offNamed()`**             | 替换当前页面为命名路由                               | 当前页面将被目标命名路由替代                                 |
+| **`Get.offAll()`**               | 清空页面栈并跳转到新页面                             | 路由栈清空，仅保留目标页面                                   |
+| **`Get.offAllNamed()`**          | 清空页面栈并跳转到命名路由                           | 常用于登录成功后跳转主页                                     |
+| **`Get.back()`**                 | 返回上一页 / 关闭当前 UI                             | 自动判断并关闭 **dialog**、**bottomSheet** 或返回页面，无需 **context** |
+| **`Get.closeAllSnackbars()`**    | 关闭所有 **snackbar** 提示条                         | 如果多个提示叠加，可统一关闭                                 |
+| **`Get.closeCurrentSnackbar()`** | 关闭当前 **snackbar** 提示条                         | 更细粒度，仅关闭最新一条                                     |
+| **`Get.closeAllOverlays()`**     | 关闭所有 UI 覆盖层（含 **dialog**、**bottomSheet**） | 常用于退出登录、切换页面前统一关闭所有 UI 弹层               |
+| **`Get.until((route) => ...)`**  | 一直返回直到符合条件                                 | 类似 `popUntil`，用于条件式多级返回                          |
+| **`Get.canPop()`**               | 是否可以返回上一页                                   | 返回 `true/false`，类似 `Navigator.canPop()`                 |
+| **`Get.isDialogOpen`**           | 当前是否有 **dialog** 被打开                         | 判断是否有弹窗正在显示中                                     |
+| **`Get.isSnackbarOpen`**         | 当前是否有 **snackbar** 被打开                       | 判断是否有提示条正在显示中                                   |
+| **`Get.isBottomSheetOpen`**      | 当前是否有 **bottomSheet** 被打开                    | 判断是否有底部弹窗正在显示中                                 |
+
+##### 27.4.9、🔑**`Get.key` **<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > **`Get.key` 就是给全局 Navigator 打了个 tag（标签）**，即：**全局 Navigator Key**。[**`GetX`**](https://pub.dev/packages/get)  把它注册到自己的容器里，之后你所有（**push**、**pop**、**dialog** 等）相关操作都可以**不需要 context，直接通过这个 tag 找到并调用 Navigator 的功能。**（<font color=red>类似于iOS的**通知机制**</font>）
 
@@ -3299,7 +3344,7 @@ ElevatedButton(
 > 👉 **任何时候用 `Get.dialog()`，都写上 `navigatorKey: Get.key`**，
 > ✅ 兼容所有场景、生命周期、嵌套结构，绝对不翻车。
 
-##### 27.4.9、[**`GetX`**](https://pub.dev/packages/get) 多语言化  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 27.4.10、[**`GetX`**](https://pub.dev/packages/get) 多语言化  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 如果找不到对应 key，会 **原样返回原始字符串**（即 `"等待状态变化"`），不会报错或崩溃。
 
@@ -3307,7 +3352,7 @@ ElevatedButton(
 String status = "等待状态变化".tr;
 ```
 
-##### 27.4.10、关于[**`GetX`**](https://pub.dev/packages/get) 的二次（语法糖🍬）封装  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 27.4.11、关于[**`GetX`**](https://pub.dev/packages/get) 的二次（语法糖🍬）封装  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 import 'package:get/get.dart';
@@ -3346,7 +3391,7 @@ T getOrLazyPut<T extends GetxController>(
 late final MyTabCtrl tabController = getOrPut(() => MyTabCtrl());
 ```
 
-##### 27.4.11、基于[**`GetX`**](https://pub.dev/packages/get) 最佳实践的完整项目结构模板（项目名为：`getx_demo`） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 27.4.12、基于[**`GetX`**](https://pub.dev/packages/get) 最佳实践的完整项目结构模板（项目名为：`getx_demo`） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```bash
 lib/
@@ -3463,7 +3508,7 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-##### 27.4.12、[**`GetX`**](https://pub.dev/packages/get) 值的双向绑定 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 27.4.13、[**`GetX`**](https://pub.dev/packages/get) 值的双向绑定 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```
 lib/
@@ -3576,6 +3621,10 @@ class JobsBinding extends Bindings {
   }
 }
 ```
+
+##### 27.4.14、**`GetInterface`**  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> `GetInterface` 是 [**GetX**](https://pub.dev/packages/get)  全部功能 API 的“目录规范”，而 `Get` 是它的唯一实现。
 
 ### 28、导航栏左上角的返回按钮的<font color=red>**行为拦截和自定义**</font>  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -4131,17 +4180,17 @@ class FadeInImageDemo extends StatelessWidget {
   }
   ```
 
-* 由[**FVM**](https://fvm.app/)管理的**Flutter.SDK**的缓存目录：`.fvm/flutter_sdk/`
+* 由[**FVM**](https://fvm.app/)管理的[**Flutter**](https://flutter.dev/).**SDK**的缓存目录：`.fvm/flutter_sdk/`
 
 * 环境变量配置：`.bash_profile`
 
   > 🌟全局定义了一个 shell 函数，把所有的 `flutter` 命令都转发给 `fvm`
   >
-  > 📌 那么 FVM 是怎么知道用哪个 Flutter SDK？
+  > 📌 那么 [**FVM**](https://fvm.app/) 是怎么知道用哪个 [**Flutter**](https://flutter.dev/).**SDK**？
   >
-  > * FVM 会优先查找**当前项目的 `.fvm/fvm_config.json`** 文件；
+  > * [**FVM**](https://fvm.app/) 会优先查找**当前项目的 `.fvm/fvm_config.json`** 文件；
   >
-  > * 如果你不在 Flutter 项目目录，FVM 会使用你设置的 **全局默认 Flutter SDK 版本**。
+  > * 如果你不在 [**Flutter**](https://flutter.dev/) 项目目录，[**FVM**](https://fvm.app/) 会使用你设置的 **全局默认 Flutter SDK 版本**。
   >
   >   ```shell
   >   ➜  Desktop fvm global
@@ -4179,11 +4228,11 @@ class FadeInImageDemo extends StatelessWidget {
   | `.fvm/fvm_config.json`                                       | 项目目录内 `.fvm/` | ❌ **建议忽略** | 实际执行时 FVM 内部记录的配置信息：包含 `flutterSdkVersion`、`channel`、`cachePath` 等 | [**FVM**](https://fvm.app/) 自动生成，用于代理和定位 SDK，不可手动编辑 |
   | `.fvm/flutter_sdk`                                           | `.fvm/` 中软链接   | ❌ 忽略         | 指向你电脑上的实际 SDK 位置（`~/.fvm/versions/3.32.6`）      | 用于让 `fvm flutter` 命令生效，指向实际安装版本              |
   | `~/.fvm/versions/<version>`                                  | 全局路径           | ✅ 本地缓存     | 实际安装的 SDK，供多个项目共用                               | 每个版本只安装一次，多项目共享此目录，无需提交               |
-  | `release` 文件<br>`.fvm/versions/<version>/version` 或 `release` | SDK 内部           | ❌ 不关心       | Flutter 官方 SDK 自带的版本描述文件，标识当前版本及 channel  | 可用于诊断或展示 SDK 内部信息，一般无需关心或操作            |
+  | `release` 文件<br>`.fvm/versions/<version>/version` 或 `release` | SDK 内部           | ❌ 不关心       | [**Flutter**](https://flutter.dev/).**SDK** 自带的版本描述文件，标识当前版本及 channel | 可用于诊断或展示 SDK 内部信息，一般无需关心或操作            |
   
 * 🧰[**FVM**](https://fvm.app/)命令行使用方式：
 
-  * **查看当前 FVM 的全局默认版本**
+  * **查看当前 [FVM](https://fvm.app/) 的全局默认版本**
 
     ```shell
     fvm global
@@ -4220,10 +4269,10 @@ class FadeInImageDemo extends StatelessWidget {
     | -------- | ------------------------------------------------------------ | -------------- |
     | `stable` | **稳定发布，适合生产环境**                                   | 普通开发者 ✅   |
     | `beta`   | **新功能预览版，较稳定**                                     | 有经验的开发者 |
-    | `main`   | **主开发分支，功能最前沿**<br>从 **Flutter 3.22 开始**，Flutter 团队对 channel 进行了重构，**废弃了 `dev` channel 的独立维护**，其功能完全被 `main` 取代。 | 需体验最新特性 |
-    | `master` | **Flutter 引擎贡献者使用**                                   | 深度参与者     |
+    | `main`   | **主开发分支，功能最前沿**<br>从 [**Flutter**](https://flutter.dev/) 3.22 开始，[**Flutter**](https://flutter.dev/) 团队对 channel 进行了重构，**废弃了 `dev` channel 的独立维护**，其功能完全被 `main` 取代。 | 需体验最新特性 |
+    | `master` | **[Flutter](https://flutter.dev/) 引擎贡献者使用**           | 深度参与者     |
 
-  * 升级（切换）由[**FVM**](https://fvm.app/)管理的**Flutter.SDK**
+  * 升级（切换）由[**FVM**](https://fvm.app/)管理的[**Flutter**](https://flutter.dev/).**SDK**
 
     ```shell
     # 如果有必要，需要先切换channel，再upgrade
@@ -4356,7 +4405,7 @@ class FadeInImageDemo extends StatelessWidget {
       }
       ```
   
-  * Git忽略文件`.gitignore`对于[**VSCode**](https://code.visualstudio.com/)的配置文件的处理
+  * **Git**忽略文件`.gitignore`对于[**VSCode**](https://code.visualstudio.com/)的配置文件的处理
   
     ```plaintext
     # The .vscode folder contains launch configuration and tasks you configure in
@@ -4479,7 +4528,7 @@ class Person {
   | Unity   | ✅ 支持游戏开发                                               |
   | C++     | ✅ 支持部分模块                                               |
 
-### 9、📂**Dart.Flutter**系统文件目录 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 9、📂**Dart**.[**Flutter**](https://flutter.dev/)系统文件目录 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 #### 9.1、`~/.pub-cache/hosted/pub.dev/`
 
@@ -4571,7 +4620,7 @@ class Person {
     >
     > 2️⃣ 在这个文件中，可以配置许多不同的选项。比如：代码格式化规则、代码风格规范、代码质量检查规则等；
     >
-    > 3️⃣ 这个文件可以帮助团队确保他们的 Dart 代码在语法、风格和质量方面都保持一致性，并且符合团队或项目的规范，确保团队的代码质量和一致性；
+    > 3️⃣ 这个文件可以帮助团队确保他们的 **Dart** 代码在语法、风格和质量方面都保持一致性，并且符合团队或项目的规范，确保团队的代码质量和一致性；
     >
     > 4️⃣ 一个典型的 `analysis_options.yaml` 文件可能包含诸如以下内容的配置：
     >
@@ -4617,13 +4666,13 @@ class Person {
 
   * `pubspec.yaml` 
 
-    > 是 Dart 语言中用于管理项目依赖和元数据的文件。这个文件通常位于 Dart 项目的根目录中，其中包含了项目的名称、版本、作者信息等基本元数据，以及项目所依赖的第三方库（通过 Dart 包管理器 pub 安装）；
+    > 是 Dart 语言中用于管理项目依赖和元数据的文件。这个文件通常位于 **Dart** 项目的根目录中，其中包含了项目的名称、版本、作者信息等基本元数据，以及项目所依赖的第三方库（通过 **Dart** 包管理器 pub 安装）；
     >
     > 1️⃣ 在这个文件中，可以做以下几件事情：
     >
-    > * **指定项目元数据**：你可以指定项目的名称、版本、描述、作者信息等元数据，这些信息将在发布到 Dart 包仓库时显示。
+    > * **指定项目元数据**：你可以指定项目的名称、版本、描述、作者信息等元数据，这些信息将在发布到 **Dart** 包仓库时显示。
     > * **定义项目依赖**：通过 `dependencies` 和 `dev_dependencies` 部分，你可以指定项目所依赖的第三方库。其中，`dependencies` 指定项目运行时依赖的库，而 `dev_dependencies` 则是开发时依赖的库，比如测试框架、代码分析工具等。
-    > * **指定 Dart 版本**：你可以指定项目所需的 Dart SDK 版本，以确保项目的兼容性。
+    > * **指定 Dart 版本**：你可以指定项目所需的 **Dart**.SDK 版本，以确保项目的兼容性。
     > * **添加其他配置**：除了上述内容外，你还可以在 `pubspec.yaml` 文件中添加其他配置，比如项目的环境依赖、脚本命令、资源文件等。
     >
     > 2️⃣ 指定版本为`any`或者什么也不写（ 并不一定会使用最新版）：**Flutter 会自动根据你项目的环境（SDK 版本、依赖冲突等）锁定一个兼容版本**，并写入 `pubspec.lock`
@@ -4710,7 +4759,7 @@ class Person {
 
     >  是 **Dart** 项目中的自动生成文件，用于锁定项目依赖的版本信息。
     >
-    > 1️⃣ 是 Dart 项目中的重要文件之一，通常由 Dart 包管理器 pub 自动生成，并且会随着你运行 `pub get` 或 `pub upgrade` 命令而更新。
+    > 1️⃣ 是 **Dart** 项目中的重要文件之一，通常由 **Dart** 包管理器 pub 自动生成，并且会随着你运行 `pub get` 或 `pub upgrade` 命令而更新。
     >
     > 2️⃣ `pubspec.lock` 文件记录了项目依赖包的确切版本信息，包括主要依赖和间接依赖。这样做的目的是确保**在不同的环境中**（比如不同的开发者、不同的构建服务器）运行相同的 `pub get` 或 `pub upgrade` 命令时，使用的依赖版本都是一致的，从而避免因为依赖版本不一致而导致的问题，提高了项目的可重复性和稳定性；
     >
@@ -4768,9 +4817,9 @@ class Person {
 
     > 是一个用来存储 **Flutter** 插件依赖信息的隐藏文件；
     >
-    > 1️⃣ 这个文件通常由  **Flutter** 工具自动生成和维护，并且在使用 `flutter pub get` 或 `flutter pub upgrade` 命令时会被更新；
+    > 1️⃣ 这个文件通常由  [**Flutter**](https://flutter.dev/) 工具自动生成和维护，并且在使用 `flutter pub get` 或 `flutter pub upgrade` 命令时会被更新；
     >
-    > 2️⃣ 文件记录了每个  **Flutter** 插件的依赖关系，包括主要插件和依赖插件。这些信息有助于 Flutter 工具更好地管理插件及其依赖关系，并确保项目中使用的所有插件及其相关的依赖都被正确地下载和管理；
+    > 2️⃣ 文件记录了每个 [**Flutter**](https://flutter.dev/) 插件的依赖关系，包括主要插件和依赖插件。这些信息有助于 Flutter 工具更好地管理插件及其依赖关系，并确保项目中使用的所有插件及其相关的依赖都被正确地下载和管理；
 
     ```yaml
     dependencies:
@@ -4801,8 +4850,8 @@ class Person {
     >
     > * **workspace.xml**：保存了项目级别的工作区配置，比如编辑器的布局、窗口状态等。
     > * **modules.xml**：包含了项目的模块信息，如果项目被分割成了多个模块，每个模块的配置信息都会在这个文件中。
-    > * **dart.xml** 或 **flutter.xml**：这些文件包含了与 **Dart** 或 Flutter 相关的配置信息，比如代码格式化规则、代码模板、SDK 路径等。
-    > * **libraries** 文件夹：保存了项目中使用的库的配置信息，比如 **Dart.SDK** 、**Flutter.SDK**、第三方库等。
+    > * **dart.xml** 或 **flutter.xml**：这些文件包含了与 **Dart** 或 [**Flutter**](https://flutter.dev/) 相关的配置信息，比如代码格式化规则、代码模板、SDK 路径等。
+    > * **libraries** 文件夹：保存了项目中使用的库的配置信息，比如 **Dart.SDK** 、[**Flutter**](https://flutter.dev/).**SDK**、第三方库等。
     > * **inspectionProfiles** 文件夹：包含了代码检查和静态分析的配置文件，用于定义代码风格和质量检查的规则。
     > * 其他可能的配置文件和文件夹，比如代码模板、文件模板、版本控制配置等。
     
@@ -4834,9 +4883,9 @@ class Person {
 
 ### 12、Dart抽象类+`factory` 构造函数 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> Dart 中的抽象类可以定义 `factory` 构造函数，它不能直接被实例化，但可以通过这个 `factory` 返回子类对象或其他实例，从而起到**工厂方法（类方法）+ 构造器**的双重作用。
+> **Dart** 中的抽象类可以定义 `factory` 构造函数，它不能直接被实例化，但可以通过这个 `factory` 返回子类对象或其他实例，从而起到**工厂方法（类方法）+ 构造器**的双重作用。
 
-  * Dart.Flutter单例的全部写法
+  * **Dart**.[**Flutter**](https://flutter.dev/)单例的全部写法
 
     | 使用场景            | 推荐写法                           |
     | ------------------- | ---------------------------------- |
@@ -4891,7 +4940,7 @@ class Person {
       Singleton.instance.foo();
       ```
 
-    * 📌 懒汉式 getter（懒加载写法）
+    * 📌 懒汉式 `getter`（懒加载写法）
 
       ```dart
       class Singleton {
@@ -4905,7 +4954,7 @@ class Person {
       }
       ```
 
-    * 📌 Dart 单例完整封装模板（带线程安全/泛型支持）
+    * 📌 **Dart** 单例完整封装模板（带线程安全/泛型支持）
 
       ```dart
       class Singleton<T> {
@@ -4963,7 +5012,7 @@ class Person {
 
 ### 14、Comparable <font color=red><b>&lt;T&gt;</b></font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> 1️⃣ Dart 中的一个接口（mixin），表示 **“可比较”类型**
+> 1️⃣ **Dart** 中的一个接口（mixin），表示 **“可比较”类型**
 >
 > 2️⃣ 用于支持排序、查找、比较等操作
 >
@@ -5202,21 +5251,21 @@ Comparable.compare(a, b)
     | `flutter analyze`      | 分析 **Dart** 代码规范与静态错误                             |
     | `flutter upgrade`      | 升级 **Flutter.SDK** 到最新版本                              |
   
-* 📦 **Flutter** 构建模式总览表
+* 📦 [**Flutter**](https://flutter.dev/) 构建模式总览表
 
-  | 模式名                             | 命令 / 配置示例                          | 编译方式           | 是否调试   | 是否优化     | 主要用途                          | 适用平台                              | 备注                            |
-  | ---------------------------------- | ---------------------------------------- | ------------------ | ---------- | ------------ | --------------------------------- | ------------------------------------- | ------------------------------- |
-  | <font color=red>**debug**</font>   | `flutter run``flutter build apk --debug` | **JIT**            | ✅ 支持     | ❌ 无优化     | 开发调试                          | **Android**<br/> **iOS**<br/> **Web** | 默认模式，支持热重载            |
-  | <font color=red>**profile**</font> | `flutter build apk --profile`            | **AOT+Profile**    | ⚠️ 限制调试 | ✅ 部分优化   | 性能分析                          | **Android**<br/>**iOS**<br/>**Web**   | 不支持断点调试，但支持 DevTools |
-  | <font color=red>**release**</font> | `flutter build apk --release`            | **AOT**            | ❌ 禁用     | ✅ 最大优化   | 上线发布                          | **Android**<br/> **iOS**<br/> **Web** | 无调试符号，运行最快            |
-  | **web-debug**                      | `flutter run -d chrome`                  | **Dart Dev**       | ✅ 支持     | ❌ 无优化     | **Web** 开发                      | **Web**<br/>（Chrome 等）             | 启动本地 dev-server             |
-  | **web-profile**                    | `flutter build web --profile`            | **Dart2JS **+ 调试 | ⚠️ 限制调试 | ✅ 优化部分   | **Web** 性能测试                  | **Web**<br/>                          | 用于 Web 基准测试               |
-  | **web-release**                    | `flutter build web --release`            | **Dart2JS** + 优化 | ❌ 禁用     | ✅ 最大优化   | **Web** 上线                      | **Web**<br/>                          | 用于部署生产环境                |
-  | **jit_release**                    | 内部测试配置（非官方公开）               | **JIT (Release)**  | ⚠️ 限制     | ✅ 类 release | 内部测试、验证行为差异            | 实验性/嵌入式场景                     | CLI 不支持，需手动设置          |
-  | **dynamic**                        | Flutter 动态集成场景                     | **JIT + AOT**      | 依项目配置 | 依项目配置   | Add-to-App 混合开发               | **Android**<br/>**iOS**               | 原生动态加载 Flutter            |
-  | **flavor 模式**                    | `flutter build apk --flavor staging`     | 依所选模式         | 依所选模式 | 依所选模式   | 多环境打包（`staging`、`uat` 等） | **Android**<br/>**iOS**               | 非编译模式，属于构建配置        |
+  | 模式名                             | 命令 / 配置示例                                  | 编译方式           | 是否调试   | 是否优化     | 主要用途                          | 适用平台                              | 备注                            |
+  | ---------------------------------- | ------------------------------------------------ | ------------------ | ---------- | ------------ | --------------------------------- | ------------------------------------- | ------------------------------- |
+  | <font color=red>**debug**</font>   | `flutter run``flutter build apk --debug`         | **JIT**            | ✅ 支持     | ❌ 无优化     | 开发调试                          | **Android**<br/> **iOS**<br/> **Web** | 默认模式，支持热重载            |
+  | <font color=red>**profile**</font> | `flutter build apk --profile`                    | **AOT+Profile**    | ⚠️ 限制调试 | ✅ 部分优化   | 性能分析                          | **Android**<br/>**iOS**<br/>**Web**   | 不支持断点调试，但支持 DevTools |
+  | <font color=red>**release**</font> | `flutter build apk --release`                    | **AOT**            | ❌ 禁用     | ✅ 最大优化   | 上线发布                          | **Android**<br/> **iOS**<br/> **Web** | 无调试符号，运行最快            |
+  | **web-debug**                      | `flutter run -d chrome`                          | **Dart Dev**       | ✅ 支持     | ❌ 无优化     | **Web** 开发                      | **Web**<br/>（Chrome 等）             | 启动本地 dev-server             |
+  | **web-profile**                    | `flutter build web --profile`                    | **Dart2JS **+ 调试 | ⚠️ 限制调试 | ✅ 优化部分   | **Web** 性能测试                  | **Web**<br/>                          | 用于 Web 基准测试               |
+  | **web-release**                    | `flutter build web --release`                    | **Dart2JS** + 优化 | ❌ 禁用     | ✅ 最大优化   | **Web** 上线                      | **Web**<br/>                          | 用于部署生产环境                |
+  | **jit_release**                    | 内部测试配置（非官方公开）                       | **JIT (Release)**  | ⚠️ 限制     | ✅ 类 release | 内部测试、验证行为差异            | 实验性/嵌入式场景                     | CLI 不支持，需手动设置          |
+  | **dynamic**                        | [**Flutter**](https://flutter.dev/) 动态集成场景 | **JIT + AOT**      | 依项目配置 | 依项目配置   | Add-to-App 混合开发               | **Android**<br/>**iOS**               | 原生动态加载 Flutter            |
+  | **flavor 模式**                    | `flutter build apk --flavor staging`             | 依所选模式         | 依所选模式 | 依所选模式   | 多环境打包（`staging`、`uat` 等） | **Android**<br/>**iOS**               | 非编译模式，属于构建配置        |
 
-#### 19.1、📦 **Flutter.Android**（较为复杂和繁琐） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 19.1、📦 [**Flutter**](https://flutter.dev/).**Android**（较为复杂和繁琐） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ##### 19.1.1、 [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -5390,7 +5439,7 @@ Comparable.compare(a, b)
 | **常见用途**         | 内部测试、第三方分发、安装包备份                             | 上传 [**Google Play**](https://play.google.com/) 商店        |
 | **是否推荐**         | ✅ 第三方或私有渠道使用                                       | ✅ [**Google**](https://www.google.com/) 官方推荐上传 [**Play**](https://play.google.com/) 商店使用 |
 
-##### 19.1.5、**Flutter**打包 **Android** 包的流程图 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 19.1.5、[**Flutter**](https://flutter.dev/)打包 **Android** 包的流程图 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```mermaid
 graph TD
@@ -5424,11 +5473,11 @@ graph TD
 
 ##### 19.1.8、⚙️ 相关配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-* **Flutter.Android**打包需要涉及到**Java**环境推荐使用[<font color=red>**openJDK**</font>](https://openjdk.org/)
+* [**Flutter**](https://flutter.dev/).**Android**打包需要涉及到**Java**环境推荐使用[<font color=red>**openJDK**</font>](https://openjdk.org/)
 
 * <font color=red>为了不污染系统的开发环境，推荐用[**HomeBrew**](https://brew.sh/)➕[**jenv**](https://formulae.brew.sh/formula/jenv)的形式。每个项目单独配置一个独属的**Java**环境</font>
 
-  * 铆定的**Java**版本号📝记录于**Flutter**项目根目录下的：`.java-version`
+  * 铆定的**Java**版本号📝记录于[**Flutter**](https://flutter.dev/)项目根目录下的：`.java-version`
 
 * **`targetSdk`** 🆚 **`minSdk`** 🆚 **`compileSdk`**
 
@@ -5440,19 +5489,19 @@ graph TD
 
   * **`compileSdk`**
 
-        > **Android** 构建系统中的一个配置项，用于指定 **编译时所使用的 Android SDK 版本**
-        >
-        > 1️⃣ **编译时 API 限制**：决定你在代码中能使用的 **Android.API** 上限（只能用 ≤ `compileSdk` 的 **API**）。
-        >
-        > 2️⃣ **不影响运行系统版本**：它不会影响 App 能运行在哪些 **Android** 系统版本上，运行范围由 `minSdk` 和 `targetSdk` 控制。
-        >
-        > 3️⃣ **影响构建工具版本要求**：`compileSdk` 越高，所需的 <a href="#AGP" style="font-size:17px; color:green;"><b>**AGP**</b></a> 版本也必须越高，否则无法编译。
-          
-        ```groovy
-        android {
-          compileSdk = 34 /// 使用 Android SDK 34 来编译这个项目
-        }
-        ```
+    > **Android** 构建系统中的一个配置项，用于指定 **编译时所使用的 Android SDK 版本**
+    >
+    > 1️⃣ **编译时 API 限制**：决定你在代码中能使用的 **Android.API** 上限（只能用 ≤ `compileSdk` 的 **API**）。
+    >
+    > 2️⃣ **不影响运行系统版本**：它不会影响 App 能运行在哪些 **Android** 系统版本上，运行范围由 `minSdk` 和 `targetSdk` 控制。
+    >
+    > 3️⃣ **影响构建工具版本要求**：`compileSdk` 越高，所需的 <a href="#AGP" style="font-size:17px; color:green;"><b>**AGP**</b></a> 版本也必须越高，否则无法编译。
+    
+    ```groovy
+    android {
+      compileSdk = 34 /// 使用 Android SDK 34 来编译这个项目
+    }
+    ```
   
   * **`minSdk`**（最小支持版本）
   
@@ -5470,7 +5519,7 @@ graph TD
       
 
 
-* **Flutter.Android** 项目在首次构建或执行 `flutter clean` 后会重新下载👇
+* [**Flutter**](https://flutter.dev/).**Android** 项目在首次构建或执行 `flutter clean` 后会重新下载👇
 
   | 资源                                                         | 说明                                                         |
   | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -5480,7 +5529,7 @@ graph TD
   | 第三方依赖                                                   | 来自 [**pub.dev**](https://pub.dev/) 的插件中声明的 AAR/JAR，如 [`image_gallery_saver`](https://pub.dev/packages/image_gallery_saver)、[`engagelab`](https://pub.dev/packages?q=engagelab) |
   | [**Google Maven**](https://maven.google.com/web/index.html) / [**JCenter**](https://mvnrepository.com/repos/jcenter) / [**MavenCentral**](https://central.sonatype.com/) | 默认构建源，国内访问会慢                                     |
 
-##### 19.1.9、📦 **Flutter.Android** 打包脚本（MacOS）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 19.1.9、📦 [**Flutter**](https://flutter.dev/).**Android** 打包脚本（MacOS）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 #!/bin/zsh
@@ -5815,7 +5864,7 @@ _open_output_folder
 | 🚀 提测/发包                                         | `apk/release/app-release.apk`（需签名）                  |
 | 🌐 上架  [**Google Play**](https://play.google.com/) | `bundle/release/app-release.aab`                         |
 
-#### 19.2、📦 **Flutter.iOS**（相对简单）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 19.2、📦 [**Flutter**](https://flutter.dev/).**iOS**（相对简单）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ##### 19.2.1、🪖<font color=red>**构建指令**</font>：`flutter build ios` 和 `flutter build ipa` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -5839,7 +5888,7 @@ _open_output_folder
 
 > `build/ios/iphoneos/Runner.app`
 >
-> 并非iOS工程文件下的Products/xxx.app （未验证❓）
+> 并非iOS工程文件下的`Products/xxx.app` （未验证❓）
 
 ```
 📁 build
@@ -5873,13 +5922,13 @@ _open_output_folder
 
 * 必须真机运行
 
-* <font color=red>无法通过**xcode**直接编译**Flutter**项目</font>
+* <font color=red>无法通过**xcode**直接编译</font>[**Flutter**](https://flutter.dev/)<font color=red>项目</font>
 
-  > 是因为其中的`Podfile`是通过**Flutter**进行唤起的，并非标准的iOS `Podfile` 文件格式
+  > 是因为其中的`Podfile`是通过[**Flutter**](https://flutter.dev/)进行唤起的，并非标准的iOS `Podfile` 文件格式
   >
   > ====================================================================
   >
-  > **Flutter 会控制 Pod 的安装和版本**，并写入：
+  > [**Flutter**](https://flutter.dev/)**会控制 Pod 的安装和版本**，并写入：
   >
   > - `ios/Podfile`
   > - `ios/Podfile.lock`
@@ -5968,9 +6017,9 @@ _open_output_folder
 
 * ✅什么是`ScrollController`?
 
-  * ✅ **Flutter** 与 **iOS** 滚动控制对照总表
+  * ✅ [**Flutter**](https://flutter.dev/)与 **iOS** 滚动控制对照总表
 
-    | 用途 / 功能                          | Flutter (`ScrollController`)                                 | iOS (`UIScrollView + Delegate`)                       |
+    | 用途 / 功能                          | [**Flutter**](https://flutter.dev/) (`ScrollController`)     | iOS (`UIScrollView + Delegate`)                       |
     | ------------------------------------ | ------------------------------------------------------------ | ----------------------------------------------------- |
     | **获取滚动位置**                     | `controller.offset`                                          | `scrollView.contentOffset`                            |
     | **监听滚动事件**                     | `controller.addListener()`                                   | `scrollViewDidScroll:` 等代理方法                     |
@@ -5984,7 +6033,7 @@ _open_output_folder
 
   * 📌 总结对比重点：
 
-    | 特性                            | Flutter                                      | iOS                                      |
+    | 特性                            | [**Flutter**](https://flutter.dev/)          | iOS                                      |
     | ------------------------------- | -------------------------------------------- | ---------------------------------------- |
     | 控制 & 监听是否分离             | 合在 `ScrollController` 或通知               | 控制靠 `scrollView`，监听靠 delegate     |
     | 联动滚动是否简便                | 非常方便，多个组件绑定同一个 controller 即可 | 比较麻烦，需要同步多个 scrollView 的状态 |
@@ -6081,7 +6130,7 @@ _open_output_folder
 
   > 这个方法没有在 Dart 层实现，而是由 Dart VM 或平台原生层提供实现。
 
-* ✅为什么**Dart.Flutter**禁止反射机制？
+* ✅为什么**Dart**.[**Flutter**](https://flutter.dev/)禁止反射机制？
 
   👉 是为了保证 **更快启动、更小体积、更高性能的移动应用体验**，这是设计上的取舍
 
@@ -6109,7 +6158,7 @@ _open_output_folder
 
   * **`dart:mirrors` 会极大增加体积和启动时间**
 
-    * **Flutter** 官方测试显示：
+    * [**Flutter**](https://flutter.dev/) 官方测试显示：
        **启用 dart:mirrors 会增加几 MB 的包大小**（尤其是 **iOS**）
     * 启动速度也会明显变慢，因为要加载大量元信息
 
@@ -6151,7 +6200,7 @@ _open_output_folder
 
   * **特别的与众不同**
 
-    > <font color=red>目前主流平台里，只有 **Dart.Flutter** 推荐 “先自己初始化，再调用 `super.XXX`”。</font>
+    > <font color=red>目前主流平台里，只有 **Dart**.[**Flutter**](https://flutter.dev/) 推荐 “先自己初始化，再调用 `super.XXX`”。</font>
     >
     > **父类不依赖子类状态，先初始化自己更安全**
   
@@ -6195,7 +6244,7 @@ _open_output_folder
   
 * 🔧**实用快捷键**
 
-  * 如果希望在某个**widget**外面包裹另一个**widget**：**`^+.`** (已修改)
+  * 如果希望在某个**`widget`**外面包裹另一个**`widget`**：**`^+.`** (已修改)
 
     > 和**MacOS**关闭**iOS模拟器**的热键冲突（**`command+.`**）。所以，需要进行更改为**`^+.`** ：
     >
