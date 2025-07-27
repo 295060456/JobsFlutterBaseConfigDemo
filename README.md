@@ -3183,6 +3183,13 @@ Get.offAllNamed('/splash');
 
 * **`Get.snackbar()`**
 
+  | 对比项                | [**Flutter**](https://flutter.dev/) 原生 `ScaffoldMessenger.showSnackBar` | [**`GetX`**](https://pub.dev/packages/get)  的 `Get.snackbar` |
+  | --------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+  | 是否需要 **context**  | ✅ 是                                                         | ❌ 否                                                         |
+  | 显示位置              | 只能在底部                                                   | 支持顶部 / 底部                                              |
+  | 是否依赖 **Scaffold** | ✅ 是                                                         | ❌ 否                                                         |
+  | 自定义灵活性          | 一般                                                         | 非常高                                                       |
+
 * **`Get.dialog()`**
 
   > **`Get.dialog()`** 默认用当前上下文找 <a href="#Navigator" style="font-size:17px; color:green;"><b>Navigator</b></a>
