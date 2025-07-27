@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'built_value模型文件/video_item.dart';
+import '利用脚本自动生成的built_value序列化文件/video_item.dart';
 import '利用脚本自动生成的built_value序列化文件/serializers.dart';
 
-// dependencies: 
+// dependencies:
 // # 数据处理
 //   built_value: # 用于序列化/反序列化数据
 //   built_value_generator: # 用于生成序列化/反序列化代码

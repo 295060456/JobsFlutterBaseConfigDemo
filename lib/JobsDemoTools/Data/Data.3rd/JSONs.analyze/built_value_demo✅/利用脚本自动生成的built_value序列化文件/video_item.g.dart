@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../built_value模型文件/video_item.dart';
+part of 'video_item.dart';
 
 // **************************************************************************
 // BuiltValueGenerator
 // **************************************************************************
 
-Serializer<VideoItem> _$videoItemSerializer = new _$VideoItemSerializer();
-Serializer<VideoList> _$videoListSerializer = new _$VideoListSerializer();
+Serializer<VideoItem> _$videoItemSerializer = _$VideoItemSerializer();
+Serializer<VideoList> _$videoListSerializer = _$VideoListSerializer();
 
 class _$VideoItemSerializer implements StructuredSerializer<VideoItem> {
   @override
@@ -264,7 +264,7 @@ class _$VideoItemSerializer implements StructuredSerializer<VideoItem> {
   @override
   VideoItem deserialize(Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = new VideoItemBuilder();
+    final result = VideoItemBuilder();
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
@@ -437,7 +437,7 @@ class _$VideoListSerializer implements StructuredSerializer<VideoList> {
   @override
   VideoList deserialize(Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = new VideoListBuilder();
+    final result = VideoListBuilder();
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
@@ -529,7 +529,7 @@ class _$VideoItem extends VideoItem {
   final String? video_size;
 
   factory _$VideoItem([void Function(VideoItemBuilder)? updates]) =>
-      (new VideoItemBuilder()..update(updates))._build();
+      (VideoItemBuilder()..update(updates))._build();
 
   _$VideoItem._(
       {this.nick_name,
@@ -567,13 +567,12 @@ class _$VideoItem extends VideoItem {
       this.video_length,
       this.video_size})
       : super._();
-
   @override
   VideoItem rebuild(void Function(VideoItemBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  VideoItemBuilder toBuilder() => new VideoItemBuilder()..replace(this);
+  VideoItemBuilder toBuilder() => VideoItemBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -889,7 +888,6 @@ class VideoItemBuilder implements Builder<VideoItem, VideoItemBuilder> {
 
   @override
   void replace(VideoItem other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$VideoItem;
   }
 
@@ -903,41 +901,42 @@ class VideoItemBuilder implements Builder<VideoItem, VideoItemBuilder> {
 
   _$VideoItem _build() {
     final _$result = _$v ??
-        new _$VideoItem._(
-            nick_name: nick_name,
-            head: head,
-            thread_id: thread_id,
-            first_post_id: first_post_id,
-            create_time: create_time,
-            play_count: play_count,
-            post_num: post_num,
-            agree_num: agree_num,
-            share_num: share_num,
-            has_agree: has_agree,
-            freq_num: freq_num,
-            forum_id: forum_id,
-            title: title,
-            source: source,
-            weight: weight,
-            extra: extra,
-            abtest_tag: abtest_tag,
-            thumbnail_width: thumbnail_width,
-            thumbnail_height: thumbnail_height,
-            video_md5: video_md5,
-            video_url: video_url,
-            video_duration: video_duration,
-            video_width: video_width,
-            video_height: video_height,
-            video_type: video_type,
-            thumbnail_url: thumbnail_url,
-            video_format: video_format,
-            thumbnail_picid: thumbnail_picid,
-            video_from: video_from,
-            video_log_id: video_log_id,
-            auditing: auditing,
-            origin_video_url: origin_video_url,
-            video_length: video_length,
-            video_size: video_size);
+        _$VideoItem._(
+          nick_name: nick_name,
+          head: head,
+          thread_id: thread_id,
+          first_post_id: first_post_id,
+          create_time: create_time,
+          play_count: play_count,
+          post_num: post_num,
+          agree_num: agree_num,
+          share_num: share_num,
+          has_agree: has_agree,
+          freq_num: freq_num,
+          forum_id: forum_id,
+          title: title,
+          source: source,
+          weight: weight,
+          extra: extra,
+          abtest_tag: abtest_tag,
+          thumbnail_width: thumbnail_width,
+          thumbnail_height: thumbnail_height,
+          video_md5: video_md5,
+          video_url: video_url,
+          video_duration: video_duration,
+          video_width: video_width,
+          video_height: video_height,
+          video_type: video_type,
+          thumbnail_url: thumbnail_url,
+          video_format: video_format,
+          thumbnail_picid: thumbnail_picid,
+          video_from: video_from,
+          video_log_id: video_log_id,
+          auditing: auditing,
+          origin_video_url: origin_video_url,
+          video_length: video_length,
+          video_size: video_size,
+        );
     replace(_$result);
     return _$result;
   }
@@ -948,18 +947,15 @@ class _$VideoList extends VideoList {
   final BuiltList<VideoItem> list;
 
   factory _$VideoList([void Function(VideoListBuilder)? updates]) =>
-      (new VideoListBuilder()..update(updates))._build();
+      (VideoListBuilder()..update(updates))._build();
 
-  _$VideoList._({required this.list}) : super._() {
-    BuiltValueNullFieldError.checkNotNull(list, r'VideoList', 'list');
-  }
-
+  _$VideoList._({required this.list}) : super._();
   @override
   VideoList rebuild(void Function(VideoListBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  VideoListBuilder toBuilder() => new VideoListBuilder()..replace(this);
+  VideoListBuilder toBuilder() => VideoListBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -986,8 +982,7 @@ class VideoListBuilder implements Builder<VideoList, VideoListBuilder> {
   _$VideoList? _$v;
 
   ListBuilder<VideoItem>? _list;
-  ListBuilder<VideoItem> get list =>
-      _$this._list ??= new ListBuilder<VideoItem>();
+  ListBuilder<VideoItem> get list => _$this._list ??= ListBuilder<VideoItem>();
   set list(ListBuilder<VideoItem>? list) => _$this._list = list;
 
   VideoListBuilder();
@@ -1003,7 +998,6 @@ class VideoListBuilder implements Builder<VideoList, VideoListBuilder> {
 
   @override
   void replace(VideoList other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$VideoList;
   }
 
@@ -1018,14 +1012,17 @@ class VideoListBuilder implements Builder<VideoList, VideoListBuilder> {
   _$VideoList _build() {
     _$VideoList _$result;
     try {
-      _$result = _$v ?? new _$VideoList._(list: list.build());
+      _$result = _$v ??
+          _$VideoList._(
+            list: list.build(),
+          );
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'list';
         list.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'VideoList', _$failedField, e.toString());
       }
       rethrow;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/%E5%89%AA%E5%88%87%E6%9D%BF%E5%A4%8D%E5%88%B6/NativeClipboard.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/剪切板复制/NativeClipboard.dart';
 import 'dart:convert';
 
 import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart'; // 公共测试器路径

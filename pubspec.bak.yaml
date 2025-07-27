@@ -186,7 +186,7 @@ dev_dependencies:
   json_serializable: any # 用于序列化/反序列化JSON数据
   build_runner: any # 用于运行生成代码（any 表示 "用兼容的最新版"）
   flutter_gen_runner: any # 根据你的 pubspec.yaml 中配置的资源文件，自动生成 assets.gen.dart 文件，让你用代码方式访问资源，更安全、方便。
-
+  built_value_generator: any # 用于生成序列化/反序列化代码
 flutter_gen:
   output: lib/gen/ # 生成文件的目录
 # For information on the generic Dart part of this file, see the

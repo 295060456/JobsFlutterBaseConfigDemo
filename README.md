@@ -40,7 +40,7 @@
   * 作为其他项目的参考，可以快速的了解到项目的架构，代码规范，以及一些设计模式
   * 这么一些优秀的成果，其来源不仅仅是来自于作者本身的持续付出与积累。更是这个领域大家庭中各路优秀作者的智慧结晶
 * 独立的测试单元
-  * 对于单个的[**Flutter**](https://flutter.dev/)工程文件（小Demo）可以利用[**运行脚本**](./【MacOS】☀️双击运行Flutter项目（iOS 模拟器）.command)，在**MacOS**的**终端**直接拖入进行运行和展示（终端运行不支持断点，只能输出日志）
+  * 对于单个的[**Flutter**](https://flutter.dev/)工程文件（小**Demo**）可以利用[**运行脚本**](./【MacOS】☀️双击运行Flutter项目（iOS 模拟器）.command)，在**MacOS**的**终端**直接拖入进行运行和展示（终端运行不支持断点，只能输出日志）
   * 为了保证各个**Demo**在形式上的独立性，所以尽可能的在单个`.dart`文件里面进行叙述。**每一个[Flutter](https://flutter.dev/)的Demo文件里，都会存在其程序的入口函数** 
 
 ## 二、💥代码讲解 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
@@ -226,7 +226,7 @@ CupertinoApp(
 
 ##### 3.2.2、搭建页面的基本结构   <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> Flutter 页面如果没有被如下👇结构组件包裹，就没有默认 UI 背景结构（如白底、AppBar、状态栏空间等）——看起来就像“一片黑”或者“没有显示内容”。
+> [**Flutter**](https://flutter.dev/) 页面如果没有被如下👇结构组件包裹，就没有默认 UI 背景结构（如白底、**AppBar**、状态栏空间等）——看起来就像“一片黑”或者“没有显示内容”。
 
 | 组件名                                    | 所属库            | 用途 / 特点                                                  |
 | ----------------------------------------- | ----------------- | ------------------------------------------------------------ |
@@ -308,13 +308,13 @@ SystemChrome.setPreferredOrientations([
 
 ### 5、`WidgetsFlutterBinding`确保 **Flutter** 框架与底层平台（如 MethodChannel、插件）之间的桥梁已完成初始化 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> Flutter 有一个叫做 **`WidgetsBinding`** 的东西，它是所有 Widget 框架的核心，它负责：
+> [**Flutter**](https://flutter.dev/) 有一个叫做 **`WidgetsBinding`** 的东西，它是所有 **`Widget`** 框架的核心，它负责：
 >
 > - 管理生命周期（如 `build`、`rebuild`）
 > - 管理 `SchedulerBinding`（帧调度）
 > - 管理平台通道（如使用 `MethodChannel` 调用原生方法）
 >
-> 在 `runApp()` 之前，你必须保证这个 Binding 已经初始化。
+> 在 `runApp()` 之前，你必须保证这个 **Binding** 已经初始化。
 
 ```dart
 WidgetsFlutterBinding.ensureInitialized();
@@ -334,11 +334,11 @@ WidgetsFlutterBinding.ensureInitialized();
 > Binding has not yet been initialized.
 > ```
 
-### 6、`DartPingIOS`在 iOS 上启用 native 层实现的 <font color=red>ping 功能</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 6、`DartPingIOS`在 iOS 上启用 **native** 层实现的 <font color=red>**ping 功能**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> 1、因为 iOS 的网络权限和限制较多，`dart_ping` 需要通过原生插件配合实现 `ping`，所以需要先进行手动注册
+> 1️⃣ 因为 iOS 的网络权限和限制较多，`dart_ping` 需要通过原生插件配合实现 `ping`，所以需要先进行手动注册
 >
-> 2、这个调用对 **Android 不需要**（在 Android 上使用 `Ping` 不需要额外处理，直接用即可）
+> 2️⃣ 这个调用对 **Android 不需要**（在 [**Android**](https://www.android.com/) 上使用 `Ping` 不需要额外处理，直接用即可）
 
 * 注册
 
@@ -2387,41 +2387,7 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 | `PhysicalModel` | 控制阴影、抗锯齿、透明等底层视觉效果   |
 | `Material`      | 实现 **material** 效果（配合 **Ink**） |
 
-### 23、中间代码的生成工具 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
-
-#### 23.1、[<font color=red>**build_runner**</font>](https://pub.dev/packages/build_runner)
-
-> **Dart 的代码生成引擎**，用于根据规则自动生成 Dart 代码
->
-> 📦 它本身不生成代码，但**驱动其他插件去生成代码**。
-
-| 命令                                 | 作用                               |
-| ------------------------------------ | ---------------------------------- |
-| `flutter pub run build_runner build` | 一次性生成代码                     |
-| `flutter pub run build_runner watch` | 监听源码变化自动生成代码           |
-| `flutter pub run build_runner clean` | 清除 `.dart_tool` 中生成的缓存代码 |
-
-
-* `build_runner` 是建筑工人 🧱（实际干活的）
-* `json_serializable`、`flutter_gen_runner`、`freezed` 等是设计图 📐（告诉你该建什么）
-* `.g.dart`、`.gen.dart` 文件是建筑成果 🏠（自动生成的代码）
-
-#### 23.2、[**flutter_gen_runner**](https://pub.dev/packages/flutter_gen)
-
-> 根据你的 `pubspec.yaml` 中配置的资源文件，自动生成 `assets.gen.dart` 文件，让你用代码方式访问资源，更安全、方便。
-
-```yaml
-dev_dependencies:
-  flutter_gen_runner: any
-  build_runner: any
-
-flutter_gen:
-  output: lib/gen/ # 生成文件的目录
-```
-
-#### 23.3、[**json_serializable**](https://pub.dev/packages/json_serializable)
-
-> 用于序列化/反序列化JSON数据
+### 23、xxx <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ### 24、👂监听 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -4494,7 +4460,7 @@ class Person {
 }
 ```
 
-### 7、package <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 7、💼 package <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * **package:**这种路径前缀只能用于 **`lib/` 目录下的 Dart 文件**。 表示从 `pubspec.yaml` 中定义的包或当前项目的 `lib/` 目录开始引用
 
@@ -4506,7 +4472,7 @@ class Person {
   | `lib/` 以外的文件夹 | 比如 `test/`、`bin/`、`web/`、`ios/`、`android/` 等不能被 `package:` 引用 |
   | `lib/` 外 Dart 文件 | 比如 `tools/util.dart`，不是 `lib/` 下的无法被 `package:` 访问 |
 
-### 8、[**Firebase**](https://firebase.google.com/?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 8、🔥[**Firebase**](https://firebase.google.com/?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * [**Firebase**](https://firebase.google.com/?hl=zh-cn)：**Google 提供的一整套后端云服务平台**，专门为移动 App（Android/iOS）、Web 应用开发者提供“后端即服务”（BaaS）能力
 
@@ -5105,7 +5071,7 @@ Comparable.compare(a, b)
   }
   ```
 
-### 16、剪切板行为  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 16、✂️剪切板行为  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 操作                                     | 可同步剪贴板？ | 方向   |
 | ---------------------------------------- | -------------- | ------ |
@@ -5194,21 +5160,28 @@ Comparable.compare(a, b)
   /// 并不等于其父组件的 context
   ```
 
-### 19、自动化代码生成 @ [**`build_runner`**](https://pub.dev/packages/build_runner)
+### 19、🔧**自动化代码生成工具** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-* 依赖的引入**`pubspec.yaml`**
+* [<font color=red>**build_runner**</font>](https://pub.dev/packages/build_runner)
 
-  ```yaml
-  # 这里引入的是所有需要被打包的依赖
-  dependencies:
-    json_annotation: any
-  # 这里引入的是所有开发期间的工具包依赖（不会被打入最终的产品包）
-  dev_dependencies:
-    build_runner: any # 这个是所有中间代码生成器的引擎
-    json_serializable: any
-  ```
+  > **Dart 的代码生成引擎**，用于根据规则自动生成 Dart 代码
+  >
+  > 📦 它本身不生成代码，但**驱动其他插件去生成代码**。
 
-* 手动运行中间代码生成工具
+  | 命令                                 | 作用                               |
+  | ------------------------------------ | ---------------------------------- |
+  | `flutter pub run build_runner build` | 一次性生成代码                     |
+  | `flutter pub run build_runner watch` | 监听源码变化自动生成代码           |
+  | `flutter pub run build_runner clean` | 清除 `.dart_tool` 中生成的缓存代码 |
+  
+  * `build_runner` 是建筑工人 🧱（实际干活的）
+    * `json_serializable`、`flutter_gen_runner`、`freezed` 等是设计图 📐（告诉你该建什么）
+    * `.g.dart`、`.gen.dart` 文件是建筑成果 🏠（自动生成的代码）
+
+
+* 依赖的引入**`pubspec.yaml`** （[**VSCode**](https://code.visualstudio.com/)保存即执行：`dart pub get`）
+
+* <font color=red>**手动运行中间代码生成工具**</font>
 
   ```shell
   dart run build_runner build
@@ -5239,37 +5212,135 @@ Comparable.compare(a, b)
   | 实时生成 `.g.dart` 等文件 | 无需每次手动运行 `build_runner build`           |
   | 增量构建，速度更快        | 只构建有变化的文件，性能优于 `build`            |
 
-* 代码示例：<font color=red>自动化代码生成**Model**</font>
+* 代码示例：
 
-  > 生成的中间代码会与此文件在同一个文件夹下
-  >
-  > ![image-20250727214937737](./assets/image-20250727214937737.png)
+  * [<font color=red>**flutter_gen_runner**</font>](https://pub.dev/packages/flutter_gen)
 
-  ```dart
-  // UserModel.dart
-  import 'package:json_annotation/json_annotation.dart';
-  part 'UserModel.g.dart'; // （1️⃣ 第一个名字必须和本文件名一致，区分大小写）2️⃣ 必须自动化生成代码前就要写这一句，否则会报错
-  
-  @JsonSerializable() // 3️⃣ 用注解，将此类标注出来生成中间件
-  class UserModel {
-    final String name;
-    final int age;
-  
-    UserModel({
-      required this.name,
-      required this.age,
-    });
-  
-    /// 只有成功生成中间代码以后：_$UserModelFromJson(json); 和 _$UserModelToJson(this);才不报错
+    > 根据你的 `pubspec.yaml` 中配置的资源文件，自动生成 `assets.gen.dart` 文件，让你用代码方式访问资源，更安全、方便。
+
+    ```yaml
+    dev_dependencies:
+      flutter_gen_runner: any
+      build_runner: any
     
-    /// 从 JSON 转 Model
-    factory UserModel.fromJson(Map<String, dynamic> json) =>
-        _$UserModelFromJson(json);
+    flutter_gen:
+      output: lib/gen/ # 生成文件的目录
+    ```
+    
+  * <font color=blue>自动化代码生成**Model**</font>
   
-    /// 从 Model 转 JSON
-    Map<String, dynamic> toJson() => _$UserModelToJson(this);
-  }
-  ```
+    * 使用 [<font color=red>**json_serializable**</font>](https://pub.dev/packages/json_serializable)：用于<u>序列化</u>/<u>反序列化</u>**JSON**数据（<font color=blue>**函数、方法、闭包等在 Dart 中是不可序列化的类型**</font>）
+  
+        > ```yaml
+        > # pubspec.yaml 编辑完后执行：dart pub get 
+        > dependencies:
+        >  json_annotation: any  # 仅运行时依赖，不自动生成代码时也能用
+        > 
+        > dev_dependencies:
+        >  build_runner: any     # 代码生成器
+        >  json_serializable: any # 负责生成 .g.dart 文件
+        > ```
+        >
+        > **生成的中间代码会与此文件在同一个文件夹下**
+        >
+        > ![image-20250727214937737](./assets/image-20250727214937737.png)
+    
+        ```dart
+        // UserModel.dart
+        import 'package:json_annotation/json_annotation.dart';
+        part 'UserModel.g.dart'; // （1️⃣ 第一个名字必须和本文件名一致，区分大小写）2️⃣ 必须自动化生成代码前就要写这一句，否则会报错
+        
+        @JsonSerializable() // 3️⃣ 用注解，将此类标注出来生成中间件。4️⃣ @JsonSerializable()只能用于类，不能用于变量或函数
+        class UserModel {
+          final String name;
+          final int age;
+        
+          UserModel({
+            required this.name,
+            required this.age,
+          });
+        
+          /// 只有成功生成中间代码以后：_$UserModelFromJson(json); 和 _$UserModelToJson(this);才不报错
+          
+          /// 从 JSON 转 Model
+          factory UserModel.fromJson(Map<String, dynamic> json) =>
+              _$UserModelFromJson(json);
+        
+          /// 从 Model 转 JSON
+          Map<String, dynamic> toJson() => _$UserModelToJson(this);
+        }
+        ```
+    
+    * 使用 [<font color=red>**built_value**</font>](https://pub.dev/packages/built_value)
+    
+      > ```yaml
+      > # pubspec.yaml 编辑完后执行：dart pub get 
+      > dependencies:
+      > built_value: any
+      > 	built_collection: any
+      > 
+      > dev_dependencies:
+      > 	build_runner: any
+      > 	built_value_generator: any
+      > ```
+      >
+      > **生成的中间代码会与此文件在同一个文件夹下**
+      >
+      > ![image-20250727223708816](./assets/image-20250727223708816.png)
+      
+      ```dart
+      /// serializers.dart
+      library serializers; // ✅ 加上这一句非常关键！
+      
+      import 'package:built_value/serializer.dart';
+      import 'package:built_value/standard_json_plugin.dart';
+      import 'package:jobs_flutter_base_config/JobsDemoTools/Data/Data.3rd/JSONs.analyze/built_value_demo✅/利用脚本自动生成的built_value序列化文件/video_item.dart';
+      import 'package:built_collection/built_collection.dart'; // ✅ 没有这一句就会找不到 BuiltList
+      
+      part 'serializers.g.dart'; // ✅ 生成器才能识别到它，并生成对应的序列化文件
+      
+      @SerializersFor([
+        VideoItem,
+        VideoList,
+      ])
+      final Serializers serializers = (_$serializers.toBuilder()
+            ..addPlugin(StandardJsonPlugin())
+            ..addBuilderFactory(
+              const FullType(BuiltList, [FullType(VideoItem)]),
+              () => ListBuilder<VideoItem>(),
+            ))
+          .build();
+      ```
+      
+      ```dart
+      /// video_item.dart
+      import 'package:built_value/built_value.dart';
+      import 'package:built_value/serializer.dart';
+      import 'package:built_collection/built_collection.dart';
+      
+      part 'video_item.g.dart'; // ✅ 同目录内文件。不允许跨文件夹
+      
+      abstract class VideoItem implements Built<VideoItem, VideoItemBuilder> {
+        String? get nick_name;
+        String? get head;
+        /// 省略若干...
+      
+        VideoItem._();
+        factory VideoItem([void Function(VideoItemBuilder) updates]) = _$VideoItem;
+      
+        static Serializer<VideoItem> get serializer => _$videoItemSerializer;
+      }
+      
+      abstract class VideoList implements Built<VideoList, VideoListBuilder> {
+        BuiltList<VideoItem> get list;
+      
+        VideoList._();
+        factory VideoList([void Function(VideoListBuilder) updates]) = _$VideoList;
+      
+        static Serializer<VideoList> get serializer => _$videoListSerializer;
+      }
+      ```
+
 
 * 🚀 常见的代码生成应用场景
 

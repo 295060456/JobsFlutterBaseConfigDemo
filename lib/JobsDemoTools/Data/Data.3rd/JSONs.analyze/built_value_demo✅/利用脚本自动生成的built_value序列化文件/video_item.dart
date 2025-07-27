@@ -2,7 +2,7 @@ import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 import 'package:built_collection/built_collection.dart';
 
-part '../利用脚本自动生成的built_value序列化文件/video_item.g.dart';
+part 'video_item.g.dart'; // ✅ 正确：同目录内文件
 
 abstract class VideoItem implements Built<VideoItem, VideoItemBuilder> {
   String? get nick_name;
