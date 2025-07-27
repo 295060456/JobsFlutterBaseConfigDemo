@@ -20,7 +20,7 @@ dependencies:
   flutter:
     sdk: flutter
   # UI组件库
-  cupertino_icons: ^1.0.6
+  cupertino_icons: any
   device_preview: any # 多设备模拟器（外部包裹）
   easy_localization: any # 国际化根容器（外部包裹）
   flutter_phoenix: any # 热重启容器（外部包裹）
@@ -48,6 +48,7 @@ dependencies:
   encrypt: any # 用于加密数据
   pointycastle: any # 用于加密数据
   video_compress: any # 用于处理视频
+  json_annotation: any # 用于处理json数据
   # 状态管理
   get: any # 用于管理应用状态
   provider: any # 用于管理应用状态
@@ -56,7 +57,7 @@ dependencies:
   flutter_bloc: any # 用于管理应用状态
   # 用户权限处理
   # 网络请求
-  dart_ping_ios: any # 
+  dart_ping_ios: any #
   http: any # 用于网络请求
   # Chopper: any # 用于网络请求
   # FlutterHttpClient: any # 用于网络请求
@@ -98,13 +99,14 @@ dependencies:
   flutter_screenutil: any # 用于屏幕适配
   # 应用程序
   # 日志调试
-  crypto: ^3.0.6
+  crypto: any
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^6.0.0 # Flutter代码规范
-
+  flutter_lints: any # Flutter代码规范
+  build_runner: any
+  json_serializable: any
 flutter_gen:
   output: lib/gen/ # 生成文件的目录
 # For information on the generic Dart part of this file, see the

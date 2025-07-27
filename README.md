@@ -5194,11 +5194,106 @@ Comparable.compare(a, b)
   /// 并不等于其父组件的 context
   ```
 
-### 19、📦构建打包 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 19、自动化代码生成 @ [**`build_runner`**](https://pub.dev/packages/build_runner)
 
-> 1️⃣ 打包慢，尤其**Android**平台
+* 依赖的引入**`pubspec.yaml`**
+
+  ```yaml
+  # 这里引入的是所有需要被打包的依赖
+  dependencies:
+    json_annotation: any
+  # 这里引入的是所有开发期间的工具包依赖（不会被打入最终的产品包）
+  dev_dependencies:
+    build_runner: any # 这个是所有中间代码生成器的引擎
+    json_serializable: any
+  ```
+
+* 手动运行中间代码生成工具
+
+  ```shell
+  dart run build_runner build
+  ```
+
+* 自动监听文件变动并实时生成代码（常驻运行的监听进程）
+
+  * 前台终端运行此命令，则**不能关闭终端**。否则无法进行实时监听
+
+    ```shell
+    dart run build_runner watch
+    ```
+
+  * **后台运行（不阻塞终端）**
+
+    > 加上 `&` 表示后台运行，但注意
+    >
+    > - 它不会输出错误日志到当前窗口；
+    > - 还要手动 kill 掉后台进程，不够直观。
+
+    ```shell
+    dart run build_runner watch --delete-conflicting-outputs &
+    ```
+
+  | 功能                      | 描述                                            |
+  | ------------------------- | ----------------------------------------------- |
+  | 自动监听 `.dart` 文件变化 | 当你修改 model / 接口等文件时，自动触发代码生成 |
+  | 实时生成 `.g.dart` 等文件 | 无需每次手动运行 `build_runner build`           |
+  | 增量构建，速度更快        | 只构建有变化的文件，性能优于 `build`            |
+
+* 代码示例：<font color=red>自动化代码生成**Model**</font>
+
+  > 生成的中间代码会与此文件在同一个文件夹下
+  >
+  > ![image-20250727214937737](./assets/image-20250727214937737.png)
+
+  ```dart
+  // UserModel.dart
+  import 'package:json_annotation/json_annotation.dart';
+  part 'UserModel.g.dart'; // （1️⃣ 第一个名字必须和本文件名一致，区分大小写）2️⃣ 必须自动化生成代码前就要写这一句，否则会报错
+  
+  @JsonSerializable() // 3️⃣ 用注解，将此类标注出来生成中间件
+  class UserModel {
+    final String name;
+    final int age;
+  
+    UserModel({
+      required this.name,
+      required this.age,
+    });
+  
+    /// 只有成功生成中间代码以后：_$UserModelFromJson(json); 和 _$UserModelToJson(this);才不报错
+    
+    /// 从 JSON 转 Model
+    factory UserModel.fromJson(Map<String, dynamic> json) =>
+        _$UserModelFromJson(json);
+  
+    /// 从 Model 转 JSON
+    Map<String, dynamic> toJson() => _$UserModelToJson(this);
+  }
+  ```
+
+* 🚀 常见的代码生成应用场景
+
+  | 应用场景          | 使用说明                                           | 常用库 / 工具                                     |
+  | ----------------- | -------------------------------------------------- | ------------------------------------------------- |
+  | ✅ JSON Model      | 自动生成 `fromJson()` / `toJson()`                 | `json_serializable` + `build_runner`              |
+  | ✅ 多语言          | 自动生成 `AppLocalizations.of(context).xxx` 的代码 | Flutter 官方 `flutter_localizations` + `gen_l10n` |
+  | ✅ 路由注册        | 自动注册路由，避免手写字符串跳转                   | `auto_route`、`get`、`go_router` 的生成器         |
+  | ✅ API 封装        | 自动生成请求类、实体类、接口调用                   | `retrofit` + `dio` + `json_serializable`          |
+  | ✅ Freezed 模型    | 自动生成不可变类、`copyWith()`、`==`、`hashCode`   | `freezed` + `build_runner`                        |
+  | ✅ 表达式处理      | 比如 `sealed_union` / `pattern matching`           | `sealed_unions`, `sum_types`, `match` 等          |
+  | ✅ 表单校验类      | 自动生成表单验证器                                 | `formz`, `reactive_forms`                         |
+  | ✅ Bloc/State 构建 | 自动生成 Bloc 状态、事件类                         | `bloc` + `hydrated_bloc` + `freezed`              |
+  | ✅ Equatable支持   | 自动添加 `==` / `hashCode` 比较                    | `freezed` 内建，或 `equatable` 手动               |
+  | ✅ Hive Adapter    | 自动生成 Hive 的 `TypeAdapter`                     | `hive_generator`                                  |
+  | ✅ ORM（数据库）   | 自动生成数据库表字段映射、查询函数                 | `floor`, `moor`（drift）                          |
+  | ✅ 测试 mock       | 自动生成 `@Mock()`、伪接口                         | `mockito` + `build_runner`                        |
+  | ✅ Dart FFI        | 自动生成 FFI 对应的 dart wrapper                   | `ffigen`                                          |
+
+### 20、📦构建打包 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> 1️⃣ 打包慢，尤其[**Android**](https://www.android.com/)平台
 >
-> 2️⃣ **Flutter**的3大构建模式
+> 2️⃣ [**Flutter**](https://flutter.dev/) 的3大构建模式
 >
 > | 对比项                     | `debug` 模式                                  | `profile` 模式                  | `release` 模式                     |
 > | -------------------------- | --------------------------------------------- | ------------------------------- | ---------------------------------- |
@@ -5272,13 +5367,13 @@ Comparable.compare(a, b)
   | **dynamic**                        | [**Flutter**](https://flutter.dev/) 动态集成场景 | **JIT + AOT**      | 依项目配置 | 依项目配置   | Add-to-App 混合开发               | **Android**<br/>**iOS**               | 原生动态加载 Flutter            |
   | **flavor 模式**                    | `flutter build apk --flavor staging`             | 依所选模式         | 依所选模式 | 依所选模式   | 多环境打包（`staging`、`uat` 等） | **Android**<br/>**iOS**               | 非编译模式，属于构建配置        |
 
-#### 19.1、📦 [**Flutter**](https://flutter.dev/).**Android**（较为复杂和繁琐） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 20.1、📦 [**Flutter**](https://flutter.dev/).**Android**（较为复杂和繁琐） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-##### 19.1.1、 [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 20.1.1、 [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 >  [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) （<font color=red>**建议保持最新**</font>）是 **Android.SDK** 命令行工具：[Android **Command Line Tools**](https://developer.android.com/tools?hl=zh-cn)的一部分，用于管理 **Android.SDK** 的组件。它允许你从终端安装、更新、查看和卸载 **Android.SDK** 中的各种包，比如：
 >
->  - [**Android**]() 平台（如 `platforms;android-34`）
+>  - [**Android**](https://www.android.com/) 平台（如 `platforms;android-34`）
 >  - 构建工具（如 `build-tools;34.0.0`）
 >  - 系统镜像（如 `system-images;android-34;google_apis;x86_64`）
 >  - 模拟器（如 `emulator`）
@@ -5316,7 +5411,7 @@ Comparable.compare(a, b)
 
     * 用于自定义 **CI/CD** 环境（如 [**Docker**](https://www.docker.com/)镜像）
 
-##### 19.1.2、[**Gradle**](https://gradle.org/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 20.1.2、[**Gradle**](https://gradle.org/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 一个高度可配置、插件化、现代化的自动化构建工具（平台无关）
 
@@ -5386,7 +5481,7 @@ Comparable.compare(a, b)
   }
   ```
 
-##### 19.1.3、<font id=AGP>[<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) = <font color=red>**A**</font>ndroid <font color=red>**G**</font>radle <font color=red>**P**</font>lugin</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> 
+##### 20.1.3、<font id=AGP>[<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) = <font color=red>**A**</font>ndroid <font color=red>**G**</font>radle <font color=red>**P**</font>lugin</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> 
 
 * 🧱  [<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) 是连接 [**Gradle**](https://gradle.org/) 和 **Android 构建逻辑** 的桥梁
 
@@ -5431,7 +5526,7 @@ Comparable.compare(a, b)
   | 版本关系               | 不同 [<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn)  需配套不同 [**Gradle**](https://gradle.org/) | 独立更新                                           |
   | **Flutter** 项目中位置 | `build.gradle` 中的 `classpath`                              | `gradle-wrapper.properties` 中的 `distributionUrl` |
 
-##### 19.1.4、**Android** 打包的产物 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 20.1.4、**Android** 打包的产物 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 项目                 | <font color=red>**A**</font>ndroid <font color=red>**p**</font>ac<font color=red>**k**</font>age | <font color=red>**A**</font>ndroid <font color=red>**a**</font>pp <font color=red>**b**</font>undle |
 | -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -5446,7 +5541,7 @@ Comparable.compare(a, b)
 | **常见用途**         | 内部测试、第三方分发、安装包备份                             | 上传 [**Google Play**](https://play.google.com/) 商店        |
 | **是否推荐**         | ✅ 第三方或私有渠道使用                                       | ✅ [**Google**](https://www.google.com/) 官方推荐上传 [**Play**](https://play.google.com/) 商店使用 |
 
-##### 19.1.5、[**Flutter**](https://flutter.dev/)打包 **Android** 包的流程图 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 20.1.5、[**Flutter**](https://flutter.dev/)打包 **Android** 包的流程图 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```mermaid
 graph TD
@@ -5458,7 +5553,7 @@ graph TD
     F --> G[Generate final APK]
 ```
 
-##### 19.1.6、如何加快**Flutter.Android**的打包速度？ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 20.1.6、如何加快**Flutter.Android**的打包速度？ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 优化方式                                            | 操作说明                                                     |
 | --------------------------------------------------- | ------------------------------------------------------------ |
@@ -5471,14 +5566,14 @@ graph TD
 | ✅ **设置构建线程数**                                | [**Gradle**](https://gradle.org/) 中设置：`org.gradle.parallel=true` |
 | ✅ **Flutter 版本更新**                              | 新版本通常对构建性能有优化                                   |
 
-##### 19.1.7、🪖<font color=red>**构建指令**</font>：`flutter build apk` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 20.1.7、🪖<font color=red>**构建指令**</font>：`flutter build apk` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 模式      | 命令                                         | 简称说明             |
 | --------- | -------------------------------------------- | -------------------- |
 | `debug`   | `flutter build apk --debug` 或 `flutter run` | 开发调试用，功能全   |
 | `release` | `flutter build apk --release`                | 发布用，高性能最小包 |
 
-##### 19.1.8、⚙️ 相关配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 20.1.8、⚙️ 相关配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * [**Flutter**](https://flutter.dev/).**Android**打包需要涉及到**Java**环境推荐使用[<font color=red>**openJDK**</font>](https://openjdk.org/)
 
@@ -5496,11 +5591,11 @@ graph TD
 
   * **`compileSdk`**
 
-    > **Android** 构建系统中的一个配置项，用于指定 **编译时所使用的 Android SDK 版本**
+    > [**Android**](https://www.android.com/) 构建系统中的一个配置项，用于指定 编译时所使用的 [**Android**](https://www.android.com/).SDK 版本
     >
-    > 1️⃣ **编译时 API 限制**：决定你在代码中能使用的 **Android.API** 上限（只能用 ≤ `compileSdk` 的 **API**）。
+    > 1️⃣ **编译时 API 限制**：决定你在代码中能使用的 [**Android**](https://www.android.com/).API 上限（只能用 ≤ `compileSdk` 的 **API**）。
     >
-    > 2️⃣ **不影响运行系统版本**：它不会影响 App 能运行在哪些 **Android** 系统版本上，运行范围由 `minSdk` 和 `targetSdk` 控制。
+    > 2️⃣ **不影响运行系统版本**：它不会影响 App 能运行在哪些 [**Android**](https://www.android.com/) 系统版本上，运行范围由 `minSdk` 和 `targetSdk` 控制。
     >
     > 3️⃣ **影响构建工具版本要求**：`compileSdk` 越高，所需的 <a href="#AGP" style="font-size:17px; color:green;"><b>**AGP**</b></a> 版本也必须越高，否则无法编译。
     
@@ -5518,7 +5613,7 @@ graph TD
   
   * **`targetSdk`**（目标优化版本）
   
-      * 告诉系统你为哪个版本做了适配：**Android** 会根据 `targetSdk` 启用/禁用某些行为变更（behavior changes）。
+      * 告诉系统你为哪个版本做了适配：[**Android**](https://www.android.com/)  会根据 `targetSdk` 启用/禁用某些行为变更（behavior changes）。
   
       * 不限制可安装系统版本：**App** 仍然可以安装在更高版本系统上，但系统会以 `targetSdk` 为基准判断兼容性。
   
@@ -5536,7 +5631,7 @@ graph TD
   | 第三方依赖                                                   | 来自 [**pub.dev**](https://pub.dev/) 的插件中声明的 AAR/JAR，如 [`image_gallery_saver`](https://pub.dev/packages/image_gallery_saver)、[`engagelab`](https://pub.dev/packages?q=engagelab) |
   | [**Google Maven**](https://maven.google.com/web/index.html) / [**JCenter**](https://mvnrepository.com/repos/jcenter) / [**MavenCentral**](https://central.sonatype.com/) | 默认构建源，国内访问会慢                                     |
 
-##### 19.1.9、📦 [**Flutter**](https://flutter.dev/).**Android** 打包脚本（MacOS）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 20.1.9、📦 [**Flutter**](https://flutter.dev/).**Android** 打包脚本（MacOS）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 #!/bin/zsh
@@ -5840,7 +5935,7 @@ _open_output_folder
 
 ```
 
-##### 19.1.10、打包成品  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 20.1.10、打包成品  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > [**Flutter**](https://flutter.dev/) 和 [**Gradle**](https://gradle.org/)  的构建系统默认会将最新产物**覆盖上一次的构建产物**
 
@@ -5871,9 +5966,9 @@ _open_output_folder
 | 🚀 提测/发包                                         | `apk/release/app-release.apk`（需签名）                  |
 | 🌐 上架  [**Google Play**](https://play.google.com/) | `bundle/release/app-release.aab`                         |
 
-#### 19.2、📦 [**Flutter**](https://flutter.dev/).**iOS**（相对简单）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 20.2、📦 [**Flutter**](https://flutter.dev/).**iOS**（相对简单）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-##### 19.2.1、🪖<font color=red>**构建指令**</font>：`flutter build ios` 和 `flutter build ipa` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 20.2.1、🪖<font color=red>**构建指令**</font>：`flutter build ios` 和 `flutter build ipa` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > **iOS** 项目主流是使用 **Xcode** + **Xcode build system** 来进行构建
 
@@ -5891,7 +5986,7 @@ _open_output_folder
 | `--export-options-plist` | `--export-options-plist=ios/ExportOptions.plist` | 指定导出 ipa 所需的 plist                |
 | `--no-codesign`          | `flutter build ios --no-codesign`                | 构建时跳过签名，常用于 CI 环境或手动签名 |
 
-##### 19.2.2、📁生成的包目录  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 20.2.2、📁生成的包目录  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > `build/ios/iphoneos/Runner.app`
 >
@@ -5917,13 +6012,13 @@ _open_output_folder
   └── 📄 ExportOptions.plist 👈 导出配置 plist（用于控制签名方式、是否上传等）📝
 ```
 
-##### 19.2.3、📦 打包脚本（TODO） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 20.2.3、📦 打包脚本（TODO） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 /// TODO
 ```
 
-##### 19.2.4、⚠️注意事项  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 20.2.4、⚠️注意事项  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 必须要有苹果的开发者账号（普通账户充值）
 

@@ -25,7 +25,7 @@ dependencies:
   flutter:
     sdk: flutter
   # UI组件库
-  cupertino_icons: ^1.0.6
+  cupertino_icons: any
   device_preview: any # 多设备模拟器（外部包裹）
   easy_localization: any # 国际化根容器（外部包裹）
   flutter_phoenix: any # 热重启容器（外部包裹）
@@ -177,12 +177,12 @@ dependencies:
   flutter_plugin_android_lifecycle: any # 用于管理生命周期 (Android)
   # 日志调试
   flutter_ulog: any # 用于打印日志
-  crypto: ^3.0.6
+  crypto: any
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^6.0.0 # Flutter代码规范
+  flutter_lints: any # Flutter代码规范
   json_serializable: any # 用于序列化/反序列化JSON数据
   build_runner: any # 用于运行生成代码（any 表示 "用兼容的最新版"）
   flutter_gen_runner: any # 根据你的 pubspec.yaml 中配置的资源文件，自动生成 assets.gen.dart 文件，让你用代码方式访问资源，更安全、方便。
