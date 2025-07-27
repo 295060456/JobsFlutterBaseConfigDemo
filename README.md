@@ -2387,7 +2387,20 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 | `PhysicalModel` | 控制阴影、抗锯齿、透明等底层视觉效果   |
 | `Material`      | 实现 **material** 效果（配合 **Ink**） |
 
-### 23、xxx <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 23、Dart.[**Flutter**](https://flutter.dev/)访问相册、摄像头、麦克风等系统级功能 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> <font color=red>**办不到**</font>。**必须依赖原生平台能力（如 Android 的 Java/Kotlin、iOS 的 Objective-C/Swift）**，因此这类功能在 Dart 层都需要通过 **Platform Channel 或插件** 实现。
+>
+> Dart 本身是运行在 **Flutter 引擎之上（Flutter Engine）** 的语言，它运行在一个虚拟环境中，不能直接访问：
+>
+> - 相册（Photo Gallery）
+> - 摄像头（Camera）
+> - 麦克风（Microphone）
+> - 蓝牙、NFC
+> - 文件系统（特指 Android/iOS 的私有路径）
+> - 电池、传感器、GPS 等
+>
+> 这些都需要平台（Android/iOS）的 **原生 API 提供支持**。
 
 ### 24、👂监听 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
