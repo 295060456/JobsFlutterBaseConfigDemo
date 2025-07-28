@@ -4374,6 +4374,99 @@ class FadeInImageDemo extends StatelessWidget {
     | 简单封装，只想隔离执行函数             | `easy_isolate` / `simple_isolate` ✅ |
     | 已使用 Bloc，希望脱离主线程逻辑        | `isolate_bloc` ✅                    |
 
+### 34、Dart.[**Flutter**](https://flutter.dev/).**Stream**
+
+> `Stream` 就是一个可以 **持续发出数据（异步事件）** 的对象。
+>
+> | 特性     | `Future`                       | `Stream`                                    |
+> | -------- | ------------------------------ | ------------------------------------------- |
+> | 数据个数 | **只能接收一次结果（单个值）** | **可以接收多个结果（事件序列）**            |
+> | 用途     | 异步任务的“单次完成”           | 异步事件的“持续监听”                        |
+> | 接收方式 | `then()` 或 `await`            | `listen()` 或 `StreamBuilder`               |
+> | 举例     | 网络请求、延迟操作             | 聊天消息流、倒计时、输入监听、**WebSocket** |
+> | 生命周期 | 一次性                         | 可以是持续的（直到关闭）                    |
+
+* **Stream** 的分类
+
+  | 类型                           | 特点                     | 示例                           |
+  | ------------------------------ | ------------------------ | ------------------------------ |
+  | **Single-subscription Stream** | 只能被监听一次           | 网络请求、输入框监听           |
+  | **Broadcast Stream**           | 可以被多个监听器同时监听 | 事件总线、多组件监听同一事件源 |
+
+  * ```dart
+    void main() {
+      // 创建一个单订阅 Stream
+      final stream = Stream<int>.fromIterable([1, 2, 3]);
+    
+      // 第一次监听 ✅ 成功
+      stream.listen((event) {
+        print("👂 第一次监听收到：$event");
+      });
+    
+      // 第二次监听 ❌ 会报错
+      Future.delayed(Duration(seconds: 1), () {
+        stream.listen((event) {
+          print("👂 第二次监听收到：$event");
+        });
+      });
+    }
+    ```
+
+    ```
+    👂 第一次监听收到：1
+    👂 第一次监听收到：2
+    👂 第一次监听收到：3
+    Unhandled exception:
+    Bad state: Stream has already been listened to.
+    ```
+
+  * ```dart
+    void main() {
+      // 将单订阅流转换为广播流
+      final controller = StreamController<String>.broadcast();
+    
+      // 监听器 A
+      controller.stream.listen((event) {
+        print("🅰️ A 监听器收到：$event");
+      });
+    
+      // 监听器 B
+      controller.stream.listen((event) {
+        print("🅱️ B 监听器收到：$event");
+      });
+    
+      // 添加数据
+      controller.add("Hello");
+      controller.add("World");
+    
+      // 关闭流
+      controller.close();
+    }
+    ```
+
+    ```
+    🅰️ A 监听器收到：Hello
+    🅱️ B 监听器收到：Hello
+    🅰️ A 监听器收到：World
+    🅱️ B 监听器收到：World
+    ```
+
+* **Stream** 的使用方式
+
+  ```dart
+  // Widget 中的使用：StreamBuilder
+  StreamBuilder<int>(
+    stream: countStream(),
+    builder: (context, snapshot) {
+      if (snapshot.hasData) {
+        return Text("数据：${snapshot.data}");
+      } else {
+        return CircularProgressIndicator();
+      }
+    },
+  )
+  ```
+
 ## 三、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ### 1、📱关于iOS模拟器（最新版本XCode：16.4） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
