@@ -24,6 +24,10 @@
 * **站在巨人的肩膀上，才能看得更远**
 * **面向信仰编程**
 
+## 💾 参考资料
+
+* [**Flutter 实战@第二版**](https://book.flutterchina.club/)
+
 ## 一、🎯目的和功效 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 品控标准（只能严格的保证编译器正常，而不能完全保证运行时的不出错）
@@ -2387,7 +2391,7 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 | `PhysicalModel` | 控制阴影、抗锯齿、透明等底层视觉效果   |
 | `Material`      | 实现 **material** 效果（配合 **Ink**） |
 
-### 23、Dart.[**Flutter**](https://flutter.dev/)访问相册、摄像头、麦克风等系统级功能 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 23、Dart.[**Flutter**](https://flutter.dev/)访问：🖼️相册、📹摄像头、🎤麦克风等系统级功能 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > <font color=red>**办不到**</font>。**必须依赖原生平台能力（如 Android 的 Java/Kotlin、iOS 的 Objective-C/Swift）**，因此这类功能在 Dart 层都需要通过 **Platform Channel 或插件** 实现。
 >
@@ -3986,7 +3990,6 @@ class MyCustomCacheManager extends CacheManager {
           ),
         );
 }
-
 ```
 
 #### 29.5、[**`octo_image`**](https://pub.dev/packages/octo_image)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
@@ -4058,6 +4061,318 @@ class FadeInImageDemo extends StatelessWidget {
   ```
 
 * 未完待续...
+
+### 32、Dart.[**Flutter**](https://flutter.dev/).**`Future`**
+
+* **`Future`** 有三种状态：
+
+  * `uncompleted` 未完成
+  * `completed with value` 成功返回
+  * `completed with error` 异常返回
+
+* **`Future`**/**`async`**/**`await`** ：**Dart**主线程（也叫 **UI isolate**）上的异步非阻塞（非多线程）
+
+* **在 Dart 中，任何函数只要加了 `async`，它的返回类型都会被自动转换为 `Future` 或 `Future<T>`，哪怕你不显式声明 `Future`**
+
+* **`sync`**、**`sync`**、**`async*`**、**`async`**
+
+  * **`sync`**（默认）—— **同步函数**
+
+    > * 按顺序一行一行执行，阻塞当前线程直到完成。
+    > * 返回普通值
+
+    ```dart
+    int add(int a, int b) {
+      return a + b;
+    }
+    ```
+
+  * **`async` **—— **异步函数（返回 Future）**
+
+    > * 表示这个函数是异步的，可能包含 `await`。
+    > * 返回类型是 `Future<T>`。
+    > * 不会阻塞主线程，适合网络请求、磁盘 IO 等耗时任务。
+
+    ```dart
+    Future<String> fetchData() async {
+      await Future.delayed(Duration(seconds: 1));
+      return '数据加载完成';
+    }
+    ```
+
+  * **`sync*`** —— **同步生成器（返回 Iterable）**
+
+    > - 用于逐步生成多个值。
+    > - 返回 `Iterable<T>`
+    > - 使用 `yield` 或 `yield*` 来发出值
+
+    ```dart
+    void main() {
+      print('--- sync* 示例 ---');
+    
+      for (final value in countSync()) {
+        print('sync* 输出: $value');
+      }
+    
+      print('--- sync* 执行完毕 ---');
+    }
+    
+    Iterable<int> countSync() sync* {
+      for (int i = 1; i <= 3; i++) {
+        print('sync* yield 前: $i');
+        yield i;
+        print('sync* yield 后: $i');
+      }
+    }
+    ```
+
+    输出结果（无延迟。`sync*` 是同步执行的，每次 `yield` 产生一个值，主线程马上处理。）：
+
+    ```
+    --- sync* 示例 ---
+    sync* yield 前: 1
+    sync* 输出: 1
+    sync* yield 后: 1
+    sync* yield 前: 2
+    sync* 输出: 2
+    sync* yield 后: 2
+    sync* yield 前: 3
+    sync* 输出: 3
+    sync* yield 后: 3
+    --- sync* 执行完毕 ---
+    ```
+
+  * **`async*`** —— **异步生成器（返回 Stream）**
+
+    > - 用于异步逐步生成多个值。
+    > - 返回 `Stream<T>`。
+    > - 使用 `yield` 或 `yield*` 来发出值。
+    > - 常用于 **WebSocket**、数据流等场景。
+
+    ```dart
+    void main() async {
+      print('--- async* 示例 ---');
+    
+      await for (final value in countAsync()) {
+        print('async* 输出: $value');
+      }
+    
+      print('--- async* 执行完毕 ---');
+    }
+    
+    Stream<int> countAsync() async* {
+      for (int i = 1; i <= 3; i++) {
+        print('async* yield 前: $i');
+        await Future.delayed(Duration(seconds: 1)); // 模拟耗时
+        yield i;
+        print('async* yield 后: $i');
+      }
+    }
+    ```
+    
+    输出结果（每秒输出一次）：
+    
+    ```
+    --- async* 示例 ---
+    async* yield 前: 1
+    async* 输出: 1
+    async* yield 后: 1
+    async* yield 前: 2
+    async* 输出: 2
+    async* yield 后: 2
+    async* yield 前: 3
+    async* 输出: 3
+    async* yield 后: 3
+    --- async* 执行完毕 ---
+    ```
+
+* **`Future`** 是**微任务（microtask queue）**，<font color=red>**会在同步任务完成后执行**</font>
+
+  ```dart
+  void main() {
+    print("1");
+    Future(() => print("2"));
+    print("3");
+  }
+  // 输出顺序：
+  1
+  3
+  2 ✅
+  ```
+
+* 写法模板
+
+  * 🧰 一站式 [**Flutter**](https://flutter.dev/) 学习模板（全功能演示）
+
+    ```dart
+    import 'dart:async';
+    
+    void main() async {
+      print("🟢 程序开始");
+    
+      // ✅ 1. Future.value：直接返回已完成的值（同步变异步）
+      Future<String>.value("✅ value() 立即完成").then(print);
+    
+      // ✅ 2. Future.delayed：延迟执行任务
+      Future.delayed(Duration(seconds: 1), () => "⏳ 1秒后返回数据").then(print);
+    
+      // ✅ 3. Future.error：构造一个立即失败的 Future
+      Future.error("❌ error() 构造错误")
+          .catchError((e) => print("🧯 捕获 error：$e"));
+    
+      // ✅ 4. Future.microtask：优先级高的微任务
+      Future.microtask(() => print("⚡ microtask 优先执行"));
+    
+      // ✅ 5. then：任务完成后继续做事情
+      fetchUserName().then((name) {
+        print("👤 用户名：$name");
+      });
+    
+      // ✅ 6. catchError：捕获 then 中的异常
+      fetchUserWithError().then((_) {
+        print("✅ 正常执行");
+      }).catchError((e) {
+        print("🔥 捕获到异常：$e");
+      });
+    
+      // ✅ 7. whenComplete：无论成功失败都会执行（类似 finally）
+      fetchUserName()
+          .then((_) => print("🌈 成功"))
+          .catchError((e) => print("⚠️ 错误"))
+          .whenComplete(() => print("🔚 任务完成"));
+    
+      // ✅ 8. await：语法糖，更清晰（注意：必须在 async 函数中）
+      String age = await fetchUserAge();
+      print("🎂 用户年龄：$age");
+    
+      // ✅ 9. try-catch await 错误处理
+      try {
+        await fetchUserWithError();
+      } catch (e) {
+        print("🛑 try-catch 捕获错误：$e");
+      }
+    
+      // ✅ 10. Future.wait：并行多个 Future
+      List<Future<String>> futures = [fetchUserName(), fetchUserAge()];
+      List<String> results = await Future.wait(futures);
+      print("📦 Future.wait 结果：$results");
+    
+      print("🔵 程序结束");
+    }
+    
+    // ===================== 模拟异步任务 ======================
+    
+    Future<String> fetchUserName() async {
+      await Future.delayed(Duration(milliseconds: 500));
+      return "Jobs";
+    }
+    
+    Future<String> fetchUserAge() async {
+      await Future.delayed(Duration(milliseconds: 300));
+      return "28";
+    }
+    
+    Future<void> fetchUserWithError() async {
+      await Future.delayed(Duration(milliseconds: 300));
+      throw "模拟网络异常";
+    }
+    ```
+
+    输出结果：
+
+    ```
+    🟢 程序开始
+    ⚡ microtask 优先执行
+    ✅ value() 立即完成
+    ⏳ 1秒后返回数据
+    👤 用户名：Jobs
+    🔥 捕获到异常：模拟网络异常
+    🌈 成功
+    🔚 任务完成
+    🎂 用户年龄：28
+    🛑 try-catch 捕获错误：模拟网络异常
+    📦 Future.wait 结果：[Jobs, 28]
+    🔵 程序结束
+    ```
+
+  * 📌 最常用写法模板（推荐记住）
+
+    ```dart
+    Future<T> someAsyncTask() async {
+      try {
+        // 异步操作
+        return await xxx;
+      } catch (e) {
+        // 错误处理
+        throw e;
+      }
+    }
+    ```
+
+* 同步 🆚 异步
+
+  * 同步 （带阻塞性）
+  * 异步（不带阻塞性）：类似于C语言中的Block，其实还是一条线程，只是等待完成后用处理的结果
+
+### 33、Dart.[**Flutter**](https://flutter.dev/) 多线程
+
+> **在 Dart / [Flutter](https://flutter.dev/) 中，唯一支持的“多线程”机制就是 `Isolate`**，没有像其他语言（**Java**/**Kotlin**/**Swift**）那样的真正**多线程（共享内存线程）机制**。
+>
+> 🚫 为什么**Dart**没有传统多线程？
+>
+> **Dart** 为了保持单线程事件驱动模型的**简洁性、安全性**，选择用 `Isolate` 替代传统多线程：
+>
+> - 避免共享内存引起的竞争问题
+> - 避免线程锁、死锁等问题
+> - 更容易在移动端跨平台实现（[**Android**](https://www.android.com/)/**iOS** 一套逻辑）
+
+* 🧠 [**Flutter**](https://flutter.dev/)  中的并发编程方案概览
+
+  | 方式                                              | 是否多线程                | 是否阻塞 UI | 用途                                                   |
+  | ------------------------------------------------- | ------------------------- | ----------- | ------------------------------------------------------ |
+  | ✅ 普通异步   **`Future/async/await`**             | ❌（单线程）               | ❌ 非阻塞    | 网络请求、延时、文件读写等异步操作                     |
+  | **`Timer`**                                       | ❌（单线程）               | ❌ 非阻塞    | 定时器（UI线程执行）                                   |
+  | ✅ 密集计算   <font color=red>**`Isolate`**</font> | ✅（多线程）               | ❌ 非阻塞    | 密集计算、解析大文件等                                 |
+  | ✅ 密集计算    **`compute()`**                     | ✅（简化版 **`Isolate`**） | ❌ 非阻塞    | [**Flutter**](https://flutter.dev/) 推荐的隔离计算方法 |
+
+  * **`Isolate`**
+
+    * **`Isolate`** 中的函数必须是顶级函数或静态方法（不能是闭包）。
+
+    * 主 **`Isolate`** 发送消息给子 **`Isolate`** 时，需要通过 **`SendPort`** 发送。
+
+    * 子 **`Isolate`** 接收消息时，需要通过 **`ReceivePort`** 接收。
+
+    * 📦 实用包推荐
+
+      | 包名                                                         | 用途说明                                                     |
+      | ------------------------------------------------------------ | ------------------------------------------------------------ |
+      | [**`flutter_isolate`**](https://pub.dev/packages/flutter_isolate) | 允许在[**Flutter**](https://flutter.dev/) 中创建新的 **isolate** 并运行 `Dart` 入口 |
+      | [**`isolate_handler`**](https://pub.dev/packages/isolate_handler) | 更高级的 **isolate** 消息调度                                |
+      | [**`worker_manager`**](https://pub.dev/packages/worker_manager) | 任务池 + **Isolate** 封装工具                                |
+
+* ✅  复杂并发：第三方任务管理库
+
+  * 🚀 常用 **Dart** 并发任务管理库推荐
+
+    | 库名                                                         | 简介                                                         | 优势                               | 推荐指数       |
+    | ------------------------------------------------------------ | ------------------------------------------------------------ | ---------------------------------- | -------------- |
+    | [**`worker_manager`**](https://pub.dev/packages/worker_manager) | 支持任务池、自动取消、并发控制                               | ✅ 高并发 ✅ 简洁易用 ✅ 自动管理     | ⭐⭐⭐⭐⭐          |
+    | [**`isolate_handler`**](https://pub.dev/packages/isolate_handler) | 多通道通信，支持多 Isolate 协调                              | ✅ 多任务通道 ✅ 可复用 Handler      | ⭐⭐⭐⭐           |
+    | [**`flutter_isolate`**](https://pub.dev/packages/flutter_isolate) | 专为 [**Flutter**](https://flutter.dev/) 封装的 Isolate，可指定 **Dart** 入口 | ✅ 支持传 context ✅ 支持 asset 路径 | ⭐⭐⭐            |
+    | [**`easy_isolate`**](https://pub.dev/packages/easy_isolate)  | 轻量封装 Isolate，API 简洁友好                               | ✅ 简洁 API ✅ 单任务模型            | ⭐⭐⭐            |
+    | [**`simple_isolate`**](https://pub.dev/packages/simple_isolate) | 极简封装，简化 Isolate 通信                                  | ✅ 上手快 ✅ 轻量                    | ⭐⭐             |
+    | [**`isolate_bloc`**](https://pub.dev/packages/isolate_bloc)  | 将 bloc 状态管理与 isolate 结合，适合 BLoC 项目架构使用      | ✅ 解耦 ✅ 多线程 bloc 模型          | ⭐⭐（特定场景） |
+
+  * ✅ 实用场景对比
+
+    | 任务场景                               | 推荐库                              |
+    | -------------------------------------- | ----------------------------------- |
+    | 需要任务队列/并发限制                  | `worker_manager` ✅                  |
+    | 多个任务之间需通信/状态同步            | `isolate_handler` ✅                 |
+    | 需要调用自定义 **Dart** 入口（多文件） | `flutter_isolate` ✅                 |
+    | 简单封装，只想隔离执行函数             | `easy_isolate` / `simple_isolate` ✅ |
+    | 已使用 Bloc，希望脱离主线程逻辑        | `isolate_bloc` ✅                    |
 
 ## 三、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
