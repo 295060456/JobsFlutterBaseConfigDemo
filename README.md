@@ -358,42 +358,46 @@ WidgetsFlutterBinding.ensureInitialized();
 >
 > 2️⃣ 这个调用对 **Android 不需要**（在 [**Android**](https://www.android.com/) 上使用 `Ping` 不需要额外处理，直接用即可）
 
-* 注册
+<details>
+<summary>注册</summary>
 
-  ```dart
-  DartPingIOS.register();
+```dart
+DartPingIOS.register();
+```
+</details>
+
+<details>
+<summary>使用</summary>
+
+```dart
+final ping = Ping('8.8.8.8', count: 4);
+
+ping.stream.listen((event) {
+  print(event.summary); // 或 event.response
+});
+```
+</details>
+
+<details>
+<summary>配置</summary>
+* `Info.plist `
+
+  ```xml
+  <key>NSAppTransportSecurity</key>
+  <dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
+  </dict>
   ```
 
-* 使用
+* `pubspec.yaml`
 
-  ```dart
-  final ping = Ping('8.8.8.8', count: 4);
-
-  ping.stream.listen((event) {
-    print(event.summary); // 或 event.response
-  });
+  ```yaml
+  dependencies:
+    dart_ping: any
+  # iOS 需要单独引入
+  dart_ping_ios: any
   ```
-
-* 配置
-
-  * `Info.plist `
-
-    ```xml
-    <key>NSAppTransportSecurity</key>
-    <dict>
-      <key>NSAllowsArbitraryLoads</key>
-      <true/>
-    </dict>
-    ```
-
-  * `pubspec.yaml`
-
-    ```yaml
-    dependencies:
-      dart_ping: any
-    # iOS 需要单独引入
-    dart_ping_ios: any
-    ```
 
 ### 7、利用**`SharedPreferences`**对数据进行存取 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
