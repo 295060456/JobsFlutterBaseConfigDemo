@@ -23,6 +23,7 @@
 * **工欲善其事必先利其器**
 * **站在巨人的肩膀上，才能看得更远**
 * **面向信仰编程**
+* 🔔 温馨提示：👉  [<font color=red>**完整展示本文档**</font>](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/README.md)
 
 ## 💾 参考资料
 
@@ -46,7 +47,6 @@
 * 独立的测试单元
   * 对于单个的[**Flutter**](https://flutter.dev/)工程文件（小**Demo**）可以利用[**运行脚本**](./【MacOS】☀️双击运行Flutter项目（iOS 模拟器）.command)，在**MacOS**的**终端**直接拖入进行运行和展示（终端运行不支持断点，只能输出日志）
   * 为了保证各个**Demo**在形式上的独立性，所以尽可能的在单个`.dart`文件里面进行叙述。**每一个[Flutter](https://flutter.dev/)的Demo文件里，都会存在其程序的入口函数** 
-* 🔔 温馨提示：<font color=red>本文档太长，在**GitHub**中会被截断，无法完整的显示，需要下载以后用[**Typora**](https://typora.io/)进行打开，方可阅览全文</font>
 
 ## 二、🌱环境配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -73,6 +73,8 @@
   ```shell
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   ```
+
+* [**Typora**](https://typora.io/)
 
 * 系统环境变量
 
