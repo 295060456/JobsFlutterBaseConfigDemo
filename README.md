@@ -128,7 +128,7 @@ void main() => runApp(XXX);
 ```
 
 <details>
-<summary>`MaterialApp`</summary>
+<summary><span style="color:red; font-weight:bold;">MaterialApp</span></summary>
 
 ```dart
 import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart';// 公共测试器路径
@@ -149,7 +149,7 @@ void main() {
 </details>
 
 <details>
-<summary>`CupertinoApp`</summary>
+<summary><span style="color:red; font-weight:bold;">CupertinoApp</span></summary>
 
 ```dart
   import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsCupertinoRunner.dart';// 公共测试器路径
@@ -170,7 +170,7 @@ void main() {
 </details>
 
 <details>
-<summary>`GetMaterialApp`</summary>
+<summary><span style="color:red; font-weight:bold;">GetMaterialApp</span></summary>
 
 ```dart
 import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsGetXRunner.dart';// 公共测试器路径
