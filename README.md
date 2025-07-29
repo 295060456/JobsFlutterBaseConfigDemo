@@ -128,7 +128,7 @@ void main() => runApp(XXX);
 ```
 
 <details>
-<summary><span style="color:red; font-weight:bold;">MaterialApp</span></summary>
+<summary>MaterialApp</summary>
 
 ```dart
 import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart';// 公共测试器路径
@@ -149,7 +149,7 @@ void main() {
 </details>
 
 <details>
-<summary><span style="color:red; font-weight:bold;">CupertinoApp</span></summary>
+<summary>CupertinoApp</summary>
 
 ```dart
   import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsCupertinoRunner.dart';// 公共测试器路径
@@ -170,7 +170,7 @@ void main() {
 </details>
 
 <details>
-<summary><span style="color:red; font-weight:bold;">GetMaterialApp</span></summary>
+<summary>GetMaterialApp</summary>
 
 ```dart
 import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsGetXRunner.dart';// 公共测试器路径
@@ -192,6 +192,9 @@ void main() {
 
 ##### 3.2.1、🚪配置首页入口   <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
+<details>
+<summary>点击展开代码</summary>
+
 ```dart
 GetMaterialApp(
   initialRoute: AppPages.INITIAL,      // 从哪个页面开始
@@ -199,7 +202,6 @@ GetMaterialApp(
   getPages: AppPages.routes,           // 有哪些页面能被跳转
 )
 ```
-
 ```dart
 MaterialApp(
   home: Builder(
@@ -234,24 +236,26 @@ CupertinoApp(
 )
 ```
 
+</details>
+
 ##### 3.2.2、搭建页面的基本结构   <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > [**Flutter**](https://flutter.dev/) 页面如果没有被如下👇结构组件包裹，就没有默认 UI 背景结构（如白底、**AppBar**、状态栏空间等）——看起来就像“一片黑”或者“没有显示内容”。
 
-| 组件名                                    | 所属库            | 用途 / 特点                                                  |
-| ----------------------------------------- | ----------------- | ------------------------------------------------------------ |
-| **Scaffold**                              | Material          | 最常用，构建 Material 风格页面结构（AppBar、Drawer、FAB、BottomSheet 等） |
-| **CupertinoPageScaffold**                 | Cupertino         | 构建 iOS 风格页面结构，支持 `navigationBar` 和 `child`       |
-| **CupertinoTabScaffold**                  | Cupertino         | iOS 风格的底部标签栏结构，配合 `CupertinoTabBar` 使用        |
-| **NestedScrollView**                      | Material          | 支持协调滚动的页面结构（如 Collapsing AppBar）               |
-| **CustomScrollView**                      | Material          | 更灵活的滚动结构，通常配合 SliverAppBar、SliverList 使用     |
-| **PageView**                              | Material          | 可横向翻页的容器，常用于引导页或 Tab 页面切换                |
-| **TabBarView** + **DefaultTabController** | Material          | 用于构建 Tab 页面结构，搭配 AppBar 的 TabBar 使用            |
-| **Navigator** / **Router**                | Flutter Core      | 构建自定义的导航堆栈管理结构（底层的页面容器）               |
-| **ShellRoute (GoRouter)**                 | go_router         | 用于统一页面结构的嵌套路由容器（Web 和 App 通用）            |
-| **GetMaterialApp + GetBuilder / GetView** | GetX              | GetX 状态管理中用于统一结构的容器类组合                      |
-| **Phoenix**                               | `flutter_phoenix` | 用于“热重启”整个 app 的容器结构                              |
-| **DevicePreview**                         | `device_preview`  | 用于响应式预览，模拟不同设备的结构容器                       |
+| 组件名                                    | 所属库                                   | 用途 / 特点                                                  |
+| ----------------------------------------- | ---------------------------------------- | ------------------------------------------------------------ |
+| **Scaffold**                              | Material                                 | 最常用，构建 Material 风格页面结构（AppBar、Drawer、FAB、BottomSheet 等） |
+| **CupertinoPageScaffold**                 | Cupertino                                | 构建 iOS 风格页面结构，支持 `navigationBar` 和 `child`       |
+| **CupertinoTabScaffold**                  | Cupertino                                | iOS 风格的底部标签栏结构，配合 `CupertinoTabBar` 使用        |
+| **NestedScrollView**                      | Material                                 | 支持协调滚动的页面结构（如 Collapsing AppBar）               |
+| **CustomScrollView**                      | Material                                 | 更灵活的滚动结构，通常配合 SliverAppBar、SliverList 使用     |
+| **PageView**                              | Material                                 | 可横向翻页的容器，常用于引导页或 Tab 页面切换                |
+| **TabBarView** + **DefaultTabController** | Material                                 | 用于构建 Tab 页面结构，搭配 AppBar 的 TabBar 使用            |
+| **Navigator** / **Router**                | Flutter Core                             | 构建自定义的导航堆栈管理结构（底层的页面容器）               |
+| **ShellRoute (GoRouter)**                 | go_router                                | 用于统一页面结构的嵌套路由容器（Web 和 App 通用）            |
+| **GetMaterialApp + GetBuilder / GetView** | [**GetX**](https://pub.dev/packages/get) | [**GetX**](https://pub.dev/packages/get)  状态管理中用于统一结构的容器类组合 |
+| **Phoenix**                               | `flutter_phoenix`                        | 用于“热重启”整个 app 的容器结构                              |
+| **DevicePreview**                         | `device_preview`                         | 用于响应式预览，模拟不同设备的结构容器                       |
 
 ### 4、[**Flutter**](https://flutter.dev/)<font color=red>**项目中比较标准且完整的启动流程**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -270,6 +274,9 @@ CupertinoApp(
 > 7️⃣ 多语言支持
 >
 > 8️⃣ 自定义生命周期监听
+
+<details>
+<summary>点击展开代码</summary>
 
 ```dart
 SystemChrome.setPreferredOrientations([
@@ -315,6 +322,7 @@ SystemChrome.setPreferredOrientations([
     configLoading();/// 配置 EasyLoading 的样式，如动画、字体、遮罩等。
   });
 ```
+</details>
 
 ### 5、`WidgetsFlutterBinding`确保 **Flutter** 框架与底层平台（如 MethodChannel、插件）之间的桥梁已完成初始化 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -394,6 +402,9 @@ WidgetsFlutterBinding.ensureInitialized();
 > 2️⃣ 额外支持了自定义对象（**Bean**）的存取
 >
 > 💥 [**Flutter**](https://flutter.dev/).**`SharedPreferences`** == OC.**`NSUserDefaults`** == Swift.**`UserDefaults`**
+
+<details>
+<summary>点击展开代码</summary>
 
 ```dart
 /// SpUtil.dart
@@ -482,6 +493,7 @@ class SpUtil {
   }
 }
 ```
+</details>
 
 ### 8、[**Flutter**](https://flutter.dev/).**SDK**标准<a href="#模态" style="color:green; font-size:25px;"><b>模态</b></a>弹窗组件（截至 2025）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -511,6 +523,9 @@ class SpUtil {
 
 * `AlertDialog`（最常用）
 
+  <details>
+  <summary>点击展开代码</summary>
+
   ```dart
   showDialog(
     context: context,
@@ -532,9 +547,13 @@ class SpUtil {
     },
   );
   ```
-
+  </details>
+  
 * `SimpleDialog`
 
+  <details>
+  <summary>点击展开代码</summary>
+  
   ```dart
   /// 适合展示多个选项
   showDialog(
@@ -556,8 +575,12 @@ class SpUtil {
     },
   );
   ```
-
+  </details>
+  
 * `Dialog`
+
+  <details>
+  <summary>点击展开代码</summary>
 
   ```dart
   /// 一个基础的对话框容器，通常用于自定义弹窗
@@ -584,8 +607,12 @@ class SpUtil {
     },
   );
   ```
+  </details>
 
 * `showDialog`
+
+  <details>
+  <summary>点击展开代码</summary>
 
   ```dart
   /// 异步等待用户返回结果
@@ -606,8 +633,12 @@ class SpUtil {
     // 用户点击了确定
   }
   ```
-
+  </details>
+  
 * `showGeneralDialog`
+
+  <details>
+  <summary>点击展开代码</summary>
 
   ```dart
   /// 完全自定义弹窗 + 动画
@@ -636,7 +667,8 @@ class SpUtil {
     },
   );
   ```
-
+  </details>
+  
   ...demo未完待补充
 
 
@@ -650,6 +682,12 @@ class SpUtil {
 | 失败提示   | `EasyLoading.showError('失败')`         | 显示带 ❌ 的错误提示 |
 | 信息提示   | `EasyLoading.showInfo('信息')`          | 显示 ℹ️ 的信息提示   |
 | 关闭提示   | `EasyLoading.dismiss()`                 | 隐藏所有提示        |
+
+```yaml
+/// pubspec.yaml
+dependencies:
+  flutter_easyloading: any
+```
 
 ```dart
 void configLoading() {
@@ -668,12 +706,6 @@ void configLoading() {
   // ..maskType = EasyLoadingMaskType.custom
   // ..maskColor = Colors.black.withOpacity(0.1)
 }
-```
-
-```yaml
-/// pubspec.yaml
-dependencies:
-  flutter_easyloading: ^3.0.5
 ```
 
 ### 10、<font id=极光原生推送>[**极光原生推送**](https://www.engagelab.com/zh_CN)</font>：[**`FlutterPluginEngagelab`**](https://pub.dev/packages/flutter_plugin_engagelab) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
@@ -836,18 +868,21 @@ String getNowTime() {
 
 * 全局变量或状态管理器传参：（如使用 `Provider`、[**`GetX`**](https://pub.dev/packages/get) 、`Riverpod`、`Bloc` 等状态管理框架共享数据）
 
-  *  [**`Provider`**](https://pub.dev/packages/provider)
+  * [**`Provider`**](https://pub.dev/packages/provider)
+
+    <details>
+    <summary>点击展开代码</summary>
 
     ```dart
     import 'package:flutter/material.dart';
     import 'package:provider/provider.dart';
-
+    
     void main() {
       runApp(
         ChangeNotifierProvider(create: (_) => UserModel(), child: MyApp()),
       );
     }
-
+    
     class UserModel extends ChangeNotifier {
       String name = '默认名';
       void updateName(String newName) {
@@ -855,12 +890,12 @@ String getNowTime() {
         notifyListeners();
       }
     }
-
+    
     class MyApp extends StatelessWidget {
       @override
       Widget build(BuildContext context) => MaterialApp(home: HomePage());
     }
-
+    
     class HomePage extends StatelessWidget {
       @override
       Widget build(BuildContext context) {
@@ -879,7 +914,7 @@ String getNowTime() {
         );
       }
     }
-
+    
     class SecondPage extends StatelessWidget {
       @override
       Widget build(BuildContext context) {
@@ -891,24 +926,28 @@ String getNowTime() {
       }
     }
     ```
-
+    </details>
+    
   * [**`GetX`**](https://pub.dev/packages/get)
+  
+    <details>
+    <summary>点击展开代码</summary>
 
     ```dart
     import 'package:flutter/material.dart';
     import 'package:get/get.dart';
-
+    
     void main() {
       runApp(GetMaterialApp(home: HomePage()));
     }
-
+    
     class UserController extends GetxController {
       var name = '默认名'.obs;
     }
-
+    
     class HomePage extends StatelessWidget {
       final UserController controller = Get.put(UserController());
-
+    
       @override
       Widget build(BuildContext context) => Scaffold(
             appBar: AppBar(title: Text('首页')),
@@ -923,7 +962,7 @@ String getNowTime() {
             ),
           );
     }
-
+    
     class SecondPage extends StatelessWidget {
       final UserController controller = Get.find();
       @override
@@ -935,24 +974,28 @@ String getNowTime() {
           );
     }
     ```
-
+    </details>
+    
   * [**`Riverpod`**](https://pub.dev/packages/riverpod)
+  
+    <details>
+    <summary>点击展开代码</summary>
 
     ```dart
     import 'package:flutter/material.dart';
     import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+    
     final userProvider = StateProvider<String>((ref) => '默认名');
-
+    
     void main() {
       runApp(ProviderScope(child: MyApp()));
     }
-
+    
     class MyApp extends StatelessWidget {
       @override
       Widget build(BuildContext context) => MaterialApp(home: HomePage());
     }
-
+    
     class HomePage extends ConsumerWidget {
       @override
       Widget build(BuildContext context, WidgetRef ref) {
@@ -970,7 +1013,7 @@ String getNowTime() {
         );
       }
     }
-
+    
     class SecondPage extends ConsumerWidget {
       @override
       Widget build(BuildContext context, WidgetRef ref) {
@@ -982,9 +1025,16 @@ String getNowTime() {
       }
     }
     ```
-
+    </details>
+    
   * [**`bloc`**](https://pub.dev/packages/bloc)
+  
+    > ✅ 优点：适合跨页面传递大量数据
+    > ❌ 缺点：可能过度依赖全局状态，调试成本高
 
+    <details>
+    <summary>点击展开代码</summary>
+    
     ```dart
     import 'package:flutter/material.dart';
     import 'package:flutter_bloc/flutter_bloc.dart';
@@ -1036,32 +1086,37 @@ String getNowTime() {
       }
     }
     ```
-
-  > ✅ 优点：适合跨页面传递大量数据
-  >  ❌ 缺点：可能过度依赖全局状态，调试成本高
-
+    </details>
+  
 * 通过单例类或静态变量传参
 
   > ✅ 优点：简单粗暴
   >  ❌ 缺点：不推荐用于生产环境，数据污染风险高
+
+  <details>
+  <summary>点击展开代码</summary>
 
   ```dart
   /// 例：用一个单例缓存临时参数（不推荐，但可应急）
   class PageCache {
     static String? tempMessage;
   }
-
+  
   // 设置参数
   PageCache.tempMessage = 'Hello';
-
+  
   // 在新页面读取
   Text(PageCache.tempMessage ?? '')
   ```
-
+  </details>
+  
 * 使用 `RouteSettings` 自定义参数（进阶命名路由）
 
   > ✅ 优点：适合大型项目进行集中统一路由处理
   >  ❌ 缺点：写法较复杂
+
+  <details>
+  <summary>点击展开代码</summary>
 
   ```dart
   onGenerateRoute: (settings) {
@@ -1073,23 +1128,26 @@ String getNowTime() {
     }
   }
   ```
-
+  </details>
+  
 * 命名路由 + `ModalRoute.of(context)?.settings.arguments`：**适合多页面统一管理时使用**
 
   > ✅ 优点：搭配 `onGenerateRoute` 可统一路由管理
   >  ❌ 缺点：参数类型校验靠自己，不如构造函数安全
 
-   ```dart
-   /// 注册路由：
-   MaterialApp(
-     initialRoute: '/',
-     routes: {
-       '/': (context) => HomePage(),
-       '/second': (context) => SecondPage(),
-     },
-   );
-   ```
+  <details>
+  <summary>点击展开代码</summary>
 
+  ```dart
+  /// 注册路由：
+  MaterialApp(
+    initialRoute: '/',
+    routes: {
+      '/': (context) => HomePage(),
+      '/second': (context) => SecondPage(),
+    },
+  );
+  ```
   ```dart
   /// 跳转传参：
   Navigator.pushNamed(
@@ -1098,7 +1156,7 @@ String getNowTime() {
     arguments: {'name': 'Jobs'},
   );
   ```
-
+  
   ```dart
   /// 接收参数：
   class SecondPage extends StatelessWidget {
@@ -1113,6 +1171,8 @@ String getNowTime() {
     }
   }
   ```
+  
+  </details>
 
 #### 13.2、返向传参 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -1125,9 +1185,12 @@ String getNowTime() {
 
 * 全局变量或状态管理器传参：（如使用  [**`Provider`**](https://pub.dev/packages/provider)、[**`GetX`**](https://pub.dev/packages/get) 、[**`Riverpod`**](https://pub.dev/packages/riverpod)、[**Bloc**](https://pub.dev/packages/bloc) 等状态管理框架共享数据）
 
-  *  [**`Provider`**](https://pub.dev/packages/provider)
+  * [**`Provider`**](https://pub.dev/packages/provider)
 
     通过模型同步（间接传参）
+
+    <details>
+    <summary>点击展开代码</summary>
 
     ```dart
     class UserModel extends ChangeNotifier {
@@ -1137,7 +1200,7 @@ String getNowTime() {
         notifyListeners();/// notifyListeners(); 不是“全局”通知，而是对注册了它这个对象的所有监听者发通知。
       }
     }
-
+    
     // 首页
     ElevatedButton(
       onPressed: () async {
@@ -1146,17 +1209,21 @@ String getNowTime() {
       child: Text('跳转到第二页'),
     ),
     Text('返回结果：${Provider.of<UserModel>(context).result}'),
-
+    
     // 第二页
     onPressed: () {
       Provider.of<UserModel>(context, listen: false).setResult('Provider 的返回值');
       Navigator.pop(context);
     },
     ```
-
+    </details>
+    
   * [<font color=red>**`GetX`**</font>](https://pub.dev/packages/get)
-
+  
     使用 `Get.back(result: value)`（标准方式）
+  
+    <details>
+    <summary>点击展开代码</summary>
 
     ```dart
     // 首页
@@ -1167,21 +1234,25 @@ String getNowTime() {
       },
       child: Text('跳转并接收返回值'),
     );
-
+    
     // 第二页
     ElevatedButton(
       onPressed: () => Get.back(result: 'GetX 的返回值'),
       child: Text('返回并传值'),
     );
     ```
-
+    </details>
+    
   * [**`Riverpod`**](https://pub.dev/packages/riverpod)
-
+  
     修改状态再 pop（间接）
+  
+    <details>
+    <summary>点击展开代码</summary>
 
     ```dart
     final resultProvider = StateProvider<String>((ref) => '无');
-
+    
     // 首页
     ElevatedButton(
       onPressed: () async {
@@ -1190,15 +1261,19 @@ String getNowTime() {
       child: Text('跳转'),
     ),
     Text('返回值：${ref.watch(resultProvider)}'),
-
+    
     // 第二页
     ref.read(resultProvider.notifier).state = 'Riverpod 返回值';
     Navigator.pop(context);
     ```
-
+    </details>
+    
   * [**`Bloc`**](https://pub.dev/packages/bloc)
-
+  
     emit 状态后 pop（间接）
+  
+    <details>
+    <summary>点击展开代码</summary>
 
     ```dart
     class ResultCubit extends Cubit<String> {
@@ -1223,8 +1298,12 @@ String getNowTime() {
     context.read<ResultCubit>().setResult('Bloc 的返回值');
     Navigator.pop(context);
     ```
+    </details>
 
 ### 14、🔙 导航栏返回按钮的行为：监听+定义   <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+<details>
+<summary>点击展开代码</summary>
 
 ```dart
 /// PageC
@@ -1238,7 +1317,6 @@ class PageC extends RouteAwareStatefulPage {
 
 class _PageCState extends RouteAwareState<PageC> {}
 ```
-
 ```dart
 abstract class RouteAwareStatefulPage extends StatefulWidget {
   final String title;
@@ -1301,6 +1379,8 @@ abstract class RouteAwareState<T extends RouteAwareStatefulPage>
 }
 ```
 
+</details>
+
 ### 15、🖥️[**Flutter**](https://flutter.dev)屏幕适配方案 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 工具/方式            | 作用                              | 用法示例                                                     |
@@ -1333,15 +1413,17 @@ abstract class RouteAwareState<T extends RouteAwareStatefulPage>
 
 * 使用
 
+  <details>
+  <summary>点击展开代码</summary>
+
   ```yaml
   dependencies:
     flutter_screenutil: any
   ```
-
   ```dart
   import 'package:flutter_screenutil/flutter_screenutil.dart';
   ```
-
+  
   ```dart
   Widget build(BuildContext context) => ScreenUtilInit(
       designSize: const Size(1125, 2436),// 👈 指定设计稿尺寸
@@ -1364,12 +1446,14 @@ abstract class RouteAwareState<T extends RouteAwareStatefulPage>
         )
     );
   ```
-
+  
   ```dart
   520.h     // 表示高度适配值
   300.w     // 表示宽度适配值
   16.sp     // 表示字体大小适配值
   ```
+  
+  </details>
 
 #### 15.2、**SafeArea** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -1499,7 +1583,7 @@ SafeArea(
 )
 ```
 
-* Flutter 没有像 iOS 那样原生的 `keyboardWillShow` 事件，但可以通过：
+* [**Flutter**](https://flutter.dev/) 没有像 **iOS** 那样原生的 `keyboardWillShow` 事件，但可以通过：
 
   - `MediaQuery.of(context).viewInsets.bottom`
   - 或者 `flutter_keyboard_visibility` 包来监听键盘状态变化
@@ -1541,15 +1625,15 @@ class XXX extends Object{}
 
 ### 17、在[**Flutter**](https://flutter.dev/)中，支持<font color=red>**滑动**</font>的所有核心**`Widget`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> Grid：网格
+> **Grid**：网格
 
 * 滚动条
 
-  * iOS 滚动指示器是 `UIScrollView` 自带的
+  * **iOS** 滚动指示器是 **`UIScrollView`** 自带的
 
     | 特点               | 描述                                                         |
     | ------------------ | ------------------------------------------------------------ |
-    | **内置指示器**     | 滚动条（scroll indicator）是 `UIScrollView` 自带的 UI 行为   |
+    | **内置指示器**     | 滚动条（scroll indicator）是 **`UIScrollView`** 自带的 UI 行为 |
     | **无需配置**       | 系统自动根据 `contentOffset` 和 `contentSize` 来决定是否显示滚动条 |
     | **开启/关闭控制**  | 通过属性控制：`showsVerticalScrollIndicator = YES/NO`        |
     | **无法自定义**     | 样式和位置难以自定义，除非私有 API 或覆盖子视图（不推荐）    |
@@ -1567,14 +1651,14 @@ class XXX extends Object{}
 
   * 📌 总结
 
-    | 对比点             | iOS                 | Flutter                              |
+    | 对比点             | iOS                 | [**Flutter**](https://flutter.dev/)  |
     | ------------------ | ------------------- | ------------------------------------ |
     | 滚动条来源         | `UIScrollView` 内置 | 需要手动用 `Scrollbar` 包裹          |
     | 滚动条是否自动同步 | ✅ 系统自动          | ❌ 需通过 `ScrollController` 手动同步 |
     | 是否可以自定义     | ❌ 非常受限          | ✅ 颜色、宽度、交互、拖拽等全可自定义 |
     | 是否可以拖动条滚动 | ❌ 不能（仅视觉）    | ✅ `interactive: true` 支持拖动滚动   |
 
-* Flutter 原生SDK内置的滚动组件
+* [**Flutter**](https://flutter.dev/).**SDK** 内置的滚动组件
 
   | 类型       | Widget                                              | 说明                     |
   | ---------- | --------------------------------------------------- | ------------------------ |
@@ -1587,8 +1671,10 @@ class XXX extends Object{}
   | 多滚动嵌套 | `NestedScrollView`                                  | 滑动联动（如顶部折叠）   |
   | 滚动增强   | `Scrollbar`、`RefreshIndicator`、`ScrollController` | 滚动条、刷新、跳转控制等 |
 
+  <details>
+  <summary>ListView</summary>
+
   ```dart
-  /// ListView
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: 20, // 列表项数量
@@ -1610,9 +1696,12 @@ class XXX extends Object{}
     );
   }
   ```
-
+  </details>
+  
+  <details>
+  <summary>GridView</summary>
+  
   ```dart
-  /// GridView
   Widget build(BuildContext context) {
     return GridView.count(
       crossAxisCount: 3, // 每行几个格子
@@ -1638,14 +1727,17 @@ class XXX extends Object{}
     );
   }
   ```
+  </details>
+  
+  <details>
+  <summary>PageView</summary>
 
   ```dart
-  /// PageView
   Widget build(BuildContext context) {
     return PageView.builder(
       itemCount: 5, // 页数
       itemBuilder: (context, index) => Center(child: Text('Page $index')),
-
+  
       scrollDirection: Axis.horizontal, // 横向或纵向滑动（默认水平）
       reverse: false, // 是否反向滑动（右滑变成前一页）
       controller: PageController(
@@ -1664,9 +1756,12 @@ class XXX extends Object{}
     );
   }
   ```
+  </details>
+  
+  <details>
+  <summary>SingleChildScrollView</summary>
 
   ```dart
-  /// SingleChildScrollView
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.vertical, // 垂直或水平滚动
@@ -1686,16 +1781,19 @@ class XXX extends Object{}
     );
   }
   ```
-
+  </details>
+  
+  <details>
+  <summary>ReorderableListView（支持拖拽排序）</summary>
+  
   ```dart
-  /// ReorderableListView（支持拖拽排序）
   Widget build(BuildContext context) {
     return ReorderableListView(
       onReorder: (oldIndex, newIndex) {
         print('从 $oldIndex 拖动到 $newIndex');
         // 拖动完成后需自己更新数据源，否则 UI 不会刷新
       },
-
+  
       children: List.generate(
         10,
         (index) => ListTile(
@@ -1704,7 +1802,7 @@ class XXX extends Object{}
           leading: Icon(Icons.drag_handle), // 可拖动提示图标
         ),
       ),
-
+  
       scrollDirection: Axis.vertical, // 滚动方向（默认垂直，可横向）
       reverse: false, // 是否倒序显示
       controller: ScrollController(), // 滚动控制器
@@ -1724,9 +1822,12 @@ class XXX extends Object{}
     );
   }
   ```
-
-  ```dart
-  /// CustomScrollView（组合多个 Sliver 的高级滚动结构）
+  </details>
+  
+  <details>
+  <summary>CustomScrollView（组合多个 Sliver 的高级滚动结构）</summary>
+  
+  ```dart 
   Widget build(BuildContext context) {
     return CustomScrollView(
       scrollDirection: Axis.vertical, // 滚动方向
@@ -1738,7 +1839,7 @@ class XXX extends Object{}
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
       restorationId: 'customScrollViewDemo',
       clipBehavior: Clip.hardEdge,
-
+  
       slivers: [
         SliverAppBar(
           pinned: true, // 是否固定顶部（吸顶）
@@ -1779,16 +1880,19 @@ class XXX extends Object{}
     );
   }
   ```
-
   > `CustomScrollView` 是构建复杂滚动结构的核心框架，适合处理：
   >
   > - 吸顶 header（SliverAppBar）
   > - 列表 + 网格混排
   > - 内容自适应 + 滚动联动
   > - 替代 `NestedScrollView` 解决性能问题
-
+  
+  </details>
+  
+  <details>
+  <summary>SliverGrid 全属性示例（Flutter 原生 Sliver 网格）</summary>
+  
   ```dart
-  /// SliverGrid 全属性示例（Flutter 原生 Sliver 网格）
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
@@ -1816,11 +1920,14 @@ class XXX extends Object{}
     );
   }
   ```
-
-  >  ❌ **`SliverGrid` 不能单独作为 Widget 返回**，因为它不是继承自 `Widget`，而是继承自 **`SliverMultiBoxAdaptorWidget`**，只能被放在 `CustomScrollView.slivers` 中使用。
-
-  ```dart
-  /// NestedScrollView（嵌套滚动视图）
+  > ❌ **`SliverGrid` 不能单独作为 Widget 返回**，因为它不是继承自 `Widget`，而是继承自 **`SliverMultiBoxAdaptorWidget`**，只能被放在 `CustomScrollView.slivers` 中使用。
+  
+  </details>
+  
+  <details>
+  <summary>NestedScrollView（嵌套滚动视图）</summary>
+  
+  ```dart 
   Widget build(BuildContext context) {
     return NestedScrollView(
       controller: ScrollController(), // 外层滚动控制器
@@ -1845,16 +1952,19 @@ class XXX extends Object{}
     );
   }
   ```
-
+  </details>
+  
+  <details>
+  <summary>Scrollbar（添加滚动条）</summary>
+  
   ```dart
-  /// Scrollbar（添加滚动条）
   Widget build(BuildContext context) {
     return Scrollbar(
       child: ListView.builder(
         itemCount: 20,
         itemBuilder: (context, index) => ListTile(title: Text('Item $index')),
       ),
-
+  
       thumbVisibility: true, // 始终显示滚动条（默认只在滚动时可见）
       trackVisibility: true, // 显示滚动轨道
       interactive: true, // 是否支持拖动滚动条进行滑动
@@ -1865,9 +1975,12 @@ class XXX extends Object{}
     );
   }
   ```
-
+  </details>
+  
+  <details>
+  <summary>展示 RefreshIndicator 的全部属性用法（下拉刷新）</summary>
+  
   ```dart
-  /// 展示 RefreshIndicator 的全部属性用法（下拉刷新）
   Widget build(BuildContext context) {
     return RefreshIndicator(
       // ✅ 下拉刷新触发回调（返回 Future）
@@ -1902,19 +2015,22 @@ class XXX extends Object{}
     );
   }
   ```
-
+  </details>
+  
+  <details>
+  <summary>组合 RefreshIndicator + ScrollController 实现上下拉完整体验（带分页）</summary>
+  
   ```dart
-  /// 组合 RefreshIndicator + ScrollController 实现上下拉完整体验（带分页）
   class RefreshLoadMoreDemo extends StatefulWidget {
     @override
     _RefreshLoadMoreDemoState createState() => _RefreshLoadMoreDemoState();
   }
-
+  
   class _RefreshLoadMoreDemoState extends State<RefreshLoadMoreDemo> {
     final ScrollController _scrollController = ScrollController();
     List<int> _data = List.generate(20, (i) => i);
     bool _isLoadingMore = false;
-
+  
     @override
     void initState() {
       super.initState();
@@ -1937,16 +2053,16 @@ class XXX extends Object{}
     Future<void> _loadMore() async {
       if (_isLoadingMore) return;
       _isLoadingMore = true;
-
+  
       await Future.delayed(Duration(seconds: 1));
       setState(() {
         int current = _data.length;
         _data.addAll(List.generate(10, (i) => current + i));
       });
-
+  
       _isLoadingMore = false;
     }
-
+  
     @override
     Widget build(BuildContext context) {
       return RefreshIndicator(
@@ -1967,7 +2083,7 @@ class XXX extends Object{}
         ),
       );
     }
-
+  
     @override
     void dispose() {
       _scrollController.dispose();
@@ -1975,13 +2091,16 @@ class XXX extends Object{}
     }
   }
   ```
-
-  > 在iOS中没有专门的系统封装上拉加载、下拉刷新的控件（一般用[**MJRefresh**](https://github.com/CoderMJLee/MJRefresh)）
+  > 在**iOS**中没有专门的系统封装上拉加载、下拉刷新的控件（一般用[**MJRefresh**](https://github.com/CoderMJLee/MJRefresh)）
   >
   > 但是在[**Flutter**](https://flutter.dev/)由系统给提供了`RefreshIndicator`
-
+  
+  </details>
+  
+  <details>
+  <summary>DraggableScrollableSheet（可拖动底部弹出滑动面板）</summary>
+  
   ```dart
-  /// DraggableScrollableSheet（可拖动底部弹出滑动面板）
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
       initialChildSize: 0.3, // 初始高度（相对于父容器 0.0~1.0）
@@ -2001,7 +2120,8 @@ class XXX extends Object{}
     );
   }
   ```
-
+  </details>
+  
 * [**Flutter社区**](pub.dev)/第三方提供的滚动库
 
   | 库                                   | 说明                                                         |
@@ -2216,6 +2336,9 @@ class XXX extends Object{}
 
 #### 20.1、使用 `Column` / `Row`（线性排列 + 间距控制） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
+<details>
+<summary>点击展开代码</summary>
+
 ```dart
 Column(
   children: [
@@ -2225,8 +2348,12 @@ Column(
   ],
 );
 ```
+</details>
 
 #### 20.2、使用 `Stack + Positioned`（绝对锚点式） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+<details>
+<summary>点击展开代码</summary>
 
 ```dart
 Stack(
@@ -2244,10 +2371,14 @@ Stack(
   ],
 );
 ```
+</details>
 
 #### 20.3、使用 `Align` + `FractionalOffset`  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > ✅ 适合相对父组件的对齐布局。相对“容器”对齐，但不能锚定某个兄弟控件
+
+<details>
+<summary>点击展开代码</summary>
 
 ```dart
 Align(
@@ -2255,10 +2386,14 @@ Align(
   child: Text("右下角锚点"),
 );
 ```
+</details>
 
 #### 20.4、使用 `CustomMultiChildLayout` 实现锚定兄弟 **`Widget`**  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > [**Flutter**](https://flutter.dev/) 的高级布局 **`Widget`**，支持**通过 key 锚定某个子`Widget` 的位置来放置另一个子 Widget**
+
+<details>
+<summary>点击展开代码</summary>
 
 ```dart
 CustomMultiChildLayout(
@@ -2283,6 +2418,7 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
   bool shouldRelayout(MultiChildLayoutDelegate oldDelegate) => false;
 }
 ```
+</details>
 
 ### 21、🎍[**Flutter**](https://flutter.dev/)中，涉及到装饰相关的**`Widget`**  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -2422,6 +2558,9 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 >
 > 3️⃣ `RouteObserver` 是`NavigatorObserver`的唯一官方子类
 
+<details>
+<summary>点击展开代码</summary>
+
 ```dart
 import 'package:flutter/material.dart';
 import 'package:flutter_plugin_engagelab/flutter_plugin_engagelab.dart';
@@ -2437,7 +2576,6 @@ class AppNavigatorObserver extends RouteObserver<PageRoute<dynamic>> {
   }
 }
 ```
-
 ```dart
 final AppNavigatorObserver appNavigatorObserver = AppNavigatorObserver();
 
@@ -2462,6 +2600,8 @@ builder: (context, child) {
           );
         }
 ```
+
+</details>
 
 #### 24.2、👂APP 生命周期的监听：`WidgetsBindingObserver` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -2507,6 +2647,10 @@ builder: (context, child) {
 
 ### 26、Tab切换：**`IndexedStack`**  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
+
+<details>
+<summary>点击展开代码</summary>
+
 ```dart
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -2543,7 +2687,6 @@ class _HomePageState extends State<HomePage> {
   }
 }
 ```
-
 ```dart
 IndexedStack(
   index: 1, // 显示第几个子组件（从 0 开始）
@@ -2568,8 +2711,10 @@ Obx(() => IndexedStack(
 ```
 
 > 只会**显示 index 对应的子组件**
->
-> 其他子组件仍然 **在内存中保持状态，不会 rebuild**
+
+其他子组件仍然 **在内存中保持状态，不会 rebuild**
+
+</details>
 
 ### 27、状态管理工具  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -2611,6 +2756,9 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
 
 * **`notifyListeners()`**：**不是全局通知**，而是**对注册了它这个对象的所有监听者**发通知
 
+  <details>
+  <summary>点击展开代码</summary>
+
   ```dart
   class MyModel extends ChangeNotifier
   
@@ -2626,6 +2774,7 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
   
   myModel.notifyListeners();
   ```
+  </details>
 
 #### 27.2、[**`riverpod`**](https://riverpod.dev/)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -2691,10 +2840,13 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
 
 * **Get.put()**
 
+  <details>
+  <summary>点击展开代码</summary>
+
   ```dart
   /// 定义 Controller
   import 'package:get/get.dart';
-
+  
   class CounterController extends GetxController {
     var count = 0.obs;
     void increment() {
@@ -2702,7 +2854,6 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
     }
   }
   ```
-
   ```dart
   /// 注册 Controller（通常在页面或入口）
   void main() {
@@ -2715,7 +2866,7 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
   /// 使用 Controller（在页面中）
   import 'package:flutter/material.dart';
   import 'package:get/get.dart';
-
+  
   class MyApp extends StatelessWidget {
     @override
     Widget build(BuildContext context) {
@@ -2724,7 +2875,7 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
       );
     }
   }
-
+  
   class CounterPage extends StatelessWidget {
     late final CounterController homeController;
     if (Get.isRegistered<CounterController>()) {
@@ -2746,26 +2897,30 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
     }
   }
   ```
-
+  
+  </details>
+  
 * **Get.putAsync()**
+
+  <details>
+  <summary>点击展开代码</summary>
 
   ```dart
   /// 定义一个异步初始化的 Service
   import 'package:get/get.dart';
-
+  
   class AuthService extends GetxService {
     late String token;
-
+  
     Future<AuthService> init() async {
       await Future.delayed(Duration(seconds: 2)); // 模拟异步操作
       token = 'abc123_from_local_storage';
       return this;
     }
-
+  
     String getToken() => token;
   }
   ```
-
   ```dart
   /// 在 main() 中注册服务（异步）
   void main() async {
@@ -2774,12 +2929,12 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
     runApp(MyApp());
   }
   ```
-
+  
   ```dart
   /// 在页面中使用该服务
   import 'package:flutter/material.dart';
   import 'package:get/get.dart';
-
+  
   class MyApp extends StatelessWidget {
     @override
     Widget build(BuildContext context) {
@@ -2788,7 +2943,7 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
       );
     }
   }
-
+  
   class AuthPage extends StatelessWidget {
     late final authService;
     if (Get.isRegistered<AuthService>()) {
@@ -2806,7 +2961,9 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
     }
   }
   ```
-
+  
+  </details>
+  
 * **Get.lazyPut()** <font color=red>**不返回实例**</font>
 
   当第一次使用时，再去创建它的实例（懒加载）
@@ -2837,11 +2994,30 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
   ```
 
 * **Get.create()**
+  <details>
+  <summary>点击展开代码</summary>
 
+  ```dart
+  /// TODO
+  ```
+  </details>
+  
 * **Get.putNamed()**
+  <details>
+  <summary>点击展开代码</summary>
 
+  ```dart
+  /// TODO
+  ```
+  </details>
 * **Get.replace()**
+  <details>
+  <summary>点击展开代码</summary>
 
+  ```dart
+  /// TODO
+  ```
+  </details>
 ##### 27.4.2、[**`GetX`**](https://pub.dev/packages/get) 的销毁机制 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ [**`GetX`**](https://pub.dev/packages/get)  中的依赖对象如果不是 `permanent: true`，默认在无人使用时可以被释放（或你手动释放）。
@@ -2871,13 +3047,16 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
 
 * `GetxController` 是一个继承自 `Controller` 的类，用于管理你的页面状态和业务逻辑。
 
-* `GetView<T>` 是一个泛型 Widget，**用于自动注入并访问一个已注册的 `GetxController`**，无需手动 `Get.find<T>()`。
+* `GetView<T>` 是一个泛型 **`Widget`**，**用于自动注入并访问一个已注册的 `GetxController`**，无需手动 `Get.find<T>()`。
 
-  > 1️⃣ 简化视图中的 controller 获取
+  > 1️⃣ 简化视图中的 **controller** 获取
   >
   > 2️⃣ 避免重复写 `final controller = Get.find<XXX>()`
   >
   > 3️⃣ 适用于 `StatelessWidget`
+
+  <details>
+  <summary>点击展开代码</summary>
 
   ```dart
   class CounterPage extends GetView<CounterController> {
@@ -2916,6 +3095,7 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
     }
   }
   ```
+  </details>
 
 ##### 27.4.4、**`GetxService`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -2928,44 +3108,51 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
 | 是否推荐全局单例 | ❌ 不推荐（容易内存泄漏） | ✅ 推荐用于全局注册一次即可     |
 | 示例用途         | 页面状态管理、交互逻辑等 | 网络服务、缓存服务、配置服务等 |
 
-* 定义
 
-  ```dart
-  class AuthService extends GetxService {
-    String? token;
+<details>
+<summary>定义</summary>
 
-    Future<AuthService> init() async {
-      // 初始化，例如从本地缓存读取 token
-      token = await getSavedToken();
-      return this;
-    }
+```dart
+class AuthService extends GetxService {
+  String? token;
 
-    Future<String?> getSavedToken() async {
-      await Future.delayed(Duration(milliseconds: 300));
-      return 'abc123';
-    }
+  Future<AuthService> init() async {
+    // 初始化，例如从本地缓存读取 token
+    token = await getSavedToken();
+    return this;
   }
-  ```
 
-* 注册服务
-
-  ```dart
-  Future<void> main() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await Get.putAsync<AuthService>(() => AuthService().init());
-    runApp(MyApp());
+  Future<String?> getSavedToken() async {
+    await Future.delayed(Duration(milliseconds: 300));
+    return 'abc123';
   }
-  ```
+}
+```
+</details>
 
-* 使用
+<details>
+<summary>注册服务</summary>
 
-  ```dart
-  late final AuthService authService;
-  if (Get.isRegistered<AuthService>()) {
-    authService = Get.find<AuthService>();
-  }
-  print(authService.token);
-  ```
+```dart
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Get.putAsync<AuthService>(() => AuthService().init());
+  runApp(MyApp());
+}
+```
+</details>
+
+<details>
+<summary>使用</summary>
+
+```dart
+late final AuthService authService;
+if (Get.isRegistered<AuthService>()) {
+  authService = Get.find<AuthService>();
+}
+print(authService.token);
+```
+</details>
 
 ##### 27.4.5、📃<font id=GetPage>**`GetPage()`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> 
 
@@ -3032,6 +3219,9 @@ GetPage(
 | `Get.to(const PageB());`       | **立即创建页面实例**，然后传给 `Get.to()`                    | ✅ 推荐，仅当不关心惰性加载时             |
 | `Get.to(() => const PageB());` | **传入一个构造函数（函数体）,[`GetX`](https://pub.dev/packages/get)  会延迟调用** | ✅ 更推荐，尤其在复杂路由或需要懒加载场景 |
 
+<details>
+<summary>点击展开代码</summary>
+
 ```dart
 class PageB extends StatelessWidget {
   const PageB({super.key});
@@ -3067,11 +3257,12 @@ TextStyle normalTextStyle({
       decoration: TextDecoration.none,
     );
 ```
-
 ```dart
 Get.off(SettingsView());      // 替换当前页
 Get.offAll(LoginView());      // 清空栈后跳转
 ```
+
+</details>
 
 ###### 27.4.6.2、命名路由（推荐方式） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -3085,13 +3276,16 @@ Get.offAllNamed('/splash');
 
 * 路由表
 
+  <details>
+  <summary>点击展开代码</summary>
+
   ```dart
   // app/routes/app_routes.dart
   abstract class AppRoutes {
     static const home = '/home';
     static const login = '/login';
   }
-
+  
   // app/routes/app_pages.dart
   class AppPages {
     static final routes = [
@@ -3106,17 +3300,18 @@ Get.offAllNamed('/splash');
       ),
     ];
   }
-
+  
   // main.dart
   GetMaterialApp(
     initialRoute: AppRoutes.home,
     getPages: AppPages.routes,
   );
-
+  
   // 页面跳转
   Get.toNamed(AppRoutes.login); // ✅ 命名跳转
   ```
-
+  </details>
+  
 * 路由守卫：跳转时进行验权
 
   ```dart
@@ -3194,20 +3389,10 @@ Get.offAllNamed('/splash');
   | **`transitionCurve`**    | `Curve`    | 动画曲线，如 `Curves.easeInOut`                |
   | **`opaque`**             | `bool`     | 是否完全遮挡，默认 `false`                     |
   | **`barrierColor`**       | `Color`    | 背景颜色，默认 `Colors.black.withOpacity(0.5)` |
-
-
-
-<details>
-<summary>点击展开代码</summary>
-
-```dart
-void main() {
-  print('Hello, world!');
-}
-```
-</details>
-
-
+  
+  <details>
+  <summary>Get.dialog()</summary>
+  
   ```dart
   ElevatedButton(
     onPressed: () async {
@@ -3235,14 +3420,39 @@ void main() {
     child: Text('打开自定义弹窗'),
   )
   ```
+  </details>
 
-* **`Get.defaultDialog()`**
+  <details>
+  <summary>Get.defaultDialog()</summary>
 
-* **`Get.bottomSheet()`**
+  ```dart
+  /// TODO
+  ```
+  </details>
 
-* **`Get.generalDialog()`**
+  <details>
+  <summary>Get.bottomSheet()</summary>
 
-* **`Get.showOverlay()`**
+  ```dart
+  /// TODO
+  ```
+  </details>
+
+  <details>
+  <summary>Get.generalDialog()</summary>
+
+  ```dart
+  /// TODO
+  ```
+  </details>
+  
+    <details>
+  <summary>Get.showOverlay()</summary>
+
+  ```dart
+  /// TODO
+  ```
+  </details>
 
 ##### 27.4.8、[**`GetX`**](https://pub.dev/packages/get) 的 UI 控制行为函数 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -3275,10 +3485,8 @@ void main() {
 | 每个页面要传 **BuildContext**            | [**`GetX`**](https://pub.dev/packages/get)  容器中全局持有导航器 |
 | UI 和状态管理耦合严重                    | UI/逻辑可分离，**Controller** 也能导航                       |
 
-✅ 场景：从非 UI 层（比如 **Service**/**Controller**）弹出一个 **Dialog**，而不依赖 `BuildContext`
-
 <details>
-<summary>点击展开代码</summary>
+<summary>✅ 场景：从非 UI 层（比如 Service/Controller）弹出一个 Dialog，而不依赖 BuildContext</summary>
 
 ```dart
 void main() {
@@ -3661,7 +3869,8 @@ class JobsBinding extends Bindings {
 >
 > 💥 **根页面是没有返回键的**
 
-对`PageC`进行返回按钮的监听
+<details>
+<summary>对PageC进行返回按钮的监听</summary>
 
 ```dart
 /// PageC
@@ -3675,7 +3884,6 @@ class PageC extends RouteAwareStatefulPage {
 
 class _PageCState extends RouteAwareState<PageC> {}
 ```
-
 ```dart
 abstract class RouteAwareStatefulPage extends StatefulWidget {
   final String title;
@@ -3738,6 +3946,8 @@ abstract class RouteAwareState<T extends RouteAwareStatefulPage>
 }
 ```
 
+</details>
+
 ### 29、图片缓存框架 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 #### 29.1、[**CachedNetworkImage**](https://pub.dev/packages/cached_network_image)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
@@ -3746,11 +3956,11 @@ abstract class RouteAwareState<T extends RouteAwareStatefulPage>
 
 <details>
 <summary>CachedNetworkImage</summary>
+
 ```yaml
 dependencies:
   cached_network_image: any
 ```
-
 
 ```dart
 import 'package:flutter/material.dart';
@@ -3958,10 +4168,8 @@ class AdvancedNetworkImageDemo extends StatelessWidget {
 
 #### 29.4、[**`flutter_cache_manager`**](https://pub.dev/packages/flutter_cache_manager)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-`flutter_cache_manager` + `Image.file`
-
 <details>
-<summary>点击展开代码</summary>
+<summary>flutter_cache_manager + Image.file</summary>
 
 ```dart
 import 'dart:io';
@@ -4581,6 +4789,9 @@ class FadeInImageDemo extends StatelessWidget {
 
   * 🧰 一站式 [**Flutter**](https://flutter.dev/) 学习模板（全功能演示）
 
+    <details>
+    <summary>点击展开代码</summary>
+
     ```dart
     import 'dart:async';
     
@@ -4654,9 +4865,8 @@ class FadeInImageDemo extends StatelessWidget {
       throw "模拟网络异常";
     }
     ```
-
     输出结果：
-
+    
     ```
     🟢 程序开始
     ⚡ microtask 优先执行
@@ -4671,9 +4881,11 @@ class FadeInImageDemo extends StatelessWidget {
     📦 Future.wait 结果：[Jobs, 28]
     🔵 程序结束
     ```
-
+    
+    </details>
+    
   * 📌 最常用写法模板（推荐记住）
-
+  
     ```dart
     Future<T> someAsyncTask() async {
       try {
@@ -4685,7 +4897,7 @@ class FadeInImageDemo extends StatelessWidget {
       }
     }
     ```
-
+  
 * 同步 🆚 异步
 
   * 同步 （带阻塞性）
@@ -4770,64 +4982,72 @@ class FadeInImageDemo extends StatelessWidget {
   | **Single-subscription Stream** | 只能被监听一次           | 网络请求、输入框监听           |
   | **Broadcast Stream**           | 可以被多个监听器同时监听 | 事件总线、多组件监听同一事件源 |
 
-  * ```dart
-    void main() {
-      // 创建一个单订阅 Stream
-      final stream = Stream<int>.fromIterable([1, 2, 3]);
-    
-      // 第一次监听 ✅ 成功
+  <details>
+  <summary>Single-subscription Stream</summary>
+
+  ```dart
+  void main() {
+    // 创建一个单订阅 Stream
+    final stream = Stream<int>.fromIterable([1, 2, 3]);
+  
+    // 第一次监听 ✅ 成功
+    stream.listen((event) {
+      print("👂 第一次监听收到：$event");
+    });
+  
+    // 第二次监听 ❌ 会报错
+    Future.delayed(Duration(seconds: 1), () {
       stream.listen((event) {
-        print("👂 第一次监听收到：$event");
+        print("👂 第二次监听收到：$event");
       });
-    
-      // 第二次监听 ❌ 会报错
-      Future.delayed(Duration(seconds: 1), () {
-        stream.listen((event) {
-          print("👂 第二次监听收到：$event");
-        });
-      });
-    }
-    ```
+    });
+  }
+  ```
+  ```
+  👂 第一次监听收到：1
+  👂 第一次监听收到：2
+  👂 第一次监听收到：3
+  Unhandled exception:
+  Bad state: Stream has already been listened to.
+  ```
 
-    ```
-    👂 第一次监听收到：1
-    👂 第一次监听收到：2
-    👂 第一次监听收到：3
-    Unhandled exception:
-    Bad state: Stream has already been listened to.
-    ```
+  </details>
+  
+  <details>
+  <summary>Broadcast Stream</summary>
 
-  * ```dart
-    void main() {
-      // 将单订阅流转换为广播流
-      final controller = StreamController<String>.broadcast();
-    
-      // 监听器 A
-      controller.stream.listen((event) {
-        print("🅰️ A 监听器收到：$event");
-      });
-    
-      // 监听器 B
-      controller.stream.listen((event) {
-        print("🅱️ B 监听器收到：$event");
-      });
-    
-      // 添加数据
-      controller.add("Hello");
-      controller.add("World");
-    
-      // 关闭流
-      controller.close();
-    }
-    ```
-
-    ```
-    🅰️ A 监听器收到：Hello
-    🅱️ B 监听器收到：Hello
-    🅰️ A 监听器收到：World
-    🅱️ B 监听器收到：World
-    ```
-
+  ```dart
+  void main() {
+    // 将单订阅流转换为广播流
+    final controller = StreamController<String>.broadcast();
+  
+    // 监听器 A
+    controller.stream.listen((event) {
+      print("🅰️ A 监听器收到：$event");
+    });
+  
+    // 监听器 B
+    controller.stream.listen((event) {
+      print("🅱️ B 监听器收到：$event");
+    });
+  
+    // 添加数据
+    controller.add("Hello");
+    controller.add("World");
+  
+    // 关闭流
+    controller.close();
+  }
+  ```
+  ```
+  🅰️ A 监听器收到：Hello
+  🅱️ B 监听器收到：Hello
+  🅰️ A 监听器收到：World
+  🅱️ B 监听器收到：World
+  ```
+  
+  </details>
+  
 * **Stream** 的使用方式
 
   ```dart
