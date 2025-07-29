@@ -41,6 +41,7 @@ dependencies:
   flutter_datetime_picker: any # 用于日期时间选择器
   easy_refresh: any # 用于下拉刷新
   extended_text: any # 用于显示富文本
+  webview_flutter: any # 用于显示网页
   camera: any # 用于拍照
   image_cropper: any # 用于裁剪图片
   image_editor: any # 用于编辑图片
@@ -53,7 +54,6 @@ dependencies:
   flutter_html: any # 用于显示HTML内容
   flutter_native_splash: any # 用于生成启动页
   flutter_native_view: any # 用于显示原生视图 (iOS)
-  webview_flutter: any # 用于显示网页
   webview_flutter_wkwebview: any # 用于显示网页
   flutter_inappwebview: any # 用于显示网页 (iOS)
   flutter_webview_plugin: any # 用于显示网页 (Android)

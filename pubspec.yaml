@@ -29,6 +29,7 @@ dependencies:
   carousel_slider: any # 用于轮播图
   card_swiper: any # 用于轮播图
   easy_refresh: any # 用于下拉刷新
+  webview_flutter: any # 用于显示网页
   camera: any # 用于拍照
   image_picker: any # image_picker 插件只能分别调用拍照或录像功能，但不能直接调用系统相机应用的完整界面
   flutter_inappwebview: any # 用于显示网页 (iOS)

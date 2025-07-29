@@ -338,9 +338,9 @@ WidgetsFlutterBinding.ensureInitialized();
 > Binding has not yet been initialized.
 > ```
 
-### 6、`DartPingIOS`在 iOS 上启用 **native** 层实现的 <font color=red>**ping 功能**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 6、`DartPingIOS`在 **iOS** 上启用 **native** 层实现的 <font color=red>**ping 功能**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> 1️⃣ 因为 iOS 的网络权限和限制较多，`dart_ping` 需要通过原生插件配合实现 `ping`，所以需要先进行手动注册
+> 1️⃣ 因为 **iOS** 的网络权限和限制较多，`dart_ping` 需要通过原生插件配合实现 `ping`，所以需要先进行手动注册
 >
 > 2️⃣ 这个调用对 **Android 不需要**（在 [**Android**](https://www.android.com/) 上使用 `Ping` 不需要额外处理，直接用即可）
 
@@ -2338,7 +2338,7 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 
 ### 22、其他**`Widget`** 分类 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 22.1、交互类  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 22.1、♻️ 交互类  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 提供用户输入、点击、拖拽、手势等功能
 
@@ -2358,7 +2358,7 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 | 路由相关 | `Navigator`, `PageView`, `MaterialPageRoute`  |
 | Tab 切换 | `TabBar`, `TabBarView`, `BottomNavigationBar` |
 
-#### 22.3、功能控制类 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 22.3、🪓 功能控制类 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 用于生命周期控制、可见性、构建逻辑等
 
@@ -2368,7 +2368,7 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 | 显隐控制     | `Visibility`, `Offstage`, `Opacity`             |
 | 占位/延迟    | `FutureBuilder`, `StreamBuilder`, `Placeholder` |
 
-#### 22.4、内容展示类  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 22.4、🖥️ 内容展示类  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 用来呈现用户可见的内容：文字、图片、图标、视频等
 
@@ -2379,7 +2379,7 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 | 图标类   | `Icon`, `IconButton`                         |
 | 其他媒体 | `VideoPlayer`, `Canvas`, `CustomPaint`       |
 
-#### 22.5、容器类  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 22.5、🪣 容器类  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 >  用来包裹内容并提供 **样式、装饰、边框、背景、阴影**
 
@@ -4050,7 +4050,329 @@ class FadeInImageDemo extends StatelessWidget {
 | `double.parse("3.14")`             | `3.14`       | `double` | ❌ 否         | String → double                                              |
 | `num.parse("5.5")`                 | `5.5`        | `num`    | ❌ 否         | String → 自动识别 int 或 double                              |
 
-### 31、字符串操作 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 31、🧭 可以承载一切的**`WebViewWidget`** 工具模版 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> 本质上是对 [**Flutter**](https://flutter.dev/) 官方的 `WebViewWidget`（来自 `webview_flutter` 插件）的 **二次封装增强版**
+
+* <details>
+  <summary>**JobsReactiveWebView.dart**</summary>
+
+  ```dart
+  import 'package:flutter/material.dart';
+  import 'package:get/get.dart';
+  import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsGetXRunner.dart';
+  import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsWebView/htmlContent.dart';
+  import 'JobsWebViewWidget.dart'; // 原始 WebView 组件
+  
+  void main() {
+    final html = htmlContent();
+  
+    runApp(JobsGetRunner.builder(
+      title: 'JobsReactiveWebView',
+      builder: (ctx) => Center(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const SizedBox(height: 12),
+              JobsReactiveWebView(
+                html: html,
+                showLoading: true,
+                enableScrollListen: true,
+                interceptLinks: true,
+                onHeightChanged: (h) {
+                  debugPrint("📏 WebView 高度: $h");
+                },
+              ),
+              const SizedBox(height: 16),
+              const Text("✅ WebView 下方内容"),
+            ],
+          ),
+        ),
+      ),
+    ));
+  }
+  
+  class JobsReactiveWebView extends StatelessWidget {
+    final String html;
+    final double minHeight;
+    final bool showLoading;
+    final bool enableScrollListen;
+    final bool interceptLinks;
+    final void Function(double height)? onHeightChanged;
+  
+    const JobsReactiveWebView({
+      super.key,
+      required this.html,
+      this.minHeight = 1,
+      this.showLoading = false,
+      this.enableScrollListen = false,
+      this.interceptLinks = false,
+      this.onHeightChanged,
+    });
+  
+    @override
+    Widget build(BuildContext context) {
+      final RxDouble _height = 1.0.obs;
+  
+      return Obx(() => AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            height: _height.value < minHeight ? minHeight : _height.value,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: JobsWebViewWidget(
+              html: html,
+              showLoading: showLoading,
+              enableScrollListen: enableScrollListen,
+              interceptLinks: interceptLinks,
+              onHeightChanged: (h) {
+                _height.value = h;
+                onHeightChanged?.call(h); // 通知外部监听者（可选）
+              },
+            ),
+          ));
+    }
+  }
+  
+  </details> ```
+
+* **JobsWebViewWidget.dart**
+
+  ```dart
+  import 'dart:async';
+  import 'package:flutter/material.dart';
+  import 'package:get/get.dart';
+  import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsGetXRunner.dart';
+  import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/JobsCommonUtil.dart';
+  import 'package:webview_flutter/webview_flutter.dart';
+  
+  /// --------------------------------------------------------------------------
+  /// 🧩 通用 WebView 组件封装：JobsUniversalWebView
+  ///
+  /// ✅ 支持静态 HTML 或远程 URL 加载（二选一）
+  /// ✅ 支持内容动态高度监听（通过 body.scrollHeight）
+  /// ✅ 支持滚动监听（window.onscroll）
+  /// ✅ 支持 a 标签链接拦截（内部跳转）
+  /// ✅ 支持加载遮罩显示（showLoading）
+  /// ✅ 支持外部获取 WebViewController
+  ///
+  /// 📌 注：不再依赖特定 HTML DOM 元素，如 #app，更通用稳定
+  /// --------------------------------------------------------------------------
+  
+  // void main() => runApp(JobsGetRunner(
+  //     JobsWebViewWidget(
+  //       html: htmlContent(),
+  //       showLoading: true,
+  //       enableScrollListen: true,
+  //       interceptLinks: true,
+  //       onHeightChanged: (h) => JobsPrint('动态高度：$h'),
+  //       onScrollChanged: (top) => JobsPrint('滚动位置：$top'),
+  //       onInterceptLink: (href) => JobsPrint('被拦截的链接：$href'),
+  //     ),
+  //     title: 'JobsWebViewWidget'));
+  
+  void main() => runApp(JobsGetRunner(
+      JobsWebViewWidget(
+        url: "https://flutter.dev",
+        showLoading: true,
+        onControllerCreated: (controller) async {
+          final title = await controller.getTitle();
+          JobsPrint("网页标题：$title");
+        },
+      ),
+      title: 'JobsWebViewWidget'));
+  
+  class JobsWebViewWidget extends StatefulWidget {
+    final String? html;
+    final String? url;
+    final bool showLoading;
+    final bool enableScrollListen;
+    final bool interceptLinks;
+    final Function(double height)? onHeightChanged;
+    final Function(double scrollTop)? onScrollChanged;
+    final Function(String interceptedUrl)? onInterceptLink;
+    final Function(WebViewController controller)? onControllerCreated;
+  
+    const JobsWebViewWidget({
+      super.key,
+      this.html,
+      this.url,
+      this.showLoading = false,
+      this.enableScrollListen = false,
+      this.interceptLinks = false,
+      this.onHeightChanged,
+      this.onScrollChanged,
+      this.onInterceptLink,
+      this.onControllerCreated,
+    });
+  
+    @override
+    State<JobsWebViewWidget> createState() => _JobsUniversalWebViewState();
+  }
+  
+  class _JobsUniversalWebViewState extends State<JobsWebViewWidget>
+      with AutomaticKeepAliveClientMixin {
+    late final WebViewController controller;
+    bool isLoading = true;
+  
+    @override
+    void initState() {
+      super.initState();
+  
+      controller = WebViewController()
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..addJavaScriptChannel('Print', onMessageReceived: (message) {
+          final msg = message.message;
+  
+          if (msg.startsWith("intercept:")) {
+            widget.onInterceptLink?.call(msg.replaceFirst("intercept:", ""));
+          } else {
+            final top = double.tryParse(msg);
+            if (top != null) {
+              widget.onScrollChanged?.call(top);
+            }
+          }
+        })
+        ..setBackgroundColor(Colors.transparent)
+        ..setNavigationDelegate(NavigationDelegate(
+          onPageFinished: (url) async {
+            await Future.delayed(const Duration(milliseconds: 300));
+  
+            if (widget.html != null) {
+              // 用 body.scrollHeight 获取内容高度
+              try {
+                final rawHeight =
+                    await controller.runJavaScriptReturningResult('''
+                  (function() {
+                    return document.body.scrollHeight.toString();
+                  })()
+                ''');
+                final cleaned = "$rawHeight".replaceAll(RegExp(r'[^0-9.]'), '');
+                final height = double.tryParse(cleaned);
+                if (height != null && height > 0) {
+                  widget.onHeightChanged?.call(height + 20);
+                }
+              } catch (e) {
+                debugPrint('⚠️ 获取页面高度失败：$e');
+              }
+            }
+  
+            // 滚动监听注入
+            if (widget.enableScrollListen) {
+              controller.runJavaScript('''
+                window.onscroll = function() {
+                  var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+                  Print.postMessage(scrollTop.toString());
+                };
+              ''');
+            }
+  
+            // 链接拦截注入
+            if (widget.interceptLinks) {
+              controller.runJavaScript('''
+                document.addEventListener('click', function(e) {
+                  var target = e.target;
+                  while (target && target.tagName !== 'A') {
+                    target = target.parentElement;
+                  }
+                  if (target && target.tagName === 'A' && target.href) {
+                    if (!target.href.startsWith("http")) {
+                      e.preventDefault();
+                      Print.postMessage("intercept:" + target.href);
+                    }
+                  }
+                }, false);
+              ''');
+            }
+  
+            if (widget.showLoading) {
+              setState(() => isLoading = false);
+            }
+          },
+        ));
+  
+      widget.onControllerCreated?.call(controller);
+  
+      if (widget.html != null) {
+        controller.loadHtmlString(_wrapHtml(widget.html!));
+      } else if (widget.url != null) {
+        controller.loadRequest(Uri.parse(widget.url!));
+      }
+    }
+  
+    String _wrapHtml(String body) {
+      final screenHeight = Get.context?.mediaQuerySize.height ?? 1000;
+      return '''
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+      <style>
+        * { margin: 0; padding: 0; }
+        html, body {
+          width: 100% !important;
+          height: auto !important;
+          overflow: auto !important;
+          -webkit-user-select: none;
+          user-select: none;
+        }
+        img {
+          max-width: 100% !important;
+          height: auto !important;
+          max-height: ${screenHeight}px !important;
+        }
+        table {
+          width: 100% !important;
+          border-collapse: collapse !important;
+        }
+        table td, table th {
+          border: 1px solid #000 !important;
+          text-align: center;
+          vertical-align: middle;
+          padding: 4px;
+        }
+      </style>
+    </head>
+    <body>
+      $body
+    </body>
+  </html>
+  ''';
+    }
+  
+    @override
+    Widget build(BuildContext context) {
+      super.build(context);
+      return Stack(
+        children: [
+          WebViewWidget(controller: controller),
+          if (widget.showLoading && isLoading)
+            const Positioned.fill(
+              child: ColoredBox(
+                color: Colors.white,
+                child: Center(child: CircularProgressIndicator()),
+              ),
+            ),
+        ],
+      );
+    }
+  
+    @override
+    bool get wantKeepAlive => true;
+  }
+  ```
+
+### 32、字符串操作 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+* 多行字符串语法
+
+  > 1️⃣ 三引号的目的：每一行省略都要加入的 `\n`（换行符）
+  >
+  > 2️⃣ 用 `'''` 是 Dart 官方推荐的**多行文本拼接方式**，特别适合 HTML、SQL、JSON 等结构化模板内容，优雅、简洁、无须转义。
+
+  | 写法             | 示例                 | 说明                             |
+  | ---------------- | -------------------- | -------------------------------- |
+  | `'''多行内容'''` | `'''line1\nline2'''` | 三个单引号，适合内容中含有双引号 |
+  | `"""多行内容"""` | `"""line1\nline2"""` | 三个双引号，适合内容中含有单引号 |
 
 * 字符串拼接
 
@@ -4062,7 +4384,7 @@ class FadeInImageDemo extends StatelessWidget {
 
 * 未完待续...
 
-### 32、Dart.[**Flutter**](https://flutter.dev/).**`Future`**
+### 33、Dart.[**Flutter**](https://flutter.dev/).**`Future`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * **`Future`** 有三种状态：
 
@@ -4314,7 +4636,7 @@ class FadeInImageDemo extends StatelessWidget {
   * 同步 （带阻塞性）
   * 异步（不带阻塞性）：类似于C语言中的Block，其实还是一条线程，只是等待完成后用处理的结果
 
-### 33、Dart.[**Flutter**](https://flutter.dev/) 多线程
+### 34、Dart.[**Flutter**](https://flutter.dev/) 多线程 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > **在 Dart / [Flutter](https://flutter.dev/) 中，唯一支持的“多线程”机制就是 `Isolate`**，没有像其他语言（**Java**/**Kotlin**/**Swift**）那样的真正**多线程（共享内存线程）机制**。
 >
@@ -4374,7 +4696,7 @@ class FadeInImageDemo extends StatelessWidget {
     | 简单封装，只想隔离执行函数             | `easy_isolate` / `simple_isolate` ✅ |
     | 已使用 Bloc，希望脱离主线程逻辑        | `isolate_bloc` ✅                    |
 
-### 34、Dart.[**Flutter**](https://flutter.dev/).**Stream**
+### 35、Dart.[**Flutter**](https://flutter.dev/).**Stream** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > `Stream` 就是一个可以 **持续发出数据（异步事件）** 的对象。
 >
@@ -4469,11 +4791,17 @@ class FadeInImageDemo extends StatelessWidget {
 
 ## 三、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-### 1、📱关于iOS模拟器（最新版本XCode：16.4） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 1、📱关于**iOS**模拟器（最新版本XCode：16.4） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-* 老版本的iOS模拟器的兼容
+* **iOS** 模拟器无法运行 **Profile** 模式的 [**Flutter**](https://flutter.dev/) APP（只支持 **Debug 模式运行**）
+  
+  > **Profile**/**Release** => 只能构建 ARM 架构，模拟器无法运行
+  >
+  > **iOS** 模拟器 => macOS 下运行的 x86_64/arm64 模拟环境
+  
+* 老版本的**iOS**模拟器的兼容
 
-  在设备选择器里面点选了较低版本的iOS模拟器（比如说：iPhone 7），只能通过命令行进行实例化并打开
+  在设备选择器里面点选了较低版本的**iOS**模拟器（比如说：iPhone 7），只能通过命令行进行实例化并打开
 
   ```shell
   xcrun simctl list devices | grep 'iPhone 7'
@@ -4482,7 +4810,7 @@ class FadeInImageDemo extends StatelessWidget {
 
   ![image-20250716131840500](./assets/README/image-20250716131840500.png)
   
-* 命令行唤起 iOS模拟器
+* 命令行唤起**iOS**模拟器
 
   ```shell
   open -a Simulator
@@ -4512,13 +4840,13 @@ class FadeInImageDemo extends StatelessWidget {
   done
   ```
 
-* 查看目前有的iOS模拟器安装包
+* 查看目前有的**iOS**模拟器安装包
 
   ```shell
   xcrun simctl list runtimes
   ```
 
-* iOS模拟器目录
+* **iOS**模拟器目录
 
   * ```shell
     ~/Library/Developer/CoreSimulator/Devices/
@@ -4531,7 +4859,7 @@ class FadeInImageDemo extends StatelessWidget {
     > **每个模拟器实例对应一个 UUID 子目录**。子目录包含该模拟器的所有数据，例如：
     >
     > - 应用程序数据（App 安装后的容器、沙盒）
-    > - `data/` 目录里有模拟器的 Documents、tmp、Library 等路径
+    > - `data/` 目录里有模拟器的 `Documents`、`tmp`、`Library` 等路径
     > - `device.plist` 存储了模拟器的配置信息（名称、系统版本、状态等）
     > - `logs/` 保存了日志
     >
@@ -4541,23 +4869,23 @@ class FadeInImageDemo extends StatelessWidget {
     ~/Library/Developer/CoreSimulator/Volumes/
     ```
 
-    > 🧼 清理建议：`Volumes/` 通常空间不大，**可以直接删除**，Xcode 会自动重新创建。
+    > 🧼 清理建议：`Volumes/` 通常空间不大，**可以直接删除**，**Xcode** 会自动重新创建。
     >
     > * 存放模拟器用到的 **挂载卷（Volumes）数据**。
     >
     > - 用于模拟 **iOS 设备的磁盘结构**，包括 `/Volumes` 中的挂载点。
-    > - 一些 App 或系统组件可能会在模拟器中访问 `/Volumes` 路径（类似 macOS 磁盘挂载），就会挂载此目录中的数据。
+    > - 一些 App 或系统组件可能会在模拟器中访问 `/Volumes` 路径（类似 **macOS** 磁盘挂载），就会挂载此目录中的数据。
     >
-    > 例如：模拟器运行中，如果用户或 App 尝试挂载外部磁盘，或创建虚拟磁盘（如 .dmg 文件），就可能映射到这个目录。
+    > 例如：模拟器运行中，如果用户或 App 尝试挂载外部磁盘，或创建虚拟磁盘（如` .dmg` 文件），就可能映射到这个目录。
     >
     > 📌 注意事项：
     >
     > - 通常这个目录在未特殊使用挂载卷的模拟器中是空的。
-    > - 可被清理，Xcode 会在需要时自动重新创建。
+    > - 可被清理，**Xcode** 会在需要时自动重新创建。
 
 ### 2、⚙️ [<font color=red>**FVM**</font>](https://fvm.app/) = <font color=red>F</font>lutter <font color=red>V</font>ersion <font color=red>M</font>anagement <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> 一个项目锁定该项目特有的Flutter.sdk环境，方便切换和调试
+> 一个[**Flutter**](https://flutter.dev/)项目，锁定该项目所独有的[**Flutter**](https://flutter.dev/).**SDK**环境，方便切换和调试
 
 * 安装[**FVM**](https://fvm.app/)的前提是先安装**dart**环境
 
@@ -4691,6 +5019,8 @@ class FadeInImageDemo extends StatelessWidget {
 
   * [**VSCode**](https://code.visualstudio.com/)的配置文件
 
+    > 直接同步下列文件到目标项目中
+  
     ```
     Flutter项目的根目录/
     └── .vscode/
@@ -4702,7 +5032,7 @@ class FadeInImageDemo extends StatelessWidget {
     ```
 
     * `extensions.json`
-
+  
       ```json
       /// 推荐使用的插件清单（团队统一）✅推荐加入Git管理
       {
@@ -4811,8 +5141,10 @@ class FadeInImageDemo extends StatelessWidget {
   
 * 安装插件
 
-  * **Select By Brackets**（默认快捷键：`option` + `A`）
+  * [**GitLens — Git supercharged**](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
 
+  * [**Bracket Select**](https://marketplace.visualstudio.com/items?itemName=chunsen.bracket-select)（默认快捷键：`option` + `A`）
+  
     > 选中括号内的内容以备操作
 
 
@@ -4862,7 +5194,7 @@ tasks.register("clean", Delete) {
 | 文件名 / 路径   | **蛇形命名法** snake_case：<br><font color=red>**每个空格皆以底线（_）取代的书写风格，<br/>且每个单字的第一个字母皆为小写**</font> | `user_model.dart`, `home_page.dart`  | ✅ 推荐              | ❌ 不推荐                                             |
 | 私有变量 / 方法 | 下划线开头<br>**只在当前 Dart 文件里能访问，其他文件即使导入了也访问不到** | `_user`, `_fetchData()`              | ✅ 必须用 `_`        | ❌ 不推荐                                             |
 
-### 6、重定向技巧
+### 6、🗺️ 重定向技巧  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 保留多个构造方式（如 builder 模式 vs 普通 child 模式）；
 >
