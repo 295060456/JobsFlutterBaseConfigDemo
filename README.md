@@ -380,6 +380,7 @@ ping.stream.listen((event) {
 
 <details>
 <summary>配置</summary>
+
 * `Info.plist `
 
   ```xml
