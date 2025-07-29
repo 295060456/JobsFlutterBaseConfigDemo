@@ -1,4 +1,4 @@
-# <font color=red>[Dart.**`Flutter`**](https://flutter.dev/?utm_source=google&utm_medium=cpc&utm_campaign=brand_sem&utm_content=apac_apac&gad_source=1&gad_campaignid=13034410756&gbraid=0AAAAAC-INI-9jKGdZCm6a9Zp2RvENOQVv&gclid=Cj0KCQjwj8jDBhD1ARIsACRV2TuPZFDZ2Py9BmKbsRj_mVS18Mf58tJhFzuzJIuxzTe316eALXjyW0AaAhelEALw_wcB&gclsrc=aw.ds)靶场🧪项目 </font><基础配置的说明>
+# <font color=red>[Dart.**`🐦Flutter`**](https://flutter.dev/?utm_source=google&utm_medium=cpc&utm_campaign=brand_sem&utm_content=apac_apac&gad_source=1&gad_campaignid=13034410756&gbraid=0AAAAAC-INI-9jKGdZCm6a9Zp2RvENOQVv&gclid=Cj0KCQjwj8jDBhD1ARIsACRV2TuPZFDZ2Py9BmKbsRj_mVS18Mf58tJhFzuzJIuxzTe316eALXjyW0AaAhelEALw_wcB&gclsrc=aw.ds)🧪靶场项目</font>@配置说明
 
 <p align="left">
   <a><img src="https://img.shields.io/badge/flutter-3.22.1-blue" alt="Flutter"/></a>
@@ -46,8 +46,185 @@
 * 独立的测试单元
   * 对于单个的[**Flutter**](https://flutter.dev/)工程文件（小**Demo**）可以利用[**运行脚本**](./【MacOS】☀️双击运行Flutter项目（iOS 模拟器）.command)，在**MacOS**的**终端**直接拖入进行运行和展示（终端运行不支持断点，只能输出日志）
   * 为了保证各个**Demo**在形式上的独立性，所以尽可能的在单个`.dart`文件里面进行叙述。**每一个[Flutter](https://flutter.dev/)的Demo文件里，都会存在其程序的入口函数** 
+* 🔔 温馨提示：<font color=red>本文档太长，在**GitHub**中会被截断，无法完整的显示，需要下载以后用[**Typora**](https://typora.io/)进行打开，方可阅览全文</font>
 
-## 二、💥代码讲解 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+## 二、🌱环境配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+* [**XCode**](https://developer.apple.com/xcode/)
+
+* [**Android studio**](https://developer.android.com/studio?hl=zh-cn)
+
+* [**VSCode**](https://code.visualstudio.com/)
+
+* [**ohmyz.sh**](https://ohmyz.sh/)
+
+  ```shell
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  ```
+
+  or
+
+  ```shell
+  sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
+  ```
+
+* [**Homebrew**](https://brew.sh/)
+
+  ```shell
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  ```
+
+* 系统环境变量
+
+  > <font color=red>为了方便管理，只配置**`bash_profile`**和**`.zshrc`**</font>
+  
+  <details>
+  <summary>.bash_profile</summary>
+  
+  ```shell
+  # 每次打开终端默认进入桌面目录
+  cd "$HOME/Desktop"
+  
+  # 配置 Rbenv.ruby 环境变量（需安装 rbenv）
+  if command -v rbenv &>/dev/null; then
+    export PATH="$HOME/.rbenv/bin:$PATH"
+    eval "$(rbenv init -)"
+  else
+    echo "⚠️ 未检测到 rbenv，请执行 brew install rbenv 安装"
+  fi
+  if command -v ruby &>/dev/null; then
+    export PATH="/usr/local/opt/ruby/bin:$PATH"
+    export LDFLAGS="-L/usr/local/opt/ruby/lib"
+    export CPPFLAGS="-I/usr/local/opt/ruby/include"
+    export PKG_CONFIG_PATH="/usr/local/opt/ruby/lib/pkgconfig"
+  else
+    echo "⚠️ 未检测到 ruby，建议执行 brew install ruby"
+  fi
+  
+  # 配置 Curl 环境变量（需 Homebrew 安装）
+  if command -v curl &>/dev/null; then
+    export PATH="/usr/local/opt/curl/bin:$PATH"
+    export LDFLAGS="-L/usr/local/opt/curl/lib"
+    export CPPFLAGS="-I/usr/local/opt/curl/include"
+    export PKG_CONFIG_PATH="/usr/local/opt/curl/lib/pkgconfig"
+  else
+    echo "⚠️ curl 未通过 brew 安装，建议执行 brew install curl"
+  fi
+  
+  # 配置 VSCode 命令行（code）
+  if [[ -d "/Applications/Visual Studio Code.app/Contents/Resources/app/bin" ]]; then
+    export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
+    if ! command -v code &>/dev/null; then
+      echo "⚠️ VSCode 已安装但未配置 code 命令，请在 VSCode 中运行：Shell Command: Install code in PATH"
+    fi
+  else
+    echo "⚠️ 未检测到 VSCode，请先安装 Visual Studio Code 后再运行本脚本"
+  fi
+  
+  # 配置 Flutter 环境变量
+  if ! command -v fvm &>/dev/null; then
+    if [[ -d "/opt/homebrew/Caskroom/flutter/latest/flutter/bin" ]]; then
+      export PATH="/opt/homebrew/Caskroom/flutter/latest/flutter/bin:$PATH"
+    elif [[ -d "/usr/local/Caskroom/flutter/latest/flutter/bin" ]]; then
+      export PATH="/usr/local/Caskroom/flutter/latest/flutter/bin:$PATH"
+    elif [[ -d "$HOME/flutter/bin" ]]; then
+      export PATH="$HOME/flutter/bin:$PATH"
+    elif [[ -d "$HOME/Documents/GitHub.Jobs/Flutter.SDK/Flutter.SDK.last/bin" ]]; then
+      export PATH="$HOME/Documents/GitHub.Jobs/Flutter.SDK/Flutter.SDK.last/bin:$PATH"
+    else
+      echo "⚠️ 未找到 Flutter SDK，请手动配置路径"
+    fi
+  fi
+  export PUB_HOSTED_URL=https://pub.dartlang.org
+  export FLUTTER_STORAGE_BASE_URL=https://storage.googleapis.com
+  
+  # 配置 FVM 环境变量
+  export PATH="$HOME/.pub-cache/bin:$PATH"
+  if command -v fvm &>/dev/null; then
+    flutter() { fvm flutter "$@"; }
+  else
+    echo "⚠️ 未检测到 fvm，请执行 flutter pub global activate fvm 安装"
+  fi
+  
+  # 配置 Android SDK 环境变量
+  if [[ -d "$HOME/Library/Android/sdk" ]]; then
+    export ANDROID_SDK_ROOT="$HOME/Library/Android/sdk"
+    export PATH="$PATH:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/tools/bin"
+  else
+    echo "⚠️ 未检测到 Android SDK，请安装 Android Studio 或配置 ANDROID_SDK_ROOT"
+  fi
+  
+  # 配置 JDK / OpenJDK / SDKMAN
+  export JAVA_HOME="/opt/homebrew/opt/openjdk"  # 默认值（优先级最低）
+  if /usr/libexec/java_home &>/dev/null; then
+    export JAVA_HOME=$(/usr/libexec/java_home)
+  fi
+  case ":$PATH:" in
+    *":$JAVA_HOME/bin:"*) ;;
+    *) export PATH="$JAVA_HOME/bin:$PATH" ;;
+  esac
+  if [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
+    export SDKMAN_DIR="$HOME/.sdkman"
+    source "$HOME/.sdkman/bin/sdkman-init.sh"
+  else
+    echo "⚠️ 未检测到 SDKMAN，请访问 https://sdkman.io 安装"
+  fi
+  
+  # 配置 Gradle 环境变量
+  if command -v gradle &>/dev/null; then
+    export PATH="$HOME/Documents/Gradle/gradle-8.7/bin:$PATH"
+  else
+    echo "⚠️ 未检测到 gradle，建议执行 brew install gradle 安装"
+  fi
+  
+  # 配置 pipx 环境变量
+  if command -v pipx &>/dev/null; then
+    export PATH="$PATH:$HOME/.local/bin"
+  else
+    echo "⚠️ pipx 未安装，建议执行 brew install pipx"
+  fi
+  
+  ```
+  </details> 
+  
+  <details>
+  <summary>.zshrc</summary>
+  
+  ```dart
+  export ZSH="$HOME/.oh-my-zsh"
+  ZSH_THEME="robbyrussell"
+  plugins=(git)
+  source $ZSH/oh-my-zsh.sh
+  
+  flutter() { fvm flutter "$@"; }
+  
+  jobs() {
+    local files=(
+      "$HOME/.bash_profile"
+      "$HOME/.bashrc"
+      "$HOME/.zshrc"
+      "$HOME/.oh-my-zsh/oh-my-zsh.sh"
+    )
+    for file in "${files[@]}"; do
+      if [[ -f "$file" ]]; then
+        source "$file"
+        echo "\033[1;32m✅ 已加载配置文件：file://$file\033[0m"
+      else
+        echo "\033[1;33m⚠️ 未找到配置文件：file://$file\033[0m"
+      fi
+    done
+    echo "\n📎 ⌘Command + 点击路径可打开对应文件（macOS Terminal 支持）"
+  }
+  
+  if [[ -z "$JOBS_ALREADY_RUN" ]]; then
+    export JOBS_ALREADY_RUN=1
+    command -v jobs &>/dev/null && jobs
+  fi
+  
+  ```
+  </details>
+
+## 三、💥代码讲解 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ### 1、🖨️打印方式 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -5069,9 +5246,9 @@ class FadeInImageDemo extends StatelessWidget {
   )
   ```
 
-## 三、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+## 四、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-### 1、📱关于**iOS**模拟器（最新版本XCode：16.4） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 1、📱关于**iOS**模拟器（最新版本[**XCode**](https://developer.apple.com/xcode/)：16.4） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * **iOS** 模拟器无法运行 **Profile** 模式的 [**Flutter**](https://flutter.dev/) APP（只支持 **Debug 模式运行**）
   
@@ -5149,7 +5326,7 @@ class FadeInImageDemo extends StatelessWidget {
     ~/Library/Developer/CoreSimulator/Volumes/
     ```
 
-    > 🧼 清理建议：`Volumes/` 通常空间不大，**可以直接删除**，**Xcode** 会自动重新创建。
+    > 🧼 清理建议：`Volumes/` 通常空间不大，**可以直接删除**，[**XCode**](https://developer.apple.com/xcode/) 会自动重新创建。
     >
     > * 存放模拟器用到的 **挂载卷（Volumes）数据**。
     >
@@ -5161,7 +5338,7 @@ class FadeInImageDemo extends StatelessWidget {
     > 📌 注意事项：
     >
     > - 通常这个目录在未特殊使用挂载卷的模拟器中是空的。
-    > - 可被清理，**Xcode** 会在需要时自动重新创建。
+    > - 可被清理，[**XCode**](https://developer.apple.com/xcode/) 会在需要时自动重新创建。
 
 ### 2、⚙️ [<font color=red>**FVM**</font>](https://fvm.app/) = <font color=red>F</font>lutter <font color=red>V</font>ersion <font color=red>M</font>anagement <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -6425,37 +6602,37 @@ Comparable.compare(a, b)
 
   * 🍎 **iOS** 专用命令
 
-    | 命令                                                         | 说明                                                |
-    | ------------------------------------------------------------ | --------------------------------------------------- |
-    | `rm -rf ios/Pods`                                            | 删除 iOS 第三方依赖（Pods 文件夹）                  |
-    | `rm ios/Podfile.lock`                                        | 删除 Pod 版本锁定文件                               |
-    | `pod install`                                                | 安装 iOS 依赖，需 CocoaPods 支持                    |
-    | `pod update`                                                 | 升级 iOS 依赖，会更新所有 Pods 版本                 |
-    | `arch -x86_64 pod install`（Intel 构建兼容命令，适用于 Apple Silicon） | 解决部分插件不兼容 ARM 的问题                       |
-    | `flutter build ios --no-codesign`                            | 构建 iOS 项目但跳过签名，适用于 CI 或调试环境       |
-    | `open ios/Runner.xcworkspace`                                | 用 Xcode 打开 iOS 工程（使用 CocoaPods 管理时必须） |
+    | 命令                                                         | 说明                                                         |
+    | ------------------------------------------------------------ | ------------------------------------------------------------ |
+    | `rm -rf ios/Pods`                                            | 删除 **iOS** 第三方依赖（**Pods** 文件夹）                   |
+    | `rm ios/Podfile.lock`                                        | 删除 Pod 版本锁定文件                                        |
+    | `pod install`                                                | 安装 **iOS** 依赖，需 [**CocoaPods**](https://cocoapods.org/) 支持 |
+    | `pod update`                                                 | 升级 **iOS** 依赖，会更新所有 **Pods** 版本                  |
+    | `arch -x86_64 pod install`（Intel 构建兼容命令，适用于 Apple Silicon） | 解决部分插件不兼容 ARM 的问题                                |
+    | `flutter build ios --no-codesign`                            | 构建 **iOS** 项目但跳过签名，适用于 CI 或调试环境            |
+    | `open ios/Runner.xcworkspace`                                | 用 [**XCode**](https://developer.apple.com/xcode/) 打开 **iOS** 工程（使用 [**CocoaPods**](https://cocoapods.org/) 管理时必须） |
 
   * 🤖 **Android** 专用命令
 
-    | 命令                                                    | 说明                                                        |
-    | ------------------------------------------------------- | ----------------------------------------------------------- |
-    | `rm -rf android/.gradle`                                | 删除 Android 层的 gradle 缓存，适用于依赖异常或版本冲突问题 |
-    | `rm -rf ~/.gradle`                                      | 删除全局 gradle 缓存（慎用），解决某些 gradle 残留 bug      |
-    | `rm -rf android/build`                                  | 删除 Android 构建产物                                       |
-    | `flutter build apk`                                     | 构建 APK 文件（适用于调试安装）                             |
-    | `flutter build appbundle`                               | 构建 AAB 包（用于 Google Play 上架）                        |
-    | `flutter build apk --debug` / `--release` / `--profile` | 根据模式构建对应 APK                                        |
-    | `./gradlew clean`（在 `android/` 目录下）               | 执行 Android 原生 gradle 清理（Flutter clean 不会清理全部） |
-    | `./gradlew build`                                       | 构建完整 Android 原生项目（包括 Java/Kotlin 代码）          |
+    | 命令                                                    | 说明                                                         |
+    | ------------------------------------------------------- | ------------------------------------------------------------ |
+    | `rm -rf android/.gradle`                                | 删除 [**Android**](https://www.android.com/) 层的 gradle 缓存，适用于依赖异常或版本冲突问题 |
+    | `rm -rf ~/.gradle`                                      | 删除全局 **gradle** 缓存（慎用），解决某些 **gradle** 残留 bug |
+    | `rm -rf android/build`                                  | 删除 [**Android**](https://www.android.com/) 构建产物        |
+    | `flutter build apk`                                     | 构建 **APK** 文件（适用于调试安装）                          |
+    | `flutter build appbundle`                               | 构建 **AAB** 包（用于[**Google Play**](https://play.google.com/)上架） |
+    | `flutter build apk --debug` / `--release` / `--profile` | 根据模式构建对应 **APK**                                     |
+    | `./gradlew clean`（在 `android/` 目录下）               | 执行 [**Android**](https://www.android.com/) 原生 **gradle** 清理（`Flutter clean `不会清理全部） |
+    | `./gradlew build`                                       | 构建完整 [**Android**](https://www.android.com/) 原生项目（包括 **Java**/**Kotlin** 代码） |
 
   * 🛠️ 诊断与环境检查命令
 
     | 命令                   | 说明                                                         |
     | ---------------------- | ------------------------------------------------------------ |
-    | `flutter doctor -v`    | 检查 **Flutter**、**Dart**、**Xcode**、**Android.SDK**、**CocoaPods**、**Java** 配置等所有环境 |
+    | `flutter doctor -v`    | 检查 [**Flutter**](https://flutter.dev/)、**Dart**、[**XCode**](https://developer.apple.com/xcode/)、[**Android**]([**Android**](https://www.android.com/))、[**CocoaPods**](https://cocoapods.org/)、**Java** 配置等所有环境 |
     | `flutter pub outdated` | 检查 `pubspec.yaml` 中的依赖是否有更新                       |
     | `flutter analyze`      | 分析 **Dart** 代码规范与静态错误                             |
-    | `flutter upgrade`      | 升级 **Flutter.SDK** 到最新版本                              |
+    | `flutter upgrade`      | 升级 [**Flutter**](https://flutter.dev/).**SDK** 到最新版本  |
   
 * 📦 [**Flutter**](https://flutter.dev/) 构建模式总览表
 
@@ -6475,7 +6652,7 @@ Comparable.compare(a, b)
 
 ##### 20.1.1、 [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
->  [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) （<font color=red>**建议保持最新**</font>）是 **Android.SDK** 命令行工具：[Android **Command Line Tools**](https://developer.android.com/tools?hl=zh-cn)的一部分，用于管理 **Android.SDK** 的组件。它允许你从终端安装、更新、查看和卸载 **Android.SDK** 中的各种包，比如：
+>  [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) （<font color=red>**建议保持最新**</font>）是[**Android**](https://www.android.com/).**SDK**命令行工具：[Android **Command Line Tools**](https://developer.android.com/tools?hl=zh-cn)的一部分，用于管理 [**Android**](https://www.android.com/).**SDK** 的组件。它允许你从终端安装、更新、查看和卸载[**Android**](https://www.android.com/).**SDK**中的各种包，比如：
 >
 >  - [**Android**](https://www.android.com/) 平台（如 `platforms;android-34`）
 >  - 构建工具（如 `build-tools;34.0.0`）
@@ -6487,7 +6664,7 @@ Comparable.compare(a, b)
 
   * [**Android Studio**](https://developer.android.com/studio?hl=zh-cn) 自带（最常见方式）
 
-    * 安装 [**Android Studio**](https://developer.android.com/studio?hl=zh-cn) 时，会自动安装 **Android.SDK** 和 [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) 
+    * 安装 [**Android Studio**](https://developer.android.com/studio?hl=zh-cn) 时，会自动安装[**Android**](https://www.android.com/).**SDK**和 [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) 
 
     * 路径一般在：
 
@@ -6525,19 +6702,19 @@ Comparable.compare(a, b)
 
   | 原因                                           | 说明                                                         |
   | ---------------------------------------------- | ------------------------------------------------------------ |
-  | [**🍎Apple**](https://www.apple.com/)官方不支持 | [**🍎Apple**](https://www.apple.com/) 的工具链是 **Xcode** / **xcodebuild** / [**fastlane**](https://fastlane.tools/)，[**Gradle**](https://gradle.org/) 无法完全替代 |
-  | 🔐 签名复杂                                     | **iOS** 构建涉及 :`代码签名`、`Provisioning Profile`、`Entitlements` 等，使用 [**Gradle**](https://gradle.org/)  不如 **Xcode** 原生工具顺畅 |
+  | [**🍎Apple**](https://www.apple.com/)官方不支持 | [**🍎Apple**](https://www.apple.com/) 的工具链是[**XCode**](https://developer.apple.com/xcode/).**build** / [**fastlane**](https://fastlane.tools/)，[**Gradle**](https://gradle.org/) 无法完全替代 |
+  | 🔐 签名复杂                                     | **iOS** 构建涉及 :`代码签名`、`Provisioning Profile`、`Entitlements` 等，使用 [**Gradle**](https://gradle.org/)  不如[**XCode**](https://developer.apple.com/xcode/)原生工具顺畅 |
   | 🔌 插件较少                                     | [**Gradle**](https://gradle.org/) 生态偏向 **Java**/**Android**，**iOS** 支持插件极少 |
-  | 👥 团队协作难                                   | 大部分 **iOS** 团队成员更熟悉  **Xcode** 原生工具顺畅，不习惯使用 [**Gradle**](https://gradle.org/) |
+  | 👥 团队协作难                                   | 大部分 **iOS** 团队成员更熟悉 [**XCode**](https://developer.apple.com/xcode/)原生工具顺畅，不习惯使用 [**Gradle**](https://gradle.org/) |
 
   💡 例外情况：**Kotlin Multiplatform (KMM)**
 
   如果使用 **Kotlin Multiplatform Mobile (KMM)** 开发 **iOS** + **Android** 双端代码：
 
   - **Android**用 [**Gradle**](https://gradle.org/)  构建
-  - **iOS** 使用 [**Gradle**](https://gradle.org/)  生成共享模块（`.framework`），再由 **Xcode** 集成
+  - **iOS** 使用 [**Gradle**](https://gradle.org/)  生成共享模块（`.framework`），再由[**XCode**](https://developer.apple.com/xcode/) 集成
 
-  📌 所以 **Gradle 可以参与构建 iOS 的一部分（共享逻辑），但最终生成和打包 IPA 仍然交给 Xcode 完成**。
+  📌 所以 **Gradle 可以参与构建 iOS 的一部分（共享逻辑），但最终生成和打包 IPA 仍然交给 [XCode](https://developer.apple.com/xcode/)完成**。
 
 * [**Gradle**](https://gradle.org/)的优势
 
@@ -6668,7 +6845,7 @@ graph TD
 | ✅ **避免清除 build/ 太频繁**                        | 不要经常执行 `flutter clean`，除非必须                       |
 | ✅ **使用 SSD 或清理磁盘空间**                       | 避免因 I/O 性能影响构建速度                                  |
 | ✅ **设置构建线程数**                                | [**Gradle**](https://gradle.org/) 中设置：`org.gradle.parallel=true` |
-| ✅ **Flutter 版本更新**                              | 新版本通常对构建性能有优化                                   |
+| ✅ [**Flutter**](https://flutter.dev/) **版本更新**  | 新版本通常对构建性能有优化                                   |
 
 ##### 20.1.7、🪖<font color=red>**构建指令**</font>：`flutter build apk` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -6711,15 +6888,15 @@ graph TD
   
   * **`minSdk`**（最小支持版本）
   
-    * 决定最低可安装系统版本：**App** 只能安装在 ≥ `minSdk` 的 **Android** 系统上，低于这个版本无法安装。
-    * 影响兼容性：设置得越低，支持的设备越多；但也限制你使用某些新 API（必须兼容旧版本）。
+    * 决定最低可安装系统版本：**App** 只能安装在 ≥ `minSdk` 的 **Android** 系统上，低于这个版本无法安装；
+    * 影响兼容性：设置得越低，支持的设备越多；但也限制你使用某些新 API（必须兼容旧版本）；
     * 必须兼容旧系统：你需要对低版本系统做兼容处理，否则 **App** 会在运行时报错。
   
   * **`targetSdk`**（目标优化版本）
   
-      * 告诉系统你为哪个版本做了适配：[**Android**](https://www.android.com/)  会根据 `targetSdk` 启用/禁用某些行为变更（behavior changes）。
+      * 告诉系统你为哪个版本做了适配：[**Android**](https://www.android.com/)  会根据 `targetSdk` 启用/禁用某些行为变更；
   
-      * 不限制可安装系统版本：**App** 仍然可以安装在更高版本系统上，但系统会以 `targetSdk` 为基准判断兼容性。
+      * 不限制可安装系统版本：**App** 仍然可以安装在更高版本系统上，但系统会以 `targetSdk` 为基准判断兼容性；
   
       * 与  [**Google Play**](https://play.google.com/)  要求强相关：发布到  [**Play**](https://play.google.com/)  商店必须满足其最新的 `targetSdk` 要求，否则无法上线。
       
@@ -6737,7 +6914,10 @@ graph TD
 
 ##### 20.1.9、📦 [**Flutter**](https://flutter.dev/).**Android** 打包脚本（MacOS）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-```shell
+<details>
+<summary>点击展开代码</summary>
+
+```dart
 #!/bin/zsh
 
 # ✅ 临时添加 Android command line tools 到 PATH（仅当前脚本会话）
@@ -7036,8 +7216,8 @@ fi
 
 _run_flutter_build
 _open_output_folder
-
 ```
+</details>
 
 ##### 20.1.10、打包成品  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -7074,14 +7254,14 @@ _open_output_folder
 
 ##### 20.2.1、🪖<font color=red>**构建指令**</font>：`flutter build ios` 和 `flutter build ipa` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> **iOS** 项目主流是使用 **Xcode** + **Xcode build system** 来进行构建
+> **iOS** 项目主流是使用[**XCode**](https://developer.apple.com/xcode/) + [**XCode**](https://developer.apple.com/xcode/) **build system** 来进行构建
 
 | 构建类型          | 构建命令                                      | 说明                                                         |
 | ----------------- | --------------------------------------------- | ------------------------------------------------------------ |
 | **Debug** 构建    | `flutter build ios --debug`                   | 构建用于调试的 iOS 包（默认使用模拟器架构）                  |
 | **Profile** 构建  | `flutter build ios --profile`                 | 构建用于性能分析的中间态包                                   |
 | **Release** 构建  | `flutter build ios --release`                 | 构建用于发布的 iOS 包（仅支持真机）                          |
-| 构建 `.xcarchive` | `flutter build ipa --export-method app-store` | 构建用于 App Store 提交的归档包（需配置 Xcode 导出选项）     |
+| 构建 `.xcarchive` | `flutter build ipa --export-method app-store` | 构建用于 App Store 提交的归档包（需配置 [**XCode**](https://developer.apple.com/xcode/) 导出选项） |
 | 构建 `.ipa` 包    | `flutter build ipa`                           | 自动使用 Release 模式归档并导出 `.ipa` 文件（默认导出方式为 development） |
 
 | 参数名                   | 示例                                             | 说明                                     |
@@ -7128,7 +7308,7 @@ _open_output_folder
 
 * 必须真机运行
 
-* <font color=red>无法通过**xcode**直接编译</font>[**Flutter**](https://flutter.dev/)<font color=red>项目</font>
+* <font color=red>无法通过**[XCode](https://developer.apple.com/xcode/)**直接编译</font>[**Flutter**](https://flutter.dev/)<font color=red>项目</font>
 
   > 是因为其中的`Podfile`是通过[**Flutter**](https://flutter.dev/)进行唤起的，并非标准的iOS `Podfile` 文件格式
   >
@@ -7143,53 +7323,58 @@ _open_output_folder
   >
   > 任何试图手动运行 `pod install` 而未执行 `flutter build ios`，都会缺少 `Flutter.framework` 和 Pod 配置，导致如下报错：`Could not find Flutter.framework or Flutter.podspec`
 
-  ```ruby
-  # Uncomment this line to define a global platform for your project
-  # platform :ios, '12.0'
-  
-  # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
-  ENV['COCOAPODS_DISABLE_STATS'] = 'true'
-  
-  project 'Runner', {
-    'Debug' => :debug,
-    'Profile' => :release,
-    'Release' => :release,
-  }
-  
-  def flutter_root
-    generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
-    unless File.exist?(generated_xcode_build_settings_path)
-      raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
-    end
-  
-    File.foreach(generated_xcode_build_settings_path) do |line|
-      matches = line.match(/FLUTTER_ROOT\=(.*)/)
-      return matches[1].strip if matches
-    end
-    raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
-  end
-  
-  require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
-  
-  flutter_ios_podfile_setup
-  
-  target 'Runner' do
-    use_frameworks!
-  
-    flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-    target 'RunnerTests' do
-      inherit! :search_paths
-    end
-  end
-  
-  post_install do |installer|
-    installer.pods_project.targets.each do |target|
-      flutter_additional_ios_build_settings(target)
-    end
-  end
-  ```
+    <details>
+    <summary>点击展开代码</summary>
 
-## 四、FAQ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+    ```ruby
+    # Uncomment this line to define a global platform for your project
+    # platform :ios, '12.0'
+  
+    # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+    ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+  
+    project 'Runner', {
+      'Debug' => :debug,
+      'Profile' => :release,
+      'Release' => :release,
+    }
+  
+    def flutter_root
+      generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+      unless File.exist?(generated_xcode_build_settings_path)
+        raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+      end
+  
+      File.foreach(generated_xcode_build_settings_path) do |line|
+        matches = line.match(/FLUTTER_ROOT\=(.*)/)
+        return matches[1].strip if matches
+      end
+      raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
+    end
+  
+    require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+  
+    flutter_ios_podfile_setup
+  
+    target 'Runner' do
+      use_frameworks!
+  
+      flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+      target 'RunnerTests' do
+        inherit! :search_paths
+      end
+    end
+  
+    post_install do |installer|
+      installer.pods_project.targets.each do |target|
+        flutter_additional_ios_build_settings(target)
+      end
+    end
+  
+    ```
+    </details>
+
+## 五、FAQ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * **`call()`**
 
@@ -7247,6 +7432,9 @@ _open_output_folder
     | 可拓展性是否强（嵌套 / 自定义） | 非常强，如 `NestedScrollView`                | 一般，需要手动组合                       |
 
   * 示例代码：
+
+    <details>
+    <summary>点击展开代码</summary>
 
     ```dart
     /// 监听和滚动到某个位置
@@ -7315,7 +7503,6 @@ _open_output_folder
       }
     }
     ```
-
     ```dart
     /// 多个组件同步滚动
     final controller = ScrollController();
@@ -7331,7 +7518,9 @@ _open_output_folder
       ],
     )
     ```
-
+    
+    </details>
+  
 * ✅什么是`external`?
 
   > 这个方法没有在 Dart 层实现，而是由 Dart VM 或平台原生层提供实现。
