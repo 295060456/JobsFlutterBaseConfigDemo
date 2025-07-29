@@ -28,6 +28,15 @@
 
 * [**Flutter 实战@第二版**](https://book.flutterchina.club/)
 
+  <details>
+  <summary>点击展开代码</summary>
+
+  ```dart
+  void main() {
+    print('Hello, world!');
+  }
+  </details> ```
+
 ## 一、🎯目的和功效 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 品控标准（只能严格的保证编译器正常，而不能完全保证运行时的不出错）
