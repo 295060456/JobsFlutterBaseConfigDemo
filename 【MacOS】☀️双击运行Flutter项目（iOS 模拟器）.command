@@ -193,15 +193,19 @@ fi
 # ---------------------------------------------------------------------------
 # 模拟器彻底关闭（防假后台）
 # ---------------------------------------------------------------------------
-_color_echo yellow "🛑 正在彻底关闭所有 iOS 模拟器..."
-xcrun simctl shutdown all >/dev/null 2>&1
-osascript -e 'quit app "Simulator"' >/dev/null 2>&1
-sleep 1
-if pgrep -f Simulator >/dev/null 2>&1; then
+_color_echo yellow "🕵️ 检测模拟器是否处于假后台..."
+
+booted_check=$(xcrun simctl list devices | grep "(Booted)")
+simulator_running=$(pgrep -f Simulator)
+
+if [[ -z "$booted_check" && -n "$simulator_running" ]]; then
+  _color_echo red "❗️ 模拟器处于假后台状态，正在强制关闭..."
+  xcrun simctl shutdown all >/dev/null 2>&1
+  osascript -e 'quit app "Simulator"' >/dev/null 2>&1
   pkill -f Simulator >/dev/null 2>&1
-  _color_echo green "✅ 已彻底关闭模拟器。"
+  _color_echo green "✅ 已强制关闭假后台模拟器。"
 else
-  _color_echo green "✅ 模拟器已关闭。"
+  _color_echo green "✅ 模拟器状态正常，无需关闭。"
 fi
 
 # ---------------------------------------------------------------------------

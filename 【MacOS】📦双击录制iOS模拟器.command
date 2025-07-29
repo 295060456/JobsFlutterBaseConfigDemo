@@ -89,11 +89,21 @@ device_name=$(echo "$selected_line" | awk -F '[()]' '{print $1}' | sed 's/ *$//'
 
 print_success "✅ 你选择的设备是：$device_name [$device_udid]"
 
-# ✅ 关闭所有模拟器（防止假后台）
-print_info "🧹 正在关闭所有正在运行的模拟器..."
-osascript -e 'quit app "Simulator"' >/dev/null 2>&1 || true
-xcrun simctl shutdown all >/dev/null 2>&1 || true
-sleep 1
+# ✅ 智能判断是否为假后台，只有在假后台才关闭模拟器
+print_info "🧪 正在检测模拟器是否为假后台..."
+
+booted_check=$(xcrun simctl list devices | grep "(Booted)")
+simulator_running=$(pgrep -f Simulator)
+
+if [[ -z "$booted_check" && -n "$simulator_running" ]]; then
+  print_warn "⚠️ 模拟器疑似处于假后台，准备强制关闭..."
+  osascript -e 'quit app "Simulator"' >/dev/null 2>&1 || true
+  xcrun simctl shutdown all >/dev/null 2>&1 || true
+  pkill -f Simulator >/dev/null 2>&1 || true
+  print_success "✅ 已强制关闭假后台模拟器"
+else
+  print_success "✅ 模拟器状态正常，无需关闭"
+fi
 
 # ✅ 启动模拟器
 print_info "🚀 启动模拟器中..."

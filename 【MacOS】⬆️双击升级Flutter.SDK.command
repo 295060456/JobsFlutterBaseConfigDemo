@@ -57,15 +57,12 @@ show_description() {
 # ---------------------- 智能切换 Homebrew 源 ----------------------
 check_and_set_homebrew_mirror() {
   local test_url="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
-  cecho yellow "🌐 正在测试 Homebrew 官方源可达性..."
+    cecho yellow "🌐 正在测试 Homebrew 官方源可达性..."
 
   if curl --connect-timeout 3 -s --head "$test_url" | /usr/bin/grep -q "200 OK"; then
     cecho green "✅ Homebrew 官方源可访问，继续使用默认源"
   else
-    cecho red "❌ 官方源访问失败，临时切换为清华镜像源"
-    export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git"
-    export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git"
-    export HOMEBREW_CASK_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask.git"
+    cecho red "⚠️ 官方源访问失败，仅设置清华 Bottle 镜像（Git 仓库镜像已停用）"
     export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles"
   fi
 }
