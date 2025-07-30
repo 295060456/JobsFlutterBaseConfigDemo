@@ -5375,7 +5375,203 @@ class FadeInImageDemo extends StatelessWidget {
   | 是否有对应的 `State` 类 | ❌ 没有             | ✅ 有（通过 `createState()` 创建）                      |
   | 生命周期复杂度          | 简单               | 更完整（**initState**、**dispose**、**didUpdate**...） |
 
-### 
+#### 36.2、🧬**`StatelessWidget`** 的生命周期
+
+- `StatelessWidget` 生命周期非常短，只有一次 `build` 调用：
+
+  ```dart
+  class MyWidget extends StatelessWidget {
+    @override
+    Widget build(BuildContext context) {
+      print("build 调用");
+      return Text('Hello');
+    }
+  }
+  ```
+
+#### 36.3、🧬`StatefulWidget` 的生命周期
+
+* ```mermaid
+  %% Flutter StatefulWidget 生命周期（含中文注释）
+  graph TD
+    A[constructor\n构造函数（创建 Widget 实例）]
+      --> B[createState\n创建 State 对象（只调用一次）]
+    B --> C[initState\n初始化状态（相当于 iOS 的 viewDidLoad）]
+    C --> D[didChangeDependencies\n依赖改变时调用（第一次也会调用）]
+    D --> E[build\n构建 UI（每次 setState 都会触发）]
+    E --> F[setState\n状态更新，触发重新构建 build]
+    F --> E
+    E --> G[didUpdateWidget\n父 Widget 更新参数时调用（例如 hot reload）]
+    G --> E
+    E --> H[deactivate\n组件临时从树中移除（还未销毁）]
+    H --> I[dispose\n组件永久销毁，释放资源，例如取消监听器]
+  
+  ```
+
+* **iOS** 和 [**Flutter**](https://flutter.dev/) 生命周期对比表
+
+  | iOS UIViewController | Flutter StatefulWidget   | 说明        |
+  | -------------------- | ------------------------ | ----------- |
+  | `init`               | `constructor`            | 初始化对象  |
+  | `viewDidLoad`        | `initState`              | 页面加载    |
+  | `viewWillAppear`     | `build` (每次刷新UI)     | UI 即将展示 |
+  | `viewDidAppear`      | `build` 完成后 UI 已渲染 | -           |
+  | `viewWillDisappear`  | `dispose`                | 销毁前清理  |
+  | `deinit`             | `dispose`                | 内存回收    |
+
+* **`StatefulWidget`**生命周期代码模板
+
+  ```dart
+  class MyPage extends StatefulWidget {
+    const MyPage({super.key});
+  
+    @override
+    State<MyPage> createState() => _MyPageState(); // 创建 State 实例
+  }
+  
+  class _MyPageState extends State<MyPage> {
+  
+    @override
+    /// 适合做一次性初始化，例如请求数据、监听。
+    void initState() {
+      super.initState();  
+      print('initState'); // 类似 viewDidLoad
+    }
+  
+    @override
+    /// 当依赖的 InheritedWidget 改变时会触发。
+    /// 通常会在第一次 build 前被调用一次。
+    void didChangeDependencies() {
+      super.didChangeDependencies();
+      print('didChangeDependencies'); 
+    }
+  
+    @override
+    /// 每次 setState 时都会重新调用。
+    Widget build(BuildContext context) {
+      print('build'); // 类似 viewWillAppear -> viewDidAppear
+      return Container();
+    }
+  
+    @override
+    /// 当父 Widget 重新创建并传入新的参数时调用。
+    void didUpdateWidget(covariant MyPage oldWidget) {
+      super.didUpdateWidget(oldWidget);
+      print('didUpdateWidget');
+    }
+  
+    @override
+    /// Widget 临时从树中移除时触发（但未销毁）。
+    void deactivate() {
+      super.deactivate();
+      print('deactivate');
+    }
+  
+    @override
+    /// 永久销毁前调用
+    /// 适合取消计时器、关闭动画控制器等资源
+    void dispose() {
+      super.dispose();
+      print('dispose'); // 类似 viewWillDisappear + deinit
+    }
+  }
+  ```
+
+### 37、[**Flutter**](https://flutter.dev/)原生动画 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> ➕ 组件类（AnimatedXxx）
+>
+> ➕ 动画控制类（AnimationController/Tween）
+>
+> ➕ 辅助类（Curves）
+>
+> ➕ 动画基类/接口（Animation、Ticker 等）
+
+#### 37.1、🟩 隐式动画组件
+
+| 组件名                          | 描述                              |
+| ------------------------------- | --------------------------------- |
+| `AnimatedContainer`             | 宽高、颜色、边距、圆角等动画      |
+| `AnimatedOpacity`               | 透明度变化动画                    |
+| `AnimatedAlign`                 | 对齐方式动画                      |
+| `AnimatedPadding`               | 内边距动画                        |
+| `AnimatedPositioned`            | `Stack` 中的绝对定位动画          |
+| `AnimatedPositionedDirectional` | 对应 RTL 支持的动画               |
+| `AnimatedDefaultTextStyle`      | 文字样式变更动画                  |
+| `AnimatedPhysicalModel`         | 阴影、颜色、形状变化动画          |
+| `AnimatedSize`                  | 内容大小变更动画                  |
+| `AnimatedSwitcher`              | 子组件切换动画（很常用）          |
+| `AnimatedCrossFade`             | 两个子组件之间淡入淡出            |
+| `AnimatedRotation`              | 旋转动画（Flutter 2.5+）          |
+| `AnimatedScale`                 | 缩放动画（Flutter 2.5+）          |
+| `AnimatedSlide`                 | 平移动画（Flutter 2.5+）          |
+| `AnimatedIcon`                  | 内置图标动画（如菜单 ⇄ 返回箭头） |
+
+#### 37.2、🟥 显式动画核心类
+
+| 类名                     | 说明                                 |
+| ------------------------ | ------------------------------------ |
+| `AnimationController`    | 控制动画的播放（启动、暂停、反转等） |
+| `Animation<T>`           | 动画对象（可监听当前值）             |
+| `Tween<T>`               | 从 A 到 B 的数值/颜色/偏移变化       |
+| `TweenSequence`          | 连续多个 Tween 组合                  |
+| `CurvedAnimation`        | 曲线包装器，将动画附加曲线           |
+| `AnimatedBuilder`        | 绑定动画刷新的构建器组件             |
+| `AnimatedWidget`         | 自定义动画组件基类                   |
+| `AlwaysStoppedAnimation` | 静态动画值                           |
+| `ReverseAnimation`       | 倒序动画包装器                       |
+| `ProxyAnimation`         | 动态代理不同动画                     |
+| `TrainHoppingAnimation`  | 切换动画序列                         |
+
+#### 37.3、🎬 过渡（Transition）动画组件
+
+> 用于构建显式动画
+
+| Widget                         | 动画作用               |
+| ------------------------------ | ---------------------- |
+| `FadeTransition`               | 透明度变化             |
+| `SlideTransition`              | 位移动画               |
+| `ScaleTransition`              | 缩放动画               |
+| `SizeTransition`               | 尺寸变化               |
+| `RotationTransition`           | 旋转动画               |
+| `AlignTransition`              | 对齐方式动画           |
+| `PositionedTransition`         | Stack 中定位动画       |
+| `RelativePositionedTransition` | 相对定位（Flutter 3+） |
+
+#### 37.4、⚙️ 动画控制类
+
+> 控制动画时钟（Ticker）
+
+| 类/混入                          | 用途说明                          |
+| -------------------------------- | --------------------------------- |
+| `Ticker`                         | 动画帧控制器（用于计时/驱动动画） |
+| `TickerFuture`                   | 动画完成时返回的 Future 对象      |
+| `TickerProvider`                 | 提供 Ticker（接口）               |
+| `SingleTickerProviderStateMixin` | 一个控制器使用                    |
+| `TickerProviderStateMixin`       | 多个控制器使用                    |
+
+#### 37.5、🌀曲线函数（Curves 类）
+
+| 常用曲线        | 动画节奏          |
+| --------------- | ----------------- |
+| `linear`        | 匀速              |
+| `easeIn`        | 慢慢加速进入      |
+| `easeOut`       | 先快后慢          |
+| `easeInOut`     | 慢进慢出          |
+| `bounceIn/Out`  | 弹簧反弹效果      |
+| `elasticIn/Out` | 有弹性的动画效果  |
+| `decelerate`    | 快开始慢结束      |
+| `fastOutSlowIn` | Material 动画推荐 |
+| `cubic(...)`    | 自定义贝塞尔曲线  |
+
+#### 37.6、🚀  页面切换动画
+
+| 类名               | 功能说明                           |
+| ------------------ | ---------------------------------- |
+| `PageRouteBuilder` | 自定义页面切换动画                 |
+| `Hero`             | 页面共享元素动画（缩放/移动）      |
+| `ModalRoute.of`    | 可获取页面动画进度，控制弹出效果等 |
+| `buildTransitions` | 可 override 修改默认路由切换效果   |
 
 ## 四、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
