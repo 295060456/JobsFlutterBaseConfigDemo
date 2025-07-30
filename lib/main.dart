@@ -111,8 +111,8 @@ Future<void> main() async {
       ..indicatorType = EasyLoadingIndicatorType.fadingCircle
       ..loadingStyle = EasyLoadingStyle.custom
       ..backgroundColor = Colors.white
-      ..indicatorColor = const Color(theme01MainColor)
-      ..textColor = const Color(theme01MainColor)
+      ..indicatorColor = theme01MainColor
+      ..textColor = theme01MainColor
       ..dismissOnTap = true; // 点击不能关闭加载框
     // ..maskType = EasyLoadingMaskType.custom
     // ..maskColor = Colors.black.withOpacity(0.1)

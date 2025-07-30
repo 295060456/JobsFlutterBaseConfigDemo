@@ -6,6 +6,7 @@ import 'package:jobs_flutter_base_config/JobsDemoTools/UI/UI.3rd🌹/GetX/💥Ge
 void main() {
   runApp(
     GetMaterialApp(
+      title: '💥GetX的值双向绑定',
       initialRoute: '/jobs',
       getPages: [
         GetPage(
