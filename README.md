@@ -3219,19 +3219,30 @@ by [**Rémi Rousselet**](https://github.com/rrousselGit)
 | `Get.reset()`              | 重置整个依赖管理系统（清空所有 Controller、Service、路由信息等） |
 | `Get.resetLazy<T>()`       | 重置指定类型的懒加载依赖（配合 `lazyPut`）                   |
 
-##### 27.4.3、💥[**`GetX`**](https://pub.dev/packages/get) 页面解耦绑定数据源
+##### 27.4.3、**`GetxController`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-###### 27.4.3.1、**`GetxController`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
-
->* `GetxController` 是一个继承自 `Controller` 的类，用于管理你的页面状态和业务逻辑。
+> 1️⃣ `GetxController` 是一个继承自 `Controller` 的类，用于管理你的页面状态和业务逻辑。
 >
->* 纯逻辑类
+> 2️⃣ 纯逻辑类
 
-######  27.4.3.2、🍬**`Binding`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+###### 27.4.3.1、🧬  <font id=GetxController的生命周期>**`GetxController`** 的生命周期</font>
+
+| 方法名                                 | 触发时机                                                     | 用途说明                                                     |
+| -------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <font color=red>**`onInit()`**</font>  | 控制器初始化时自动调用（在构造函数之后）                     | 类似于 `initState()`，适合初始化变量、监听等                 |
+| <font color=red>**`onReady()`**</font> | 第一次 **frame** 渲染完成后调用                              | 类似于 `WidgetsBinding.instance.addPostFrameCallback`，适合执行依赖 UI 的逻辑，比如请求接口、导航等 |
+| <font color=red>**`onClose()`**</font> | 控制器被永久销毁时调用（如 `Get.delete()` 或路由移除）       | 清理资源，如取消订阅、关闭 **stream**、**timer** 等          |
+| `dispose()`                            | 和 `onClose()` 相同，通常不需要手动调用                      | <font color=red>**`onClose()`**</font> 内部默认会调用 `dispose()` |
+| `onStart()`                            | 不常用，**GetxController** 没有直接提供此生命周期            | 一般用于<a href="#GetView" style="font-size:17px; color:green;">**GetView**</a>或你自己扩展的生命周期控制 |
+| `onResumed()`                          | 配合<a href="#监听App生命周期状态变化" style="font-size:17px; color:green;">**GetObserver**</a>使用，表示页面 **resumed** 状态 | 类似 **App** 生命周期，见下方扩展                            |
+| `onPaused()`                           | 页面切到后台或被覆盖时                                       | ——                                                           |
+| `onDetached()`                         | 页面彻底退出时                                               | ——                                                           |
+
+##### 27.4.4、🍬**`Binding`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > **`Binding` 就是提前绑定 `controller` 的地方。**让你不需要在页面里手动写 **`Get.put()`** 或 **`Get.lazyPut()`**
 
-###### 27.4.3.3、🍬**`GetView<T>`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 27.4.5、🍬 <font id=GetView>**`GetView<T>`**</font>  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > * 是 `StatelessWidget` 的子类：`class GetView<T extends GetxController> extends StatelessWidget`
 > * 适用于 `StatelessWidget`。<font color=red>不能用于 `StatefulWidget`</font>
@@ -3283,7 +3294,9 @@ class CounterPage extends StatelessWidget {
 ```
 </details>
 
-###### 27.4.3.4、 [**`GetX`**](https://pub.dev/packages/get)  推荐的最佳实践方式：**`GetPage`** ➕ **`Binding`** ➕ **`GetView` ** ➕ **`Controller`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 27.4.6、💥[**`GetX`**](https://pub.dev/packages/get) 页面解耦绑定数据源 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+>  [**`GetX`**](https://pub.dev/packages/get)  推荐的最佳实践方式：**`GetPage`** ➕ **`Binding`** ➕ **`GetView` ** ➕ **`Controller`** 
 
 <details>
 <summary>点击展开代码</summary>
@@ -4143,13 +4156,120 @@ class JobsBinding extends Bindings {
 
 > `GetInterface` 是 [**GetX**](https://pub.dev/packages/get)  全部功能 API 的“目录规范”，而 `Get` 是它的唯一实现。
 
+##### 27.4.17、📢 全局通知  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+* 👂监听
+
+  * 纯逻辑监听器函数（不涉及UI）
+
+    | 名称           | 说明                                  |
+    | -------------- | ------------------------------------- |
+    | **`ever`**     | 每次 **Rx** 改变都触发                |
+    | **`once`**     | **Rx** 第一次改变触发一次             |
+    | **`debounce`** | **Rx** 停止变化一段时间后触发（防抖） |
+    | **`interval`** | **Rx** 在一段时间内只触发一次（节流） |
+    | **`everAll`**  | 同时监听多个 **Rx**，任一改变就触发   |
+
+    ```dart
+    // main.dart
+    import 'package:flutter/material.dart';
+    import 'package:get/get.dart';
+    import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsGetXRunner.dart';
+    import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/JobsCommonUtil.dart';
+    
+    // ✅ 操作说明：
+    // 点击“➕ 增加计数”按钮：
+    // ever 每次触发；
+    // once 只触发第一次；
+    // interval 每隔 1 秒只触发一次；
+    // everAll 也会触发。
+    
+    // 输入框中输入内容（如：abc）：
+    // 每次变动不会立即触发 debounce；
+    // 停止输入约 800ms 后才触发；
+    // everAll 也会触发。
+    
+    void main() => runApp(JobsGetRunner(RxListenerDemo(), title: '🎯 GetX 监听器演示'));
+    
+    class RxListenerDemo extends StatelessWidget {
+      final MyController controller = Get.put(MyController());
+    
+      @override
+      Widget build(BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Obx(() => Text('🧮 当前计数：${controller.counter}',
+                  style: TextStyle(fontSize: 24))),
+              ElevatedButton(
+                onPressed: () => controller.counter.value++,
+                child: const Text('➕ 增加计数'),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                decoration: const InputDecoration(labelText: '🔤 输入关键词'),
+                onChanged: (val) => controller.keyword.value = val,
+              ),
+            ],
+          ),
+        );
+      }
+    }
+    
+    class MyController extends GetxController {
+      // 声明两个响应式变量
+      final RxInt counter = 0.obs;
+      final RxString keyword = ''.obs;
+    
+      // 初始化监听器
+      @override
+      void onInit() {
+        super.onInit();
+    
+        // 每次改变都触发
+        ever(counter, (val) => JobsPrint("🔁 ever: counter = $val"));
+    
+        // 只触发第一次
+        once(counter, (val) => JobsPrint("🎯 once: counter = $val"));
+    
+        // 防抖：停止改变后 800ms 再触发
+        debounce(keyword, (val) => JobsPrint("⏳ debounce: keyword = $val"),
+            time: Duration(milliseconds: 800));
+    
+        // 节流：每隔 1s 触发一次
+        interval(counter, (val) => JobsPrint("🚦 interval: counter = $val"),
+            time: Duration(seconds: 1));
+    
+        // 同时监听多个 Rx
+        everAll([counter, keyword], (valList) {
+          JobsPrint(
+              "📦 everAll: counter = ${counter.value}, keyword = ${keyword.value}");
+        });
+      }
+    }
+    ```
+  
+  * UI监听器：**Obx**（以前是函数，现在版本上升为类）
+  
+    >```dart
+    >class Obx extends ObxWidget
+    >abstract class ObxWidget extends StatefulWidget
+    >```
+  
+  *  <font id=监听App生命周期状态变化>**监听 App 生命周期状态变化**</font> **：`GetObserver`**(类)
+  
+    > ```dart
+    > class GetObserver extends NavigatorObserver with WidgetsBindingObserver
+    > ```
+
 ### 28、导航栏左上角的返回按钮的<font color=red>**行为拦截和自定义**</font>  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> 1️⃣ 用户点击 iOS 的导航栏返回键（左上角）
+> 1️⃣ 用户点击 **iOS** 的导航栏返回键（左上角）
 >
 > 2️⃣ 调用 `Navigator.of(context).pop()`
 >
-> 3️⃣ iOS 上从屏幕左边缘滑动返回（手势返回）
+> 3️⃣ **iOS** 上从屏幕左边缘滑动返回（手势返回）
 >
 > 💥 **根页面是没有返回键的**
 
@@ -4537,7 +4657,7 @@ class MyCustomCacheManager extends CacheManager {
 /// TODO
 ```
 
-#### 29.6、[**`FadeInImage`**](https://api.flutter.dev/flutter/widgets/FadeInImage-class.html) (by@<font color=red>**Flutter.SDK**</font>) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 29.6、[**`FadeInImage`**](https://api.flutter.dev/flutter/widgets/FadeInImage-class.html) (by@[<font color=red>**Flutter**</font>.**SDK**](https://flutter.dev/)) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 <details>
 <summary>FadeInImage</summary>
@@ -5348,9 +5468,9 @@ class FadeInImageDemo extends StatelessWidget {
   )
   ```
 
-### 36、🧬生命周期 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 36、🧬<font id=Widget的生命周期>**`Widget`**的生命周期</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 36.1、**`StatefulWidget`** 和 **`StatelessWidget`** 的关系
+#### 36.1、**`StatefulWidget`** 和 **`StatelessWidget`** 的关系 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 共同点
 
@@ -5375,7 +5495,7 @@ class FadeInImageDemo extends StatelessWidget {
   | 是否有对应的 `State` 类 | ❌ 没有             | ✅ 有（通过 `createState()` 创建）                      |
   | 生命周期复杂度          | 简单               | 更完整（**initState**、**dispose**、**didUpdate**...） |
 
-#### 36.2、🧬**`StatelessWidget`** 的生命周期
+#### 36.2、🧬**`StatelessWidget`** 的生命周期 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 - `StatelessWidget` 生命周期非常短，只有一次 `build` 调用：
 
@@ -5389,24 +5509,23 @@ class FadeInImageDemo extends StatelessWidget {
   }
   ```
 
-#### 36.3、🧬`StatefulWidget` 的生命周期
+#### 36.3、🧬`StatefulWidget` 的生命周期 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-* ```mermaid
-  %% Flutter StatefulWidget 生命周期（含中文注释）
-  graph TD
-    A[constructor\n构造函数（创建 Widget 实例）]
-      --> B[createState\n创建 State 对象（只调用一次）]
-    B --> C[initState\n初始化状态（相当于 iOS 的 viewDidLoad）]
-    C --> D[didChangeDependencies\n依赖改变时调用（第一次也会调用）]
-    D --> E[build\n构建 UI（每次 setState 都会触发）]
-    E --> F[setState\n状态更新，触发重新构建 build]
-    F --> E
-    E --> G[didUpdateWidget\n父 Widget 更新参数时调用（例如 hot reload）]
-    G --> E
-    E --> H[deactivate\n组件临时从树中移除（还未销毁）]
-    H --> I[dispose\n组件永久销毁，释放资源，例如取消监听器]
-  
-  ```
+ ```mermaid
+ %% Flutter StatefulWidget 生命周期（含中文注释）
+ graph TD
+   A[constructor<br>构造函数（创建 Widget 实例）]
+     --> B[createState<br>创建 State 对象（只调用一次）]
+   B --> C[initState<br>初始化状态（相当于 iOS 的 viewDidLoad）]
+   C --> D[didChangeDependencies<br>依赖改变时调用（第一次也会调用）]
+   D --> E[build<br>构建 UI（每次 setState 都会触发）]
+   E --> F[setState<br>状态更新，触发重新构建 build]
+   F --> E
+   E --> G[didUpdateWidget<br>父 Widget 更新参数时调用（例如 hot reload）]
+   G --> E
+   E --> H[deactivate<br>组件临时从树中移除（还未销毁）]
+   H --> I[dispose<br>组件永久销毁，释放资源，例如取消监听器]
+ ```
 
 * **iOS** 和 [**Flutter**](https://flutter.dev/) 生命周期对比表
 
@@ -5477,7 +5596,70 @@ class FadeInImageDemo extends StatelessWidget {
   }
   ```
 
-### 37、[**Flutter**](https://flutter.dev/)原生动画 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 37、🧬 <font id=Flutt.App的生命周期>[**Flutter**](https://flutter.dev/).**App**的生命周期</font>监听 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+#### 37.1、混入（mixin）观察者：
+
+```dart
+class MyController extends GetxController with WidgetsBindingObserver
+```
+
+#### 37.2、添加观察者：
+
+```dart
+@override
+void onInit() {
+  super.onInit();
+  /// 向事件中心注册自己（通常是 State 或 Controller）为“订阅者”,使得可以接收 App 生命周期变化的通知。
+  WidgetsBinding.instance.addObserver(this);
+}
+```
+
+#### 37.3、监听变化：
+
+```dart
+@override
+void didChangeAppLifecycleState(AppLifecycleState state) {
+  switch (state) {
+    case AppLifecycleState.inactive:
+      // 应用程序处于非活动状态
+      debugPrint('应用程序处于非活动状态');
+      break;
+    case AppLifecycleState.paused:
+      // 应用程序处于后台
+      debugPrint('应用程序处于后台');
+      break;
+    case AppLifecycleState.resumed:
+      // 应用程序处于前台并可交互
+      debugPrint('应用程序处于前台并可交互');
+      break;
+    case AppLifecycleState.detached:
+      // 应用程序没有关联的 Flutter 引擎
+      debugPrint('应用程序没有关联的 Flutter 引擎');
+      break;
+      /// Flutter 3.22（Dart 3.3） 之后新增。仅在 iOS 和 Android 上生效
+    case AppLifecycleState.hidden:
+      // AppLifecycleState.hidden 是 Flutter 中的一个枚举值，它表示应用程序的状态在 iOS 平台上被隐藏时的状态。
+      // 具体来说，AppLifecycleState.hidden 是在 iOS 上当用户按下主屏幕按钮或切换到另一个应用程序时，Flutter 应用程序进入后台并且不再可见的状态。
+      // 在 Android 平台上没有完全对应的状态。
+      // 在 Android 上，当应用程序进入后台时，通常会接收到 AppLifecycleState.paused 状态。
+      debugPrint('Handle this case');
+  }
+  super.didChangeAppLifecycleState(state);
+}
+```
+
+#### 347.4、移除观察者：
+
+```dart
+@override
+void onClose() {
+  WidgetsBinding.instance.removeObserver(this);
+  super.onClose();
+}
+```
+
+### 38、[**Flutter**](https://flutter.dev/)原生动画 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > ➕ 组件类（AnimatedXxx）
 >
@@ -5487,7 +5669,7 @@ class FadeInImageDemo extends StatelessWidget {
 >
 > ➕ 动画基类/接口（Animation、Ticker 等）
 
-#### 37.1、🟩 隐式动画组件
+#### 38.1、🟩 隐式动画组件 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 组件名                          | 描述                              |
 | ------------------------------- | --------------------------------- |
@@ -5507,7 +5689,7 @@ class FadeInImageDemo extends StatelessWidget {
 | `AnimatedSlide`                 | 平移动画（Flutter 2.5+）          |
 | `AnimatedIcon`                  | 内置图标动画（如菜单 ⇄ 返回箭头） |
 
-#### 37.2、🟥 显式动画核心类
+#### 38.2、🟥 显式动画核心类 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 类名                     | 说明                                 |
 | ------------------------ | ------------------------------------ |
@@ -5523,7 +5705,7 @@ class FadeInImageDemo extends StatelessWidget {
 | `ProxyAnimation`         | 动态代理不同动画                     |
 | `TrainHoppingAnimation`  | 切换动画序列                         |
 
-#### 37.3、🎬 过渡（Transition）动画组件
+#### 38.3、🎬 过渡（Transition）动画组件 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 用于构建显式动画
 
@@ -5538,7 +5720,7 @@ class FadeInImageDemo extends StatelessWidget {
 | `PositionedTransition`         | Stack 中定位动画       |
 | `RelativePositionedTransition` | 相对定位（Flutter 3+） |
 
-#### 37.4、⚙️ 动画控制类
+#### 38.4、⚙️ 动画控制类 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 控制动画时钟（Ticker）
 
@@ -5550,7 +5732,7 @@ class FadeInImageDemo extends StatelessWidget {
 | `SingleTickerProviderStateMixin` | 一个控制器使用                    |
 | `TickerProviderStateMixin`       | 多个控制器使用                    |
 
-#### 37.5、🌀曲线函数（Curves 类）
+#### 38.5、🌀曲线函数（Curves 类） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 常用曲线        | 动画节奏          |
 | --------------- | ----------------- |
@@ -5564,7 +5746,7 @@ class FadeInImageDemo extends StatelessWidget {
 | `fastOutSlowIn` | Material 动画推荐 |
 | `cubic(...)`    | 自定义贝塞尔曲线  |
 
-#### 37.6、🚀  页面切换动画
+#### 38.6、🚀  页面切换动画 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 类名               | 功能说明                           |
 | ------------------ | ---------------------------------- |
@@ -5572,6 +5754,51 @@ class FadeInImageDemo extends StatelessWidget {
 | `Hero`             | 页面共享元素动画（缩放/移动）      |
 | `ModalRoute.of`    | 可获取页面动画进度，控制弹出效果等 |
 | `buildTransitions` | 可 override 修改默认路由切换效果   |
+
+### 39、安全取（📚字典）值 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+/// 安全获取 Map 中的值，支持类型推断与默认值
+T? safeGet<T>(Map map, dynamic key, [T? defaultValue]) {
+  final value = map[key];
+  if (value is T) return value;
+  return defaultValue;
+}
+```
+
+<details>
+<summary>点击展开代码</summary>
+
+```dart
+void main() {
+  Map<String, dynamic> user = {
+    "name": "Jobs",
+    "age": 30,
+    "isVip": true,
+  };
+
+  // ✅ 正常获取
+  String? name = safeGet<String>(user, "name");
+  JobsPrint(name); // 输出: Jobs
+
+  // ✅ 获取不存在字段，返回 null
+  String? gender = safeGet<String>(user, "gender");
+  JobsPrint(gender); // 输出: null
+
+  // ✅ 获取不存在字段，提供默认值
+  String gender2 = safeGet<String>(user, "gender", "男")!;
+  JobsPrint(gender2); // 输出: 男
+
+  // ✅ 类型安全：不会返回错误类型
+  bool? vip = safeGet<bool>(user, "isVip");
+  JobsPrint(vip); // 输出: true
+
+  // ❌ 错误类型不会强转：安全返回默认值
+  int? wrongType = safeGet<int>(user, "name", -1);
+  JobsPrint(wrongType); // 输出: -1
+}
+```
+</details>
 
 ## 四、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -5992,7 +6219,9 @@ tasks.register("clean", Delete) {
 class Person {
   final String name;
   final int age;
+  /// ✅ 命名构造函数
   const Person._internal(this.name, this.age);
+  /// 如果从一个构造函数“重定向”到另一个构造函数，必须用 :+ this(...) 的方式。
   const Person(String name) : this._internal(name, 18);
 }
 ```
@@ -6897,7 +7126,111 @@ Comparable.compare(a, b)
   | ✅ 测试 mock       | 自动生成 `@Mock()`、伪接口                         | `mockito` + `build_runner`                        |
   | ✅ Dart FFI        | 自动生成 FFI 对应的 dart wrapper                   | `ffigen`                                          |
 
-### 20、📦构建打包 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 20、🏗️构造函数 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+#### 20.1、📚 各种构造函数形式讲解
+
+* **默认构造函数**（<font color=red>**不能有两个默认构造函数（名字相同，参数不同也不行）**</font>）
+
+  > 默认构造函数 == 没写名字的命名构造函数。
+
+  ```dart
+  class Person {
+    final String name;
+    Person(this.name); // 默认构造函数（只能有一个，函数名即类名。名字相同，参数不同也不行）
+    // Person(int age); // ❌ 报错：重复定义构造函数
+  }
+  ```
+
+* **命名构造函数**（<font color=red>**可以有多个命名构造函数，但是：必须有唯一名字**</font>）
+
+  ```dart
+  class Person {
+    final String name;
+    final int age;
+    Person(this.name, this.age); // 默认构造函数（只能有一个，函数名即类名。名字相同，参数不同也不行）
+    Person.student(String name) : this(name, 18); // 默认学生18岁
+    Person.student(int age) : this("Jobs", age); // ❌ 报错。Dart 不支持构造函数的重载（不像 Java 或 C++ 那样支持同名不同参）
+  }
+  ```
+
+  ```dart
+  /// 命名构造函数 的相关调用
+  void main() {
+    var p1 = Person("Tom", 25);           // 调用默认构造函数
+    var p2 = Person.student("Alice");     // 调用命名构造函数
+  
+    print("${p1.name}, ${p1.age}");       // 输出: Tom, 25
+    print("${p2.name}, ${p2.age}");       // 输出: Alice, 18
+  }
+  ```
+
+* **初始化列表构造函数**
+
+  ```dart
+  class User {
+    final String upperName;
+    // ✅ 对参数做转换处理
+    User(String name) : upperName = name.toUpperCase();// 对外来的参数，进行一次处理以后，再赋值到成员变量（初始化 final 字段）
+  }
+  ```
+
+  ```dart
+  /// 初始化列表构造函数 的相关调用
+  void main() {
+    var user = User("jobs");
+    print(user.upperName); // 输出：JOBS
+  }
+  ```
+
+* **`const` 构造函数**（**`Widget`** 常用）
+
+  > | 作用                          | 好处                                                         |
+  > | ----------------------------- | ------------------------------------------------------------ |
+  > | 编译期常量                    | 提高性能，减少内存分配                                       |
+  > | 支持 **`Widget`**  树中的优化 | [**Flutter**](https://flutter.dev/) 的 `const` **`Widget`** 可避免重建，提高性能 |
+  > | 自动复用相同实例              | 节省资源、提高效率                                           |
+
+  ```dart
+  class Point {
+    final int x, y;
+    const Point(this.x, this.y);
+  }
+  ```
+
+  ```dart
+  /// 普通调用（非 const）
+  void main() {
+    var p = Point(3, 4);
+    print('Point: (${p.x}, ${p.y})'); // 输出: Point: (3, 4)
+  }
+  ```
+
+  ```dart
+  /// const 调用（编译期常量）
+  void main() {
+    const p1 = Point(3, 4);
+    const p2 = Point(3, 4);
+    // identical(p1, p2) 是 Dart 判断两个对象是否是“同一个内存地址”的方法。
+    // 因为是 const，所以 Dart 会在编译期把 (3, 4) 的 Point 实例缓存并复用。
+    print(identical(p1, p2)); // true ✅ 编译期常量，自动复用同一个对象
+  }
+  ```
+
+* **`factory` 构造函数**（高级构建方式）
+
+  ```dart
+  class Person {
+    final String name;
+    Person._internal(this.name); // 私有构造函数
+    // 工厂构造函数（可以缓存/控制创建）
+    factory Person.fromJson(Map<String, dynamic> json) {
+      return Person._internal(json['name']);
+    }
+  }
+  ```
+
+### 21、📦构建打包 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ 打包慢，尤其[**Android**](https://www.android.com/)平台
 >
@@ -6920,11 +7253,11 @@ Comparable.compare(a, b)
 
 * 构建环境清理与诊断命令对照表
 
-  * 🧹 **Flutter** 构建环境清理与诊断命令对照表
+  * 🧹 [**Flutter**](https://flutter.dev/) 构建环境清理与诊断命令对照表
 
     | 📦 命令            | 💡 说明                                                       |
     | ----------------- | ------------------------------------------------------------ |
-    | `flutter clean`   | 清理 Flutter 构建产物（适用于 iOS 和 Android），解决异常构建、缓存问题 |
+    | `flutter clean`   | 清理 [**Flutter**](https://flutter.dev/) 构建产物（适用于 iOS 和 Android），解决异常构建、缓存问题 |
     | `flutter pub get` | 重新获取 Dart 依赖（通常配合 clean 一起使用）                |
 
   * 🍎 **iOS** 专用命令
@@ -6975,9 +7308,9 @@ Comparable.compare(a, b)
   | **dynamic**                        | [**Flutter**](https://flutter.dev/) 动态集成场景 | **JIT + AOT**      | 依项目配置 | 依项目配置   | Add-to-App 混合开发               | **Android**<br/>**iOS**               | 原生动态加载 Flutter            |
   | **flavor 模式**                    | `flutter build apk --flavor staging`             | 依所选模式         | 依所选模式 | 依所选模式   | 多环境打包（`staging`、`uat` 等） | **Android**<br/>**iOS**               | 非编译模式，属于构建配置        |
 
-#### 20.1、📦 [**Flutter**](https://flutter.dev/).**Android**（较为复杂和繁琐） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 21.1、📦 [**Flutter**](https://flutter.dev/).**Android**（较为复杂和繁琐） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-##### 20.1.1、 [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.1.1、 [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 >  [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) （<font color=red>**建议保持最新**</font>）是[**Android**](https://www.android.com/).**SDK**命令行工具：[Android **Command Line Tools**](https://developer.android.com/tools?hl=zh-cn)的一部分，用于管理 [**Android**](https://www.android.com/).**SDK** 的组件。它允许你从终端安装、更新、查看和卸载[**Android**](https://www.android.com/).**SDK**中的各种包，比如：
 >
@@ -7019,7 +7352,7 @@ Comparable.compare(a, b)
 
     * 用于自定义 **CI/CD** 环境（如 [**Docker**](https://www.docker.com/)镜像）
 
-##### 20.1.2、[**Gradle**](https://gradle.org/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.1.2、[**Gradle**](https://gradle.org/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 一个高度可配置、插件化、现代化的自动化构建工具（平台无关）
 
@@ -7089,7 +7422,7 @@ Comparable.compare(a, b)
   }
   ```
 
-##### 20.1.3、<font id=AGP>[<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) = <font color=red>**A**</font>ndroid <font color=red>**G**</font>radle <font color=red>**P**</font>lugin</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> 
+##### 21.1.3、<font id=AGP>[<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) = <font color=red>**A**</font>ndroid <font color=red>**G**</font>radle <font color=red>**P**</font>lugin</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> 
 
 * 🧱  [<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) 是连接 [**Gradle**](https://gradle.org/) 和 **Android 构建逻辑** 的桥梁
 
@@ -7134,7 +7467,7 @@ Comparable.compare(a, b)
   | 版本关系               | 不同 [<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn)  需配套不同 [**Gradle**](https://gradle.org/) | 独立更新                                           |
   | **Flutter** 项目中位置 | `build.gradle` 中的 `classpath`                              | `gradle-wrapper.properties` 中的 `distributionUrl` |
 
-##### 20.1.4、**Android** 打包的产物 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.1.4、**Android** 打包的产物 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 项目                 | <font color=red>**A**</font>ndroid <font color=red>**p**</font>ac<font color=red>**k**</font>age | <font color=red>**A**</font>ndroid <font color=red>**a**</font>pp <font color=red>**b**</font>undle |
 | -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -7149,7 +7482,7 @@ Comparable.compare(a, b)
 | **常见用途**         | 内部测试、第三方分发、安装包备份                             | 上传 [**Google Play**](https://play.google.com/) 商店        |
 | **是否推荐**         | ✅ 第三方或私有渠道使用                                       | ✅ [**Google**](https://www.google.com/) 官方推荐上传 [**Play**](https://play.google.com/) 商店使用 |
 
-##### 20.1.5、[**Flutter**](https://flutter.dev/)打包 **Android** 包的流程图 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.1.5、[**Flutter**](https://flutter.dev/)打包 **Android** 包的流程图 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```mermaid
 graph TD
@@ -7161,7 +7494,7 @@ graph TD
     F --> G[Generate final APK]
 ```
 
-##### 20.1.6、如何加快**Flutter.Android**的打包速度？ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.1.6、如何加快**Flutter.Android**的打包速度？ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 优化方式                                            | 操作说明                                                     |
 | --------------------------------------------------- | ------------------------------------------------------------ |
@@ -7174,14 +7507,14 @@ graph TD
 | ✅ **设置构建线程数**                                | [**Gradle**](https://gradle.org/) 中设置：`org.gradle.parallel=true` |
 | ✅ [**Flutter**](https://flutter.dev/) **版本更新**  | 新版本通常对构建性能有优化                                   |
 
-##### 20.1.7、🪖<font color=red>**构建指令**</font>：`flutter build apk` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.1.7、🪖<font color=red>**构建指令**</font>：`flutter build apk` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 模式      | 命令                                         | 简称说明             |
 | --------- | -------------------------------------------- | -------------------- |
 | `debug`   | `flutter build apk --debug` 或 `flutter run` | 开发调试用，功能全   |
 | `release` | `flutter build apk --release`                | 发布用，高性能最小包 |
 
-##### 20.1.8、⚙️ 相关配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.1.8、⚙️ 相关配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * [**Flutter**](https://flutter.dev/).**Android**打包需要涉及到**Java**环境推荐使用[<font color=red>**openJDK**</font>](https://openjdk.org/)
 
@@ -7239,7 +7572,7 @@ graph TD
   | 第三方依赖                                                   | 来自 [**pub.dev**](https://pub.dev/) 的插件中声明的 AAR/JAR，如 [`image_gallery_saver`](https://pub.dev/packages/image_gallery_saver)、[`engagelab`](https://pub.dev/packages?q=engagelab) |
   | [**Google Maven**](https://maven.google.com/web/index.html) / [**JCenter**](https://mvnrepository.com/repos/jcenter) / [**MavenCentral**](https://central.sonatype.com/) | 默认构建源，国内访问会慢                                     |
 
-##### 20.1.9、📦 [**Flutter**](https://flutter.dev/).**Android** 打包脚本（MacOS）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.1.9、📦 [**Flutter**](https://flutter.dev/).**Android** 打包脚本（MacOS）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 <details>
 <summary>点击展开代码</summary>
@@ -7546,7 +7879,7 @@ _open_output_folder
 ```
 </details>
 
-##### 20.1.10、打包成品  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.1.10、打包成品  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > [**Flutter**](https://flutter.dev/) 和 [**Gradle**](https://gradle.org/)  的构建系统默认会将最新产物**覆盖上一次的构建产物**
 
@@ -7577,9 +7910,9 @@ _open_output_folder
 | 🚀 提测/发包                                         | `apk/release/app-release.apk`（需签名）                  |
 | 🌐 上架  [**Google Play**](https://play.google.com/) | `bundle/release/app-release.aab`                         |
 
-#### 20.2、📦 [**Flutter**](https://flutter.dev/).**iOS**（相对简单）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 21.2、📦 [**Flutter**](https://flutter.dev/).**iOS**（相对简单）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-##### 20.2.1、🪖<font color=red>**构建指令**</font>：`flutter build ios` 和 `flutter build ipa` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.2.1、🪖<font color=red>**构建指令**</font>：`flutter build ios` 和 `flutter build ipa` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > **iOS** 项目主流是使用[**XCode**](https://developer.apple.com/xcode/) + [**XCode**](https://developer.apple.com/xcode/) **build system** 来进行构建
 
@@ -7597,7 +7930,7 @@ _open_output_folder
 | `--export-options-plist` | `--export-options-plist=ios/ExportOptions.plist` | 指定导出 ipa 所需的 plist                |
 | `--no-codesign`          | `flutter build ios --no-codesign`                | 构建时跳过签名，常用于 CI 环境或手动签名 |
 
-##### 20.2.2、📁生成的包目录  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.2.2、📁生成的包目录  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > `build/ios/iphoneos/Runner.app`
 >
@@ -7623,13 +7956,13 @@ _open_output_folder
   └── 📄 ExportOptions.plist 👈 导出配置 plist（用于控制签名方式、是否上传等）📝
 ```
 
-##### 20.2.3、📦 打包脚本（TODO） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.2.3、📦 打包脚本（TODO） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 /// TODO
 ```
 
-##### 20.2.4、⚠️注意事项  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.2.4、⚠️注意事项  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 必须要有苹果的开发者账号（普通账户充值）
 

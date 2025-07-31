@@ -64,6 +64,8 @@ class _RotaryViewState extends State<RotaryView> with WidgetsBindingObserver {
         // 应用程序没有关联的 Flutter 引擎
         debugPrint('应用程序没有关联的 Flutter 引擎');
         break;
+
+      /// Flutter 3.22（Dart 3.3） 之后新增。仅在 iOS 和 Android 上生效
       case AppLifecycleState.hidden:
         // AppLifecycleState.hidden 是 Flutter 中的一个枚举值，它表示应用程序的状态在 iOS 平台上被隐藏时的状态。
         // 具体来说，AppLifecycleState.hidden 是在 iOS 上当用户按下主屏幕按钮或切换到另一个应用程序时，Flutter 应用程序进入后台并且不再可见的状态。
