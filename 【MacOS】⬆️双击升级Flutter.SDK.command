@@ -2,7 +2,7 @@
 setopt +o nomatch
 export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/homebrew/bin:$PATH"
 
-# ---------------------- 彩色输出 ----------------------
+# ✅ 彩色输出
 cecho() {
   local color="$1"; shift
   local text="$*"
@@ -15,7 +15,7 @@ cecho() {
   esac
 }
 
-# ---------------------- 环境命令依赖校验 ----------------------
+# ✅ 环境命令依赖校验
 require_commands() {
   local cmds=("grep" "awk" "xargs" "git" "curl")
   for cmd in "${cmds[@]}"; do
@@ -26,7 +26,7 @@ require_commands() {
   done
 }
 
-# ---------------------- 自述说明 ----------------------
+# ✅ 自述信息
 show_description() {
   clear
   cecho blue "🛠 Flutter SDK 升级助手（支持 FVM / 系统 Flutter）"
@@ -54,7 +54,7 @@ show_description() {
   read -rs
 }
 
-# ---------------------- 智能切换 Homebrew 源 ----------------------
+# ✅ 智能切换 Homebrew 源
 check_and_set_homebrew_mirror() {
   local test_url="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
     cecho yellow "🌐 正在测试 Homebrew 官方源可达性..."
@@ -67,7 +67,7 @@ check_and_set_homebrew_mirror() {
   fi
 }
 
-# ---------------------- 自检工具 ----------------------
+# ✅ 自检工具
 ensure_brew() {
   if ! command -v brew >/dev/null; then
     cecho red "🧰 未安装 Homebrew，正在安装..."
@@ -91,7 +91,7 @@ ensure_fzf() {
   fi
 }
 
-# ---------------------- 判断方法 ----------------------
+# ✅ 判断方法
 is_flutter_fvm_proxy() {
   if type flutter | /usr/bin/grep -q 'fvm flutter'; then return 0; fi
   [[ "$(which flutter)" == *".fvm/"* ]] && return 0
@@ -150,7 +150,7 @@ select_channel() {
   echo -e "stable\nbeta\nmain\nmaster" | fzf --prompt="切换 Channel > "
 }
 
-# ---------------------- 执行升级 ----------------------
+# ✅ 执行升级
 perform_upgrade() {
   local sdk_cmd="$1"
   local sdk_path="$2"
@@ -175,20 +175,16 @@ perform_upgrade() {
   "$sdk_cmd" upgrade
 }
 
-# ---------------------- 主函数入口 ----------------------
-main() {
-  show_description
-  require_commands
-  check_and_set_homebrew_mirror
-  ensure_brew
-  ensure_fzf
-
+# ✅ 判断 flutter 命令来源与 SDK 路径
+detect_flutter_cmd_and_sdk_path() {
+  # 显示当前 flutter 路径信息
   cecho yellow "🧩 当前 flutter 路径：$(which flutter)"
   type flutter
 
-  local flutter_cmd="flutter"
-  local sdk_path=""
+  flutter_cmd="flutter"
+  sdk_path=""
 
+  # 判断是否为 FVM 转发
   if is_flutter_fvm_proxy; then
     flutter_cmd="fvm flutter"
     sdk_path=$(get_sdk_path_from_fvm)
@@ -198,26 +194,39 @@ main() {
     cecho yellow "⚠️ flutter 命令是系统 Flutter"
   fi
 
+  # SDK 路径 fallback 判断
   if [[ -z "$sdk_path" ]]; then
     cecho red "❌ 无法识别 Flutter SDK 路径，尝试 fallback"
     sdk_path=$(get_sdk_path_from_fvm)
-    [[ -n "$sdk_path" ]] && cecho green "✅ fallback 成功：$sdk_path" || {
+    if [[ -n "$sdk_path" ]]; then
+      cecho green "✅ fallback 成功：$sdk_path"
+    else
       cecho red "❌ fallback 也失败，终止"
       cecho yellow "📋 flutter --version --verbose 输出如下（供调试）："
       echo "--------------------"
       flutter --version --verbose
       echo "--------------------"
       exit 1
-    }
+    fi
   fi
 
+  # 最终确认的 SDK 路径
   cecho blue "📁 当前 Flutter SDK 路径：$sdk_path"
+}
 
-  perform_upgrade "$flutter_cmd" "$sdk_path"
+# ✅ 主函数入口
+main() {
+  show_description                            # ✅ 自述信息
+  require_commands                            # ✅ 检查必要命令依赖（如 grep、awk、git、curl 等）
+  check_and_set_homebrew_mirror               # ✅ 检查 Homebrew 源可达性，必要时切换为国内镜像
+  ensure_brew                                 # ✅ 自检 Homebrew，如未安装则自动安装并升级
+  ensure_fzf                                  # ✅ 检查并安装 fzf 工具（用于 channel 选择等交互）
+  detect_flutter_cmd_and_sdk_path             # ✅ 检测 flutter 是否通过 FVM 管理，并获取 SDK 路径
+  perform_upgrade "$flutter_cmd" "$sdk_path"  # ✅ 执行 Flutter SDK 升级流程（支持 FVM / 系统 flutter）
 
   echo ""
-  cecho green "✅ Flutter SDK 升级完成"
-  read "?⏎ 按回车关闭窗口"
+  cecho green "✅ Flutter SDK 升级完成"         # ✅ 最终成功提示
+  read "?⏎ 按回车关闭窗口"                       # ✅ 提示用户手动关闭窗口（适用于 GUI 脚本或 Terminal 自动退出）
 }
 
 main

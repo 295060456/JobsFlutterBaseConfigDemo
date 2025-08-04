@@ -1,184 +1,218 @@
 #!/bin/zsh
 
-# ========== 彩色输出 ==========
-red()    { echo "\033[1;31m$1\033[0m"; }
-green()  { echo "\033[1;32m$1\033[0m"; }
-yellow() { echo "\033[1;33m$1\033[0m"; }
+# ✅ 日志与语义输出
+SCRIPT_BASENAME=$(basename "$0" | sed 's/\.[^.]*$//')
+LOG_FILE="/tmp/${SCRIPT_BASENAME}.log"
 
-# ========== 自述 ==========
-clear
-green "📦 Flutter 项目依赖升级助手（支持 FVM + fzf）"
-green "===================================================================="
-green "✅ 功能说明："
-green "   ➤ 自动检测 Flutter 项目目录（含 pubspec.yaml + lib/）"
-green "   ➤ 自动检测并安装/升级 fzf"
-green "   ➤ 选择依赖升级方式：全清空 / 逐个升级"
-green "   ➤ 全清空仅重新拉包，不调用其他脚本"
-green "===================================================================="
-echo ""
+log()            { echo -e "$1" | tee -a "$LOG_FILE"; }
+color_echo()     { log "\033[1;32m$1\033[0m"; }
+info_echo()      { log "\033[1;34mℹ $1\033[0m"; }
+success_echo()   { log "\033[1;32m✔ $1\033[0m"; }
+warn_echo()      { log "\033[1;33m⚠ $1\033[0m"; }
+warm_echo()      { log "\033[1;33m$1\033[0m"; }
+note_echo()      { log "\033[1;35m➤ $1\033[0m"; }
+error_echo()     { log "\033[1;31m✖ $1\033[0m"; }
+err_echo()       { log "\033[1;31m$1\033[0m"; }
+debug_echo()     { log "\033[1;35m🐞 $1\033[0m"; }
+highlight_echo() { log "\033[1;36m🔹 $1\033[0m"; }
+gray_echo()      { log "\033[0;90m$1\033[0m"; }
+bold_echo()      { log "\033[1m$1\033[0m"; }
+underline_echo() { log "\033[4m$1\033[0m"; }
 
-# ========== fzf 自检并安装/升级 ==========
-echo "🔍 正在检测 fzf..."
-if ! command -v fzf >/dev/null 2>&1; then
-  yellow "📦 未安装 fzf，正在安装..."
-  brew install fzf
-else
-  green "✅ fzf 已安装，尝试升级..."
-  brew upgrade fzf
-fi
+# ✅ 全局变量
+flutter_cmd=(flutter)  # 默认使用系统 flutter
 
-# ========== 判断并获取 Flutter 项目根目录 ==========
-is_flutter_project() {
-  [[ -f "$1/pubspec.yaml" && -d "$1/lib" ]]
+# ✅ Flutter 项目目录初始化
+init_project_dir() {
+  BASE_DIR="$(cd "$(dirname "$0")" && pwd -P)"
+  readonly BASE_DIR
+  gray_echo "📂 当前脚本路径: $BASE_DIR"
+
+  project_dir="$BASE_DIR"
+  while [[ ! -f "$project_dir/pubspec.yaml" || ! -d "$project_dir/lib" ]]; do
+    error_echo "❌ 当前目录不是 Flutter 项目（缺少 pubspec.yaml 或 lib/）"
+    read "input_path?📂 请拖入 Flutter 项目根目录或按回车重试："
+    input_path="${input_path/#\~/$HOME}"
+    input_path="${input_path//\\/}"
+    [[ -n "$input_path" ]] && project_dir="$input_path"
+  done
+
+  cd "$project_dir" || { error_echo "❌ 进入项目失败"; exit 1; }
+  success_echo "📁 已定位 Flutter 项目目录：$project_dir"
 }
 
-project_dir="$(cd "$(dirname "$0")" && pwd)"
-while ! is_flutter_project "$project_dir"; do
-  red "❌ 当前目录不是 Flutter 项目（缺少 pubspec.yaml 或 lib/）"
-  echo ""
-  read "input_path?📂 请拖入 Flutter 项目根目录（或直接回车使用当前路径）："
-  input_path="${input_path/#\~/$HOME}"
-  input_path="${input_path//\\/}"
-  input_path="${input_path%"${input_path##*[![:space:]]}"}"
-
-  if [[ -n "$input_path" ]]; then
-    project_dir="$input_path"
+# ✅ 检查是否使用 FVM
+detect_flutter_command() {
+  if [[ -f "$project_dir/.fvm/fvm_config.json" ]]; then
+    warn_echo "🧩 检测到 FVM 管理，将使用 fvm flutter"
+    flutter_cmd=(fvm flutter)
+  else
+    info_echo "📦 使用系统 Flutter 命令"
+    flutter_cmd=(flutter)
   fi
-done
-
-cd "$project_dir" || {
-  red "❌ 切换到目录失败：$project_dir"
-  exit 1
 }
 
-green "📁 已定位 Flutter 项目目录：$project_dir"
+# ✅ 判断芯片架构（ARM64 / x86）
+get_cpu_arch() {
+  [[ $(uname -m) == "arm64" ]] && echo "arm64" || echo "x86_64"
+}
 
-# ========== fzf 选择升级方式 ==========
-echo ""
-green "🎯 请选择依赖升级策略："
-upgrade_strategy=$(printf "🧹 全量清空 .pub-cache 并重新拉取依赖（推荐）\n⚙️ 逐个升级 pubspec.yaml 中的依赖（当前逻辑）" | fzf --prompt="📦 选择升级方式 > " --height=10 --reverse)
+# ✅ 自检安装 🍺 Homebrew
+install_homebrew() {
+  arch=$(get_cpu_arch)
+  if ! command -v brew &>/dev/null; then
+    warn_echo "🧩 未检测到 Homebrew，正在安装 ($arch)..."
+    if [[ "$arch" == "arm64" ]]; then
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
+        error_echo "❌ Homebrew 安装失败"
+        exit 1
+      }
+    else
+      arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
+        error_echo "❌ Homebrew 安装失败（x86_64）"
+        exit 1
+      }
+    fi
+    success_echo "✅ Homebrew 安装成功"
+  else
+    info_echo "🔄 Homebrew 已安装，更新中..."
+    brew update && brew upgrade && brew cleanup
+    success_echo "✅ Homebrew 已更新"
+  fi
+}
 
-if [[ "$upgrade_strategy" == "🧹 全量清空 .pub-cache 并重新拉取依赖（推荐）" ]]; then
-  red "⚠️ 即将清空 ~/.pub-cache/hosted/pub.dev 目录（不影响项目代码）"
-  read "?🔁 是否继续执行？（输入 y 确认，其他跳过）" confirm_wipe
-  if [[ "$confirm_wipe" == "y" ]]; then
+# ✅ fzf 安装检查
+ensure_fzf_installed() {
+  if ! command -v fzf >/dev/null 2>&1; then
+    warn_echo "📦 未安装 fzf，开始安装..."
+    brew install fzf
+  else
+    info_echo "🔄 fzf 已安装，尝试升级..."
+    brew upgrade fzf || true
+  fi
+}
+
+# ✅ 清空缓存并重新拉包
+clear_and_regenerate() {
+  warn_echo "⚠️ 即将清空 ~/.pub-cache/hosted/pub.dev"
+  read "?🔁 是否继续执行？输入 y 确认：" confirm
+  if [[ "$confirm" == "y" ]]; then
     rm -rf ~/.pub-cache/hosted/pub.dev/*
-    green "✅ 已清空 pub.dev 缓存"
-
-    echo ""
-    green "📦 正在重新获取依赖..."
-    fvm flutter pub get
-
-    green "🎉 全量依赖升级流程完成！"
+    success_echo "✅ 已清空缓存"
+    info_echo "📦 正在重新拉取依赖..."
+    "${flutter_cmd[@]}" pub get
+    success_echo "🎉 全量升级完成！"
     exit 0
   else
-    yellow "⏭️ 取消清空缓存，回到原始脚本逻辑"
+    warn_echo "⏭️ 跳过清空缓存"
   fi
-fi
+}
 
-# ========== 用户确认继续 ==========
-read "?🟢 按回车继续执行逐个升级逻辑，输入任意字符后回车退出：" user_confirm
-if [[ -n "$user_confirm" ]]; then
-  red "❌ 已取消执行"
-  exit 0
-fi
-
-# ========== 显示 outdated 状态 ==========
-echo ""
-yellow "📋 当前依赖状态（包括已废弃包）"
-echo "===================================================================="
-fvm flutter pub outdated
-echo "===================================================================="
-echo ""
-
-read "?📈 是否进入逐个升级流程？（回车 = 执行，任意输入跳过）" confirm_upgrade
-if [[ -n "$confirm_upgrade" ]]; then
-  yellow "⏭️ 跳过升级流程"
-  exit 0
-fi
-
-# ========== 收集依赖分类 ==========
-dependencies=($(grep -A 1000 '^dependencies:' pubspec.yaml | grep -B 1000 '^dev_dependencies:' | grep -E '^\s*[a-zA-Z0-9_-]+:\s*\^?[0-9]' | awk -F: '{print $1}' | sed 's/^[ \t]*//'))
-dev_dependencies=($(grep -A 1000 '^dev_dependencies:' pubspec.yaml | grep -v 'flutter:' | grep -E '^\s*[a-zA-Z0-9_-]+:\s*\^?[0-9]' | awk -F: '{print $1}' | sed 's/^[ \t]*//'))
-
-# ========== 合并依赖来源 ==========
-declare -A dep_sources
-for pkg in "${dependencies[@]}"; do
-  dep_sources["$pkg"]="dependencies"
-done
-for pkg in "${dev_dependencies[@]}"; do
-  dep_sources["$pkg"]="dev_dependencies"
-done
-
-transitives=$(fvm flutter pub outdated --json | grep -oE '"package":"[^"]+"' | cut -d'"' -f4)
-for pkg in $transitives; do
-  if [[ -z "${dep_sources["$pkg"]}" ]]; then
-    dep_sources["$pkg"]="transitive"
-  fi
-done
-all_pkgs=("${(k)dep_sources}")
-
-# ========== 升级循环 ==========
-for pkg in "${all_pkgs[@]}"; do
+# ✅ 升级策略选择
+select_upgrade_strategy() {
   echo ""
-  yellow "🔍 正在处理包：$pkg（来源：${dep_sources[$pkg]}）"
+  info_echo "🎯 请选择升级策略"
+  strategy=$(printf "🧹 全量清空 .pub-cache 并重新拉取依赖\n⚙️ 逐个升级 pubspec.yaml 中的依赖" | \
+    fzf --prompt="📦 选择升级方式 > " --height=10 --reverse)
 
-  output=$(fvm flutter pub outdated "$pkg" --json 2>/dev/null)
-  current=$(echo "$output" | grep -oE '"current":"[^"]+"' | head -n1 | cut -d'"' -f4)
-  resolvable=$(echo "$output" | grep -oE '"resolvable":"[^"]+"' | head -n1 | cut -d'"' -f4)
-  latest=$(echo "$output" | grep -oE '"latest":"[^"]+"' | head -n1 | cut -d'"' -f4)
-
-  if [[ -z "$current" || -z "$latest" ]]; then
-    red "⚠️ 无法获取版本信息，可能已废弃或格式异常"
-    continue
+  if [[ "$strategy" == *全量清空* ]]; then
+    clear_and_regenerate
   fi
+}
 
-  if [[ "$current" == "$latest" ]]; then
-    green "✅ $pkg 已是最新版本（$current）"
-    continue
-  fi
+# ✅ 逐个升级逻辑
+upgrade_dependencies_interactive() {
+  echo ""
+  warn_echo "📋 当前依赖状态："
+  "${flutter_cmd[@]}" pub outdated
+  echo ""
+  read "?📈 是否进入逐个升级流程？（回车执行，其他跳过）" input
+  [[ -n "$input" ]] && return
 
-  echo "📌 当前版本：$current"
-  echo "🔧 可解析版本（不改 pubspec.yaml）：$resolvable"
-  echo "🆕 最新版本：$latest"
+  dependencies=($(awk '/^dependencies:/,/^dev_dependencies:/ {if ($0 ~ /^[[:space:]]+[a-zA-Z0-9_-]+:/) print $1}' pubspec.yaml | cut -d: -f1))
+  dev_dependencies=($(awk '/^dev_dependencies:/ {flag=1; next} /^$/ {flag=0} flag && $0 ~ /^[[:space:]]+[a-zA-Z0-9_-]+:/ {print $1}' pubspec.yaml | cut -d: -f1))
 
-  if [[ "${dep_sources[$pkg]}" != "transitive" ]]; then
-    read "?🚀 是否将 $pkg 升级为 ^$latest 并写入 pubspec.yaml？（y = 升级，回车跳过）" upgrade
-    if [[ "$upgrade" == "y" ]]; then
-      matched_line=$(grep -E "^\s*$pkg:" pubspec.yaml)
-      if [[ "$matched_line" =~ (git:|path:|sdk:) ]]; then
-        yellow "⚠️ $pkg 为 git/path/sdk 类型依赖，跳过修改"
-      else
-        new_line=$(echo "$matched_line" | sed -E "s/(\s*$pkg:\s*)\^?[0-9]+\.[0-9]+\.[0-9]+/\1^$latest/")
-        if [[ "$matched_line" != "$new_line" ]]; then
-          sed -i '' "s|$matched_line|$new_line|" pubspec.yaml
-          green "✅ $pkg 已更新版本为：$new_line"
+  declare -A sources
+  for d in "${dependencies[@]}"; do sources["$d"]="dependencies"; done
+  for d in "${dev_dependencies[@]}"; do sources["$d"]="dev_dependencies"; done
+
+  transitives=$("${flutter_cmd[@]}" pub outdated --json | grep -oE '"package":"[^"]+"' | cut -d'"' -f4)
+  for t in $transitives; do [[ -z "${sources["$t"]}" ]] && sources["$t"]="transitive"; done
+
+  for pkg in ${(k)sources}; do
+    echo ""; warn_echo "🔍 正在处理：$pkg（来源：${sources[$pkg]}）"
+    output=$("${flutter_cmd[@]}" pub outdated "$pkg" --json 2>/dev/null)
+    current=$(echo "$output" | grep -oE '"current":"[^"]+"' | cut -d'"' -f4)
+    latest=$(echo "$output" | grep -oE '"latest":"[^"]+"' | cut -d'"' -f4)
+
+    [[ -z "$current" || -z "$latest" ]] && error_echo "❌ 无法获取版本信息" && continue
+    [[ "$current" == "$latest" ]] && success_echo "✔ $pkg 已是最新版 $current" && continue
+
+    echo "📌 当前版本：$current"
+    echo "🆕 最新版本：$latest"
+
+    if [[ "${sources[$pkg]}" != "transitive" ]]; then
+      read "?🚀 升级 $pkg 到 ^$latest？（y 升级）" confirm
+      if [[ "$confirm" == "y" ]]; then
+        matched_line=$(grep -E "^\s*$pkg:" pubspec.yaml)
+        if [[ "$matched_line" =~ (git:|path:|sdk:) ]]; then
+          warn_echo "⚠️ $pkg 为 git/path/sdk 类型依赖，跳过"
         else
-          yellow "⏭️ 无法替换该行格式，跳过"
+          new_line=$(echo "$matched_line" | sed -E "s/(\s*$pkg:\s*)\^?[0-9]+\.[0-9]+\.[0-9]+/\1^$latest/")
+          if [[ "$matched_line" != "$new_line" ]]; then
+            sed -i '' "s|$matched_line|$new_line|" pubspec.yaml
+            success_echo "✔ $pkg 已更新为：$new_line"
+          else
+            warn_echo "⏭️ 无法替换该行，格式异常"
+          fi
         fi
+      else
+        warn_echo "⏭️ 跳过 $pkg"
       fi
     else
-      yellow "⏭️ 跳过 $pkg"
+      info_echo "📦 $pkg 是间接依赖，无法直接升级"
     fi
+  done
+}
+
+# ✅ 自述信息
+print_intro() {
+  success_echo "📦 Flutter 项目依赖升级助手（支持 FVM + fzf）"
+  echo "===================================================================="
+  note_echo "➤ 自动检测 Flutter 项目目录（含 pubspec.yaml + lib/）"
+  note_echo "➤ 自动安装或升级 fzf"
+  note_echo "➤ 支持全清空缓存 or 逐个依赖升级"
+  echo "===================================================================="
+  echo ""
+}
+
+# ✅ flutter pub get 提示执行
+maybe_run_pub_get() {
+  echo ""
+  read "?📦 是否执行 flutter pub get？（回车执行）" input
+  if [[ -z "$input" ]]; then
+    "${flutter_cmd[@]}" pub get
+    success_echo "✔ 依赖拉取完成"
   else
-    yellow "📦 $pkg 是间接依赖，无法直接升级"
+    warn_echo "⏭️ 已跳过 flutter pub get，请手动执行"
   fi
-done
+}
 
-# ========== flutter pub get ==========
-echo ""
-read "?📦 是否执行 flutter pub get？（回车 = 执行，任意输入跳过）" get_choice
-if [[ -z "$get_choice" ]]; then
-  fvm flutter pub get
-  green "✅ 依赖安装完成"
-else
-  yellow "⏭️ 未执行 flutter pub get，请手动执行"
-fi
+# ✅ 主函数入口
+main() {
+  print_intro                               # ✅ 自述信息
+  init_project_dir                          # ✅ 自动识别 Flutter 项目根目录
+  detect_flutter_command                    # ✅ 判断是否使用 FVM，设置 flutter_cmd
+  install_homebrew                          # ✅ 自动安装或更新 Homebrew
+  ensure_fzf_installed                      # ✅ 安装或升级 fzf
+  select_upgrade_strategy                   # ✅ fzf 选择升级策略（全清空 or 逐个升级）
+  upgrade_dependencies_interactive          # ✅ 如果逐个升级则进行每个依赖的交互处理
+  maybe_run_pub_get                         # ✅ 提示执行 flutter pub get
 
-# ========== 重新验证状态 ==========
-echo ""
-yellow "🔁 正在重新检查依赖状态..."
-echo "===================================================================="
-fvm flutter pub outdated
-echo "===================================================================="
-green "🎉 脚本执行完毕！"
+  echo ""
+  warn_echo "🔁 最终依赖状态如下："
+  "${flutter_cmd[@]}" pub outdated          # ✅ 展示最终状态
+  success_echo "🎉 脚本执行完毕"
+}
+
+main "$@"

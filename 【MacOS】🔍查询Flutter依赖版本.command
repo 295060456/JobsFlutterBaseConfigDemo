@@ -1,59 +1,106 @@
 #!/bin/zsh
 
-#######################################################################
-# 🛠️ 脚本功能说明：
-# 1️⃣ 自动判断脚本所在目录是否为 Flutter 项目根目录（含 pubspec.lock 和 pubspec.yaml）
-# 2️⃣ 若不是，则提示用户拖入 Flutter 项目根目录路径
-# 3️⃣ 支持同时查询多个依赖包，包名以空格分隔（支持多空格）
-# 4️⃣ 自动读取 pubspec.lock 获取实际依赖版本号
-# 5️⃣ 用户直接按回车则退出
-# 6️⃣ 若全部依赖未找到则要求重新输入
-# 7️⃣ 查询成功后延迟 2 秒并强制关闭当前终端窗口（不影响其他终端）
-#######################################################################
+# ✅ 日志与输出函数
+SCRIPT_BASENAME=$(basename "$0" | sed 's/\.[^.]*$//')   # 当前脚本名（去掉扩展名）
+LOG_FILE="/tmp/${SCRIPT_BASENAME}.log"                  # 设置对应的日志文件路径
 
-# 清屏
-clear
+log()            { echo -e "$1" | tee -a "$LOG_FILE"; }
+color_echo()     { log "\033[1;32m$1\033[0m"; }         # ✅ 正常绿色输出
+info_echo()      { log "\033[1;34mℹ $1\033[0m"; }       # ℹ 信息
+success_echo()   { log "\033[1;32m✔ $1\033[0m"; }       # ✔ 成功
+warn_echo()      { log "\033[1;33m⚠ $1\033[0m"; }       # ⚠ 警告
+warm_echo()      { log "\033[1;33m$1\033[0m"; }         # 🟡 温馨提示（无图标）
+note_echo()      { log "\033[1;35m➤ $1\033[0m"; }       # ➤ 说明
+error_echo()     { log "\033[1;31m✖ $1\033[0m"; }       # ✖ 错误
+err_echo()       { log "\033[1;31m$1\033[0m"; }         # 🔴 错误纯文本
+debug_echo()     { log "\033[1;35m🐞 $1\033[0m"; }      # 🐞 调试
+highlight_echo() { log "\033[1;36m🔹 $1\033[0m"; }      # 🔹 高亮
+gray_echo()      { log "\033[0;90m$1\033[0m"; }         # ⚫ 次要信息
+bold_echo()      { log "\033[1m$1\033[0m"; }            # 📝 加粗
+underline_echo() { log "\033[4m$1\033[0m"; }            # 🔗 下划线
 
-echo "📦 当前脚本用于查询 Flutter 项目中某个或多个依赖包的实际使用版本（来源：pubspec.lock）"
-echo "📌 输入方式：支持多个依赖包名，用空格分隔。例如：camera dio firebase_core"
-echo ""
+# ✅ 自述信息
+print_intro() {
+    clear
+    highlight_echo "📦 本脚本用于查询 Flutter 项目依赖的实际版本（来源：pubspec.lock）"
+    info_echo "1️⃣ 自动识别当前目录是否为 Flutter 项目"
+    info_echo "2️⃣ 如果不是，则提示拖入项目路径"
+    info_echo "3️⃣ 支持一次输入多个依赖名（用空格分隔）"
+    info_echo "4️⃣ 查询结果自动格式化显示"
+    info_echo "5️⃣ 查询成功后延迟 2 秒关闭终端窗口"
+    echo ""
+}
 
-# 获取脚本目录
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# ✅ 项目路径获取
+detect_flutter_project_dir() {
+    local dir="$(cd "$(dirname "$0")" && pwd)"
+    if [[ -f "$dir/pubspec.lock" && -f "$dir/pubspec.yaml" ]]; then
+        flutter_project_dir="$dir"
+        success_echo "✅ 已自动识别 Flutter 项目目录：$flutter_project_dir"
+    else
+        warn_echo "⚠️ 未检测到 Flutter 项目，请拖入包含 pubspec.lock 的项目目录："
+        read -r user_input
+        user_input="${user_input//\"/}"
 
-# 判断是否为 Flutter 项目目录
-if [[ -f "$SCRIPT_DIR/pubspec.lock" && -f "$SCRIPT_DIR/pubspec.yaml" ]]; then
-  PROJECT_DIR="$SCRIPT_DIR"
-  echo "✅ 已自动识别 Flutter 项目目录：$PROJECT_DIR"
-else
-  echo "⚠️ 未检测到 Flutter 项目，请将包含 pubspec.lock 的 Flutter 项目目录拖入终端后回车："
-  read -r user_input
-  user_input=${user_input//\"/}
+        if [[ ! -d "$user_input" ]]; then
+            error_echo "❌ 无效路径：$user_input"
+            exit 1
+        fi
 
-  if [[ ! -d "$user_input" ]]; then
-    echo "❌ 错误：路径无效"
-    exit 1
-  fi
+        if [[ ! -f "$user_input/pubspec.lock" || ! -f "$user_input/pubspec.yaml" ]]; then
+            error_echo "❌ 非有效 Flutter 项目根目录（缺 pubspec.lock 或 pubspec.yaml）"
+            exit 1
+        fi
 
-  if [[ ! -f "$user_input/pubspec.lock" || ! -f "$user_input/pubspec.yaml" ]]; then
-    echo "❌ 错误：该目录不是有效的 Flutter 项目根目录（缺少 pubspec.lock 或 pubspec.yaml）"
-    exit 1
-  fi
+        flutter_project_dir="$user_input"
+        success_echo "✅ 项目路径已识别：$flutter_project_dir"
+    fi
 
-  PROJECT_DIR="$user_input"
-fi
+    cd "$flutter_project_dir" || exit 1
+    gray_echo "📂 当前目录：$flutter_project_dir"
+}
 
-cd "$PROJECT_DIR" || exit 1
-echo "📂 项目目录切换为：$PROJECT_DIR"
-echo ""
+# ✅ 查询依赖版本
+query_dependencies_loop() {
+  while true; do
+    echo ""
+    read "?📦 请输入依赖包名（多个空格分隔，直接回车退出）： " package_line
+    [[ -z "$package_line" ]] && close_terminal
 
-# 主循环
-while true; do
-  read "?📦 请输入要查询的依赖包名（多个包用空格分隔，直接回车退出）： " package_line
+    local package_list=(${(z)package_line})
+    local all_not_found=true
 
-  # 用户直接按回车，退出
-  if [[ -z "$package_line" ]]; then
-    echo "👋 已退出"
+    echo ""
+    highlight_echo "🔍 查询结果："
+    echo "──────────────────────────────────────────────"
+
+    for pkg in $package_list; do
+        version=$(awk "/$pkg:/{found=1} found && /version: /{print \$2; exit}" pubspec.lock)
+        if [[ -n "$version" ]]; then
+            printf "\033[1;32m✔ %-25s 版本：%s\033[0m\n" "$pkg" "$version" | tee -a "$LOG_FILE"
+            all_not_found=false
+        else
+            printf "\033[1;31m✖ %-25s 未找到或未集成\033[0m\n" "$pkg" | tee -a "$LOG_FILE"
+        fi
+    done
+
+    echo "──────────────────────────────────────────────"
+
+    if [[ "$all_not_found" == true ]]; then
+        echo ""
+        warn_echo "⚠️ 没有任何有效依赖，请重新输入（或直接回车退出）"
+        continue
+    fi
+
+    success_echo "✅ 查询完成，窗口将自动关闭..."
+    sleep 2
+    close_terminal
+  done
+}
+
+# ✅ 关闭终端窗口
+close_terminal() {
+    info_echo "👋 退出脚本"
     sleep 1
     osascript <<EOF
 tell application "Terminal"
@@ -61,40 +108,13 @@ tell application "Terminal"
 end tell
 EOF
     exit 0
-  fi
+}
 
-  package_list=(${(z)package_line}) # 转换为空格分隔的数组
+# ✅ 主函数入口
+main() {
+    print_intro                         # ✅ 自述信息
+    detect_flutter_project_dir          # ✅ 自动识别或用户拖入 Flutter 项目路径
+    query_dependencies_loop             # ✅ 开始依赖查询循环
+}
 
-  echo ""
-  echo "🔍 查询结果："
-  echo "──────────────────────────────────────────────"
-
-  all_not_found=true
-  for pkg in $package_list; do
-    version=$(awk "/$pkg:/{found=1} found && /version: /{print \$2; exit}" pubspec.lock)
-    if [[ -n "$version" ]]; then
-      printf "✅ %-25s 版本：%s\n" "$pkg" "$version"
-      all_not_found=false
-    else
-      printf "❌ %-25s 未找到或未集成\n" "$pkg"
-    fi
-  done
-
-  echo "──────────────────────────────────────────────"
-
-  if [[ "$all_not_found" == true ]]; then
-    echo ""
-    echo "⚠️ 没有任何有效的依赖，请重新输入（或直接回车退出）。"
-    continue
-  fi
-
-  echo ""
-  echo "✅ 查询完成，窗口将自动关闭..."
-  sleep 2
-  osascript <<EOF
-tell application "Terminal"
-  if front window exists then close front window
-end tell
-EOF
-  exit 0
-done
+main "$@"

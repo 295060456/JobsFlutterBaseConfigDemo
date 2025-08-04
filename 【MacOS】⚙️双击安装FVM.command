@@ -1,163 +1,260 @@
 #!/bin/zsh
 
-# ========== 彩色输出 ==========
-red()    { echo "\033[1;31m$1\033[0m"; }
-green()  { echo "\033[1;32m$1\033[0m"; }
-yellow() { echo "\033[1;33m$1\033[0m"; }
-
-# ========== 更详细的头部介绍 ==========
-echo ""
-green "🛠️ 欢迎使用 Flutter 项目一键初始化脚本（支持 FVM）"
-green "====================================================================="
-green "📦 功能概述："
-green "   ➤ 本脚本适用于 Flutter 项目，支持使用 FVM 管理多个 SDK 版本"
-green "   ➤ 自动检测当前目录是否为 Flutter 项目（必须包含 pubspec.yaml + lib/）"
-green "   ➤ 自动检测并安装依赖工具（brew / jq / fzf / dart / fvm）"
-green "   ➤ 自动从 Google 获取可用 Flutter 稳定版本，并可视化选择"
-green "   ➤ 同步写入新版 .fvmrc（JSON 格式）与旧版 .fvm/fvm_config.json"
-green "   ➤ 自动执行 fvm install/use，绑定并切换所选 Flutter 版本"
-green "   ➤ 支持可选命令：flutter clean / pub get / doctor / analyze"
-green "   ➤ 检查 .packages、.flutter-plugins、.metadata 等 Flutter 状态文件"
-green "   ➤ 显示 SDK 安装路径 ~/.fvm/versions/<version>"
-green ""
-green "📁 注意事项："
-green "   当前脚本目录将被视为 Flutter 项目根目录"
-green "   若当前路径不符合条件，将提示你手动拖入 Flutter 项目"
-green "====================================================================="
-echo ""
-
-# ========== 检查 Flutter 项目路径 ==========
-is_flutter_project() {
-  [[ -f "$1/pubspec.yaml" && -d "$1/lib" ]]
-}
-
-SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
-cd "$SCRIPT_DIR"
-
-if ! is_flutter_project "$SCRIPT_DIR"; then
-  red "❌ 当前路径不是 Flutter 项目"
-  while true; do
-    echo ""
-    echo "📁 请拖入一个 Flutter 项目文件夹，然后按回车："
-    read "FLUTTER_DIR?路径："
-    FLUTTER_DIR=${FLUTTER_DIR//\\//}
-    FLUTTER_DIR=${FLUTTER_DIR//\"/}
-    FLUTTER_DIR=$(eval "echo $FLUTTER_DIR")
-
-    if is_flutter_project "$FLUTTER_DIR"; then
-      cd "$FLUTTER_DIR"
-      SCRIPT_DIR="$FLUTTER_DIR"
-      green "✅ 成功进入 Flutter 项目：$SCRIPT_DIR"
-      break
-    else
-      red "⚠️  无效路径，请确保包含 pubspec.yaml 和 lib/"
-    fi
-  done
-fi
-
-read "?⏳ 按【回车】继续，或 Ctrl+C 退出..."
-
-# ========== 工具检测 ==========
-check_install_tool() {
-  local tool=$1
-  if ! command -v "$tool" &>/dev/null; then
-    yellow "🔧 正在安装 $tool ..."
-    brew install "$tool"
-  else
-    green "✅ 已安装：$tool"
-  fi
-}
-
-for t in brew jq fzf dart; do
-  check_install_tool "$t"
-done
-
-# ========== 安装/升级 FVM ==========
 export PATH="$HOME/.pub-cache/bin:$PATH"
-dart pub global activate fvm
 
-# ========== 读取已有版本 ==========
-CONFIGURED_VERSION=""
-if [[ -f .fvmrc ]]; then
-  CONFIGURED_VERSION=$(jq -r '.flutterSdkVersion // empty' .fvmrc 2>/dev/null)
-elif [[ -f .fvm/fvm_config.json ]]; then
-  CONFIGURED_VERSION=$(jq -r '.flutterSdkVersion // empty' .fvm/fvm_config.json)
-fi
+# ✅ 全局变量定义
+typeset -g SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"  # 当前脚本路径
+typeset -g CURRENT_VERSION=""       # 当前 .fvmrc 配置版本
+typeset -g VERSIONS=""              # Flutter 可用稳定版本列表
+typeset -g SELECTED_VERSION=""      # 用户选择的 Flutter 版本
 
-if [[ "$CONFIGURED_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-  green "📄 当前配置版本：$CONFIGURED_VERSION"
-else
-  CONFIGURED_VERSION=""
-fi
+# ✅ 彩色输出函数封装
+SCRIPT_BASENAME=$(basename "$0" | sed 's/\.[^.]*$//')   # 当前脚本名（去掉扩展名）
+LOG_FILE="/tmp/${SCRIPT_BASENAME}.log"                  # 设置对应的日志文件路径
 
-# ========== 获取 Flutter 稳定版本 ==========
-VERSIONS=$(curl -s https://storage.googleapis.com/flutter_infra_release/releases/releases_macos.json |
-  jq -r '.releases[] | select(.channel=="stable") | .version' |
-  sort -V | uniq | tac)
+log()            { echo -e "$1" | tee -a "$LOG_FILE"; }
+color_echo()     { log "\033[1;32m$1\033[0m"; }        # ✅ 正常绿色输出
+info_echo()      { log "\033[1;34mℹ $1\033[0m"; }      # ℹ 信息
+success_echo()   { log "\033[1;32m✔ $1\033[0m"; }      # ✔ 成功
+warn_echo()      { log "\033[1;33m⚠ $1\033[0m"; }      # ⚠ 警告
+warm_echo()      { log "\033[1;33m$1\033[0m"; }        # 🟡 温馨提示（无图标）
+note_echo()      { log "\033[1;35m➤ $1\033[0m"; }      # ➤ 说明
+error_echo()     { log "\033[1;31m✖ $1\033[0m"; }      # ✖ 错误
+err_echo()       { log "\033[1;31m$1\033[0m"; }        # 🔴 错误纯文本
+debug_echo()     { log "\033[1;35m🐞 $1\033[0m"; }     # 🐞 调试
+highlight_echo() { log "\033[1;36m🔹 $1\033[0m"; }     # 🔹 高亮
+gray_echo()      { log "\033[0;90m$1\033[0m"; }        # ⚫ 次要信息
+bold_echo()      { log "\033[1m$1\033[0m"; }           # 📝 加粗
+underline_echo() { log "\033[4m$1\033[0m"; }           # 🔗 下划线
 
-if [[ -z "$VERSIONS" ]]; then
-  red "❌ 无法获取 Flutter 稳定版本列表，请检查网络"
-  exit 1
-fi
+# ✅ 单行 shellenv 写入函数
+inject_shellenv_block() {
+    local id="$1"           # 参数1：环境变量块 ID，如 "homebrew_env"
+    local shellenv="$2"     # 参数2：实际要写入的 shellenv 内容，如 'eval "$(/opt/homebrew/bin/brew shellenv)"'
+    local header="# >>> ${id} 环境变量 >>>"  # 自动生成注释头
 
-# ========== 使用 fzf 选择版本 ==========
-if [[ -n "$CONFIGURED_VERSION" ]]; then
+    # 参数校验
+    if [[ -z "$id" || -z "$shellenv" ]]; then
+    error_echo "❌ 缺少参数：inject_shellenv_block <id> <shellenv>"
+    return 1
+    fi
+
+    # 若用户未选择该 ID，则跳过写入
+    if [[ ! " ${selected_envs[*]} " =~ " $id " ]]; then
+    warn_echo "⏭️ 用户未选择写入环境：$id，跳过"
+    return 0
+    fi
+
+    # 避免重复写入
+    if grep -Fq "$header" "$PROFILE_FILE"; then
+      info_echo "📌 已存在 header：$header"
+    elif grep -Fq "$shellenv" "$PROFILE_FILE"; then
+      info_echo "📌 已存在 shellenv：$shellenv"
+    else
+      echo "" >> "$PROFILE_FILE"
+      echo "$header" >> "$PROFILE_FILE"
+      echo "$shellenv" >> "$PROFILE_FILE"
+      success_echo "✅ 已写入：$header"
+    fi
+
+    # 当前 shell 生效
+    eval "$shellenv"
+    success_echo "🟢 shellenv 已在当前终端生效"
+}
+
+# ✅ 自述信息
+print_description() {
   echo ""
-  green "📄 当前配置版本：$CONFIGURED_VERSION"
-  echo "⬇️ 请选择要使用的 Flutter 版本（当前版本已标记 ✅，回车保持当前）"
-  CHOICES=$(echo "$VERSIONS" | awk -v current="$CONFIGURED_VERSION" '{ if ($0 == current) print "✅ " $0; else print $0 }')
-else
-  echo ""
-  echo "⬇️ 可用 Flutter 稳定版本如下（回车默认选择最新）"
-  CHOICES="$VERSIONS"
-fi
+  bold_echo "🛠 Flutter SDK 安装助手（支持官方 / brew / fvm）"
+  gray_echo "------------------------------------------------------"
+  note_echo "1️⃣ 安装或升级 Homebrew / fzf"
+  note_echo "2️⃣ 提供三种 Flutter 安装方式（fzf选择）"
+  note_echo "3️⃣ 自动写入环境变量到 ~/.bash_profile"
+  gray_echo "------------------------------------------------------"
+}
 
-RAW_SELECTED_LINE=$(echo "$CHOICES" | \
-  fzf --prompt="🎯 选择要使用的 Flutter 版本：" \
-      --height=50% \
-      --border \
-      --ansi)
-
-SELECTED_VERSION=$(echo "$RAW_SELECTED_LINE" | sed 's/^✅ //' | grep -Eo '^[0-9]+\.[0-9]+\.[0-9]+$')
-
-if [[ -z "$SELECTED_VERSION" ]]; then
-  if [[ -n "$CONFIGURED_VERSION" ]]; then
-    SELECTED_VERSION="$CONFIGURED_VERSION"
-    yellow "📎 保持使用当前版本：$SELECTED_VERSION"
-  else
-    SELECTED_VERSION=$(echo "$VERSIONS" | head -n1)
-    yellow "📎 默认使用最新版本：$SELECTED_VERSION"
+# ✅ 项目路径检测
+check_flutter_project_path() {
+  cd "$SCRIPT_DIR"
+  if [[ ! -f "pubspec.yaml" || ! -d "lib" ]]; then
+    error_echo "❌ 当前路径不是 Flutter 项目（缺 pubspec.yaml 或 lib/）"
+    exit 1
   fi
-fi
+  success_echo "📂 当前目录符合 Flutter 项目规范"
+}
 
-# ========== 写入配置文件 ==========
-echo "{\"flutterSdkVersion\": \"$SELECTED_VERSION\"}" > .fvmrc
-green "✅ 写入 .fvmrc（JSON 格式，兼容 fvm 3.2.x）：$SELECTED_VERSION"
+# ✅ 判断芯片架构（ARM64 / x86_64）
+get_cpu_arch() {
+  [[ $(uname -m) == "arm64" ]] && echo "arm64" || echo "x86_64"
+}
 
-mkdir -p .fvm
-echo "{\"flutterSdkVersion\": \"$SELECTED_VERSION\"}" > .fvm/fvm_config.json
-yellow "☑️ 同步写入 .fvm/fvm_config.json（辅助兼容）"
+# ✅ 自检安装 Homebrew（芯片架构兼容、含环境注入）
+install_homebrew() {
+  local arch="$(get_cpu_arch)"                    # 获取当前架构（arm64 或 x86_64）
+  local shell_path="${SHELL##*/}"                # 获取当前 shell 名称（如 zsh、bash）
+  local profile_file=""
+  local brew_bin=""
+  local shellenv_cmd=""
 
-# ========== 安装并切换版本 ==========
-fvm install "$SELECTED_VERSION"
-fvm use "$SELECTED_VERSION"
+  if ! command -v brew &>/dev/null; then
+    warn_echo "🧩 未检测到 Homebrew，正在安装中...（架构：$arch）"
 
-# ========== flutter 命令别名 ==========
-if ! grep -q 'flutter()' ~/.zshrc; then
-  echo '' >> ~/.zshrc
-  echo 'flutter() { fvm flutter "$@"; }' >> ~/.zshrc
-  green "✅ flutter 命令别名已写入 ~/.zshrc"
-fi
+    if [[ "$arch" == "arm64" ]]; then
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
+        error_echo "❌ Homebrew 安装失败（arm64）"
+        exit 1
+      }
+      brew_bin="/opt/homebrew/bin/brew"
+    else
+      arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
+        error_echo "❌ Homebrew 安装失败（x86_64）"
+        exit 1
+      }
+      brew_bin="/usr/local/bin/brew"
+    fi
 
-# ========== 状态文件检查 ==========
-[[ -f .packages ]] && green "📁 已检测到 .packages 文件" || yellow "⚠️ 未检测到 .packages 文件"
-[[ -f .flutter-plugins ]] && green "📁 已检测到 .flutter-plugins 文件" || yellow "⚠️ 未检测到 .flutter-plugins 文件"
-[[ -f .metadata ]] && green "📁 已检测到 .metadata 文件" || yellow "⚠️ 未检测到 .metadata 文件"
-[[ -d .dart_tool ]] && green "📁 已检测到 .dart_tool 目录" || yellow "⚠️ 未检测到 .dart_tool 目录"
+    success_echo "✅ Homebrew 安装成功"
 
-# ========== 检查重复依赖函数 ==========
+    # ==== 注入 shellenv 到对应配置文件（自动生效） ====
+    shellenv_cmd="eval \"\$(${brew_bin} shellenv)\""
+
+    case "$shell_path" in
+      zsh)   profile_file="$HOME/.zprofile" ;;
+      bash)  profile_file="$HOME/.bash_profile" ;;
+      *)     profile_file="$HOME/.profile" ;;
+    esac
+
+    inject_shellenv_block "$profile_file" "$shellenv_cmd"
+
+  else
+    info_echo "🔄 Homebrew 已安装，正在更新..."
+    brew update && brew upgrade && brew cleanup && brew doctor && brew -v
+    success_echo "✅ Homebrew 已更新"
+  fi
+}
+
+# ✅  自检安装 Homebrew.jq
+install_jq() {
+  if ! command -v jq &>/dev/null; then
+    note_echo "📦 未检测到 jq，正在通过 Homebrew 安装..."
+    brew install jq || { error_echo "❌ jq 安装失败"; exit 1; }
+    success_echo "✅ jq 安装成功"
+  else
+    info_echo "🔄 jq 已安装，升级中..."
+    brew upgrade jq
+    success_echo "✅ jq 已是最新版"
+  fi
+}
+
+# ✅ 自检安装 Homebrew.dart
+install_dart() {
+  if ! command -v dart &>/dev/null; then
+    note_echo "📦 未检测到 dart，正在通过 Homebrew 安装..."
+    brew tap dart-lang/dart
+    brew install dart || { error_echo "❌ dart 安装失败"; exit 1; }
+    success_echo "✅ dart 安装成功"
+  else
+    info_echo "🔄 dart 已安装，升级中..."
+    brew upgrade dart
+    success_echo "✅ dart 已是最新版"
+  fi
+}
+
+# ✅ 自检安装 Homebrew.fvm
+install_fvm() {
+  if ! command -v fvm &>/dev/null; then
+    note_echo "📦 未检测到 fvm，正在通过 dart pub global 安装..."
+    dart pub global activate fvm || { error_echo "❌ fvm 安装失败"; exit 1; }
+    success_echo "✅ fvm 安装成功"
+  else
+    info_echo "🔄 fvm 已安装，正在升级..."
+    dart pub global activate fvm
+    success_echo "✅ fvm 已是最新版"
+  fi
+
+  # ✅ 自动注入 ~/.pub-cache/bin 到 PATH（用统一结构封装）
+  inject_shellenv_block "fvm_env" 'export PATH="$HOME/.pub-cache/bin:$PATH"'
+}
+
+# ✅ 获取当前版本配置
+get_current_configured_version() {
+  if [[ -f .fvmrc ]]; then
+    jq -r '.flutterSdkVersion // empty' .fvmrc 2>/dev/null
+  elif [[ -f .fvm/fvm_config.json ]]; then
+    jq -r '.flutterSdkVersion // empty' .fvm/fvm_config.json 2>/dev/null
+  fi
+}
+
+# ✅ 获取 Flutter 稳定版本列表
+fetch_stable_versions() {
+  curl -s https://storage.googleapis.com/flutter_infra_release/releases/releases_macos.json |
+    jq -r '.releases[] | select(.channel=="stable") | .version' |
+    sort -V | uniq | tac
+}
+
+# ✅ 选择 Flutter 版本（fzf）
+select_flutter_version() {
+  local current="$1"
+  local versions="$2"
+
+  local choices=""
+  if [[ -n "$current" ]]; then
+    choices=$(echo "$versions" | awk -v current="$current" '{ if ($0 == current) print "✅ " $0; else print $0 }')
+  else
+    choices="$versions"
+  fi
+
+  local raw=$(echo "$choices" | fzf --prompt="🎯 选择 Flutter 版本：" --height=50% --border --ansi)
+  echo "$raw" | sed 's/^✅ //' | grep -Eo '^[0-9]+\.[0-9]+\.[0-9]+$'
+}
+
+# ✅ 准备版本信息（设置全局变量）
+prepare_flutter_versions() {
+  CURRENT_VERSION=$(get_current_configured_version)
+  VERSIONS=$(fetch_stable_versions)
+  [[ -z "$VERSIONS" ]] && error_echo "❌ 无法获取 Flutter 版本列表" && exit 1
+  SELECTED_VERSION=$(select_flutter_version "$CURRENT_VERSION" "$VERSIONS")
+  [[ -z "$SELECTED_VERSION" ]] && SELECTED_VERSION=$(echo "$VERSIONS" | head -n1)
+}
+
+# ✅ 写入 FVM 配置文件
+write_fvm_config() {
+  local version="$1"
+  echo "{\"flutterSdkVersion\": \"$version\"}" > .fvmrc
+  success_echo "✔ 写入 .fvmrc：$version"
+
+  mkdir -p .fvm
+  echo "{\"flutterSdkVersion\": \"$version\"}" > .fvm/fvm_config.json
+  note_echo "➤ 写入 .fvm/fvm_config.json"
+}
+
+# ✅ 安装并切换 Flutter 版本
+install_flutter_version() {
+  local version="$1"
+  fvm install "$version"
+  fvm use "$version"
+}
+
+# ✅ 写 flutter 别名函数
+write_flutter_alias() {
+  if ! grep -q 'flutter()' ~/.zshrc; then
+    echo '' >> ~/.zshrc
+    echo 'flutter() { fvm flutter "$@"; }' >> ~/.zshrc
+    success_echo "✔ 写入 flutter 函数别名 ~/.zshrc"
+  fi
+}
+
+# ✅ 检查项目状态文件
+check_flutter_state_files() {
+  [[ -f .packages ]] && note_echo "📦 检测到 .packages" || warn_echo "⚠️ 缺 .packages"
+  [[ -f .flutter-plugins ]] && note_echo "📦 检测到 .flutter-plugins" || warn_echo "⚠️ 缺 .flutter-plugins"
+  [[ -f .metadata ]] && note_echo "📦 检测到 .metadata" || warn_echo "⚠️ 缺 .metadata"
+  [[ -d .dart_tool ]] && note_echo "📁 检测到 .dart_tool" || warn_echo "⚠️ 缺 .dart_tool"
+}
+
+# ✅ 检查重复依赖
 check_duplicate_dependencies() {
-  local dep_list=$(awk '
+  local list=$(awk '
     $1=="dependencies:" {mode="dep"; next}
     $1=="dev_dependencies:" {mode="dev"; next}
     /^[a-zA-Z0-9_]+:/ {
@@ -171,59 +268,63 @@ check_duplicate_dependencies() {
     }
   ' pubspec.yaml)
 
-  if [[ -n "$dep_list" ]]; then
-    red "⚠️ 检测到重复依赖（同时出现在 dependencies 与 dev_dependencies）："
-    for pkg in $dep_list; do
-      red "   - $pkg"
+  if [[ -n "$list" ]]; then
+    error_echo "⚠️ 同时出现在 dependencies 与 dev_dependencies："
+    for pkg in $list; do
+      err_echo "  - $pkg"
     done
   fi
 }
-check_duplicate_dependencies
 
-# ========== 用户交互：可选命令 ==========
+# ✅ 可选命令交互执行
 ask_feature_toggle() {
-  local prompt="$1"
   echo ""
-  echo "👉 $prompt"
-  echo "【按回车跳过，输入 y 后回车以启用】"
+  note_echo "👉 $1"
+  gray_echo "【回车跳过，y 回车启用】"
   read "input?➤ "
-  if [[ "$input" == "y" || "$input" == "Y" ]]; then
-    echo "✅ 已启用：$prompt"
-    return 0
-  else
-    echo "⏩ 已跳过：$prompt"
-    return 1
-  fi
+  [[ "$input" == "y" || "$input" == "Y" ]]
 }
 
-if ask_feature_toggle "是否执行 flutter clean？"; then
-  fvm flutter clean
-fi
+run_optional_commands() {
+  ask_feature_toggle "是否执行 flutter clean？" && fvm flutter clean
+  ask_feature_toggle "是否执行 flutter pub get？" && fvm flutter pub get
+  ask_feature_toggle "是否执行 flutter doctor？" && fvm flutter doctor
+  ask_feature_toggle "是否执行 flutter analyze？" && fvm flutter analyze
+}
 
-if ask_feature_toggle "是否执行 flutter pub get？"; then
-  fvm flutter pub get
-fi
+# ✅ 最终信息展示
+show_final_summary() {
+  local version="$1"
+  local sdk_path="$HOME/.fvm/versions/$version"
 
-if ask_feature_toggle "是否执行 flutter doctor？"; then
-  fvm flutter doctor
-fi
+  echo ""
+  highlight_echo "🎉 Flutter 环境配置完成"
+  gray_echo "------------------------------------------"
+  info_echo "Flutter 版本：$version"
+  info_echo "FVM 路径：$(which fvm)"
+  info_echo "项目路径：$SCRIPT_DIR"
+  info_echo "SDK 路径：$sdk_path"
+  gray_echo "------------------------------------------"
+}
 
-if ask_feature_toggle "是否执行 flutter analyze？"; then
-  fvm flutter analyze
-fi
+# ✅ 主执行入口
+main() {
+    clear
+    print_description                           # 🖨 自述信息
+    check_flutter_project_path "$SCRIPT_DIR"    # 📁 检查项目路径
+    install_dependencies                        # 🔧 安装必要工具
+    install_homebrew                            # 🔧 安装必要工具 Homebrew
+    install_jq                                  # 🔧 安装必要工具 Homebrew.jq
+    install_dart                                # 🔧 安装必要工具 Homebrew.dart
+    install_fvm                                 # 🔧 安装必要工具 Homebrew.fvm
+    prepare_flutter_versions                    # 🎯 获取和选择 Flutter 版本
+    write_fvm_config "$SELECTED_VERSION"        # 📝 写入版本配置
+    install_flutter_version "$SELECTED_VERSION" # ⬇️ 安装并切换版本
+    write_flutter_alias                         # 🔁 写 flutter 别名
+    check_flutter_state_files                   # 📄 检查状态文件
+    check_duplicate_dependencies                # 🔍 检查重复依赖
+    run_optional_commands                       # 🔘 执行额外命令
+    show_final_summary "$SELECTED_VERSION"      # ✅ 展示总结信息
+}
 
-# ========== 输出版本信息 ==========
-echo ""
-FLUTTER_VERSION=$(fvm flutter --version 2>/dev/null)
-if [[ -n "$FLUTTER_VERSION" ]]; then
-  FLUTTER_SDK_PATH="$HOME/.fvm/versions/$SELECTED_VERSION"
-  red "=============================================="
-  red "🎉 当前 Flutter 版本：$(echo "$FLUTTER_VERSION" | head -n1)"
-  red "🎯 Dart 版本：$(echo "$FLUTTER_VERSION" | grep 'Dart')"
-  red "📦 FVM 路径：$(which fvm)"
-  red "📁 项目路径：$SCRIPT_DIR"
-  red "📂 SDK 安装目录：$FLUTTER_SDK_PATH"
-  red "=============================================="
-else
-  red "❌ 获取 Flutter 版本失败，请检查 FVM 是否正常"
-fi
+main "$@"

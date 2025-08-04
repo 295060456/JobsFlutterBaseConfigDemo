@@ -800,6 +800,7 @@ class SpUtil {
 
   ```dart
   /// 异步等待用户返回结果
+  /// Dart 中所有未初始化的对象变量（包括 bool）在类中默认值是 null，因为 Dart 是一个 空安全（null safety）语言。
   bool? confirmed = await showDialog<bool>(
     context: context,
     builder: (context) {
@@ -957,6 +958,23 @@ String getNowTime() {
   String amPm = amPmFormatter.format(time);
   return '$formattedDate ${amPm == 'AM' ? 'AM' : 'PM'}';
 }
+```
+
+```dart
+// 当前时间
+DateTime now = DateTime.now();
+// 指定时间
+DateTime specific = DateTime(2024, 7, 31, 14, 30); // 2024年7月31日 14:30
+// 从字符串解析（注意格式）
+DateTime parsed = DateTime.parse("2024-07-31 14:30:00");
+
+print(now.year);       // 年
+print(now.month);      // 月
+print(now.day);        // 日
+print(now.hour);       // 时
+print(now.minute);     // 分
+print(now.second);     // 秒
+print(now.weekday);    // 星期几（1=星期一，7=星期日）
 ```
 
 * 📆 日期格式符
@@ -1717,9 +1735,9 @@ abstract class RouteAwareState<T extends RouteAwareStatefulPage>
 
 #### 15.3、📐 键盘遮挡通用处理方案  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-🌹类似于iOS里面的[**IQKeyboardManager**](https://github.com/hackiftekhar/IQKeyboardManager)，👉 **监听键盘的高度变化，动态将视图往上推这么多距离，避免输入控件被遮挡。**
+🌹类似于**iOS**里面的[**IQKeyboardManager**](https://github.com/hackiftekhar/IQKeyboardManager)，👉 **监听键盘的高度变化，动态将视图往上推这么多距离，避免输入控件被遮挡。**
 
-> **MediaQuery**.**of(context)**.**viewInsets**.**bottom**，是 Flutter 提供的一个<u> **动态值**</u>，表示：当前屏幕底部被“系统遮挡”的高度
+> **MediaQuery**.**of(context)**.**viewInsets**.**bottom**，是 [**Flutter**](https://flutter.dev/) 提供的一个<u> **动态值**</u>，表示：当前屏幕底部被“系统遮挡”的高度
 >
 > | 系统遮挡 | MediaQuery.of(context).viewInsets.bottom 值 |
 > | -------- | ------------------------------------------- |
@@ -2104,7 +2122,7 @@ class XXX extends Object{}
     );
   }
   ```
-  > ❌ **`SliverGrid` 不能单独作为 Widget 返回**，因为它不是继承自 `Widget`，而是继承自 **`SliverMultiBoxAdaptorWidget`**，只能被放在 `CustomScrollView.slivers` 中使用。
+  > ❌ **`SliverGrid` 不能单独作为 `Widget` 返回**，因为它不是继承自 `Widget`，而是继承自 **`SliverMultiBoxAdaptorWidget`**，只能被放在 `CustomScrollView.slivers` 中使用。
   
   </details>
   
@@ -2408,41 +2426,233 @@ class XXX extends Object{}
 > | 常用场景 | 占满空间、均分            | 需要灵活控制内容大小时使用     |
 > | 包装效果 | 是 `Flexible(fit: tight)` | 可自定义 `fit: tight/loose`    |
 
-* <font id=Row>`Row`</font>  <a href="#线性布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+##### 19.1.1、<font id=Row>`Row`</font>  <a href="#线性布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
 
-* <font id=Column>`Column`</font> <a href="#线性布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+##### 19.1.2、<font id=Column>`Column`</font> <a href="#线性布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
 
-* <font id=Flex>`Flex`</font> <a href="#线性布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+##### 19.1.3、<font id=Flex>`Flex`</font> <a href="#线性布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
 
-  * 只要是基于 `Flex` 的布局组件（如 `Row`、`Column`、`Flex`），**都支持 `crossAxisAlignment`**，它控制的是 **“垂直于主轴方向” 的子组件对齐方式**。
+```dart
+Flex(
+  direction: Axis.horizontal, // 或 Axis.vertical
+  mainAxisAlignment: MainAxisAlignment.center,
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Expanded(child: Text('A')),
+    Expanded(child: Text('B')),
+  ],
+)
+```
 
-    | Widget   | 主轴方向                      | 交叉轴方向（crossAxis） |
-    | -------- | ----------------------------- | ----------------------- |
-    | `Column` | 竖直（上下）                  | 水平（左右）            |
-    | `Row`    | 水平（左右）                  | 竖直（上下）            |
-    | `Flex`   | 可变（通过 `direction` 指定） | 取决于 `direction`      |
+* 可以看作是 `Row` 和 `Column` 的通用版本，需要手动指定方向。
 
-* <font id=Expanded>**`Expanded`**</font> <a href="#线性布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+* 只要是基于 `Flex` 的布局组件（如 `Row`、`Column`、`Flex`），**都支持 `crossAxisAlignment`**，它控制的是 **“垂直于主轴方向” 的子组件对齐方式**。
 
-* <font id=Flexible>`Flexible`</font> <a href="#线性布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+  | Widget   | 主轴方向                      | 交叉轴方向（crossAxis） |
+  | -------- | ----------------------------- | ----------------------- |
+  | `Column` | 竖直（上下）                  | 水平（左右）            |
+  | `Row`    | 水平（左右）                  | 竖直（上下）            |
+  | `Flex`   | 可变（通过 `direction` 指定） | 取决于 `direction`      |
 
-* <font id=Spacer>`Spacer`</font> <a href="#线性布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+##### 19.1.4、<font id=Expanded>**`Expanded`**</font> <a href="#线性布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+> 在**主轴方向**撑满父组件剩余空间
+
+```dart
+Row(
+  children: [
+    Expanded(
+      flex: 1, // 默认值是 1
+      child: Container(color: Colors.red, height: 50),
+    ),
+    Expanded(
+      flex: 2, // 占用剩余空间的 2 份
+      child: Container(color: Colors.blue, height: 50),
+    ),
+  ],
+)
+```
+
+```dart
+Row(
+  children: [
+    Container(width: 80, color: Colors.orange),
+    Expanded(
+      child: Container(color: Colors.green), // 自动填满剩余
+    ),
+  ],
+)
+```
+
+##### 19.1.5、<font id=Flexible>`Flexible`</font> <a href="#线性布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+| 特性         | Expanded                   | Flexible                       |
+| ------------ | -------------------------- | ------------------------------ |
+| 填充剩余空间 | **必须填充（强制拉伸）**   | **可选择是否填充**             |
+| `fit` 属性   | 固定为 `tight`（填满空间） | `loose`（尽量小）或 `tight`    |
+| 使用频率     | 更高                       | 多用于需要灵活缩放但不强制填满 |
+
+##### 19.1.6、<font id=Spacer>`Spacer`</font> <a href="#线性布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+> `Spacer` 用来占据 **可伸缩的空白区域**，常用于“把两个组件拉开”或“均分距离”。
+
+```dart
+Row(
+  children: [
+    Text('A'),
+    Spacer(flex: 1),      // 占1份
+    Text('B'),
+    Spacer(flex: 2),      // 占2份
+    Text('C'),
+  ],
+)
+```
 
 * <font id=SizedBox>`SizedBox`</font> <a href="#线性布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
 
+  ```dart
+  /// TODO
+  ```
+
 #### 19.2、<font id=层叠布局>🧱</font> 层叠布局（类似 iOS 的 Frame 布局 + zIndex） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-| Widget                                                       | 功能说明                              |
-| ------------------------------------------------------------ | ------------------------------------- |
-| <a href="#Stack" style="font-size:17px; color:green;"><b>`Stack`</b></a> | 层叠布局（类似 iOS 的 `UIView` 叠加） |
-| <a href="#Positioned" style="font-size:17px; color:green;"><b>`Positioned`</b></a> | Stack 子元素定位                      |
-| <a href="#Align" style="font-size:17px; color:green;"><b>`Align`</b></a> | 子组件对齐（用于 Stack、普通 Widget） |
-| <a href="#Center" style="font-size:17px; color:green;"><b>`Center`</b></a> | 子组件居中                            |
+| Widget                                                       | 功能说明                                          |
+| ------------------------------------------------------------ | ------------------------------------------------- |
+| <a href="#Stack" style="font-size:17px; color:green;"><b>`Stack`</b></a> | 层叠布局（类似 **iOS** 的 `UIView` 叠加）         |
+| <a href="#Positioned" style="font-size:17px; color:green;"><b>`Positioned`</b></a> | **`Stack`** 子元素定位                            |
+| <a href="#Align" style="font-size:17px; color:green;"><b>`Align`</b></a> | 子组件对齐（用于 **`Stack`**、普通 **`Widget`**） |
+| <a href="#Center" style="font-size:17px; color:green;"><b>`Center`</b></a> | 子组件居中                                        |
 
-* <font id=Stack>`Stack`</font> <a href="#层叠布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
-* <font id=Positioned>`Positioned`</font> <a href="#层叠布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
-* <font id=Align>`Align`</font> <a href="#层叠布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
-* <font id=Align>`Center`</font> <a href="#层叠布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+##### 19.2.1、<font id=Stack>`Stack`</font> <a href="#层叠布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+```dart
+/// 在 Flutter 中，Positioned 不能 放在 Stack 外面，必须作为 Stack 的直接子组件。这是因为 Positioned 只在 Stack 内部生效，它的布局行为依赖于父级是 Stack。
+Stack(
+  alignment: Alignment.center, // 默认 topStart
+  clipBehavior: Clip.none,     // 默认裁剪可超出边界
+  children: [
+    Container(width: 200, height: 200, color: Colors.red),
+    Positioned(
+      top: 20,
+      left: 30,
+      child: Container(width: 100, height: 100, color: Colors.green),
+    ),
+    Text('位于中间的文字'),
+  ],
+)
+```
+
+```dart
+/// 一个 橙色的正方形（200x200） 在底部；
+/// 然后在它的 左上角，再覆盖一个 蓝色半透明的正方形（100x100）；
+Stack(
+  children: [
+    Container(width: 200, height: 200, color: Colors.orange),
+    Container(width: 100, height: 100, color: Colors.blue.withOpacity(0.6)),
+  ],
+)
+```
+
+##### 19.2.2、<font id=Positioned>`Positioned`</font> <a href="#层叠布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+> 精确像素位置
+>
+> <font color=red>只能与 `Stack` 搭配，不能与其他容器搭配</font>
+
+##### 19.2.3、<font id=Align>`Align`</font> <a href="#层叠布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+> `Align` 用来在父容器中对齐子组件的位置，支持各种方向（上下左右、居中等）
+
+```dart
+/// 把按钮放在右下角
+Container(
+  width: 300,
+  height: 300,
+  color: Colors.grey,
+  child: Align(
+    alignment: Alignment.bottomRight,
+    child: ElevatedButton(onPressed: () {}, child: Text('点我')),
+  ),
+)
+```
+
+```dart
+/// 自定义位置
+/// 在 Flutter 的 Alignment(x, y) 中：（x 和 y 范围是 -1.0 ~ 1.0）
+            y = -1.0
+               ↑
+   (-1, -1)     |     (1, -1)
+      ┌─────────┬─────────┐
+      │         │         │
+      │         │         │
+x = -1│         │         │x = 1
+      │         │         │
+      │         │         │
+      └─────────┴─────────┘
+   (-1, 1)      ↓     (1, 1)
+            y = 1.0
+
+🔸Alignment(0, 0)：正中间，居中对齐
+🔸Alignment(1.0, 1.0)：右下角，最大偏移，贴到右下角
+🔸Alignment(-1.0, -1.0)：左上角，最小偏移，贴到左上角
+
+Align(
+  alignment: Alignment(0.8, -0.5), // 相对于父视图的偏移比例值（不是像素值），表示子组件相对父容器的位置：右上偏下一点
+  child: Icon(Icons.star, size: 40, color: Colors.orange),
+)
+```
+
+##### 19.2.4、<font id=Align>`Center`</font> <a href="#层叠布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+> | 参数名         | 类型      | 说明                                                         |
+> | -------------- | --------- | ------------------------------------------------------------ |
+> | `key`          | `Key?`    | 标准 [**Flutter**](https://flutter.dev/) 构造函数参数，用于标识 **`Widget`** |
+> | `child`        | `Widget?` | 要居中的子组件                                               |
+> | `widthFactor`  | `double?` | 若非 null，则 **Center** 的宽度 = `child.width * widthFactor` |
+> | `heightFactor` | `double?` | 若非 null，则 **Center** 的高度 = `child.height * heightFactor` |
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart';
+
+void main() =>
+    runApp(const JobsMaterialRunner(CenterDemo(), title: 'Center 属性演示'));
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const CenterDemo();
+  }
+}
+
+class CenterDemo extends StatelessWidget {
+  const CenterDemo({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.grey[300],
+      child: Center(
+        widthFactor: 2.0, // 宽度为 child 的 2 倍
+        heightFactor: 3.0, // 高度为 child 的 3 倍
+        child: Container(
+          color: Colors.blue,
+          width: 80,
+          height: 80,
+          child: const Center(
+            child: Text(
+              '居中',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
 
 #### 19.3、<font id=约束类布局>🧱</font> 约束类布局（最接近 [**Masonry**](https://github.com/SnapKit/Masonry) 的思想） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -2455,22 +2665,116 @@ class XXX extends Object{}
 | <a href="#AspectRatio" style="font-size:17px; color:green;"><b>`AspectRatio`</b></a> | 按宽高比自动调整尺寸     |
 | <a href="#LimitedBox" style="font-size:17px; color:green;"><b>`LimitedBox`</b></a> | 超出最大尺寸时才应用限制 |
 
-* <font id=ConstrainedBox>`ConstrainedBox`</font> <a href="#约束类布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
-* <font id=UnconstrainedBox>`UnconstrainedBox`</font> <a href="#约束类布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
-* <font id=SizedBox>`SizedBox`</font> <a href="#约束类布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
-* <font id=FractionallySizedBox>`FractionallySizedBox`</font> <a href="#约束类布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
-* <font id=AspectRatio>`AspectRatio`</font> <a href="#约束类布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
-* <font id=LimitedBox>`LimitedBox`</font> <a href="#约束类布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+##### 19.3.1、<font id=ConstrainedBox>`ConstrainedBox`</font> <a href="#约束类布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+> 用来设置子组件的**最大/最小宽高限制**，不管子组件本身多大。
+
+```dart
+ConstrainedBox(
+  constraints: BoxConstraints(
+    minWidth: 100,
+    maxWidth: 200,
+    minHeight: 50,
+    maxHeight: 100,
+  ),
+  child: Container(width: 300, height: 30, color: Colors.red),
+)
+  
+📌 上面这个例子里，即使 Container 设置了 width: 300, height: 30，但 ConstrainedBox 会强行让它：
+宽度：最大不能超过 200
+高度：最小不能小于 50
+🔚 最终实际大小是：200 x 50
+```
+
+```dart
+ConstrainedBox(
+  constraints: BoxConstraints(minWidth: 60, minHeight: 60),
+  child: ConstrainedBox(
+    constraints: BoxConstraints(minWidth: 90, minHeight: 20),
+    child: Container(width: 30, height: 10, color: Colors.green),
+  ),
+)
+
+minWidth: 取两个 minWidth 中较大的：90
+minHeight: 取两个 minHeight 中较大的：60
+➡️ 最终为：90 x 60
+```
+
+##### 19.3.2、<font id=UnconstrainedBox>`UnconstrainedBox`</font> <a href="#约束类布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+##### 19.3.3、<font id=SizedBox>`SizedBox`</font> <a href="#约束类布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+##### 19.3.4、<font id=FractionallySizedBox>`FractionallySizedBox`</font> <a href="#约束类布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+##### 19.3.5、<font id=AspectRatio>`AspectRatio`</font> <a href="#约束类布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+##### 19.3.6、<font id=LimitedBox>`LimitedBox`</font> <a href="#约束类布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
 
 #### 19.4、<font id=自动换行&流式布局>🧱</font> 自动换行&流式布局 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-| Widget                                                       | 功能说明                               |
-| ------------------------------------------------------------ | -------------------------------------- |
-| <a href="#Wrap" style="font-size:17px; color:green;"><b>`Wrap`</b></a> | 自动换行布局（类似 HTML 的 flex-wrap） |
-| <a href="#Flow" style="font-size:17px; color:green;"><b>`Flow`</b></a> | 高级流式布局（需手动实现 delegate）    |
+| Widget                                                       | 功能说明                                     |
+| ------------------------------------------------------------ | -------------------------------------------- |
+| <a href="#Wrap" style="font-size:17px; color:green;"><b>`Wrap`</b></a> | 自动换行布局（类似 **HTML** 的 `flex-wrap`） |
+| <a href="#Flow" style="font-size:17px; color:green;"><b>`Flow`</b></a> | 高级流式布局（需手动实现 **delegate**）      |
 
-* <font id=Wrap>`Wrap`</font> <a href="#自动换行&流式布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
-* <font id=Flow>`Flow`</font> <a href="#自动换行&流式布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+##### 19.4.1、<font id=Wrap>`Wrap`</font> <a href="#自动换行&流式布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+##### 19.4.2、<font id=Flow>`Flow`</font> <a href="#自动换行&流式布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart';
+
+void main() => runApp(const JobsMaterialRunner(FlowApp(), title: 'Flow 示例'));
+
+class FlowApp extends StatelessWidget {
+  const FlowApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Flow(
+        delegate: MyFlowDelegate(),
+        children: List.generate(10, (i) {
+          return Container(
+            width: 60,
+            height: 40,
+            color: Colors.primaries[i % Colors.primaries.length],
+            alignment: Alignment.center,
+            margin: const EdgeInsets.all(2),
+            child: Text('$i', style: const TextStyle(color: Colors.white)),
+          );
+        }),
+      ),
+    );
+  }
+}
+
+class MyFlowDelegate extends FlowDelegate {
+  @override
+  void paintChildren(FlowPaintingContext context) {
+    double x = 0.0, y = 0.0;
+    const spacing = 8.0;
+    final maxWidth = context.size.width;
+
+    for (int i = 0; i < context.childCount; i++) {
+      final size = context.getChildSize(i)!;
+      if (x + size.width > maxWidth) {
+        x = 0;
+        y += size.height + spacing;
+      }
+      context.paintChild(i, transform: Matrix4.translationValues(x, y, 0));
+      x += size.width + spacing;
+    }
+  }
+
+  @override
+  Size getSize(BoxConstraints constraints) => Size(constraints.maxWidth, 200);
+
+  @override
+  bool shouldRepaint(covariant FlowDelegate oldDelegate) => false;
+}
+```
 
 #### 19.5、<font id=表格&网格布局>🧱</font> 表格&网格布局 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -2480,27 +2784,55 @@ class XXX extends Object{}
 | <a href="#GridView" style="font-size:17px; color:green;"><b>`GridView`</b></a> | 网格布局（支持滚动）   |
 | <a href="#SliverGrid" style="font-size:17px; color:green;"><b>`SliverGrid`</b></a> | 滚动性能优化的网格布局 |
 
-* <font id=Table>`Table`</font> <a href="#表格&网格布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
-* <font id=GridView>`GridView`</font> <a href="#表格&网格布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
-* <font id=SliverGrid>`SliverGrid`</font> <a href="#表格&网格布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+##### 19.5.1、<font id=Table>`Table`</font> <a href="#表格&网格布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+##### 19.5.2、<font id=GridView>`GridView`</font> <a href="#表格&网格布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+##### 19.5.3、<font id=SliverGrid>`SliverGrid`</font> <a href="#表格&网格布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
 
 #### 19.6、<font id=边距&填充&对齐>🧱</font> 边距&填充&对齐 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | Widget                                                       | 功能说明                                                     |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | <a href="#Padding" style="font-size:17px; color:green;"><b>`Padding`</b></a> | 添加内边距                                                   |
-| <a href="#Margin" style="font-size:17px; color:green;"><b>`Margin`</b></a> | ❌ 无此 Widget，可用 `Padding + Container` 模拟外边距         |
+| <a href="#Margin" style="font-size:17px; color:green;"><b>`Margin`</b></a> | ❌ 无此 **`Widget`**，可用 `Padding + Container` 模拟外边距   |
 | <a href="#Container" style="font-size:17px; color:Red;"><b>`Container`</b></a> | 可组合设置 `padding`, `margin`, `alignment`。<font color=red>**是装饰 + 布局一体的`容器`**</font> |
 | <a href="#Align" style="font-size:17px; color:green;"><b>`Align`</b></a> | 设置对齐方式                                                 |
 | <a href="#Center" style="font-size:17px; color:green;"><b>`Center`</b></a> | 子组件居中                                                   |
 | <a href="#Baseline" style="font-size:17px; color:green;"><b>`Baseline`</b></a> | 按基线对齐                                                   |
+| <a href="#Baseline" style="font-size:17px; color:green;"><b>`Transform`</b></a> | 用于任何**`Widget`**外部来实现相对原位置的偏移               |
 
-* <font id=Padding>`Padding`</font> <a href="#边距&填充&对齐" style="font-size:17px; color:green;"><b>⬆️</b></a>
-* <font id=Margin>`Margin`</font> <a href="#边距&填充&对齐" style="font-size:17px; color:green;"><b>⬆️</b></a>
-* <font id=Container>`Container`</font> <a href="#边距&填充&对齐" style="font-size:17px; color:green;"><b>⬆️</b></a>
-* <font id=Align>`Align`</font> <a href="#边距&填充&对齐" style="font-size:17px; color:green;"><b>⬆️</b></a>
-* <font id=Center>`Center`</font> <a href="#边距&填充&对齐" style="font-size:17px; color:green;"><b>⬆️</b></a>
-* <font id=Baseline>`Baseline`</font> <a href="#边距&填充&对齐" style="font-size:17px; color:green;"><b>⬆️</b></a>
+##### 19.6.1、<font id=Padding>`Padding`</font> <a href="#边距&填充&对齐" style="font-size:17px; color:green;"><b>⬆️</b></a> 
+
+##### 19.6.2、<font id=Margin>`Margin`</font> <a href="#边距&填充&对齐" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+##### 19.6.3、<font id=Container>`Container`</font> <a href="#边距&填充&对齐" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+##### 19.6.4、<font id=Align>`Align`</font> <a href="#边距&填充&对齐" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+##### 19.6.5、<font id=Center>`Center`</font> <a href="#边距&填充&对齐" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+##### 19.6.6、<font id=Baseline>`Baseline`</font> <a href="#边距&填充&对齐" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+##### 19.6.7、<font id=Baseline>`Transform`</font> <a href="#边距&填充&对齐" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+```dart
+Transform.translate(
+  offset: Offset(20, -10), // 向右移动 20px，向上移动 10px
+  child: Container(
+    width: 100,
+    height: 100,
+    color: Colors.green,
+  ),
+)
+```
+
+| 特性/行为         | `Positioned`               | `Transform.translate`                  |
+| ----------------- | -------------------------- | -------------------------------------- |
+| 必须在 `Stack` 中 | ✅ 是                       | ❌ 否                                   |
+| 影响布局位置      | ✅ 会改变布局（真正“移动”） | ❌ 仅视觉偏移，不影响父布局的计算       |
+| 可以动画使用      | ❌ 手动实现动画             | ✅ 可配合动画控制偏移                   |
+| 适用场景          | 精确放置子组件位置         | 轻量位置偏移、动画滑动、视觉错位效果等 |
 
 #### 19.7、<font id=布局辅助>🧱</font> 布局辅助 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -2511,10 +2843,152 @@ class XXX extends Object{}
 | <a href="#LayoutBuilder" style="font-size:17px; color:green;"><b>`LayoutBuilder`</b></a> | 可根据父约束动态构建子组件 |
 | <a href="#CustomSingleChildLayout/CustomMultiChildLayout" style="font-size:17px; color:green;"><b>`CustomSingleChildLayout` / `CustomMultiChildLayout`</b></a> | 高级自定义布局逻辑         |
 
-* <font id=Offstage>`Offstage`</font> <a href="#布局辅助" style="font-size:17px; color:green;"><b>⬆️</b></a>
-* <font id=Visibility>`Visibility`</font> <a href="#布局辅助" style="font-size:17px; color:green;"><b>⬆️</b></a>
-* <font id=LayoutBuilder>`LayoutBuilder`</font> <a href="#布局辅助" style="font-size:17px; color:green;"><b>⬆️</b></a>
-* <font id=CustomSingleChildLayout/CustomMultiChildLayout>`CustomSingleChildLayout` / `CustomMultiChildLayout`</font> <a href="#布局辅助" style="font-size:17px; color:green;"><b>⬆️</b></a>
+##### 19.7.1、<font id=Offstage>`Offstage`</font> <a href="#布局辅助" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+```dart
+/// TODO
+```
+
+##### 19.7.2、<font id=Visibility>`Visibility`</font> <a href="#布局辅助" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+```dart
+/// TODO
+```
+
+##### 19.7.3、<font id=LayoutBuilder>`LayoutBuilder`</font> <a href="#布局辅助" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+```dart
+/// TODO
+```
+
+##### 19.7.4、<font id=CustomSingleChildLayout/CustomMultiChildLayout>`CustomSingleChildLayout` / `CustomMultiChildLayout`</font> <a href="#布局辅助" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+* **`CustomSingleChildLayout`**
+
+  > `CustomSingleChildLayout` 是 [**Flutter**](https://flutter.dev/) 中用于精确控制**单个子组件**布局的 **`Widget`**，它和 `CustomMultiChildLayout` 类似，但仅用于 **一个子组件**
+
+  ```dart
+  import 'package:flutter/material.dart';
+  import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart';
+  
+  void main() => runApp(const JobsMaterialRunner(CustomSingleLayoutApp(),
+      title: '📐 CustomSingleChildLayout 示例'));
+  
+  class CustomSingleLayoutApp extends StatelessWidget {
+    const CustomSingleLayoutApp({super.key});
+  
+    @override
+    Widget build(BuildContext context) {
+      return Container(
+        width: 300,
+        height: 200,
+        color: Colors.grey.shade300,
+        child: CustomSingleChildLayout(
+          delegate: MySingleChildDelegate(),
+          child: Container(
+            width: 100,
+            height: 60,
+            color: Colors.blue,
+            alignment: Alignment.center,
+            child: const Text('Hello', style: TextStyle(color: Colors.white)),
+          ),
+        ),
+      );
+    }
+  }
+  
+  class MySingleChildDelegate extends SingleChildLayoutDelegate {
+    @override
+    Offset getPositionForChild(Size size, Size childSize) {
+      // 子组件放在底部中间
+      return Offset(
+        (size.width - childSize.width) / 2,
+        size.height - childSize.height,
+      );
+    }
+  
+    @override
+    Size getSize(BoxConstraints constraints) => constraints.biggest;
+  
+    @override
+    bool shouldRelayout(covariant SingleChildLayoutDelegate oldDelegate) => false;
+  }
+  ```
+
+* **`CustomMultiChildLayout`**
+
+  ```dart
+  import 'package:flutter/material.dart';
+  import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart';
+  
+  void main() => runApp(const JobsMaterialRunner(CustomLayoutApp(),
+      title: 'CustomMultiChildLayout 示例'));
+  
+  class CustomLayoutApp extends StatelessWidget {
+    const CustomLayoutApp({super.key});
+  
+    @override
+    Widget build(BuildContext context) {
+      return Center(
+        child: CustomMultiChildLayout(
+          delegate: MyCustomLayoutDelegate(),
+          children: [
+            LayoutId(
+              id: 'topLeft',
+              child: box(Colors.red, '左上'),
+            ),
+            LayoutId(
+              id: 'topRight',
+              child: box(Colors.green, '右上'),
+            ),
+            LayoutId(
+              id: 'bottomCenter',
+              child: box(Colors.blue, '下中'),
+            ),
+          ],
+        ),
+      );
+    }
+  
+    static Widget box(Color color, String label) {
+      return Container(
+        width: 80,
+        height: 50,
+        color: color,
+        alignment: Alignment.center,
+        child: Text(label, style: const TextStyle(color: Colors.white)),
+      );
+    }
+  }
+  
+  /// 具体的布局逻辑
+  class MyCustomLayoutDelegate extends MultiChildLayoutDelegate {
+    @override
+    void performLayout(Size size) {
+      if (hasChild('topLeft')) {
+        layoutChild(
+            'topLeft', const BoxConstraints.tightFor(width: 80, height: 50));
+        positionChild('topLeft', const Offset(0, 0));
+      }
+  
+      if (hasChild('topRight')) {
+        layoutChild(
+            'topRight', const BoxConstraints.tightFor(width: 80, height: 50));
+        positionChild('topRight', Offset(size.width - 80, 0));
+      }
+  
+      if (hasChild('bottomCenter')) {
+        layoutChild('bottomCenter',
+            const BoxConstraints.tightFor(width: 100, height: 60));
+        positionChild(
+            'bottomCenter', Offset((size.width - 100) / 2, size.height - 60));
+      }
+    }
+  
+    @override
+    bool shouldRelayout(covariant MultiChildLayoutDelegate oldDelegate) => false;
+  }
+  ```
 
 ### 20、✅ [**Flutter**](https://flutter.dev/)中，实现相对位置布局的几种方式 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -5651,7 +6125,7 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
 }
 ```
 
-#### 347.4、移除观察者：
+#### 37.4、移除观察者：
 
 ```dart
 @override
@@ -7197,7 +7671,7 @@ Comparable.compare(a, b)
 * **命名构造函数**（<font color=red>**可以有多个命名构造函数，但是：必须有唯一名字**</font>）
 
   ```dart
-  class Person {
+   class Person {
     final String name;
     final int age;
     Person(this.name, this.age); // 默认构造函数（只能有一个，函数名即类名。名字相同，参数不同也不行）
@@ -8349,6 +8823,10 @@ _open_output_folder
     }
     ```
   
+* 🌊**流式布局**
+
+  > **`流式布局`**是一种网页或应用界面布局方式，其核心理念是**内容会根据屏幕大小自动“流动”并重新排列**，以适应不同的设备和分辨率。它是一种相对于固定布局的响应式设计方法，常用于前端开发和 UI 设计中。
+
 * 🔧**实用快捷键**
 
   * 如果希望在某个**`widget`**外面包裹另一个**`widget`**：**`^+.`** (已修改)

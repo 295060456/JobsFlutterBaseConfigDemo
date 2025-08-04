@@ -1,42 +1,29 @@
 #!/bin/zsh
-# ============================================================================
-# 📱 Flutter / Dart -> iOS 模拟器 启动脚本（修正版）
-# ---------------------------------------------------------------------------
-# 特点：
-#   • 自动识别 Flutter 根目录 / Dart 单文件入口
-#   • 支持在脚本【位于项目根目录时无需拖入路径】——本次修复重点 ✅
-#   • 支持拖入路径（文件或目录），自动判定
-#   • 自动识别 FVM、flavor、构建模式
-#   • fzf 选择 / 创建模拟器（设备 + Runtime）
-#   • CocoaPods 异常自动修复（后台模式）
-#   • 创建桌面快捷方式（链接到本脚本）
-#   • 所有交互遵循统一规则：回车=执行 / 默认，任意键=跳过（或其它说明）
-# ============================================================================
 
-# ----------------------------- 实用函数区 ----------------------------------
+# ✅ 彩色输出函数
+SCRIPT_BASENAME=$(basename "$0" | sed 's/\.[^.]*$//')   # 当前脚本名（去掉扩展名）
+LOG_FILE="/tmp/${SCRIPT_BASENAME}.log"                  # 设置对应的日志文件路径
 
-# 彩色输出
-_color_echo() {
-  local color="$1"; shift
-  local text="$*"
-  case "$color" in
-    green)  printf "\033[32m%s\033[0m\n" "$text" ;;
-    red)    printf "\033[31m%s\033[0m\n" "$text" ;;
-    yellow) printf "\033[33m%s\033[0m\n" "$text" ;;
-    blue)   printf "\033[34m%s\033[0m\n" "$text" ;;
-    cyan)   printf "\033[36m%s\033[0m\n" "$text" ;;
-    *)      printf "%s\n" "$text" ;;
-  esac
-}
+log()            { echo -e "$1" | tee -a "$LOG_FILE"; }
+color_echo()     { log "\033[1;32m$1\033[0m"; }        # ✅ 正常绿色输出
+info_echo()      { log "\033[1;34mℹ $1\033[0m"; }      # ℹ 信息
+success_echo()   { log "\033[1;32m✔ $1\033[0m"; }      # ✔ 成功
+warn_echo()      { log "\033[1;33m⚠ $1\033[0m"; }      # ⚠ 警告
+warm_echo()      { log "\033[1;33m$1\033[0m"; }        # 🟡 温馨提示（无图标）
+note_echo()      { log "\033[1;35m➤ $1\033[0m"; }      # ➤ 说明
+error_echo()     { log "\033[1;31m✖ $1\033[0m"; }      # ✖ 错误
+err_echo()       { log "\033[1;31m$1\033[0m"; }        # 🔴 错误纯文本
+debug_echo()     { log "\033[1;35m🐞 $1\033[0m"; }     # 🐞 调试
+highlight_echo() { log "\033[1;36m🔹 $1\033[0m"; }     # 🔹 高亮
+gray_echo()      { log "\033[0;90m$1\033[0m"; }        # ⚫ 次要信息
+bold_echo()      { log "\033[1m$1\033[0m"; }           # 📝 加粗
+underline_echo() { log "\033[4m$1\033[0m"; }           # 🔗 下划线
 
-# 解析真实绝对路径（兼容相对路径、~、空格等）
-# 使用：_abs_path <path> -> echo 输出绝对路径
-_abs_path() {
+# ✅ 路径工具函数
+abs_path() {
   local p="$1"
   [[ -z "$p" ]] && return 1
-  # 去掉包裹双引号
   p="${p//\"/}"
-  # 去掉末尾斜杠（不影响根 /）
   [[ "$p" != "/" ]] && p="${p%/}"
   if [[ -d "$p" ]]; then
     (cd "$p" 2>/dev/null && pwd -P)
@@ -47,340 +34,241 @@ _abs_path() {
   fi
 }
 
-# 判断 Flutter 项目根目录（仅需 pubspec.yaml + lib/）
-_is_flutter_project_root() {
+is_flutter_project_root() {
   local p="$1"
-  local abs=$(_abs_path "$p") || return 1
+  local abs=$(abs_path "$p") || return 1
   [[ -f "$abs/pubspec.yaml" && -d "$abs/lib" ]]
 }
 
-# 判断 Dart 文件是否入口：支持 void/Future<void> main() [async]，忽略注释和注解
-_is_dart_entry_file() {
+is_dart_entry_file() {
   local f="$1"
-  local abs=$(_abs_path "$f") || return 1
+  local abs=$(abs_path "$f") || return 1
   [[ $abs == *.dart ]] || return 1
-
-  # ✅ 支持 main() {...} 和 main() => ... 写法
   if grep -Ev '^\s*//' "$abs" | grep -Eq '\b(Future\s*<\s*void\s*>|void)?\s*main\s*\(\s*\)\s*(async\s*)?(\{|=>)' ; then
     return 0
   fi
   return 1
 }
 
-# ----------------------------- Banner --------------------------------------
-clear
-_color_echo cyan   "                                                                                       "
-_color_echo cyan   "88888888888 88         88        88 888888888888 888888888888 88888888888 88888888ba   "
-_color_echo cyan   "88          88         88        88      88           88      88          88      \"8b  "
-_color_echo cyan   "88          88         88        88      88           88      88          88      ,8P  "
-_color_echo cyan   "88aaaaa     88         88        88      88           88      88aaaaa     88aaaaaa8P'  "
-_color_echo cyan   "88\"\"\"\"\"     88         88        88      88           88      88\"\"\"\"\"     88\"\"\"\"88'    "
-_color_echo cyan   "88          88         88        88      88           88      88          88    \`8b    "
-_color_echo cyan   "88          88         Y8a.    .a8P      88           88      88          88     \`8b   "
-_color_echo cyan   "88          88888888888 \`\"Y8888Y\"'       88           88      88888888888 88      \`8b  "
-_color_echo cyan   "                                                                                       "
-_color_echo yellow "                        🛠️ FLUTTER iOS 模拟器 启动脚本"
-printf "\n"
-_color_echo green  "🛠️ 本脚本用于将 Dart 或 Flutter 项目运行到 iOS 模拟器"
-_color_echo green  "===================================================================="
-_color_echo green  "👉 支持："
-_color_echo green  "   1. 拖入 Flutter 项目根目录（含 pubspec.yaml 和 lib/main.dart）或 Dart 单文件（含 void main）"
-_color_echo green  "   2. 自动识别 FVM、构建模式、flavor 参数"
-_color_echo green  "   3. 自动启动 iOS 模拟器，处理假后台问题"
-_color_echo green  "   4. 支持 fzf 模拟器选择与创建（设备 + 系统组合）"
-_color_echo green  "   5. flutter run 日志异常时自动修复 CocoaPods"
-_color_echo green  "   6. 自动创建桌面 .command 快捷方式"
-_color_echo green  "===================================================================="
-_color_echo red    "📌 如需运行断点调试，请使用 VSCode / Android Studio / Xcode 等 IDE。终端运行不支持断点。"
-printf "\n"
-
-# ---------------------------------------------------------------------------
-# 获取脚本自身绝对路径（用于桌面快捷方式）
-# ---------------------------------------------------------------------------
-SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd -P)"
-SCRIPT_PATH="${SCRIPT_DIR}/$(basename -- "$0")"
-
-# ---------------------------------------------------------------------------
-# 入口识别：支持三种情况
-#   A. 用户拖入路径（目录 / 文件）并回车
-#   B. 用户直接回车（空输入）=> 若脚本所在目录是 Flutter 根目录则自动使用
-#   C. 用户拖入 Dart 单文件
-# ---------------------------------------------------------------------------
-entry_file=""
-flutter_root=""
-
-while true; do
-  _color_echo yellow "📂 请拖入 Flutter 项目根目录或 Dart 单文件路径："
-  read -r user_input
-  user_input="${user_input//\"/}"          # 去掉引号
-  user_input="${user_input%/}"              # 去尾斜杠
-
-  # 用户直接回车：尝试脚本所在目录
-  if [[ -z "$user_input" ]]; then
-    if _is_flutter_project_root "$SCRIPT_DIR"; then
-      flutter_root=$(_abs_path "$SCRIPT_DIR")
-      entry_file="$flutter_root/lib/main.dart"
-      _color_echo cyan "🎯 检测到脚本所在目录即 Flutter 根目录，自动使用。"
-      break
-    else
-      _color_echo red "❌ 未检测到有效路径（脚本目录不是 Flutter 根）。请重新拖入。"
-      continue
-    fi
-  fi
-
-  if [[ -d "$user_input" ]]; then
-    if _is_flutter_project_root "$user_input"; then
-      flutter_root=$(_abs_path "$user_input")
-      entry_file="$flutter_root/lib/main.dart"
-      break
-    fi
-  elif [[ -f "$user_input" ]]; then
-    if _is_dart_entry_file "$user_input"; then
-      entry_file=$(_abs_path "$user_input")
-      flutter_root="${entry_file:h}"
-      break
-    fi
-  fi
-
-  _color_echo red "❌ 无效路径，请重新拖入 Flutter 根目录或 Dart 单文件。"
- done
-
-cd "$flutter_root" || { _color_echo red "无法进入项目目录：$flutter_root"; exit 1; }
-_color_echo green "✅ 项目路径：$flutter_root"
-_color_echo green "🎯 入口文件：$entry_file"
-
-# ---------------------------------------------------------------------------
-# 构建参数
-# ---------------------------------------------------------------------------
-printf "\n"
-_color_echo blue "🌶️ 请输入构建的 flavor 名称（回车=无 --flavor）："
-read -r flavor
-if [[ -n "$flavor" ]]; then
-  flavor_args=(--flavor "$flavor")
-else
-  flavor_args=()
-fi
-
-printf "\n"
-# 使用 fzf 选择构建模式
-_color_echo blue "🚧 请选择构建模式："
-build_mode=$(printf "debug\nrelease\nprofile" | fzf --prompt="👉 选择构建模式 > " --height=40% --reverse)
-
-# 默认 fallback：如果用户直接按 ESC 或 Ctrl+C 或空选
-build_mode="${build_mode:-debug}"
-_color_echo green "✅ 已选择构建模式：$build_mode"
-
-# ---------------------------------------------------------------------------
-# FVM 检测
-# ---------------------------------------------------------------------------
-if [[ -f "$flutter_root/.fvm/fvm_config.json" ]]; then
-  _color_echo yellow "🧩 检测到 FVM，将使用 fvm flutter。"
-  flutter_cmd=(fvm flutter)
-else
-  flutter_cmd=(flutter)
-fi
-
-# ---------------------------------------------------------------------------
-# pub get（统一交互：回车=执行，任意键=跳过）
-# ---------------------------------------------------------------------------
-read '?📦 执行 flutter pub get？(回车=执行 / 任意键=跳过) ' run_get
-if [[ -z "$run_get" ]]; then
-  "${flutter_cmd[@]}" pub get
-else
-  _color_echo yellow "⏭️ 跳过 pub get。"
-fi
-
-# ---------------------------------------------------------------------------
-# 模拟器彻底关闭（防假后台）
-# ---------------------------------------------------------------------------
-_color_echo yellow "🕵️ 检测模拟器是否处于假后台..."
-
-booted_check=$(xcrun simctl list devices | grep "(Booted)")
-simulator_running=$(pgrep -f Simulator)
-
-if [[ -z "$booted_check" && -n "$simulator_running" ]]; then
-  _color_echo red "❗️ 模拟器处于假后台状态，正在强制关闭..."
-  xcrun simctl shutdown all >/dev/null 2>&1
-  osascript -e 'quit app "Simulator"' >/dev/null 2>&1
-  pkill -f Simulator >/dev/null 2>&1
-  _color_echo green "✅ 已强制关闭假后台模拟器。"
-else
-  _color_echo green "✅ 模拟器状态正常，无需关闭。"
-fi
-
-# ---------------------------------------------------------------------------
-# 重启模拟器（回车=打开 / 任意键=跳过）
-# ---------------------------------------------------------------------------
-read '?📱 按回车重新打开 iOS 模拟器，任意键=跳过： ' sim_input
-if [[ -z "$sim_input" ]]; then
-  open -a Simulator && _color_echo green "✅ iOS 模拟器已重新打开。"
-else
-  _color_echo yellow "⏭️ 已跳过打开模拟器。"
-fi
-
-# ---------------------------------------------------------------------------
-# 交互：fzf 创建模拟器
-# 注意：create_simulator_with_fzf 仅输出最后一行 "<name>|<id>" 供解析
-# ---------------------------------------------------------------------------
-create_simulator_with_fzf() {
-  # 设备类型列表
-  _color_echo blue "📦 获取可用设备类型..." >&2
-  local device_options
-  device_options=(${(@f)$(xcrun simctl list devicetypes 2>/dev/null | grep '^iPhone' | sed -E 's/^(.+) \((.+)\)$/📱 \1|\2/')})
-  [[ ${#device_options[@]} -eq 0 ]] && { _color_echo red "❌ 未找到可用设备类型" >&2; return 1; }
-
-  local selected_device_display selected_device_id
-  selected_device_display=$(printf '%s\n' "${device_options[@]}" | cut -d'|' -f1 | fzf --prompt='👉 选择设备型号 > ' --height=40% --reverse)
-  [[ -z "$selected_device_display" ]] && { _color_echo yellow "⚠️ 未选择设备" >&2; return 1; }
-
-  for entry in "${device_options[@]}"; do
-    local name="${entry%%|*}" id="${entry##*|}"
-    [[ "$name" == "$selected_device_display" ]] && selected_device_id="$id" && break
-  done
-  [[ -z "$selected_device_id" ]] && { _color_echo red "❌ 无法匹配设备标识符" >&2; return 1; }
-  _color_echo green "✅ 你选择的设备是：$selected_device_display" >&2
-  _color_echo green "🔗 对应设备 ID：$selected_device_id" >&2
-
-  # Runtime 列表
-  _color_echo blue "🧬 获取可用 iOS Runtime..." >&2
-  local runtime_options
-  runtime_options=(${(@f)$(xcrun simctl list runtimes 2>/dev/null | grep 'iOS' | grep -v 'unavailable' | sed -En 's/^.*(iOS [0-9.]+) \([^)]+\) - (com\.apple\.CoreSimulator\.SimRuntime\.[^)]+).*$/🧬 \1|\2/p')})
-  [[ ${#runtime_options[@]} -eq 0 ]] && { _color_echo red "❌ 未找到可用 Runtime" >&2; return 1; }
-
-  local selected_runtime_display selected_runtime_id
-  selected_runtime_display=$(printf '%s\n' "${runtime_options[@]}" | cut -d'|' -f1 | fzf --prompt='👉 选择系统版本 > ' --height=40% --reverse)
-  [[ -z "$selected_runtime_display" ]] && { _color_echo yellow "⚠️ 未选择系统版本" >&2; return 1; }
-
-  for entry in "${runtime_options[@]}"; do
-    local name="${entry%%|*}" id="${entry##*|}"
-    [[ "$name" == "$selected_runtime_display" ]] && selected_runtime_id="$id" && break
-  done
-  [[ -z "$selected_runtime_id" ]] && { _color_echo red "❌ 无法匹配系统版本标识符" >&2; return 1; }
-  _color_echo green "🧬 你选择的系统版本是：$selected_runtime_display" >&2
-  _color_echo green "🔗 对应 Runtime ID：$selected_runtime_id" >&2
-
-  # 创建模拟器
-  local sim_name="MySim_$(date +%s | tail -c 6)"
-  _color_echo blue "🚀 正在创建模拟器 $sim_name ..." >&2
-  _color_echo cyan "📤 执行命令：xcrun simctl create \"$sim_name\" \"$selected_device_id\" \"$selected_runtime_id\"" >&2
-  local sim_id
-  sim_id=$(xcrun simctl create "$sim_name" "$selected_device_id" "$selected_runtime_id" 2>/dev/null)
-  if [[ -z "$sim_id" ]]; then
-    _color_echo red "❌ 模拟器创建失败" >&2
-    return 1
-  fi
-
-  _color_echo green "✅ 模拟器创建成功：$sim_name" >&2
-  _color_echo green "🆔 模拟器 ID：$sim_id" >&2
-  _color_echo yellow "🚀 正在启动模拟器 $sim_name ..." >&2
-  xcrun simctl boot "$sim_id" >/dev/null 2>&1
-  open -a Simulator >/dev/null 2>&1
-
-  # 只输出解析行（stdout）
-  echo "$sim_name|$sim_id"
+# ✅ 自述信息
+show_banner() {
+  clear
+  highlight_echo "                                                                                       "
+  highlight_echo "88888888888 88         88        88 888888888888 888888888888 88888888888 88888888ba   "
+  highlight_echo "88          88         88        88      88           88      88          88      \"8b  "
+  highlight_echo "88          88         88        88      88           88      88          88      ,8P  "
+  highlight_echo "88aaaaa     88         88        88      88           88      88aaaaa     88aaaaaa8P'  "
+  highlight_echo "88\"\"\"\"\"     88         88        88      88           88      88\"\"\"\"\"     88\"\"\"\"\"\"88'  "
+  highlight_echo "88          88         88        88      88           88      88          88     `8b   "
+  highlight_echo "88          88         Y8a.    .a8P      88           88      88          88      8b   "
+  highlight_echo "88          88888888888 `\"Y8888Y\"'       88           88      88888888888 88      `8b  "
+  warn_echo    "                        🛠️ FLUTTER iOS 模拟器 启动脚本"
+  echo ""
+  success_echo "🛠️ 本脚本用于将 Dart 或 Flutter 项目运行到 iOS 模拟器"
+  success_echo "===================================================================="
+  success_echo "👉 支持："
+  success_echo "   1. 拖入 Flutter 项目根目录（含 pubspec.yaml 和 lib/main.dart）或 Dart 单文件（含 void main）"
+  success_echo "   2. 自动识别 FVM、构建模式、flavor 参数"
+  success_echo "   3. 自动启动 iOS 模拟器，处理假后台问题"
+  success_echo "   4. 支持 fzf 模拟器选择与创建（设备 + 系统组合）"
+  success_echo "   5. flutter run 日志异常时自动修复 CocoaPods"
+  success_echo "   6. 自动创建桌面 .command 快捷方式"
+  success_echo "===================================================================="
+  error_echo   "📌 如需运行断点调试，请使用 VSCode / Android Studio / Xcode 等 IDE。终端运行不支持断点。"
+  echo ""
 }
 
-# ---------------------------------------------------------------------------
-# 模拟器检测 & 条件创建
-# ---------------------------------------------------------------------------
-sim_name=""
-sim_id=""
-device_list=$("${flutter_cmd[@]}" devices | grep -i 'simulator')
-try_count=0
-max_try=3
+# ✅ 项目入口识别
+detect_entry() {
+  SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd -P)"
+  SCRIPT_PATH="${SCRIPT_DIR}/$(basename -- "$0")"
 
-while [[ $try_count -lt $max_try ]]; do
-  device_list=$("${flutter_cmd[@]}" devices | grep -i 'simulator')
-  if [[ -n "$device_list" ]]; then
-    break
-  fi
-  _color_echo yellow "⚠️ 未检测到模拟器（尝试第 $((try_count+1)) 次）"
-  printf '❓ 是否创建模拟器？输入 y 或 Y 回车创建，其它任意键跳过等待：'
-  read -r user_input
-  if [[ "$user_input" == "y" || "$user_input" == "Y" ]]; then
-    result=$(create_simulator_with_fzf | tail -n1)
-    sim_name="${result%%|*}"; sim_id="${result##*|}"
-    break
-  fi
-  _color_echo cyan "⏳ 等待模拟器加载中..."
-  sleep 2
-  ((try_count++))
- done
+  while true; do
+    warn_echo "📂 请拖入 Flutter 项目根目录或 Dart 单文件路径："
+    read -r user_input
+    user_input="${user_input//\"/}"
+    user_input="${user_input%/}"
 
-if [[ -z "$device_list" && -z "$sim_id" ]]; then
-  _color_echo red "⏱️ 自动进入创建流程..."
-  result=$(create_simulator_with_fzf | tail -n1)
-  sim_name="${result%%|*}"; sim_id="${result##*|}"
-fi
-
-# ---------------------------------------------------------------------------
-# 若没有通过创建得到 sim_id，则让用户从 flutter devices 列表中选
-# ---------------------------------------------------------------------------
-if [[ -z "$sim_id" ]]; then
-  formatted_devices=()
-  while IFS= read -r line; do
-    local_name=$(echo "$line" | awk -F '•' '{print $1}' | xargs)
-    local_id=$(echo   "$line" | awk -F '•' '{print $2}' | xargs)
-    formatted_devices+=("$local_name（$local_id）")
-  done <<< "$device_list"
-
-  selected_entry=$(printf '%s\n' "${formatted_devices[@]}" | fzf --prompt='👉 选择模拟器 > ')
-  [[ -z "$selected_entry" ]] && { _color_echo red "❌ 未选择设备，退出"; exit 1; }
-  sim_name="${selected_entry%%（*}";
-  sim_id="${selected_entry##*（}"; sim_id="${sim_id%）}"
-fi
-
-# ---------------------------------------------------------------------------
-# flutter run（前台 / 后台）
-# ---------------------------------------------------------------------------
-run_args=(run -d "$sim_id" -t "$entry_file" --$build_mode "${flavor_args[@]}")
-_color_echo green "🚀 启动到模拟器：$sim_name ($sim_id)"
-read '?🎯 是否后台运行 flutter run？(回车=前台 / 任意键=后台) ' run_mode_input
-
-if [[ -z "$run_mode_input" ]]; then
-  "${flutter_cmd[@]}" "${run_args[@]}"
-else
-  "${flutter_cmd[@]}" "${run_args[@]}" > /tmp/flutter_run_log.txt 2>&1 &
-  sleep 5
-  _color_echo green "✅ Flutter run 已在后台运行。日志：/tmp/flutter_run_log.txt"
-
-  if grep -q 'CocoaPods' /tmp/flutter_run_log.txt || grep -q 'Error' /tmp/flutter_run_log.txt; then
-    _color_echo yellow "⚠️ 检测到 CocoaPods 异常，尝试自动修复..."
-    if ! command -v pod >/dev/null 2>&1; then
-      _color_echo red "❌ 未安装 CocoaPods：请执行 sudo gem install cocoapods"
-      exit 1
+    if [[ -z "$user_input" ]]; then
+      if is_flutter_project_root "$SCRIPT_DIR"; then
+        flutter_root=$(abs_path "$SCRIPT_DIR")
+        entry_file="$flutter_root/lib/main.dart"
+        highlight_echo "🎯 检测到脚本所在目录即 Flutter 根目录，自动使用。"
+        break
+      else
+        error_echo "❌ 当前目录不是 Flutter 项目根目录，请重新拖入。"
+        continue
+      fi
     fi
-    rm -rf ios/Pods ios/Podfile.lock
-    (cd ios && pod repo update && pod install)
-    _color_echo yellow "♻️ 正在重新 flutter run（后台）..."
-    "${flutter_cmd[@]}" "${run_args[@]}" > /tmp/flutter_run_log.txt 2>&1 &
-    sleep 5
+
+    if [[ -d "$user_input" ]]; then
+      if is_flutter_project_root "$user_input"; then
+        flutter_root=$(abs_path "$user_input")
+        entry_file="$flutter_root/lib/main.dart"
+        break
+      fi
+    elif [[ -f "$user_input" ]]; then
+      if is_dart_entry_file "$user_input"; then
+        entry_file=$(abs_path "$user_input")
+        flutter_root="${entry_file:h}"
+        break
+      fi
+    fi
+
+    error_echo "❌ 无效路径，请重新拖入 Flutter 根目录或 Dart 单文件。"
+  done
+
+  cd "$flutter_root" || { error_echo "无法进入项目目录：$flutter_root"; exit 1; }
+  success_echo "✅ 项目路径：$flutter_root"
+  success_echo "🎯 入口文件：$entry_file"
+}
+
+# ✅ 构建参数交互
+prompt_build_config() {
+  echo ""
+  info_echo "🌶️ 请输入构建的 flavor 名称（回车=无 --flavor）："
+  read -r flavor
+  if [[ -n "$flavor" ]]; then
+    flavor_args=(--flavor "$flavor")
+  else
+    flavor_args=()
   fi
-fi
 
-# ---------------------------------------------------------------------------
-# 创建桌面快捷方式（指向本脚本）
-# ---------------------------------------------------------------------------
-project_name=$(grep -m1 '^name:' "$flutter_root/pubspec.yaml" | awk '{print $2}')
-[[ -z "$project_name" ]] && project_name="FlutterProject"
+  echo ""
+  info_echo "🚧 请选择构建模式："
+  build_mode=$(printf "debug\nrelease\nprofile" | fzf --prompt="👉 选择构建模式 > " --height=40% --reverse)
+  build_mode="${build_mode:-debug}"
+  success_echo "✅ 已选择构建模式：$build_mode"
+}
 
-desktop_path="$HOME/Desktop"
-shortcut_path="$desktop_path/${project_name}.command"
-count=1
-while [[ -e "$shortcut_path" ]]; do
-  shortcut_path="$desktop_path/${project_name} ($count).command"
-  ((count++))
- done
+# ✅ FVM 检测
+detect_fvm() {
+  if [[ -f "$flutter_root/.fvm/fvm_config.json" ]]; then
+    note_echo "🧩 检测到 FVM，将使用 fvm flutter。"
+    flutter_cmd=(fvm flutter)
+  else
+    flutter_cmd=(flutter)
+  fi
+}
 
-# 确保桌面目录存在
-mkdir -p "$desktop_path" 2>/dev/null
+# ✅ 执行 pub get
+pub_get() {
+  read '?📦 执行 flutter pub get？(回车=执行 / 任意键=跳过) ' run_get
+  if [[ -z "$run_get" ]]; then
+    "${flutter_cmd[@]}" pub get
+  else
+    warn_echo "⏭️ 跳过 pub get。"
+  fi
+}
 
-if [[ ! -L "$shortcut_path" || "$(readlink "$shortcut_path" 2>/dev/null)" != "$SCRIPT_PATH" ]]; then
-  ln -sf "$SCRIPT_PATH" "$shortcut_path"
-  chmod +x "$shortcut_path"
-  _color_echo green "✅ 已创建桌面快捷方式：$shortcut_path"
-else
-  _color_echo yellow "⚠️ 快捷方式已存在，跳过创建。"
-fi
+# ✅  修复模拟器假后台
+fix_fake_simulator() {
+  warn_echo "🕵️ 检测模拟器是否处于假后台..."
+  booted_check=$(xcrun simctl list devices | grep "(Booted)") # ✅ 使用 simctl 检查当前是否有已启动（Booted）状态的模拟器设备
+  simulator_running=$(pgrep -f Simulator)                     # ✅ 检查是否存在 Simulator 应用的后台进程（即进程存在但可能界面未显示）
+  
+  # 🧠 如果没有任何 Booted 状态的设备，但检测到 Simulator 进程，说明是“假后台”
+  if [[ -z "$booted_check" && -n "$simulator_running" ]]; then
+    error_echo "❗️ 模拟器处于假后台状态，正在强制关闭..."
+    xcrun simctl shutdown all >/dev/null 2>&1                 # 🧹 使用 simctl 关闭所有模拟器实例（防止残留）
+    osascript -e 'quit app "Simulator"' >/dev/null 2>&1       # 🧼 使用 AppleScript 关闭 Simulator 应用（用于 GUI 层面的强制退出）
+    pkill -f Simulator >/dev/null 2>&1                        # 🧯 最后保险措施：通过进程名强制终止 Simulator 进程
+    success_echo "✅ 已强制关闭假后台模拟器。"
+  else
+    success_echo "✅ 模拟器状态正常，无需关闭。"
+  fi
+}
 
-exit 0
+# ✅ 创建桌面快捷方式
+create_shortcut() {
+  project_name=$(grep -m1 '^name:' "$flutter_root/pubspec.yaml" | awk '{print $2}')
+  [[ -z "$project_name" ]] && project_name="FlutterProject"
+
+  desktop_path="$HOME/Desktop"
+  shortcut_path="$desktop_path/${project_name}.command"
+  count=1
+
+  while [[ -e "$shortcut_path" ]]; do
+    shortcut_path="$desktop_path/${project_name} ($count).command"
+    ((count++))
+  done
+
+  mkdir -p "$desktop_path" 2>/dev/null
+
+  if [[ ! -L "$shortcut_path" || "$(readlink "$shortcut_path" 2>/dev/null)" != "$SCRIPT_PATH" ]]; then
+    ln -sf "$SCRIPT_PATH" "$shortcut_path"
+    chmod +x "$shortcut_path"
+    success_echo "✅ 已创建桌面快捷方式：$shortcut_path"
+  else
+    warn_echo "⚠️ 快捷方式已存在，跳过创建。"
+  fi
+}
+
+# ✅ 启动模拟器
+launch_simulator() {
+  local sim_check=$(xcrun simctl list devices | grep Booted)
+  if [[ -n "$sim_check" ]]; then
+    success_echo "📱 模拟器已启动。"
+    return
+  fi
+
+  local sim_running=$(pgrep -f Simulator)
+  if [[ -z "$sim_running" ]]; then
+    info_echo "🚀 正在启动 Simulator 应用..."
+    open -a Simulator
+    sleep 3
+  fi
+}
+
+# ✅ 选择或创建模拟器设备
+select_or_create_device() {
+  local device_list=$(xcrun simctl list devices available | grep -E 'iPhone|iPad' | grep -v unavailable | awk -F'[()]' '{gsub(/^[ \t]+/, "", $1); print $1 " (" $2 ")"}')
+  local selected_device=$(echo "$device_list" | fzf --prompt="📱 选择模拟器设备 > " --height=50% --reverse)
+
+  if [[ -z "$selected_device" ]]; then
+    warn_echo "⏭️ 未选择设备，跳过启动新模拟器。"
+    return
+  fi
+
+  local udid=$(echo "$selected_device" | grep -oE '[0-9A-F\-]{36}')
+  if [[ -n "$udid" ]]; then
+    highlight_echo "📱 正在启动模拟器设备：$selected_device"
+    xcrun simctl boot "$udid" >/dev/null 2>&1
+    open -a Simulator
+    sleep 2
+    success_echo "✅ 设备启动完成：$selected_device"
+  else
+    error_echo "❌ 获取设备 UDID 失败，跳过启动。"
+  fi
+}
+
+# ✅ 运行 Flutter 项目
+run_flutter_app() {
+  local run_cmd=("${flutter_cmd[@]}" run -d all "$entry_file" --$build_mode "${flavor_args[@]}")
+
+  highlight_echo "🚀 运行命令：${run_cmd[*]}"
+  "${run_cmd[@]}" || {
+    warn_echo "⚠️ flutter run 失败，尝试自动修复 CocoaPods..."
+    pod install --project-directory=ios || true
+    sleep 1
+    "${run_cmd[@]}"
+  }
+}
+
+# ✅  主流程函数
+main() {
+  clear
+  show_banner                   # 自述信息
+  detect_entry                  # 项目入口识别
+  prompt_build_config           # 构建参数交互
+  detect_fvm                    # FVM 检测
+  pub_get                       # 执行 pub get
+  fix_fake_simulator            # 修复模拟器假后台
+  launch_simulator              # 启动模拟器
+  select_or_create_device       # 选择或创建模拟器设备
+  run_flutter_app               # 运行 Flutter 项目
+  create_shortcut               # 创建桌面快捷方式
+}
+
+# ✅ 脚本执行入口
+main "$@"

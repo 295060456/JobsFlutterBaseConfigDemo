@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/zsh
 
-# 定义关闭终端窗口的函数
+# ✅ 定义关闭终端窗口的函数
 close_terminal_window() {
     # 获取所有终端窗口的索引
     WINDOW_IDS=$(osascript -e 'tell application "Terminal" to get id of every window')
@@ -13,7 +13,7 @@ close_terminal_window() {
     osascript -e "tell application \"Terminal\" to close (every window whose id is $WINDOW_TO_CLOSE) without saving"
 }
 
-# 打开新的终端窗口并切换到脚本所在的目录
+# ✅ 打开新的终端窗口并切换到脚本所在的目录
 open_terminal_and_cd() {
     local dir="$1"
     osascript <<EOF
@@ -24,11 +24,11 @@ end tell
 EOF
 }
 
-# 获取当前脚本文件的目录
+# ✅ 获取当前脚本文件的目录
 current_directory=$(dirname "$(readlink -f "$0")")
 
-# 关闭终端窗口
+# ✅ 关闭终端窗口
 close_terminal_window
 
-# 打开新的终端窗口并切换到脚本所在的目录
+# ✅ 打开新的终端窗口并切换到脚本所在的目录
 open_terminal_and_cd "$current_directory"

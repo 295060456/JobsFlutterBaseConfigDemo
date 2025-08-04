@@ -1,220 +1,226 @@
 #!/bin/zsh
 
-# ✅ 彩色打印函数
-print_success() { echo "\033[1;32m✅ $1\033[0m"; }
-print_info()    { echo "\033[1;34m📘 $1\033[0m"; }
-print_warn()    { echo "\033[1;33m⚠️ $1\033[0m"; }
-print_error()   { echo "\033[1;31m❌ $1\033[0m"; }
+# ✅ 全局变量定义区域
+PROFILE_FILE=""
+selected_envs=()
 
-# ✅ 选择写入配置文件
-print_info "📝 请选择你要写入的配置文件（默认写入 ~/.bash_profile）："
-echo "1️⃣ ~/.bash_profile"
-echo "2️⃣ ~/.bashrc"
-echo "3️⃣ ~/.zshrc"
-echo "4️⃣ ~/.oh-my-zsh/oh-my-zsh.sh"
-read "?👉 输入序号选择（回车默认 ~/.bash_profile）：" profile_choice
+# ✅ 彩色输出函数
+SCRIPT_BASENAME=$(basename "$0" | sed 's/\.[^.]*$//')   # 当前脚本名（去掉扩展名）
+LOG_FILE="/tmp/${SCRIPT_BASENAME}.log"                  # 设置对应的日志文件路径
 
-case $profile_choice in
-  2) PROFILE_FILE="$HOME/.bashrc";;
-  3) PROFILE_FILE="$HOME/.zshrc";;
-  4) PROFILE_FILE="$HOME/.oh-my-zsh/oh-my-zsh.sh";;
-  *) PROFILE_FILE="$HOME/.bash_profile";;
-esac
+log()            { echo -e "$1" | tee -a "$LOG_FILE"; }
+color_echo()     { log "\033[1;32m$1\033[0m"; }        # ✅ 正常绿色输出
+info_echo()      { log "\033[1;34mℹ $1\033[0m"; }      # ℹ 信息
+success_echo()   { log "\033[1;32m✔ $1\033[0m"; }      # ✔ 成功
+warn_echo()      { log "\033[1;33m⚠ $1\033[0m"; }      # ⚠ 警告
+warm_echo()      { log "\033[1;33m$1\033[0m"; }        # 🟡 温馨提示（无图标）
+note_echo()      { log "\033[1;35m➤ $1\033[0m"; }      # ➤ 说明
+error_echo()     { log "\033[1;31m✖ $1\033[0m"; }      # ✖ 错误
+err_echo()       { log "\033[1;31m$1\033[0m"; }        # 🔴 错误纯文本
+debug_echo()     { log "\033[1;35m🐞 $1\033[0m"; }     # 🐞 调试
+highlight_echo() { log "\033[1;36m🔹 $1\033[0m"; }     # 🔹 高亮
+gray_echo()      { log "\033[0;90m$1\033[0m"; }        # ⚫ 次要信息
+bold_echo()      { log "\033[1m$1\033[0m"; }           # 📝 加粗
+underline_echo() { log "\033[4m$1\033[0m"; }           # 🔗 下划线
 
-print_info "📄 当前配置文件：$PROFILE_FILE"
-touch "$PROFILE_FILE"
+# ✅ 自述信息
+print_description() {
+  info_echo      "=============================="
+  info_echo      "     Jobs Installer 🚀       "
+  info_echo      "=============================="
+  echo ""
+  bold_echo      "🛠️ Jobs 自动化脚本助手"
+  gray_echo      "----------------------------------------------"
+  note_echo      "✅ 自动检测环境 / 安装依赖"
+  note_echo      "✅ 支持 FVM / SDK 管理 / PATH 写入"
+  note_echo      "✅ 命令行交互式选择 / 回车跳过 / 高亮提示"
+  note_echo      "✅ 所有改动尽量幂等且具备提示"
+  gray_echo      "----------------------------------------------"
+}
 
-# ✅ 显示功能说明
-print_info "🛠️ 本脚本支持添加以下环境变量配置（可多选）："
-echo ""
-echo " 1️⃣ Rbenv / Ruby"
-echo " 2️⃣ Curl"
-echo " 3️⃣ VSCode"
-echo " 4️⃣ Flutter"
-echo " 5️⃣ Android SDK"
-echo " 6️⃣ FVM"
-echo " 7️⃣ JDK / OpenJDK / SDKMAN"
-echo " 8️⃣ Gradle"
-echo " 9️⃣ pipx"
-echo " 🔟 终端默认路径定位 ~/Desktop"
-echo ""
-print_warn "💡 默认直接回车 = 全选；否则请输入多个编号，用空格分隔"
+# ✅ 用户确认启动
+wait_for_user_to_start() {
+  echo ""
+  read "?👉 按下回车开始执行，或 Ctrl+C 取消..."
+  echo ""
+}
 
-selected=()
-while true; do
-  read "?👉 请输入你想添加的编号（回车=全选）: " input
-  if [[ -z "$input" ]]; then
-    selected=(1 2 3 4 5 6 7 8 9 10)
-    break
-  else
-    selected+=($input)
-    print_info "当前选择：${selected[*]}"
-    read "?👉 是否继续添加更多编号？回车结束，输入更多编号继续：" more
-    [[ -n "$more" ]] && selected+=($more) || break
-  fi
-done
+# ✅  功能模块：选择 Profile
+select_profile_file() {
+  info_echo "📝 请选择你要写入的配置文件（默认写入 ~/.bash_profile）："
+  echo "1️⃣ ~/.bash_profile"
+  echo "2️⃣ ~/.bashrc"
+  echo "3️⃣ ~/.zshrc"
+  echo "4️⃣ ~/.oh-my-zsh/oh-my-zsh.sh"
+  read "?👉 输入序号选择（回车默认 ~/.bash_profile）：" choice
 
-selected=($(echo "${selected[@]}" | tr ' ' '\n' | sort -n | uniq))
+  case $choice in
+    2) PROFILE_FILE="$HOME/.bashrc" ;;
+    3) PROFILE_FILE="$HOME/.zshrc" ;;
+    4) PROFILE_FILE="$HOME/.oh-my-zsh/oh-my-zsh.sh" ;;
+    *) PROFILE_FILE="$HOME/.bash_profile" ;;
+  esac
 
-# ✅ 插入环境配置块函数
-append_block_if_not_exists() {
-  local id=$1
-  local header="$2"
-  shift 2
-  local block=("$@")
+  info_echo "📄 当前配置文件：$PROFILE_FILE"
+  touch "$PROFILE_FILE"
+}
 
-  if [[ " ${selected[@]} " =~ " ${id} " ]]; then
-    if ! grep -Fq "$header" "$PROFILE_FILE"; then
-      if [[ $id == 10 ]]; then
-        sed -i '' '1i\
-'"${block[0]}"'
-' "$PROFILE_FILE"
-        print_success "已将『终端默认进入桌面目录』写入配置文件顶部"
-      else
-        echo "\n$header" >> "$PROFILE_FILE"
-        for line in "${block[@]}"; do echo "$line" >> "$PROFILE_FILE"; done
-        print_success "✅ 已添加：$header"
-      fi
+# ✅ 功能模块：选择环境变量编号
+select_env_items() {
+  info_echo "🛠️ 请选择你要写入的环境变量（可多选）："
+  echo ""
+  echo " 1️⃣ Rbenv / Ruby"
+  echo " 2️⃣ Curl"
+  echo " 3️⃣ VSCode"
+  echo " 4️⃣ Flutter"
+  echo " 5️⃣ Android SDK"
+  echo " 6️⃣ FVM"
+  echo " 7️⃣ JDK / SDKMAN"
+  echo " 8️⃣ Gradle"
+  echo " 9️⃣ pipx"
+  echo " 🔟 cd 进入桌面"
+  echo ""
+  warn_echo "💡 回车 = 全选；否则请输入多个编号，用空格分隔"
+
+  local input more
+  while true; do
+    read "?👉 请输入你想添加的编号（回车=全选）: " input
+    if [[ -z "$input" ]]; then
+      selected_envs=(1 2 3 4 5 6 7 8 9 10)
+      break
     else
-      print_info "📌 已存在：$header"
+      selected_envs+=($input)
+      info_echo "📌 当前选择：${selected_envs[*]}"
+      read "?👉 是否继续添加更多编号？回车结束，输入更多编号继续：" more
+      [[ -n "$more" ]] && selected_envs+=($more) || break
+    fi
+  done
+
+  selected_envs=($(echo "${selected_envs[@]}" | tr ' ' '\n' | sort -n | uniq))
+}
+
+# ✅ 功能模块：多行写入环境变量块（避免重复写入）
+append_env_block() {
+  local file="$1"           # 参数1：要写入的文件路径，例如 ~/.zshrc
+  shift                     # 去掉第一个参数
+  local block=("$@")        # 参数2+：多行内容数组
+
+  # 提取 block 中第一行作为 header（用作唯一标识）
+  local header="${block[0]}"
+  if [[ -z "$header" ]]; then
+    error_echo "❌ 环境变量块不能为空"
+    return 1
+  fi
+
+  # 如果文件中已包含该 header，跳过写入
+  if grep -Fq "$header" "$file" 2>/dev/null; then
+    info_echo "📌 已存在：$header"
+  else
+    echo "" >> "$file"
+    for line in "${block[@]}"; do
+      echo "$line" >> "$file"
+    done
+    success_echo "✅ 已写入到 $file：$header"
+  fi
+}
+
+# ✅ 功能模块：特殊处理 cd 桌面
+prepend_cd_desktop() {
+  if [[ " ${selected_envs[*]} " =~ " 10 " ]]; then
+    if ! grep -Fxq 'cd "$HOME/Desktop"' "$PROFILE_FILE"; then
+      tmp_file=$(mktemp)
+      echo '# 每次打开终端默认进入桌面目录' >> "$tmp_file"
+      echo 'cd "$HOME/Desktop"' >> "$tmp_file"
+      echo '' >> "$tmp_file"
+      cat "$PROFILE_FILE" >> "$tmp_file"
+      mv "$tmp_file" "$PROFILE_FILE"
+      success_echo "✅ 已将『cd ~/Desktop』插入配置文件顶部"
+    else
+      info_echo "📌 配置文件中已存在 cd ~/Desktop"
     fi
   fi
 }
 
-# ✅ cd ~/Desktop 永久插入顶部（不使用 sed 以避免兼容问题）
-if [[ " ${selected[@]} " =~ " 10 " ]]; then
-  if ! grep -Fxq 'cd "$HOME/Desktop"' "$PROFILE_FILE"; then
-    tmp_file=$(mktemp)
-    echo '# 每次打开终端默认进入桌面目录' >> "$tmp_file"
-    echo 'cd "$HOME/Desktop"' >> "$tmp_file"
-    echo '' >> "$tmp_file"
-    cat "$PROFILE_FILE" >> "$tmp_file"
-    mv "$tmp_file" "$PROFILE_FILE"
-    print_success "✅ 已将『cd ~/Desktop』插入配置文件顶部"
-  else
-    print_info "📌 配置文件中已存在 cd ~/Desktop"
-  fi
-fi
+# ✅ 功能模块：写入各类配置
+write_all_env_blocks() {
+  append_env_block "$PROFILE_FILE" \
+    "# 配置 Rbenv / Ruby" \
+    'export PATH="$HOME/.rbenv/bin:$PATH"' \
+    'eval "$(rbenv init -)"'
 
-# ✅ Rbenv + Ruby
-append_block_if_not_exists 1 "# 配置 Rbenv.ruby 环境变量（需安装 rbenv）" \
-  'if command -v rbenv &>/dev/null; then' \
-  '  export PATH="$HOME/.rbenv/bin:$PATH"' \
-  '  eval "$(rbenv init -)"' \
-  'else' \
-  '  echo "⚠️ 未检测到 rbenv，请执行 brew install rbenv 安装"' \
-  'fi' \
-  'if command -v ruby &>/dev/null; then' \
-  '  export PATH="/usr/local/opt/ruby/bin:$PATH"' \
-  '  export LDFLAGS="-L/usr/local/opt/ruby/lib"' \
-  '  export CPPFLAGS="-I/usr/local/opt/ruby/include"' \
-  '  export PKG_CONFIG_PATH="/usr/local/opt/ruby/lib/pkgconfig"' \
-  'else' \
-  '  echo "⚠️ 未检测到 ruby，建议执行 brew install ruby"' \
-  'fi'
+  append_env_block "$PROFILE_FILE" \
+    "# 配置 Curl 环境变量" \
+    'export PATH="/usr/local/opt/curl/bin:$PATH"'
 
-# ✅ Curl
-append_block_if_not_exists 2 "# 配置 Curl 环境变量（需 Homebrew 安装）" \
-  'if command -v curl &>/dev/null; then' \
-  '  export PATH="/usr/local/opt/curl/bin:$PATH"' \
-  '  export LDFLAGS="-L/usr/local/opt/curl/lib"' \
-  '  export CPPFLAGS="-I/usr/local/opt/curl/include"' \
-  '  export PKG_CONFIG_PATH="/usr/local/opt/curl/lib/pkgconfig"' \
-  'else' \
-  '  echo "⚠️ curl 未通过 brew 安装，建议执行 brew install curl"' \
-  'fi'
+  append_env_block "$PROFILE_FILE" \
+    "# 配置 VSCode 命令行" \
+    'export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"'
 
-# ✅ VSCode
-append_block_if_not_exists 3 "# 配置 VSCode 命令行（code）" \
-  'if [[ -d "/Applications/Visual Studio Code.app/Contents/Resources/app/bin" ]]; then' \
-  '  export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"' \
-  '  if ! command -v code &>/dev/null; then' \
-  '    echo "⚠️ VSCode 已安装但未配置 code 命令，请在 VSCode 中运行：Shell Command: Install code in PATH"' \
-  '  fi' \
-  'else' \
-  '  echo "⚠️ 未检测到 VSCode，请先安装 Visual Studio Code 后再运行本脚本"' \
-  'fi'
+  append_env_block "$PROFILE_FILE" \
+    "# 配置 Flutter 环境变量" \
+    'export PATH="$HOME/flutter/bin:$PATH"' \
+    'export PUB_HOSTED_URL=https://pub.dev' \
+    'export FLUTTER_STORAGE_BASE_URL=https://storage.googleapis.com'
 
-# ✅ Flutter
-append_block_if_not_exists 4 "# 配置 Flutter 环境变量" \
-  'if ! command -v fvm &>/dev/null; then' \
-  '  if [[ -d "/opt/homebrew/Caskroom/flutter/latest/flutter/bin" ]]; then' \
-  '    export PATH="/opt/homebrew/Caskroom/flutter/latest/flutter/bin:$PATH"' \
-  '  elif [[ -d "/usr/local/Caskroom/flutter/latest/flutter/bin" ]]; then' \
-  '    export PATH="/usr/local/Caskroom/flutter/latest/flutter/bin:$PATH"' \
-  '  elif [[ -d "$HOME/flutter/bin" ]]; then' \
-  '    export PATH="$HOME/flutter/bin:$PATH"' \
-  '  elif [[ -d "$HOME/Documents/GitHub.Jobs/Flutter.SDK/Flutter.SDK.last/bin" ]]; then' \
-  '    export PATH="$HOME/Documents/GitHub.Jobs/Flutter.SDK/Flutter.SDK.last/bin:$PATH"' \
-  '  else' \
-  '    echo "⚠️ 未找到 Flutter SDK，请手动配置路径"' \
-  '  fi' \
-  'fi' \
-  'export PUB_HOSTED_URL=https://pub.dartlang.org' \
-  'export FLUTTER_STORAGE_BASE_URL=https://storage.googleapis.com'
+  append_env_block "$PROFILE_FILE" \
+    "# 配置 Android SDK" \
+    'export ANDROID_SDK_ROOT="$HOME/Library/Android/sdk"' \
+    'export PATH="$PATH:$ANDROID_SDK_ROOT/platform-tools"'
 
-# ✅ Android SDK
-append_block_if_not_exists 5 "# 配置 Android SDK 环境变量" \
-  'if [[ -d "$HOME/Library/Android/sdk" ]]; then' \
-  '  export ANDROID_SDK_ROOT="$HOME/Library/Android/sdk"' \
-  '  export PATH="$PATH:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/tools/bin"' \
-  'else' \
-  '  echo "⚠️ 未检测到 Android SDK，请安装 Android Studio 或配置 ANDROID_SDK_ROOT"' \
-  'fi'
+  append_env_block "$PROFILE_FILE" \
+    "# 配置 FVM" \
+    'export PATH="$HOME/.pub-cache/bin:$PATH"' \
+    'flutter() { fvm flutter "$@"; }'
 
-# ✅ FVM
-append_block_if_not_exists 6 "# 配置 FVM 环境变量" \
-  'export PATH="$HOME/.pub-cache/bin:$PATH"' \
-  'if command -v fvm &>/dev/null; then' \
-  '  flutter() { fvm flutter "$@"; }' \
-  'else' \
-  '  echo "⚠️ 未检测到 fvm，请执行 flutter pub global activate fvm 安装"' \
-  'fi'
+  append_env_block "$PROFILE_FILE" \
+    "# 配置 JDK / SDKMAN" \
+    'export JAVA_HOME=$(/usr/libexec/java_home)' \
+    'export PATH="$JAVA_HOME/bin:$PATH"'
 
-# ✅ JDK / SDKMAN（避免 PATH 重复，优雅 fallback）
-append_block_if_not_exists 7 "# 配置 JDK / OpenJDK / SDKMAN" \
-  'export JAVA_HOME="/opt/homebrew/opt/openjdk"  # 默认值（优先级最低）' \
-  'if /usr/libexec/java_home &>/dev/null; then' \
-  '  export JAVA_HOME=$(/usr/libexec/java_home)' \
-  'fi' \
-  'case ":$PATH:" in' \
-  '  *":$JAVA_HOME/bin:"*) ;;' \
-  '  *) export PATH="$JAVA_HOME/bin:$PATH" ;;' \
-  'esac' \
-  'if [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then' \
-  '  export SDKMAN_DIR="$HOME/.sdkman"' \
-  '  source "$HOME/.sdkman/bin/sdkman-init.sh"' \
-  'else' \
-  '  echo "⚠️ 未检测到 SDKMAN，请访问 https://sdkman.io 安装"' \
-  'fi'
+  append_env_block "$PROFILE_FILE" \
+    "# 配置 Gradle" \
+    'export PATH="$HOME/Documents/Gradle/gradle-8.7/bin:$PATH"'
 
-# ✅ Gradle
-append_block_if_not_exists 8 "# 配置 Gradle 环境变量" \
-  'if command -v gradle &>/dev/null; then' \
-  '  export PATH="$HOME/Documents/Gradle/gradle-8.7/bin:$PATH"' \
-  'else' \
-  '  echo "⚠️ 未检测到 gradle，建议执行 brew install gradle 安装"' \
-  'fi'
+  append_env_block "$PROFILE_FILE" \
+    "# 配置 pipx" \
+    'export PATH="$PATH:$HOME/.local/bin"'
 
-# ✅ pipx
-append_block_if_not_exists 9 "# 配置 pipx 环境变量" \
-  'if command -v pipx &>/dev/null; then' \
-  '  export PATH="$PATH:$HOME/.local/bin"' \
-  'else' \
-  '  echo "⚠️ pipx 未安装，建议执行 brew install pipx"' \
-  'fi'
+  prepend_cd_desktop
+}
 
-# ✅ 打开配置文件供用户查看
-open "$PROFILE_FILE"
-
-# ✅ 提示用户手动 source，而不是在脚本中执行
-if [[ "$PROFILE_FILE" == "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]]; then
-  print_warn "⚠️ 你修改的是 oh-my-zsh 的主文件，请执行以下命令："
-  print_info "👉  source ~/.zshrc"
-else
-  print_success "✅ 环境变量已写入：$PROFILE_FILE"
-  print_warn "⚠️ 为使配置生效，请在终端中手动执行："
+# ✅ 功能模块：打开文件 & 提示
+final_tip() {
+  open "$PROFILE_FILE"
   echo ""
-  echo "👉  source \"$PROFILE_FILE\""
+  success_echo "✅ 环境变量已写入：$PROFILE_FILE"
+  warn_echo "⚠️ 请手动执行以下命令以使其生效："
   echo ""
-fi
+  underline_echo "source \"$PROFILE_FILE\""
+  echo ""
+}
+
+# ✅ 功能说明输出（结构清晰）
+print_description() {
+  echo ""
+  bold_echo "🛠️ 环境变量快速写入脚本"
+  gray_echo "---------------------------------------------"
+  note_echo "1️⃣ 选择配置文件（.zshrc / .bash_profile / etc）"
+  note_echo "2️⃣ 支持多种常用开发工具配置写入"
+  note_echo "3️⃣ 自动避免重复写入，结构清晰"
+  note_echo "4️⃣ 全程交互，写入后自动打开查看"
+  gray_echo "---------------------------------------------"
+}
+
+# ✅ 主函数
+main() {
+  clear                           # 清屏
+  print_description               # 自述信息
+  wait_for_user_to_start          # 等待用户确认开始
+  print_description               # 自述介绍
+  select_profile_file             # 选择配置文件
+  select_env_items                # 选择要写入的环境变量项
+  write_all_env_blocks            # 写入配置
+  final_tip                       # 提示用户手动生效
+}
+
+main "$@"

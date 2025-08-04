@@ -1,98 +1,116 @@
 #!/bin/zsh
 
-# ✅ 打印颜色信息函数
-print_green()  { echo "\033[0;32m$1\033[0m"; }
-print_yellow() { echo "\033[0;33m$1\033[0m"; }
-print_red()    { echo "\033[0;31m$1\033[0m"; }
+# ✅ 彩色输出函数 🌈
+SCRIPT_BASENAME=$(basename "$0" | sed 's/\.[^.]*$//')   # 当前脚本名（去掉扩展名）
+LOG_FILE="/tmp/${SCRIPT_BASENAME}.log"                  # 设置对应的日志文件路径
 
-# ✅ 打印脚本用途
+log()            { echo -e "$1" | tee -a "$LOG_FILE"; }
+color_echo()     { log "\033[1;32m$1\033[0m"; }         # ✅ 正常绿色输出
+info_echo()      { log "\033[1;34mℹ $1\033[0m"; }       # ℹ 信息
+success_echo()   { log "\033[1;32m✔ $1\033[0m"; }       # ✔ 成功
+warn_echo()      { log "\033[1;33m⚠ $1\033[0m"; }       # ⚠ 警告
+warm_echo()      { log "\033[1;33m$1\033[0m"; }         # 🟡 温馨提示（无图标）
+note_echo()      { log "\033[1;35m➤ $1\033[0m"; }       # ➤ 说明
+error_echo()     { log "\033[1;31m✖ $1\033[0m"; }       # ✖ 错误
+err_echo()       { log "\033[1;31m$1\033[0m"; }         # 🔴 错误纯文本
+debug_echo()     { log "\033[1;35m🐞 $1\033[0m"; }      # 🐞 调试
+highlight_echo() { log "\033[1;36m🔹 $1\033[0m"; }      # 🔹 高亮
+gray_echo()      { log "\033[0;90m$1\033[0m"; }         # ⚫ 次要信息
+bold_echo()      { log "\033[1m$1\033[0m"; }            # 📝 加粗
+underline_echo() { log "\033[4m$1\033[0m"; }            # 🔗 下划线
+
+# ✅ 自述信息
 print_usage() {
-  print_green "🛠️ 脚本用途："
-  print_green "1️⃣ 检查当前 Ruby 与 gem 环境"
-  print_green "2️⃣ 检查已安装的 CocoaPods 版本"
-  print_green "3️⃣ 如果不是最新版本，则卸载所有旧版本并安装最新版本"
-  print_green "4️⃣ 打印当前 pod 命令路径，验证环境配置正确"
+  success_echo "🛠️ CocoaPods 环境升级助手"
+  echo "===================================================================="
+  note_echo "1️⃣ 检查当前 Ruby 与 gem 环境"
+  note_echo "2️⃣ 检查已安装的 CocoaPods 版本"
+  note_echo "3️⃣ 如果非最新，则卸载所有旧版本并安装最新版本"
+  note_echo "4️⃣ 验证 pod 命令路径，确保配置生效"
+  echo "===================================================================="
   echo ""
-  read "?👉 按下回车继续执行，或按 Ctrl+C 取消..."
+  read "?👉 按下回车继续执行，或 Ctrl+C 取消..."
 }
 
-# ✅ 检查当前 pod 版本
+# ✅ 检查当前 CocoaPods 版本
 check_current_pod_version() {
   if command -v pod &>/dev/null; then
     CURRENT_VERSION=$(pod --version)
-    print_green "当前 pod 版本: $CURRENT_VERSION"
+    success_echo "当前 pod 版本：$CURRENT_VERSION"
   else
-    print_red "未检测到 pod 命令，可能未安装或路径异常。"
+    error_echo "未检测到 pod 命令，可能未安装或环境异常"
     CURRENT_VERSION="none"
   fi
 }
 
-# ✅ 获取最新版本
+# ✅ 获取最新版本 🔍
 get_latest_version() {
   LATEST_VERSION=$(gem list -r ^cocoapods$ | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | sort -V | tail -n 1)
-  print_green "可用最新版本: $LATEST_VERSION"
+  info_echo "远程可用最新版：$LATEST_VERSION"
 }
 
-# ✅ 检查当前 Ruby 和 gem 环境
+# ✅ 检查 Ruby 与 gem 环境 🔧
 check_ruby_env() {
   RUBY_PATH=$(rbenv which ruby 2>/dev/null)
   GEM_HOME=$(gem env home)
-  print_yellow "当前使用的 Ruby 路径: $RUBY_PATH"
-  print_yellow "当前使用的 gem 安装路径: $GEM_HOME"
+  gray_echo "当前 Ruby 路径：$RUBY_PATH"
+  gray_echo "当前 gem 安装路径：$GEM_HOME"
 }
 
-# ✅ 清除所有已安装的 CocoaPods
+# ✅ 卸载全部 CocoaPods 🧹
 remove_all_cocoapods() {
-  print_yellow "卸载所有已安装的 CocoaPods..."
+  warn_echo "卸载所有已安装的 CocoaPods..."
   gem list --local cocoapods | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | while read -r ver; do
-    print_yellow "正在卸载版本: $ver"
+    warn_echo "正在卸载版本 $ver ..."
     sudo gem uninstall cocoapods -v "$ver" -aIx
   done
 }
 
-# ✅ 安装最新版本 CocoaPods 到当前 Ruby
+# ✅ 安装最新 CocoaPods 📦
 install_latest_cocoapods() {
-  print_yellow "正在安装最新版本 CocoaPods $LATEST_VERSION ..."
+  info_echo "正在安装 CocoaPods $LATEST_VERSION..."
   sudo gem install cocoapods -v "$LATEST_VERSION"
 }
 
-# ✅ 刷新缓存 & shim
+# ✅ 刷新环境缓存 🔁
 refresh_env() {
-  print_yellow "刷新环境缓存..."
+  gray_echo "刷新环境缓存中..."
   hash -r
   if command -v rbenv &>/dev/null; then
-    print_yellow "检测到 rbenv，正在刷新 shim..."
+    gray_echo "rbenv 环境下，执行 rehash ..."
     rbenv rehash
   fi
 }
 
-# ✅ 查看 pod 命令路径
+# ✅ 查看 pod 路径 🔍
 check_pod_location() {
   POD_PATH=$(which pod)
-  print_green "当前 pod 命令路径: $POD_PATH"
+  success_echo "当前 pod 命令路径：$POD_PATH"
 }
 
-# ✅ 主流程
-main() {
-  print_usage
-
-  print_green "🚀 CocoaPods 最终升级脚本开始执行..."
-
-  check_ruby_env
-  check_current_pod_version
-  get_latest_version
-
+# ✅ 升级判断与处理 ♻️
+upgrade_if_needed() {
+  # ✅ 判断是否为最新版
   if [[ "$CURRENT_VERSION" == "$LATEST_VERSION" ]]; then
-    print_green "✅ 已是最新版本，无需升级。"
+    success_echo "✔ 当前已是最新版本，无需升级"
   else
-    remove_all_cocoapods
-    install_latest_cocoapods
-    refresh_env
-    check_current_pod_version
-    print_green "🎉 升级完成，当前 pod 版本: $(pod --version)"
+    remove_all_cocoapods                      # ✅ 清空旧版本 🧹 
+    install_latest_cocoapods                  # ✅ 安装新版本 📦
+    refresh_env                               # ✅ 刷新环境 🔁
+    check_current_pod_version                 # ✅ 再次确认：检查当前 CocoaPods 版本
+    success_echo "🎉 升级完成，当前版本为：$(pod --version)"
   fi
-
-  check_pod_location
 }
 
-main
+# ✅ 主函数入口 🚀
+main() {
+  print_usage                                 # ✅ 自述信息 🖨️
+  info_echo "🚀 CocoaPods 升级脚本开始执行..."
+  check_ruby_env                              # ✅ 检查 Ruby 与 gem 环境 🔧
+  check_current_pod_version                   # ✅ 获取当前版本：检查当前 CocoaPods 版本 🧪
+  get_latest_version                          # ✅ 获取远程版本 🔍
+  upgrade_if_needed                           # ✅ 判断是否为最新版 ♻️
+  check_pod_location                          # ✅ 打印 pod 命令路径 🔍
+}
+
+main "$@"
