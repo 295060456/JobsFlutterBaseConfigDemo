@@ -77,18 +77,46 @@ create_avd() {
   fi
 }
 
-# ✅ 启动模拟器
+# ✅ 启动 Android 模拟器（fzf 选择 + 等待 ready）
 start_emulator() {
-  echo ""
-  info_echo "🚀 启动模拟器 $AVD_NAME..."
-  nohup emulator -avd "$AVD_NAME" > /dev/null 2>&1 &
-
-  sleep 5
-  if pgrep -f "emulator.*$AVD_NAME" > /dev/null; then
-    success_echo "🎉 模拟器已启动成功！名称：$AVD_NAME"
-  else
-    error_echo "❌ 模拟器启动失败，请手动运行：emulator -avd $AVD_NAME"
+  if adb devices | grep -q "device$"; then
+    success_echo "✅ 已检测到设备或模拟器"
+    return
   fi
+
+  warm_echo "🖥️ 当前无模拟器运行，准备启动 AVD..."
+
+  if ! command -v fzf &>/dev/null; then
+    error_echo "❌ 未安装 fzf，请先安装：brew install fzf"
+    exit 1
+  fi
+
+  avds=($("$ANDROID_HOME/emulator/emulator" -list-avds))
+  if [[ ${#avds[@]} -eq 0 ]]; then
+    error_echo "❌ 未找到任何 AVD，请先使用 avdmanager 创建模拟器"
+    exit 1
+  fi
+
+  selected_avd=$(printf "%s\n" "${avds[@]}" | fzf --prompt="📱 选择要启动的模拟器：")
+  if [[ -z "$selected_avd" ]]; then
+    error_echo "❌ 未选择 AVD，已取消"
+    exit 1
+  fi
+
+  highlight_echo "🚀 启动模拟器：$selected_avd ..."
+  nohup "$ANDROID_HOME/emulator/emulator" -avd "$selected_avd" >/dev/null 2>&1 &
+
+  info_echo "⏳ 等待模拟器启动中，请稍候..."
+  for i in {1..30}; do
+    if adb devices | grep -q "device$"; then
+      success_echo "✅ 模拟器已就绪"
+      return
+    fi
+    sleep 2
+  done
+
+  error_echo "❌ 模拟器启动失败，请手动检查 AVD 是否可用"
+  exit 1
 }
 
 # ✅ 输出添加环境变量提示

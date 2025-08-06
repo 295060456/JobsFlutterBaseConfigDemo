@@ -1,4 +1,3 @@
-/// 个人本地设置配置。❌不推荐加入Git管理
 {
   "_comment": "🚫 本文件为个人本地 VS Code 设置，仅供自己使用，❌ 不推荐加入 Git 管理",
   "__cmake_note": "✅ 指定 CMake 项目的源代码目录（用于 CMake 插件）",
@@ -8,7 +7,7 @@
   "__dart_imports_note": "✅ Dart 编辑器：整理 import 时总是使用 package 引用风格",
   "dart.editImports": "always_use_package_imports",
   "__flutter_sdk_note": "✅ Flutter SDK 路径（使用 FVM 管理的版本路径）",
-  "dart.flutterSdkPath": ".fvm/versions/3.32.6",
+  "dart.flutterSdkPath": ".fvm/versions/3.32.8",
   "__format_note": "✅ 每次保存文件时自动格式化代码",
   "editor.formatOnSave": true,
   "__autosave_note": "✅ 当窗口失焦时自动保存",
@@ -30,5 +29,5 @@
   "__bracket_colorization_note": "✅ 启用括号颜色匹配功能，为不同层级的括号着色",
   "editor.bracketPairColorization.enabled": true,
   "__bracket_match_note": "✅ 始终高亮当前括号对，便于匹配括号位置",
-  "editor.matchBrackets": "always",
+  "editor.matchBrackets": "always"
 }

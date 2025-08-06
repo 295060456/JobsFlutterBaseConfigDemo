@@ -3,11 +3,13 @@
 # ✅ 环境变量设置
 export ANDROID_HOME="${ANDROID_HOME:-$HOME/Library/Android/sdk}"
 export PATH="$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
-
+    
 # ✅ 获取脚本路径
-script_path="$(cd "$(dirname "$0")" && pwd)"
-script_file="$(basename "$0")"
+script_path="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
 flutter_project_root="$script_path"
+cd "$flutter_project_root"
+script_file="$(basename "$0")"
+flutter_cmd=("flutter")
 
 # ✅ 彩色输出函数
 SCRIPT_BASENAME=$(basename "$0" | sed 's/\.[^.]*$//')   # 当前脚本名（去掉扩展名）
@@ -27,6 +29,27 @@ highlight_echo() { log "\033[1;36m🔹 $1\033[0m"; }     # 🔹 高亮
 gray_echo()      { log "\033[0;90m$1\033[0m"; }        # ⚫ 次要信息
 bold_echo()      { log "\033[1m$1\033[0m"; }           # 📝 加粗
 underline_echo() { log "\033[4m$1\033[0m"; }           # 🔗 下划线
+
+# ✅ 日志输出（日志文件名 == 脚本文件名）
+init_logging() {
+  local custom_log_name="$1"
+
+  # 获取脚本路径（兼容 Finder 双击和终端执行）
+  local resolved_path="${(%):-%x}"
+  script_path="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
+
+  local default_log_name="$(basename "$resolved_path" | sed 's/\.[^.]*$//').log"
+  local log_file_name="${custom_log_name:-$default_log_name}"
+
+  LOG_FILE="${script_path}/${log_file_name}"
+
+  # 清空旧日志
+  : > "$LOG_FILE"
+  # 打印路径（彩色输出后才重定向）
+  info_echo "日志记录启用：$LOG_FILE"
+  # 重定向所有输出到终端 + 日志
+  exec 1> >(tee -a "$LOG_FILE") 2>&1
+}
 
 # ✅ 创建桌面快捷方式
 create_shortcut() {
@@ -98,7 +121,7 @@ fix_missing_namespace() {
   done
 }
 
-# ✅  启动 Android 模拟器
+# ✅ 启动 Android 模拟器
 start_android_emulator() {
   if adb devices | grep -q "device$"; then
     success_echo "✅ 已检测到设备或模拟器"
@@ -182,16 +205,21 @@ detect_entry_file() {
   BUILD_MODE=${BUILD_MODE:-debug}
 }
 
-# ✅  执行 flutter run
-run_flutter() {
-  if [[ -f "$flutter_project_root/.fvm/fvm_config.json" ]] && command -v fvm &>/dev/null; then
-    flutter_cmd="fvm flutter"
-    note_echo "🧩 使用 FVM 管理 Flutter 版本"
+# ✅ FVM 监测
+detect_flutter_cmd() {
+  script_path="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
+  local fvm_config_path="$script_path/.fvm/fvm_config.json"
+  if command -v fvm >/dev/null 2>&1 && [[ -f "$fvm_config_path" ]]; then
+    flutter_cmd=("fvm" "flutter")
+    info_echo "🧩 检测到 FVM 项目，使用命令：fvm flutter"
   else
-    flutter_cmd="flutter"
-    note_echo "🧩 使用全局 Flutter"
+    flutter_cmd=("flutter")
+    info_echo "📦 使用系统 Flutter 命令：flutter"
   fi
+}
 
+# ✅ 执行 flutter run
+run_flutter() {
   note_echo "📦 自动执行：flutter pub upgrade"
   eval "$flutter_cmd pub upgrade"
 
@@ -225,21 +253,116 @@ run_flutter() {
 
   if [[ $? -ne 0 ]]; then
     warn_echo "⚠️ 构建失败，执行自动修复流程..."
-    note_echo "🧹 清除缓存 ~/.pub-cache 和本地构建产物"
-    rm -rf ~/.pub-cache
+    note_echo "🧹 清除项目构建产物和 pubspec.lock..."
     rm -rf "$flutter_project_root/.dart_tool"
     rm -rf "$flutter_project_root/build"
+    rm -f "$flutter_project_root/pubspec.lock"
     eval "$flutter_cmd pub get"
     note_echo "🔁 正在重试 flutter run..."
     eval "$cmd"
   fi
 }
 
-# ==================== 主执行函数 ====================
+# ✅ Android 构建环境完整性检查
+check_android_environment() {
+  warm_echo "🔍 正在检查 Android 构建环境..."
+  eval "$flutter_cmd --version"
+
+  # === JDK 检查 ===
+  if ! command -v java &>/dev/null; then
+    error_echo "❌ 未安装 Java（JDK），请先安装 JDK 17 或以上"
+    exit 1
+  fi
+
+  JAVA_VERSION=$(java -version 2>&1 | grep 'version' | awk -F '"' '{print $2}')
+  JAVA_MAJOR=$(echo "$JAVA_VERSION" | awk -F. '{print ($1 == "1") ? $2 : $1}')
+  if [[ "$JAVA_MAJOR" -lt 17 ]]; then
+    warn_echo "⚠ 当前 JDK 版本为 $JAVA_VERSION，建议使用 JDK 17+（AGP 8+ 要求）"
+  else
+    success_echo "✅ JDK 版本符合要求：$JAVA_VERSION"
+  fi
+
+  # === sdkmanager 检查 + 版本 ===
+  if ! command -v sdkmanager &>/dev/null; then
+    error_echo "❌ 未找到 sdkmanager，可能缺少 Android cmdline-tools"
+    warn_echo "🛠️ 可尝试执行：sdkmanager --install 'cmdline-tools;latest'"
+    exit 1
+  else
+    sdk_version=$(sdkmanager --version 2>/dev/null | head -n1)
+    success_echo "✅ sdkmanager 版本：$sdk_version"
+  fi
+
+  # === adb 检查 + 版本 ===
+  if ! command -v adb &>/dev/null; then
+    error_echo "❌ 未安装 adb，缺失 platform-tools"
+    warn_echo "🛠️ 可执行：sdkmanager 'platform-tools'"
+    exit 1
+  else
+    adb_version=$(adb version | grep -oE 'version [0-9.]+' | awk '{print $2}')
+    success_echo "✅ adb 版本：$adb_version"
+  fi
+
+  # === build-tools 检查 ===
+  if [[ ! -d "$ANDROID_HOME/build-tools" ]] || [[ -z "$(ls "$ANDROID_HOME/build-tools")" ]]; then
+    warn_echo "⚠️ 未检测到任何 build-tools，尝试安装中..."
+    sdkmanager "build-tools;34.0.0" || warn_echo "⚠️ build-tools 安装可能失败，请手动检查"
+  else
+    latest_build_tools=$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -n1)
+    success_echo "✅ 已检测到 build-tools：$latest_build_tools"
+  fi
+
+  # === platforms 检查 ===
+  if [[ ! -d "$ANDROID_HOME/platforms" ]] || [[ -z "$(ls "$ANDROID_HOME/platforms")" ]]; then
+    warn_echo "⚠️ 未检测到任何 Android 平台 SDK，尝试安装中..."
+    sdkmanager "platforms;android-34" || warn_echo "⚠️ Android 平台 SDK 安装可能失败，请手动检查"
+  else
+    latest_platform=$(ls "$ANDROID_HOME/platforms" | sort -V | tail -n1)
+    success_echo "✅ 已检测到平台 SDK：$latest_platform"
+  fi
+
+  # === flutter doctor 简要摘要（仅 Android Toolchain） ===
+  flutter_output=$("${flutter_cmd[@]}" doctor | grep -i "android toolchain")
+  if [[ -n "$flutter_output" ]]; then
+    success_echo "🧾 Flutter 检测结果：$flutter_output"
+  else
+    warn_echo "⚠️ 未能获取 Flutter doctor 信息，请手动执行 flutter doctor 检查"
+  fi
+
+  # === Gradle Wrapper 检查 ===
+  local wrapper_file="android/gradle/wrapper/gradle-wrapper.properties"
+  if [[ -f "$wrapper_file" ]]; then
+    gradle_url=$(grep distributionUrl "$wrapper_file" | cut -d= -f2 | xargs)
+    gradle_version=$(echo "$gradle_url" | grep -oE 'gradle-[0-9.]+' || true)
+    if [[ -n "$gradle_version" ]]; then
+      success_echo "✅ 检测到 Gradle Wrapper：$gradle_version"
+    else
+      warn_echo "⚠️ 未能解析 Gradle 版本：$gradle_url"
+    fi
+  else
+    warn_echo "⚠️ 未检测到 gradle-wrapper.properties，可能不是标准 Flutter 项目结构"
+  fi
+
+  # === Android NDK 检查 ===
+  local ndk_dir="$ANDROID_HOME/ndk"
+  if [[ -d "$ndk_dir" ]] && [[ -n "$(ls -A "$ndk_dir")" ]]; then
+    latest_ndk=$(ls "$ndk_dir" | sort -V | tail -n1)
+    success_echo "✅ 检测到 Android NDK：$latest_ndk"
+  else
+    warn_echo "⚠️ 未检测到 Android NDK（$ndk_dir），如项目使用 native C/C++，请通过 sdkmanager 安装"
+    note_echo "➤ 示例命令：sdkmanager 'ndk;26.3.11579264'"
+  fi
+
+  warm_echo "🔍 Android 构建环境监察完毕"
+}
+
+# ✅ 主执行函数
 main() {
   clear
-  create_shortcut                               # 创建桌面快捷方式
   show_intro                                    # 自述信息
+  detect_flutter_cmd                            # FVM 监测
+  check_android_environment                     # 环境完整性检测
+  init_logging                                  # 日志输出
+  create_shortcut                               # 创建桌面快捷方式
   fix_missing_namespace "$flutter_project_root" # 修复缺失 namespace
   detect_entry_file                             # 检测入口文件
   run_flutter                                   # 执行 flutter run

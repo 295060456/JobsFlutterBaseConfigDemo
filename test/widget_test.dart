@@ -8,7 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jobs_flutter_base_config/JobsDemoTools/UI/UI.3rd🌹/GetX/GetX管理的页面的生命周期/GetXLifeCycleDemo.dart';
-import 'package:jobs_flutter_base_config/main.dart';
+import 'package:jobs_flutter_base_config/mainss.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {

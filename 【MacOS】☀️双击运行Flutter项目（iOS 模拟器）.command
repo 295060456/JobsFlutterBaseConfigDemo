@@ -53,15 +53,15 @@ is_dart_entry_file() {
 # ✅ 自述信息
 show_banner() {
   clear
-  highlight_echo "                                                                                       "
-  highlight_echo "88888888888 88         88        88 888888888888 888888888888 88888888888 88888888ba   "
-  highlight_echo "88          88         88        88      88           88      88          88      \"8b  "
-  highlight_echo "88          88         88        88      88           88      88          88      ,8P  "
-  highlight_echo "88aaaaa     88         88        88      88           88      88aaaaa     88aaaaaa8P'  "
-  highlight_echo "88\"\"\"\"\"     88         88        88      88           88      88\"\"\"\"\"     88\"\"\"\"\"\"88'  "
-  highlight_echo "88          88         88        88      88           88      88          88     `8b   "
-  highlight_echo "88          88         Y8a.    .a8P      88           88      88          88      8b   "
-  highlight_echo "88          88888888888 `\"Y8888Y\"'       88           88      88888888888 88      `8b  "
+  highlight_echo '                                                                                       '
+  highlight_echo '88888888888 88         88        88 888888888888 888888888888 88888888888 88888888ba   '
+  highlight_echo '88          88         88        88      88           88      88          88      "8b  '
+  highlight_echo '88          88         88        88      88           88      88          88      ,8P  '
+  highlight_echo '88aaaaa     88         88        88      88           88      88aaaaa     88aaaaaa8P''  '
+  highlight_echo '88""""""     88         88        88      88           88      88""""""     88""""""88''  '
+  highlight_echo '88          88         88        88      88           88      88          88     `8b   '
+  highlight_echo '88          88         Y8a.    .a8P      88           88      88          88      8b   '
+  highlight_echo '88          88888888888 `"Y8888Y"`       88           88      88888888888 88      `8b  '
   warn_echo    "                        🛠️ FLUTTER iOS 模拟器 启动脚本"
   echo ""
   success_echo "🛠️ 本脚本用于将 Dart 或 Flutter 项目运行到 iOS 模拟器"
@@ -81,7 +81,7 @@ show_banner() {
 # ✅ 项目入口识别
 detect_entry() {
   SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd -P)"
-  SCRIPT_PATH="${SCRIPT_DIR}/$(basename -- "$0")"
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
 
   while true; do
     warn_echo "📂 请拖入 Flutter 项目根目录或 Dart 单文件路径："
@@ -220,33 +220,47 @@ launch_simulator() {
   fi
 }
 
-# ✅ 选择或创建模拟器设备
+# ✅ 选择 iOS 模拟器（fzf），并启动该设备
 select_or_create_device() {
-  local device_list=$(xcrun simctl list devices available | grep -E 'iPhone|iPad' | grep -v unavailable | awk -F'[()]' '{gsub(/^[ \t]+/, "", $1); print $1 " (" $2 ")"}')
-  local selected_device=$(echo "$device_list" | fzf --prompt="📱 选择模拟器设备 > " --height=50% --reverse)
+  local device_list selected_device
+
+  # 获取所有可用 iOS 模拟器设备（不含 unavailable）
+  device_list=$(xcrun simctl list devices available | grep -E 'iPhone|iPad' | awk -F'[()]' '{gsub(/^[ \t]+/, "", $1); print $1 " (" $2 ")"}')
+
+  selected_device=$(echo "$device_list" | fzf --prompt="📱 选择 iOS 模拟器设备 > " --height=50% --reverse)
 
   if [[ -z "$selected_device" ]]; then
-    warn_echo "⏭️ 未选择设备，跳过启动新模拟器。"
-    return
+    error_echo "❌ 未选择模拟器设备，无法继续。"
+    exit 1
   fi
 
-  local udid=$(echo "$selected_device" | grep -oE '[0-9A-F\-]{36}')
-  if [[ -n "$udid" ]]; then
-    highlight_echo "📱 正在启动模拟器设备：$selected_device"
-    xcrun simctl boot "$udid" >/dev/null 2>&1
+  ios_device_id=$(echo "$selected_device" | grep -oE '[0-9A-Fa-f\-]{36}')
+  ios_device_name=$(echo "$selected_device" | sed -E 's/\s+\([0-9A-Fa-f\-]+\)$//')
+
+  if [[ -n "$ios_device_id" ]]; then
+    highlight_echo "📱 启动模拟器：$ios_device_name"
+    xcrun simctl boot "$ios_device_id" >/dev/null 2>&1
     open -a Simulator
     sleep 2
-    success_echo "✅ 设备启动完成：$selected_device"
+    success_echo "✅ 设备启动完成：$ios_device_name"
   else
-    error_echo "❌ 获取设备 UDID 失败，跳过启动。"
+    error_echo "❌ 解析设备 UDID 失败：$selected_device"
+    exit 1
   fi
 }
 
 # ✅ 运行 Flutter 项目
 run_flutter_app() {
-  local run_cmd=("${flutter_cmd[@]}" run -d all "$entry_file" --$build_mode "${flavor_args[@]}")
+  if [[ -z "$ios_device_id" ]]; then
+    error_echo "❌ 没有有效的 iOS 模拟器设备 ID，无法运行。"
+    exit 1
+  fi
 
-  highlight_echo "🚀 运行命令：${run_cmd[*]}"
+  local run_cmd=("${flutter_cmd[@]}" run -d "$ios_device_id" "$entry_file" --$build_mode "${flavor_args[@]}")
+
+  highlight_echo "🚀 正在运行到 iOS 模拟器：$ios_device_name"
+  highlight_echo "💻 执行命令：${run_cmd[*]}"
+
   "${run_cmd[@]}" || {
     warn_echo "⚠️ flutter run 失败，尝试自动修复 CocoaPods..."
     pod install --project-directory=ios || true

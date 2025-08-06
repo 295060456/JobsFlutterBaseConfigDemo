@@ -64,27 +64,27 @@ get_cpu_arch() {
 install_homebrew() {
   arch=$(get_cpu_arch)
   if ! command -v brew &>/dev/null; then
-    _color_echo yellow "🧩 未检测到 Homebrew，正在安装 ($arch)..."
+    color_echo "🧩 未检测到 Homebrew，正在安装 ($arch)..."
     if [[ "$arch" == "arm64" ]]; then
       /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
-        _color_echo red "❌ Homebrew 安装失败"
+        color_echo "❌ Homebrew 安装失败"
         exit 1
       }
     else
       arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
-        _color_echo red "❌ Homebrew 安装失败（x86_64）"
+        color_echo "❌ Homebrew 安装失败（x86_64）"
         exit 1
       }
     fi
-    _color_echo green "✅ Homebrew 安装成功"
+    color_echo "✅ Homebrew 安装成功"
   else
-    _color_echo blue "🔄 Homebrew 已安装，更新中..."
+    color_echo "🔄 Homebrew 已安装，更新中..."
     brew update && brew upgrade && brew cleanup
-    _color_echo green "✅ Homebrew 已更新"
+    color_echo "✅ Homebrew 已更新"
   fi
 }
 
-# ============================== 自检 Homebrew.fzf ==============================
+# ✅ 自检 Homebrew.fzf
 install_fzf() {
   if ! command -v fzf &>/dev/null; then
     method=$(fzf_select "通过 Homebrew 安装" "通过 Git 安装")
@@ -96,9 +96,9 @@ install_fzf() {
       *) err "❌ 取消安装 fzf";;
     esac
   else
-    _color_echo blue "🔄 fzf 已安装，升级中..."
+    color_echo "🔄 fzf 已安装，升级中..."
     brew upgrade fzf
-    _color_echo green "✅ fzf 已是最新版"
+    color_echo "✅ fzf 已是最新版"
   fi
 }
 
@@ -115,14 +115,17 @@ _abs_path() {
 
 # ✅ 是否为 Flutter 项目的根目录
 _is_flutter_project_root() {
+  debug_echo "🔎 判断目录：$1"
+  debug_echo "📄 pubspec.yaml 是否存在：$(ls -l "$1/pubspec.yaml" 2>/dev/null || echo ❌)"
+  debug_echo "📁 lib 目录是否存在：$(ls -ld "$1/lib" 2>/dev/null || echo ❌)"
   [[ -f "$1/pubspec.yaml" && -d "$1/lib" ]]
 }
 
-# ✅ Flutter 项目路径识别
+# ✅ Flutter 项目路径识别（回车默认用脚本目录）
 resolve_flutter_root() {
-  local script_path="$(_abs_path "$0")"
-  local script_dir="${script_path:h}"
-  local current_pwd="$(pwd -P)"
+
+  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
+  debug_echo "🔍 脚本目录：$script_dir"
 
   if _is_flutter_project_root "$script_dir"; then
     flutter_root="$script_dir"
@@ -131,8 +134,8 @@ resolve_flutter_root() {
     return
   fi
 
-  if _is_flutter_project_root "$current_pwd"; then
-    flutter_root="$current_pwd"
+  if _is_flutter_project_root "$script_dir"; then
+    flutter_root="$script_dir"
     cd "$flutter_root"
     highlight_echo "📌 使用当前工作目录作为 Flutter 项目根目录"
     return
@@ -142,14 +145,24 @@ resolve_flutter_root() {
     warn_echo "📂 请拖入 Flutter 项目根目录（包含 pubspec.yaml 和 lib/）："
     read -r input_path
     input_path="${input_path//\"/}"
-    abs=$(_abs_path "$input_path")
+    input_path=$(echo "$input_path" | xargs)
+
+    # ✅ 如果用户什么都不输入，就使用脚本所在目录
+    if [[ -z "$input_path" ]]; then
+      input_path="$script_dir"
+      info_echo "📎 未输入路径，默认使用脚本目录：$input_path"
+    fi
+
+    local abs=$(_abs_path "$input_path")
+    debug_echo "🧪 用户输入路径解析为：$abs"
+
     if _is_flutter_project_root "$abs"; then
       flutter_root="$abs"
       cd "$flutter_root"
       success_echo "✅ 识别成功：$flutter_root"
       return
     fi
-    error_echo "❌ 无效路径，请重试"
+    error_echo "❌ 无效路径：$abs，请重试"
   done
 }
 
@@ -305,6 +318,13 @@ _detect_flutter_cmd() {
   fi
 }
 
+# ✅ 确认步骤函数
+confirm_step() {
+  local step="$1"
+  read "REPLY?👉 是否执行【$step】？回车=是 / 任意键+回车=跳过: "
+  [[ -z "$REPLY" ]]
+}
+
 # ✅ 执行 flutter clean🧹 与 pub get
 maybe_flutter_clean_and_get() {
   if confirm_step "flutter clean"; then
@@ -325,7 +345,7 @@ main() {
     resolve_flutter_root                        # ✅ 获取 Flutter 根目录
     select_build_target                         # ✅ 选择 APK / AAB / All 构建类型
     prompt_flavor_and_mode                      # ✅ 选择 flavor 和构建模式（release/debug/profile）
-    detect_flutter_cmd                          # ✅ 判断是否使用 FVM
+    detect_flutter_command                      # ✅ 判断是否使用 FVM
     configure_java_env                          # ✅ 配置 Java 环境（支持记忆）
     maybe_flutter_clean_and_get                 # ✅ 执行 flutter clean🧹 与 pub get
     run_flutter_build                           # ✅ 执行 flutter build 命令

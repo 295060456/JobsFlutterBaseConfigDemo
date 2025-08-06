@@ -52,6 +52,36 @@
     echo ""
   }
   ```
+  
+* ```shell
+  # ✅ 自述信息
+  show_banner() {
+    clear
+    highlight_echo '                                                                                       '
+    highlight_echo '88888888888 88         88        88 888888888888 888888888888 88888888888 88888888ba   '
+    highlight_echo '88          88         88        88      88           88      88          88      "8b  '
+    highlight_echo '88          88         88        88      88           88      88          88      ,8P  '
+    highlight_echo '88aaaaa     88         88        88      88           88      88aaaaa     88aaaaaa8P''  '
+    highlight_echo '88""""""     88         88        88      88           88      88""""""     88""""""88''  '
+    highlight_echo '88          88         88        88      88           88      88          88     `8b   '
+    highlight_echo '88          88         Y8a.    .a8P      88           88      88          88      8b   '
+    highlight_echo '88          88888888888 `"Y8888Y"`       88           88      88888888888 88      `8b  '
+    warn_echo    "                        🛠️ FLUTTER iOS 模拟器 启动脚本"
+    echo ""
+    success_echo "🛠️ 本脚本用于将 Dart 或 Flutter 项目运行到 iOS 模拟器"
+    success_echo "===================================================================="
+    success_echo "👉 支持："
+    success_echo "   1. 拖入 Flutter 项目根目录（含 pubspec.yaml 和 lib/main.dart）或 Dart 单文件（含 void main）"
+    success_echo "   2. 自动识别 FVM、构建模式、flavor 参数"
+    success_echo "   3. 自动启动 iOS 模拟器，处理假后台问题"
+    success_echo "   4. 支持 fzf 模拟器选择与创建（设备 + 系统组合）"
+    success_echo "   5. flutter run 日志异常时自动修复 CocoaPods"
+    success_echo "   6. 自动创建桌面 .command 快捷方式"
+    success_echo "===================================================================="
+    error_echo   "📌 如需运行断点调试，请使用 VSCode / Android Studio / Xcode 等 IDE。终端运行不支持断点。"
+    echo ""
+  }
+  ```
 
 ### 🎯 🖨️打印输出彩色函数 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -198,6 +228,33 @@
   # _JobsPrint_Underline "🔗 文档地址：https://example.com"
   ```
 
+### 🎯 📔日志输出 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```shell
+# ✅ 日志输出（日志文件名 == 脚本文件名）
+init_logging() {
+  local custom_log_name="$1"
+
+  # 获取脚本路径（兼容 Finder 双击和终端执行）
+  local resolved_path="${(%):-%x}"
+  script_path="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
+
+  local default_log_name="$(basename "$resolved_path" | sed 's/\.[^.]*$//').log"
+  local log_file_name="${custom_log_name:-$default_log_name}"
+
+  LOG_FILE="${script_path}/${log_file_name}"
+
+  # 清空旧日志
+  : > "$LOG_FILE"
+
+  # 打印路径（彩色输出后才重定向）
+  info_echo "日志记录启用：$LOG_FILE"
+
+  # 重定向所有输出到终端 + 日志
+  exec 1> >(tee -a "$LOG_FILE") 2>&1
+}
+```
+
 ### 🎯 打开系统设置 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
@@ -207,30 +264,35 @@ open "x-apple.systempreferences:com.apple.preference.security?Privacy"
 ### 🎯 等待用户输入后执行 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * ```shell
-  read '?XXX 任意键=跳过： ' sim_input
-  if [[ -z "$sim_input" ]]; then
-    # 系统检测到用户输入回车，开始执行
-  else
-    # 系统检测到用户输入任意键
-  fi
+  wait_for_user_to_start() {
+    read '?XXX 任意键=跳过： ' sim_input
+    if [[ -z "$sim_input" ]]; then
+      # 系统检测到用户输入回车，开始执行
+    else
+      # 系统检测到用户输入任意键
+    fi
+  }
   ```
-
-* ```shell
-  echo ""
-  read "?👉 按下回车键继续执行，或按 Ctrl+C 取消..."
   
-  echo ""
+* ```shell
+  wait_for_user_to_start() {
+    echo ""
+    read "?👉 按下回车开始执行，或 Ctrl+C 取消..."
+    echo ""
+  }
   ```
-
+  
 * ```shell
-  read -p "⚠️ 确定要卸载 XXX？请输入 yes 开始执行：" confirm
+  wait_for_user_to_start() {
+    read -p "⚠️ 确定要卸载 XXX？请输入 yes 开始执行：" confirm
   
-  if [[ "$confirm" != "yes" ]]; then
-    echo "❎ 已取消卸载操作"
-    exit 0
-  fi
+    if [[ "$confirm" != "yes" ]]; then
+      echo "❎ 已取消卸载操作"
+      exit 0
+    fi
   
-  echo "🧨 正在卸载 XXX..."
+    echo "🧨 正在卸载 XXX..."
+  }
   ```
 
 ### 🎯 判断是否当前IP在中国🇨🇳（大陆地区）<a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
@@ -250,21 +312,41 @@ is_in_china() {
 
 ### 🎯 获取系统变量 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 1、**获取：脚本所在目录的绝对路径**
+#### 1、<font color=red>**获取：脚本所在目录的绝对路径**</font> <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-  >`"$0"`：表示**当前脚本的相对路径或调用路径**
+  >- **${BASH_SOURCE[0]:-${(%):-%x}}**
   >
-  >`dirname "$0"`：提取出脚本所在的**目录路径**
+  >  获取当前脚本路径，兼容 bash 和 zsh：
   >
-  >`cd "$(dirname "$0")"`：进入脚本所在的目录
+  >  - bash 用 BASH_SOURCE[0]
+  >  - zsh 用 ${(%):-%x}
+  >  - :- 是默认值语法（如果前者不存在就用后者）
   >
-  >`pwd`：获取当前目录的**绝对路径**
+  >- **dirname**
+  >
+  >  提取文件路径中的目录部分，例如：/a/b/c.sh → /a/b
+  >
+  >- **cd "$(dirname ...)”**
+  >
+  >  切换到脚本所在的目录，准备获取绝对路径
+  >
+  >- **pwd**
+  >
+  >  获取当前目录的**绝对路径**，即脚本所在目录的绝对路径
+  >
+  >- **整体结构 $(...)**
+  >
+  >  使用命令替换，将整个执行结果赋值给变量
+  >
+  >- **最终变量 SCRIPT_DIR=...**
+  >
+  >  将脚本自身所在目录的**绝对路径**保存到 SCRIPT_DIR 中，适用于引用、路径拼接等
 
   ```shell
-  basedir=$(cd "$(dirname "$0")"; pwd -P)
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
   ```
 
-#### 2、**获取：当前脚本文件名**
+#### 2、**获取：当前脚本文件名** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
   > `basename "$0"`：提取脚本文件的**文件名**部分（去除路径）
 
@@ -272,13 +354,20 @@ is_in_china() {
   script_file="$(basename "$0")"
   ```
 
-#### 3、**获取：桌面路径**
+#### 3、**获取：脚本路径** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```shell
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
+SCRIPT_PATH="${SCRIPT_DIR}/$(basename -- "$0")"
+```
+
+#### 4、**获取：桌面路径 **<a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
   ```shell
   DESKTOP_PATH=~/Desktop
   ```
 
-#### 4、**获取：当前用户名**
+#### 5、**获取：当前用户名** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
   > 用双引号 `"` 包裹起来，可以防止用户名中出现空格、特殊字符时发生错误
 
@@ -306,7 +395,7 @@ is_in_china() {
   | `id -un`  | 命令     | 当前有效用户的用户名（与 `whoami` 通常一样，但更底层）   |
   | `logname` | 命令     | 最初登录系统的用户（在 `sudo` 场景下可能与当前用户不同） |
 
-#### 5、**获取：🍏 Xcode 信息**
+#### 6、**获取：🍏 Xcode 信息 **<a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 print_xcode_info() {
@@ -320,7 +409,7 @@ print_xcode_info() {
 }
 ```
 
-#### 6、**获取：☕ Java 信息 **
+#### 7、**获取：☕ Java 信息 ** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```
 print_java_info() {
@@ -334,7 +423,7 @@ print_java_info() {
 }
 ```
 
-#### 7、**获取：🤖 Android SDK 信息**
+#### 8、**获取：🤖 Android SDK 信息** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 print_android_sdk_info() {
@@ -358,192 +447,6 @@ print_android_sdk_info() {
   fi
 }
 ```
-
-
-
-
-
-### 🎯 [**Flutter**](https://flutter.dev/) <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
-
-#### 🎯 1、判断当前目录是否为[**Flutter**](https://flutter.dev/)项目根目录 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
-
-```shell
-_is_flutter_project_root() {
-  [[ -f "$1/pubspec.yaml" && -d "$1/lib" ]]
-}
-```
-
-#### 🎯 2、获取 **Flutter** 项目名称  <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
-
-```shell
-_get_flutter_project_name() {
-  local root="$1"
-  if _is_flutter_project_root "$root"; then
-    flutter_project_name=$(grep -m1 '^name:' "$root/pubspec.yaml" | awk '{print $2}')
-    [[ -z "$flutter_project_name" ]] && flutter_project_name="Flutter项目"
-  else
-    flutter_project_name="Flutter项目"
-  fi
-}
-```
-
-#### 🎯 3、判断[**Flutter**](https://flutter.dev/)文件是否是入口🚪 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
-
-> <font color=red>**支持的**`main`**函数写法**</font>
-> `void main() {}`// 标准同步入口
-> `void main() => runApp();`// 箭头函数写法
-> `Future<void> main() async {}`// 异步入口函数
-> `Future<void> main() => runApp(); `// 异步箭头写法
-> `main() {}`// 无返回值声明的入口
-> `main() async {}`// 无返回值 + 异步入口
-
-```shell
-_is_dart_entry_file() {
-  local f="$1"
-  local abs=$(_abs_path "$f") || return 1
-  [[ $abs == *.dart ]] || return 1
-
-  # ✅ 支持 main() {...} 和 main() => ... 写法
-  if grep -Ev '^\s*//' "$abs" | grep -Eq '\b(Future\s*<\s*void\s*>|void)?\s*main\s*\(\s*\)\s*(async\s*)?(\{|=>)' ; then
-    return 0
-  fi
-  return 1
-}
-```
-
-```dart
-detect_entry() {
-  SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd -P)"
-  SCRIPT_PATH="${SCRIPT_DIR}/$(basename -- "$0")"
-
-  while true; do
-    warn_echo "📂 请拖入 Flutter 项目根目录或 Dart 单文件路径："
-    read -r user_input
-    user_input="${user_input//\"/}"
-    user_input="${user_input%/}"
-
-    if [[ -z "$user_input" ]]; then
-      if is_flutter_project_root "$SCRIPT_DIR"; then
-        flutter_root=$(abs_path "$SCRIPT_DIR")
-        entry_file="$flutter_root/lib/main.dart"
-        highlight_echo "🎯 检测到脚本所在目录即 Flutter 根目录，自动使用。"
-        break
-      else
-        error_echo "❌ 当前目录不是 Flutter 项目根目录，请重新拖入。"
-        continue
-      fi
-    fi
-
-    if [[ -d "$user_input" ]]; then
-      if is_flutter_project_root "$user_input"; then
-        flutter_root=$(abs_path "$user_input")
-        entry_file="$flutter_root/lib/main.dart"
-        break
-      fi
-    elif [[ -f "$user_input" ]]; then
-      if is_dart_entry_file "$user_input"; then
-        entry_file=$(abs_path "$user_input")
-        flutter_root="${entry_file:h}"
-        break
-      fi
-    fi
-
-    error_echo "❌ 无效路径，请重新拖入 Flutter 根目录或 Dart 单文件。"
-  done
-
-  cd "$flutter_root" || { error_echo "无法进入项目目录：$flutter_root"; exit 1; }
-  success_echo "✅ 项目路径：$flutter_root"
-  success_echo "🎯 入口文件：$entry_file"
-}
-```
-
-#### 🎯 4、统一获取[**Flutter**](https://flutter.dev/)项目路径 和 **Dart** 入口文件路径 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
-
-> 兼容用户拖入目录、拖入 Dart 文件、或直接回车（默认为当前目录为[**Flutter**](https://flutter.dev/)项目根目录）三种用法
-
-```shell
-# ---------------------------------------------------------------------------
-# 获取脚本自身绝对路径（用于桌面快捷方式）
-# ---------------------------------------------------------------------------
-SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd -P)"
-SCRIPT_PATH="${SCRIPT_DIR}/$(basename -- "$0")"
-
-# ---------------------------------------------------------------------------
-# 入口识别：支持三种情况
-#   A. 用户拖入路径（目录 / 文件）并回车
-#   B. 用户直接回车（空输入）=> 若脚本所在目录是 Flutter 根目录则自动使用
-#   C. 用户拖入 Dart 单文件
-# ---------------------------------------------------------------------------
-entry_file=""
-flutter_root=""
-
-while true; do
-  _color_echo yellow "📂 请拖入 Flutter 项目根目录或 Dart 单文件路径："
-  read -r user_input
-  user_input="${user_input//\"/}"          # 去掉引号
-  user_input="${user_input%/}"              # 去尾斜杠
-
-  # 用户直接回车：尝试脚本所在目录
-  if [[ -z "$user_input" ]]; then
-    if _is_flutter_project_root "$SCRIPT_DIR"; then
-      flutter_root=$(_abs_path "$SCRIPT_DIR")
-      entry_file="$flutter_root/lib/main.dart"
-      _color_echo cyan "🎯 检测到脚本所在目录即 Flutter 根目录，自动使用。"
-      break
-    else
-      _color_echo red "❌ 未检测到有效路径（脚本目录不是 Flutter 根）。请重新拖入。"
-      continue
-    fi
-  fi
-
-  if [[ -d "$user_input" ]]; then
-    if _is_flutter_project_root "$user_input"; then
-      flutter_root=$(_abs_path "$user_input")
-      entry_file="$flutter_root/lib/main.dart"
-      break
-    fi
-  elif [[ -f "$user_input" ]]; then
-    if _is_dart_entry_file "$user_input"; then
-      entry_file=$(_abs_path "$user_input")
-      flutter_root="${entry_file:h}"
-      break
-    fi
-  fi
-
-  _color_echo red "❌ 无效路径，请重新拖入 Flutter 根目录或 Dart 单文件。"
- done
-
-cd "$flutter_root" || { _color_echo red "无法进入项目目录：$flutter_root"; exit 1; }
-_color_echo green "✅ 项目路径：$flutter_root"
-_color_echo green "🎯 入口文件：$entry_file"
-```
-
-#### 🎯 5、[**FVM**](https://fvm.app/) 检测 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
-
-```dart
-_detect_flutter_cmd() {
-  if command -v fvm >/dev/null 2>&1 && [[ -f ".fvm/fvm_config.json" ]]; then
-    flutter_cmd=("fvm" "flutter")
-    info_echo "🧩 检测到 FVM 项目，使用命令：fvm flutter"
-  else
-    flutter_cmd=("flutter")
-    info_echo "📦 使用系统 Flutter 命令：flutter"
-  fi
-}
-```
-
-```dart
-read '?📦 执行 flutter pub get？(回车=执行 / 任意键=跳过) ' run_get
-if [[ -z "$run_get" ]]; then
-  "${flutter_cmd[@]}" pub get
-else
-  _color_echo yellow "⏭️ 跳过 pub get。"
-fi
-```
-
-> 如果安装了[**FVM**](https://fvm.app/) ，则 `fvm flutter pub get`
->
-> 如果没有安装[**FVM**](https://fvm.app/) ，则 `flutter pub get`
 
 ### 🎯 生成桌面快捷方式 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -664,49 +567,47 @@ print_duration
 
 ### 🎯 写文件 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 🎯 1、语法 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+>* **追加写入**
+>
+>   * 单行文件
+>
+>     ```shell
+>     echo 'export PATH="$HOME/.pub-cache/bin:$PATH"' >> ~/.zshrc
+>     ```
+>
+>   * 多行文件
+>
+>     ```shell
+>     cat <<EOF >> ~/.zshrc
+>            
+>     # >>> Flutter 环境变量 >>>
+>     export PATH="\$HOME/.pub-cache/bin:\$PATH"
+>            
+>     EOF
+>     ```
+>
+>* **覆盖写入**
+>
+>   * 单行文件
+>
+>     ```shell
+>     echo 'export PATH="$HOME/.pub-cache/bin:$PATH"' > ~/.zshrc
+>     ```
+>
+>   * 多行文件
+>
+>     ```shell
+>      cat <<EOF > ~/.zshrc
+>               
+>      # >>> Flutter 环境变量 >>>
+>      export PATH="\$HOME/.pub-cache/bin:\$PATH"
+>               
+>      EOF
+>     ```
+>  
+>
 
-* **追加写入**
-
-  * 单行文件
-
-    ```shell
-    echo 'export PATH="$HOME/.pub-cache/bin:$PATH"' >> ~/.zshrc
-    ```
-
-  * 多行文件
-
-    ```shell
-    cat <<EOF >> ~/.zshrc
-    
-    # >>> Flutter 环境变量 >>>
-    export PATH="\$HOME/.pub-cache/bin:\$PATH"
-    
-    EOF
-    ```
-
-* **覆盖写入**
-
-  * 单行文件
-
-    ```shell
-    echo 'export PATH="$HOME/.pub-cache/bin:$PATH"' > ~/.zshrc
-    ```
-
-  * 多行文件
-
-    ```shell
-    cat <<EOF > ~/.zshrc
-    
-    # >>> Flutter 环境变量 >>>
-    export PATH="\$HOME/.pub-cache/bin:\$PATH"
-    
-    EOF
-    ```
-
-#### 🎯 2、封装 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
-
-##### 🎯 2.1、单行写文件（避免重复写入） <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 🎯 1、单行写文件（避免重复写入） <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 inject_shellenv_block() {
@@ -744,7 +645,7 @@ inject_shellenv_block() {
 }
 ```
 
-##### 🎯 2.2、多行写文件（避免重复写入） <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 🎯 2、多行写文件（避免重复写入） <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 append_env_block() {
@@ -771,6 +672,37 @@ append_env_block() {
   fi
 }
 ```
+
+#### 🎯 3、函数将内容插入到指定的文件顶部 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```shell
+insert_block_to_profile_top() {
+  local marker="$1"
+  shift
+  local block=("${@}")
+
+  for line in "${block[@]}"; do
+    if grep -Fq "$line" "$PROFILE_FILE"; then
+      info_echo "已存在配置：$line"
+      return
+    fi
+  done
+
+  local original_content="$(< "$PROFILE_FILE")"
+  local block_text="${(j:\n:)block}"
+  echo -e "${block_text}\n\n${original_content}" > "$PROFILE_FILE"
+  success_echo "✅ 写入成功：$marker"
+}
+```
+
+> ```shell
+> marker="# 🧪配置 KK"
+> block=(
+>   "$marker"
+>   'export KK=1234'
+> )
+> insert_block_to_profile_top "$marker" "${block[@]}"
+> ```
 
 ### 🎯 环境变量 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -857,13 +789,69 @@ get_cpu_arch() {
 }
 ```
 
-### 🎯 自检安装 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 🎯 [**SDKMAN**](https://sdkman.io/)  <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+/// TODO
+
+### 🎯 💎[**rubygems**](https://rubygems.org/) 自检安装 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+#### 🎯1、自检安装 💎**`Gem.CocoaPods`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```shell
+install_cocoaPods() {
+  if ! command -v gem &>/dev/null; then
+    error_echo "❌ 未检测到 Ruby gem，请先安装 Ruby 或使用 Homebrew 安装方式"
+    return 1
+  fi
+
+  if ! command -v pod &>/dev/null; then
+    info_echo "📦 未检测到 CocoaPods，正在通过 gem 安装..."
+    sudo gem install cocoapods || { error_echo "❌ CocoaPods 安装失败（gem）"; exit 1; }
+    success_echo "✅ CocoaPods 安装成功（gem）"
+  else
+    info_echo "🔄 CocoaPods 已安装，正在通过 gem 升级..."
+    sudo gem update cocoapods || { error_echo "❌ CocoaPods 升级失败（gem）"; exit 1; }
+    success_echo "✅ CocoaPods 升级完成（gem）"
+  fi
+
+  info_echo "🔧 初始化 CocoaPods 仓库（pod setup）..."
+  pod setup || warn_echo "⚠️ pod setup 执行失败，可能已初始化"
+
+  pod --version | tee -a "$LOG_FILE"
+}
+```
+
+#### 🎯1、自检安装 💎**`Gem.bundler`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```shell
+install_bundler() {
+  if ! command -v gem &>/dev/null; then
+    error_echo "❌ 未检测到 Ruby gem，请先安装 Ruby 或使用 rbenv / Homebrew 安装方式"
+    return 1
+  fi
+
+  if ! gem list -i bundler &>/dev/null; then
+    info_echo "📦 未检测到 Bundler，正在通过 gem 安装..."
+    sudo gem install bundler || { error_echo "❌ Bundler 安装失败（gem）"; exit 1; }
+    success_echo "✅ Bundler 安装成功（gem）"
+  else
+    info_echo "🔄 Bundler 已安装，正在升级..."
+    sudo gem update bundler || { error_echo "❌ Bundler 升级失败（gem）"; exit 1; }
+    success_echo "✅ Bundler 升级完成（gem）"
+  fi
+
+  info_echo "📦 当前 Bundler 版本："
+  bundler -v | tee -a "$LOG_FILE"
+}
+```
+
+### 🎯 🍺**`Homebrew`** 自检安装 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 #### 🎯 1、自检安装 🍺**`Homebrew`** （自动架构判断）<a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 install_homebrew() {
-  local arch="$(get_cpu_arch)"                    # 获取当前架构（arm64 或 x86_64）
+  local arch="$(get_cpu_arch)"                   # 获取当前架构（arm64 或 x86_64）
   local shell_path="${SHELL##*/}"                # 获取当前 shell 名称（如 zsh、bash）
   local profile_file=""
   local brew_bin=""
@@ -923,18 +911,13 @@ fi
 ```shell
 install_fzf() {
   if ! command -v fzf &>/dev/null; then
-    method=$(fzf_select "通过 Homebrew 安装" "通过 Git 安装")
-    case $method in
-      *Homebrew*) brew install fzf;;
-      *Git*)
-        git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && ~/.fzf/install --all
-        ;;
-      *) err "❌ 取消安装 fzf";;
-    esac
+    note_echo "📦 未检测到 fzf，正在通过 Homebrew 安装..."
+    brew install fzf || { error_echo "❌ fzf 安装失败"; exit 1; }
+    success_echo "✅ fzf 安装成功"
   else
-    _color_echo blue "🔄 fzf 已安装，升级中..."
+    info_echo "🔄 fzf 已安装，升级中..."
     brew upgrade fzf && brew cleanup
-    _color_echo green "✅ fzf 已是最新版"
+    success_echo "✅ fzf 已是最新版"
   fi
 }
 ```
@@ -988,35 +971,246 @@ install_coreutils() {
 }
 ```
 
-#### 🎯 6、自检安装 **`Ruby`**（fzf交互 + 多选项） <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 🎯 6、自检安装 🍺**`Homebrew.bc`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
-install_ruby() {
-  method=$(fzf_select "通过 Homebrew 安装 Ruby" "通过 Rbenv 安装 Ruby" "通过 RVM 安装 Ruby")
-  case $method in
-    *Homebrew*)
-      brew install ruby
-      echo 'export PATH="$(brew --prefix ruby)/bin:$PATH"' >> ~/.zshrc
-      ;;
-    *Rbenv*)
-      brew install rbenv ruby-build
-      echo 'eval "$(rbenv init -)"' >> ~/.zshrc
-      eval "$(rbenv init -)"
-      rbenv install 3.3.0
-      rbenv global 3.3.0
-      ;;
-    *RVM*)
-      \curl -sSL https://get.rvm.io | bash -s stable --ruby
-      source ~/.rvm/scripts/rvm
-      ;;
-    *) err "❌ 未选择安装 Ruby";;
-  esac
+install_bc() {
+  if ! command -v bc &>/dev/null; then
+    info_echo "📦 未检测到 bc，正在通过 Homebrew 安装..."
+    brew install bc || { error_echo "❌ bc 安装失败"; exit 1; }
+    success_echo "✅ bc 安装成功"
+  else
+    info_echo "🔄 bc 已安装，升级中..."
+    brew upgrade bc && brew cleanup
+    success_echo "✅ bc 已是最新版"
+  fi
 }
 ```
 
-### 🎯 自检安装 **`fvm`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 🎯 7、自检安装 🍺**`Homebrew.jenv`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> <font color=red>**安装`fvm`一定要在安装了`dart`环境的大前提下才可以**</font>
+> [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)的运行和打包需要一个[**Java**](https://www.java.com/zh-CN/)环境（有必要和系统[**Java**](https://www.java.com/zh-CN/)环境进行区分开）
+>
+> [**jenv**](https://github.com/jenv/jenv) **不会自己安装 Java**，你需要手动或用[**Homebrew**](https://brew.sh/)安装好 **JDK**，然后让 [**jenv**](https://github.com/jenv/jenv) **识别**它。
+>
+> [**Java**](https://www.java.com/zh-CN/)来源：官方Java、[**OpenJDK**](https://openjdk.org/)、[**temurin**](https://adoptium.net/zh-CN/temurin/releases)
+
+```shell
+install_jenv() {
+  if ! command -v jenv &>/dev/null; then
+    info_echo "📦 未检测到 jenv，正在通过 Homebrew 安装..."
+    brew install jenv || { error_echo "❌ jenv 安装失败"; exit 1; }
+    success_echo "✅ jenv 安装成功"
+  else
+    info_echo "🔄 jenv 已安装，升级中..."
+    brew upgrade jenv && brew cleanup
+    success_echo "✅ jenv 已是最新版"
+  fi
+
+  # ✅ 设置 jenv 环境变量（追加到 .zshrc 或 .bash_profile）
+  local shellrc="$HOME/.zshrc"
+  [[ -n "$ZSH_VERSION" ]] || shellrc="$HOME/.bash_profile"
+
+  if ! grep -q 'jenv init' "$shellrc"; then
+    info_echo "📎 正在写入 jenv 初始化配置到：$shellrc"
+    {
+      echo ''
+      echo '# >>> jenv 初始化 >>>'
+      echo 'export PATH="$HOME/.jenv/bin:$PATH"'
+      echo 'eval "$(jenv init -)"'
+      echo '# <<< jenv 初始化 <<<'
+    } >> "$shellrc"
+    success_echo "✅ jenv 初始化配置已写入 $shellrc"
+  else
+    info_echo "📌 jenv 初始化配置已存在于 $shellrc"
+  fi
+
+  # ✅ 当前 shell 生效
+  export PATH="$HOME/.jenv/bin:$PATH"
+  eval "$(jenv init -)"
+  success_echo "🟢 jenv 初始化完成并在当前终端生效"
+}
+```
+
+> * 查 `.jenv/versions` 的链接来源
+>
+>   ```shell
+>   jenv versions --bare --verbose
+>   ```
+>
+>   ```shell
+>   ls -l ~/.jenv/versions/
+>   ```
+>
+>   ```shell
+>   list_jenv_java_paths() {
+>     echo "📦 当前 jenv 添加的 JDK 路径映射："
+>     for v in ~/.jenv/versions/*; do
+>       name=$(basename "$v")
+>       target=$(readlink "$v")
+>       echo "  $name  ->  $target"
+>     done
+>   }
+>   ```
+>
+> * 添加所有 brew 安装的 Java 到 jenv管理
+>
+>   ```shell
+>   add_all_brew_java_to_jenv() {
+>     echo "🧭 正在检测架构并添加 brew 安装的 Java 版本到 jenv..."
+>   
+>     if [[ "$(uname -m)" == "arm64" ]]; then
+>       base_path="/opt/homebrew/opt"
+>       echo "🐹 当前为 Apple Silicon (ARM64)"
+>     else
+>       base_path="/usr/local/opt"
+>       echo "🧠 当前为 Intel x86_64 架构"
+>     fi
+>   
+>     found=false
+>   
+>     for path in "$base_path"/openjdk*/libexec/openjdk.jdk/Contents/Home; do
+>       if [[ -d "$path" ]]; then
+>         echo "➕ 添加到 jenv: $path"
+>         jenv add "$path"
+>         found=true
+>       fi
+>     done
+>   
+>     if [[ "$found" == false ]]; then
+>       echo "⚠️ 未找到任何 openjdk 安装路径，请先通过 brew 安装 openjdk"
+>     else
+>       jenv rehash
+>       echo "✅ 已添加并刷新 jenv"
+>     fi
+>   }
+>   ```
+>
+>   ```shell
+>   jenv_add() {
+>   	for v in 8 11 17 21; do
+>       path="/opt/homebrew/opt/openjdk@${v}/libexec/openjdk.jdk/Contents/Home"
+>       [[ -x "$path/bin/java" ]] && jenv add "$path"
+>     done
+>   
+>     jenv rehash # 重新生成 shims，使得你添加或切换的 Java 版本能被系统识别并生效。
+>   }
+>   ```
+>
+>   ```shell
+>   jenv global 17.0 # 全局（所有项目默认）
+>   jenv local 1.8 # 当前目录（项目级）
+>   ```
+>
+> * 批量移除 jenv管理的 所有 Java 版本
+>
+>   ```shell
+>   jenv_remove_all_java() {
+>     echo "🧹 开始移除所有通过 Homebrew 安装并注册到 jenv 的 Java 版本..."
+>   
+>     if [[ "$(uname -m)" == "arm64" ]]; then
+>       base_path="/opt/homebrew/opt"
+>     else
+>       base_path="/usr/local/opt"
+>     fi
+>   
+>     found=false
+>   
+>     for path in "$base_path"/openjdk*/libexec/openjdk.jdk/Contents/Home; do
+>       if [[ -d "$path" ]]; then
+>         echo "❌ 正在移除：$path"
+>         jenv remove "$path"
+>         found=true
+>       fi
+>     done
+>   
+>     if [[ "$found" == false ]]; then
+>       echo "⚠️ 未检测到任何已注册 Java 安装路径"
+>     else
+>       jenv rehash
+>       echo "✅ 已完成全部移除"
+>     fi
+>   }
+>   ```
+
+#### 🎯 8、自检安装 🍺**`Homebrew.cocoapods`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```shell
+install_cocoapods() {
+  if ! command -v pod &>/dev/null; then
+    info_echo "📦 未检测到 CocoaPods，正在通过 Homebrew 安装..."
+    brew install cocoapods || { error_echo "❌ CocoaPods 安装失败"; exit 1; }
+    success_echo "✅ CocoaPods 安装成功"
+  else
+    info_echo "🔄 CocoaPods 已安装，升级中..."
+    brew upgrade cocoapods && brew cleanup
+    success_echo "✅ CocoaPods 已是最新版"
+  fi
+
+  # ✅ 打印版本并写入日志
+  pod --version | tee -a "$LOG_FILE"
+}
+```
+
+#### 🎯 9、自检安装 **`Rbenv`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> `rbenv` 是一个 **Ruby 版本管理工具**
+
+```shell
+install_rbenv() {
+  if ! command -v rbenv &>/dev/null; then
+    info_echo "📦 未检测到 rbenv，正在通过 Homebrew 安装..."
+    brew install rbenv ruby-build || { error_echo "❌ rbenv 安装失败"; exit 1; }
+    success_echo "✅ rbenv 安装成功"
+  else
+    info_echo "🔄 rbenv 已安装，升级中..."
+    brew upgrade rbenv ruby-build && brew cleanup
+    success_echo "✅ rbenv 已是最新版"
+  fi
+
+  # ✅ 初始化 rbenv 环境（写入当前 shell）
+  export PATH="$HOME/.rbenv/bin:$PATH"
+  eval "$(rbenv init -)"
+
+  success_echo "🟢 rbenv 环境已初始化"
+}
+```
+
+#### 🎯 10、官方安装 **`Ruby`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```shell
+# 1. 克隆 rbenv 到本地
+git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+
+# 2. 初始化 PATH 和 shell hook
+echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.zshrc
+echo 'eval "$(rbenv init -)"' >> ~/.zshrc
+
+# 3. 加载到当前 shell 会话
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(~/.rbenv/bin/rbenv init -)"
+
+# 4. 安装 ruby-build 插件（用来安装 Ruby）
+git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
+
+# 显示可安装的版本
+rbenv install -l | grep -v - | tail -n 20
+
+# 安装最新版（举例）
+rbenv install 3.3.0
+
+# 设置为全局默认
+rbenv global 3.3.0
+
+# 验证安装
+ruby -v
+```
+
+### 🎯 （Dart官方推荐）自检安装 **`fvm`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> <font color=red>**安装`fvm`的大前提是预先安装`dart`环境 **</font>
+>
+> <font color=red>🍺Homebrew 核心源中目前**没有**收录 Dart 的 `fvm` 工具</font>
 
 ```shell
 install_fvm() {
@@ -1032,26 +1226,6 @@ install_fvm() {
 	fvm --version | tee -a "$LOG_FILE"
   # ✅ 自动注入 ~/.pub-cache/bin 到 PATH（用统一结构封装）
   inject_shellenv_block "fvm_env" 'export PATH="$HOME/.pub-cache/bin:$PATH"'
-}
-```
-
-### 🎯 安装**`CocoaPods`**（`fzf`选择 `gem`/`Homebrew`） <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
-
-```
-install_cocoapods() {
-  method=$(fzf_select "通过 gem 安装 CocoaPods" "通过 Homebrew 安装 CocoaPods")
-  case $method in
-    *gem*)
-      sudo gem install cocoapods
-      ;;
-    *Homebrew*)
-      brew install cocoapods
-      ;;
-    *) err "❌ 未选择安装方式";;
-  esac
-  pod setup
-  info "✅ CocoaPods 安装完成"
-  pod --version | tee -a "$LOG_FILE"
 }
 ```
 
@@ -1115,8 +1289,6 @@ set_gem_source() {
 }
 ```
 
-
-
 ### 🎯 检测本地**`Java`**环境是否已经安装 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > **`command -v java`**：检查 `java` 命令是否存在于 `PATH` 中；
@@ -1137,6 +1309,202 @@ else
     echo "未安装 Java"
 fi 
 ```
+
+### 🎯 [**Flutter**](https://flutter.dev/) <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+#### 🎯 1、判断当前目录是否为[**Flutter**](https://flutter.dev/)项目根目录 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```shell
+_is_flutter_project_root() {
+  [[ -f "$1/pubspec.yaml" && -d "$1/lib" ]]
+}
+```
+
+#### 🎯 2、获取 **Flutter** 项目名称  <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```shell
+_get_flutter_project_name() {
+  local root="$1"
+  if _is_flutter_project_root "$root"; then
+    flutter_project_name=$(grep -m1 '^name:' "$root/pubspec.yaml" | awk '{print $2}')
+    [[ -z "$flutter_project_name" ]] && flutter_project_name="Flutter项目"
+  else
+    flutter_project_name="Flutter项目"
+  fi
+}
+```
+
+#### 🎯 3、判断[**Flutter**](https://flutter.dev/)文件是否是入口🚪 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> <font color=red>**支持的**`main`**函数写法**</font>
+> `void main() {}`// 标准同步入口
+> `void main() => runApp();`// 箭头函数写法
+> `Future<void> main() async {}`// 异步入口函数
+> `Future<void> main() => runApp(); `// 异步箭头写法
+> `main() {}`// 无返回值声明的入口
+> `main() async {}`// 无返回值 + 异步入口
+
+```shell
+_is_dart_entry_file() {
+  local f="$1"
+  local abs=$(_abs_path "$f") || return 1
+  [[ $abs == *.dart ]] || return 1
+
+  # ✅ 支持 main() {...} 和 main() => ... 写法
+  if grep -Ev '^\s*//' "$abs" | grep -Eq '\b(Future\s*<\s*void\s*>|void)?\s*main\s*\(\s*\)\s*(async\s*)?(\{|=>)' ; then
+    return 0
+  fi
+  return 1
+}
+```
+
+```dart
+detect_entry() {
+  SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd -P)"
+  SCRIPT_PATH="${SCRIPT_DIR}/$(basename -- "$0")"
+
+  while true; do
+    warn_echo "📂 请拖入 Flutter 项目根目录或 Dart 单文件路径："
+    read -r user_input
+    user_input="${user_input//\"/}"
+    user_input="${user_input%/}"
+
+    if [[ -z "$user_input" ]]; then
+      if is_flutter_project_root "$SCRIPT_DIR"; then
+        flutter_root=$(abs_path "$SCRIPT_DIR")
+        entry_file="$flutter_root/lib/main.dart"
+        highlight_echo "🎯 检测到脚本所在目录即 Flutter 根目录，自动使用。"
+        break
+      else
+        error_echo "❌ 当前目录不是 Flutter 项目根目录，请重新拖入。"
+        continue
+      fi
+    fi
+
+    if [[ -d "$user_input" ]]; then
+      if is_flutter_project_root "$user_input"; then
+        flutter_root=$(abs_path "$user_input")
+        entry_file="$flutter_root/lib/main.dart"
+        break
+      fi
+    elif [[ -f "$user_input" ]]; then
+      if is_dart_entry_file "$user_input"; then
+        entry_file=$(abs_path "$user_input")
+        flutter_root="${entry_file:h}"
+        break
+      fi
+    fi
+
+    error_echo "❌ 无效路径，请重新拖入 Flutter 根目录或 Dart 单文件。"
+  done
+
+  cd "$flutter_root" || { error_echo "无法进入项目目录：$flutter_root"; exit 1; }
+  success_echo "✅ 项目路径：$flutter_root"
+  success_echo "🎯 入口文件：$entry_file"
+}
+```
+
+#### 🎯 4、统一获取[**Flutter**](https://flutter.dev/)项目路径 和 **Dart** 入口文件路径 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> 兼容用户拖入目录、拖入 **Dart** 文件、或直接回车（默认为当前目录为[**Flutter**](https://flutter.dev/)项目根目录）三种用法
+
+```shell
+resolve_flutter_root() {
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
+  SCRIPT_PATH="${SCRIPT_DIR}/$(basename -- "$0")"
+
+  debug_echo "🐞 SCRIPT_DIR: $SCRIPT_DIR"
+  debug_echo "🐞 SCRIPT_PATH: $SCRIPT_PATH"
+  debug_echo "🐞 当前工作目录：$(pwd -P)"
+
+  flutter_root=""
+  entry_file=""
+
+  while true; do
+    warn_echo "📂 请拖入 Flutter 项目根目录或 Dart 单文件路径："
+    read -r user_input
+    user_input="${user_input//\"/}"
+    user_input=$(echo "$user_input" | xargs)
+    debug_echo "🐞 用户输入路径：$user_input"
+
+    # ✅ 用户直接回车：尝试脚本目录是否为 Flutter 项目
+    if [[ -z "$user_input" ]]; then
+      debug_echo "🐞 用户未输入路径，尝试使用 SCRIPT_DIR 检测"
+      if _is_flutter_project_root "$SCRIPT_DIR"; then
+        flutter_root="$SCRIPT_DIR"
+        entry_file="$flutter_root/lib/main.dart"
+        highlight_echo "🎯 检测到脚本所在目录是 Flutter 根目录，自动使用"
+        break
+      else
+        error_echo "❌ SCRIPT_DIR ($SCRIPT_DIR) 不是有效 Flutter 项目"
+        continue
+      fi
+    fi
+
+    # ✅ 用户拖入路径
+    if [[ -d "$user_input" ]]; then
+      debug_echo "🐞 检测到输入是目录"
+      if _is_flutter_project_root "$user_input"; then
+        flutter_root="$user_input"
+        entry_file="$flutter_root/lib/main.dart"
+        highlight_echo "🎯 成功识别 Flutter 根目录：$flutter_root"
+        break
+      else
+        error_echo "❌ 目录中未找到 pubspec.yaml 或 lib/：$user_input"
+      fi
+    elif [[ -f "$user_input" ]]; then
+      debug_echo "🐞 检测到输入是文件"
+      if grep -q 'main()' "$user_input"; then
+        entry_file="$user_input"
+        flutter_root="$(dirname "$user_input")"
+        highlight_echo "🎯 成功识别 Dart 单文件：$entry_file"
+        break
+      else
+        error_echo "❌ 文件不是 Dart 主程序：$user_input"
+      fi
+    else
+      error_echo "❌ 输入路径无效：$user_input"
+    fi
+  done
+
+  cd "$flutter_root" || {
+    error_echo "❌ 无法进入项目目录：$flutter_root"
+    exit 1
+  }
+
+  success_echo "✅ 项目路径：$flutter_root"
+  success_echo "🎯 入口文件：$entry_file"
+}
+```
+
+#### 🎯 5、[**FVM**](https://fvm.app/) 检测 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+detect_flutter_cmd() {
+  script_path="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
+  local fvm_config_path="$script_path/.fvm/fvm_config.json"
+  if command -v fvm >/dev/null 2>&1 && [[ -f "$fvm_config_path" ]]; then
+    flutter_cmd=("fvm" "flutter")
+    info_echo "🧩 检测到 FVM 项目，使用命令：fvm flutter"
+  else
+    flutter_cmd=("flutter")
+    info_echo "📦 使用系统 Flutter 命令：flutter"
+  fi
+}
+```
+
+```dart
+read '?📦 执行 flutter pub get？(回车=执行 / 任意键=跳过) ' run_get
+if [[ -z "$run_get" ]]; then
+  "${flutter_cmd[@]}" pub get
+else
+  _color_echo yellow "⏭️ 跳过 pub get。"
+fi
+```
+
+> 如果安装了[**FVM**](https://fvm.app/) ，则 `fvm flutter pub get`
+>
+> 如果没有安装[**FVM**](https://fvm.app/) ，则 `flutter pub get`
 
 ### 🎯 全更新 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -1212,7 +1580,7 @@ print_green "🔗 正在添加 Git 源 https://github.com/CocoaPods/Specs.git ..
 pod repo add cocoapods https://github.com/CocoaPods/Specs.git
 ```
 
-### 🎯 `Shell`
+### 🎯 `Shell` <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 #### 🎯 1、切换`Shell` <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 

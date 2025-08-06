@@ -150,25 +150,36 @@ install_jq() {
 install_dart() {
   if ! command -v dart &>/dev/null; then
     note_echo "📦 未检测到 dart，正在通过 Homebrew 安装..."
-    brew tap dart-lang/dart
+    brew tap dart-lang/dart || warn_echo "⚠️ tap dart-lang/dart 失败（已存在或网络异常）"
     brew install dart || { error_echo "❌ dart 安装失败"; exit 1; }
     success_echo "✅ dart 安装成功"
   else
-    info_echo "🔄 dart 已安装，升级中..."
-    brew upgrade dart
-    success_echo "✅ dart 已是最新版"
+    info_echo "🔄 dart 已安装，路径为：$(which dart)"
+    brew tap dart-lang/dart || warn_echo "⚠️ tap dart-lang/dart 失败（可能已存在）"
+
+    if brew outdated | grep -q "^dart\$"; then
+      highlight_echo "⬆️ 检测到 dart 有更新，正在升级..."
+      if brew upgrade dart; then
+        success_echo "✅ dart 升级成功"
+      else
+        error_echo "❌ dart 升级失败"
+      fi
+    else
+      success_echo "✅ dart 已是最新版（无需升级）"
+    fi
   fi
 }
 
-# ✅ 自检安装 Homebrew.fvm
+# ✅ 自检安装 Homebrew.fvm（虽然安装fvm的大前提是预先安装dart环境，但是通过Homebrew安装fvm会帮你安装dart环境：来自 dart-lang/dart tap）
 install_fvm() {
   if ! command -v fvm &>/dev/null; then
     note_echo "📦 未检测到 fvm，正在通过 dart pub global 安装..."
-    dart pub global activate fvm || { error_echo "❌ fvm 安装失败"; exit 1; }
+    dart pub global deactivate fvm                                             # 卸载 fvm
+    dart pub global activate fvm || { error_echo "❌ fvm 安装失败"; exit 1; }   # 安装或更新 fvm
     success_echo "✅ fvm 安装成功"
   else
     info_echo "🔄 fvm 已安装，正在升级..."
-    dart pub global activate fvm
+    dart pub global activate fvm                                               # 安装或更新 fvm
     success_echo "✅ fvm 已是最新版"
   fi
 
@@ -312,7 +323,6 @@ main() {
     clear
     print_description                           # 🖨 自述信息
     check_flutter_project_path "$SCRIPT_DIR"    # 📁 检查项目路径
-    install_dependencies                        # 🔧 安装必要工具
     install_homebrew                            # 🔧 安装必要工具 Homebrew
     install_jq                                  # 🔧 安装必要工具 Homebrew.jq
     install_dart                                # 🔧 安装必要工具 Homebrew.dart

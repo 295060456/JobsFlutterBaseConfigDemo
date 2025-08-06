@@ -144,7 +144,8 @@ install_fzf() {
 
 # ✅ 验证 Flutter 项目根目录
 ensure_flutter_project_root() {
-  cd "$(dirname "$0")"
+  script_dir="$(cd "$(dirname "${(%):-%x}")" && pwd)"
+  cd "$script_dir"
   while [[ ! -f "pubspec.yaml" || ! -d "lib" ]]; do
     error_echo "当前目录不是 Flutter 项目根目录（缺少 pubspec.yaml 或 lib/）"
     info_echo "📁 当前目录为：$(pwd)"

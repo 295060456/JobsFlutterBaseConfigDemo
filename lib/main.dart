@@ -1,171 +1,159 @@
-import 'dart:async';
-
-import 'package:dart_ping_ios/dart_ping_ios.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_plugin_engagelab/flutter_plugin_engagelab.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
-import 'package:jobs_flutter_base_config/JobsDemoTools/Data/Data.3rd/本地数据存取/sp_util.dart';
-import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/AppLifecycleCtrl.dart';
-import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/AppNavigatorObserver.dart';
-import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/CommonColor.dart';
-import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/Extensions/string_utils.dart';
-import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/JobsCommonUtil.dart';
-import 'package:provider/provider.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart'; // 公共测试器路径
+import 'package:vibration/vibration.dart';
+import 'dart:math'; // 导入 dart:math 库
 
-import 'core/app_initializer.dart';
-import 'notifier/locale_notifier.dart';
-import 'pages/Splash/splash_page.dart';
-import 'routes/app_pages.dart';
-import 'services/theme_service.dart';
-import 'utils/global_observer.dart';
+void main() => runApp(JobsMaterialRunner(
+    Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        CustomShapeButton(
+          shape: Shape.triangle,
+          onPressed: () {
+            debugPrint('我是三角形按钮');
+            Vibration.vibrate(duration: 200);
+          },
+        ),
+        const SizedBox(height: 20),
+        CustomShapeButton(
+          shape: Shape.star,
+          onPressed: () {
+            debugPrint('我是五角星按钮');
+            Vibration.vibrate(duration: 200);
+          },
+        ),
+        const SizedBox(height: 20),
+        CustomShapeButton(
+          shape: Shape.parallelogram,
+          onPressed: () {
+            debugPrint('我是平行四边形按钮');
+            Vibration.vibrate(duration: 200);
+          },
+        ),
+      ],
+    ),
+    title: 'Custom Shape Buttons'));
 
-// Future<void> main() async{SystemChrome->}
-// runApp(MultiProvider.child(JobsApp(StatelessWidget)))->
-// GestureDetector->
-// Consumer<LocaleNotifier>->
-// GetMaterialApp->
-// SplashPage()
+enum Shape { triangle, star, parallelogram }
 
-Future<void> main() async {
-  FlutterError.onError = (FlutterErrorDetails details) {
-    // 打印错误到控制台
-    FlutterError.dumpErrorToConsole(details);
-    JobsPrint(details.toString());
-    // JobsPrint(details.exception.toString());
-    // JobsPrint(details.stack.toString());
-    // JobsPrint(details.exceptionAsString().toString());
-  };
+class CustomShapeButton extends StatefulWidget {
+  final Shape shape;
+  final VoidCallback onPressed;
 
-  /// 初始化时区数据库
-  tz.initializeTimeZones();
+  const CustomShapeButton(
+      {super.key, required this.shape, required this.onPressed});
 
-  // 设置状态栏样式
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.white, // 状态栏背景颜色
-    statusBarIconBrightness: Brightness.dark, // 状态栏图标颜色（黑色）
-    statusBarBrightness: Brightness.light, // 适用于iOS
-
-    systemNavigationBarColor: Colors.white, // 导航栏背景颜色
-    systemNavigationBarIconBrightness: Brightness.dark, // 导航栏图标为黑色
-    systemNavigationBarDividerColor: Colors.white, // 导航栏分割线颜色（可选）
-  ));
-
-  /// 用于确保Flutter框架已经初始化
-  ///💥某些情况下可以省略，最新版本的Flutter中不需要显示调用，但是为了确保向下兼容，还是加上
-  WidgetsFlutterBinding.ensureInitialized();
-
-  DartPingIOS.register();
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]).then((_) async {
-    WakelockPlus.enable();
-    Get.put(AppLifecycleCtrl()); // 注册生命周期监听
-
-    String currentLanguage = SpUtil.getString("currentLanguageType") ?? "zh";
-    final AppNavigatorObserver appNavigatorObserver = AppNavigatorObserver();
-
-    runZonedGuarded(() {
-      /// 设置应用的屏幕方向为竖屏。
-      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
-          .then((_) {
-        runApp(
-          ScreenUtilInit(
-            designSize: const Size(1125, 2436), // 目前给到的设计图尺寸，如有变动，后续再改
-            minTextAdapt: true,
-            splitScreenMode: true,
-            builder: (context, child) {
-              return GetMaterialApp(
-                  debugShowCheckedModeBanner: false,
-                  title: '澳门'.tr,
-                  navigatorObservers: [appNavigatorObserver],
-                  localizationsDelegates: const [
-                    GlobalMaterialLocalizations.delegate,
-                    GlobalWidgetsLocalizations.delegate,
-                    GlobalCupertinoLocalizations.delegate,
-                  ],
-                  // supportedLocales: supportedLocales,
-                  // initialRoute: AppPages.INITIAL,
-                  // initialBinding: MainBindings(),
-                  // getPages: AppPages.routes,
-                  // builder: EasyLoading.init(),
-                  // translations: AppTranslations(),
-                  locale: Locale(currentLanguage),
-                  fallbackLocale: const Locale("en"));
-            },
-          ),
-        );
-      });
-    }, (error, stackTrace) {
-      /// 处理未捕获的异常
-      JobsPrint(error.toString());
-      JobsPrint(stackTrace.toString());
-    });
-
-    EasyLoading.instance
-      ..indicatorType = EasyLoadingIndicatorType.fadingCircle
-      ..loadingStyle = EasyLoadingStyle.custom
-      ..backgroundColor = Colors.white
-      ..indicatorColor = theme01MainColor
-      ..textColor = theme01MainColor
-      ..dismissOnTap = true; // 点击不能关闭加载框
-    // ..maskType = EasyLoadingMaskType.custom
-    // ..maskColor = Colors.black.withOpacity(0.1)
-  });
-
-  await AppInitializer.init();
-
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
-      .then((_) {
-    runApp(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => LocaleNotifier()),
-        ],
-        child: const JobsApp(),
-      ),
-    );
-  });
-
-  // App 启动后将角标置为0
-  FlutterPluginEngagelab.setNotificationBadge(0);
-  FlutterPluginEngagelab.resetNotificationBadge();
+  @override
+  _CustomShapeButtonState createState() => _CustomShapeButtonState();
 }
 
-class JobsApp extends StatelessWidget {
-  const JobsApp({super.key});
+class _CustomShapeButtonState extends State<CustomShapeButton> {
+  bool _isPressed = false;
+
+  void _handleTap() {
+    setState(() {
+      _isPressed = true;
+    });
+
+    Future.delayed(const Duration(milliseconds: 200), () {
+      setState(() {
+        _isPressed = false;
+      });
+    });
+
+    widget.onPressed();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Consumer<LocaleNotifier>(
-        builder: (_, localeNotifier, __) {
-          return GetMaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: "Flutter 脚手架".tr,
-            locale: localeNotifier.locale,
-            fallbackLocale: const Locale("en"),
-            theme: ThemeService.instance.lightTheme,
-            darkTheme: ThemeService.instance.darkTheme,
-            themeMode: ThemeService.instance.themeMode,
-            getPages: AppPages.routes,
-            initialRoute: AppPages.initial,
-            navigatorObservers: [GlobalRouteObserver()],
-            localizationsDelegates: const [
-              GlobalMaterialLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-            ],
-            supportedLocales: const [Locale("en"), Locale("zh")],
-            home: const SplashPage(),
-          );
-        },
+      onTap: _handleTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: _isPressed ? 120 : 100,
+        height: _isPressed ? 120 : 100,
+        child: CustomPaint(
+          painter: ShapePainter(widget.shape),
+        ),
       ),
     );
+  }
+}
+
+class ShapePainter extends CustomPainter {
+  final Shape shape;
+
+  ShapePainter(this.shape);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.blue
+      ..style = PaintingStyle.fill;
+
+    switch (shape) {
+      case Shape.triangle:
+        drawTriangle(canvas, size, paint);
+        break;
+      case Shape.star:
+        drawStar(canvas, size, paint);
+        break;
+      case Shape.parallelogram:
+        drawParallelogram(canvas, size, paint);
+        break;
+    }
+  }
+
+  void drawTriangle(Canvas canvas, Size size, Paint paint) {
+    final path = Path()
+      ..moveTo(size.width / 2, 0)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  void drawStar(Canvas canvas, Size size, Paint paint) {
+    final path = Path();
+    final outerRadius = size.width / 2;
+    final innerRadius = outerRadius / 2.5;
+    const angle = 72 * pi / 180;
+
+    for (int i = 0; i < 5; i++) {
+      final outerPoint = Offset(
+        size.width / 2 + outerRadius * cos(i * 2 * angle),
+        size.height / 2 - outerRadius * sin(i * 2 * angle),
+      );
+      final innerPoint = Offset(
+        size.width / 2 + innerRadius * cos((i * 2 + 1) * angle),
+        size.height / 2 - innerRadius * sin((i * 2 + 1) * angle),
+      );
+      if (i == 0) {
+        path.moveTo(outerPoint.dx, outerPoint.dy);
+      } else {
+        path.lineTo(outerPoint.dx, outerPoint.dy);
+      }
+      path.lineTo(innerPoint.dx, innerPoint.dy);
+    }
+    path.close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  void drawParallelogram(Canvas canvas, Size size, Paint paint) {
+    final path = Path()
+      ..moveTo(size.width * 0.2, 0)
+      ..lineTo(size.width, 0)
+      ..lineTo(size.width * 0.8, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
   }
 }
