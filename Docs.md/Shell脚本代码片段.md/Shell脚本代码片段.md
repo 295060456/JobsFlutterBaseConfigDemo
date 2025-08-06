@@ -579,10 +579,10 @@ print_duration
 >
 >     ```shell
 >     cat <<EOF >> ~/.zshrc
->            
+>              
 >     # >>> Flutter 环境变量 >>>
 >     export PATH="\$HOME/.pub-cache/bin:\$PATH"
->            
+>              
 >     EOF
 >     ```
 >
@@ -598,10 +598,10 @@ print_duration
 >
 >     ```shell
 >      cat <<EOF > ~/.zshrc
->               
+>                   
 >      # >>> Flutter 环境变量 >>>
 >      export PATH="\$HOME/.pub-cache/bin:\$PATH"
->               
+>                   
 >      EOF
 >     ```
 >  
@@ -987,7 +987,27 @@ install_bc() {
 }
 ```
 
-#### 🎯 7、自检安装 🍺**`Homebrew.jenv`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 🎯 7、自检安装 🍺**`Homebrew.Gradle`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```shell
+install_gradle() {
+  if ! command -v gradle &>/dev/null; then
+    note_echo "📦 未检测到 Gradle，正在通过 Homebrew 安装..."
+    brew install gradle || { error_echo "❌ Gradle 安装失败"; exit 1; }
+    success_echo "✅ Gradle 安装成功"
+  else
+    info_echo "🔄 Gradle 已安装，升级中..."
+    brew upgrade gradle && brew cleanup
+    success_echo "✅ Gradle 已是最新版"
+  fi
+
+  # 🔍 输出当前版本（带版本号高亮）
+  gradle_ver=$(gradle --version 2>/dev/null | grep Gradle | awk '{print $2}')
+  highlight_echo "📌 当前 Gradle 版本：$gradle_ver"
+}
+```
+
+#### 🎯 8、自检安装 🍺**`Homebrew.jenv`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)的运行和打包需要一个[**Java**](https://www.java.com/zh-CN/)环境（有必要和系统[**Java**](https://www.java.com/zh-CN/)环境进行区分开）
 >
@@ -1098,8 +1118,11 @@ install_jenv() {
 >   ```
 >
 >   ```shell
->   jenv global 17.0 # 全局（所有项目默认）
->   jenv local 1.8 # 当前目录（项目级）
+>   jenv versions --bare --verbose # 用这里的结果
+>   
+>   jenv global openjdk64-24.0.2   # 全局（所有项目默认）
+>   jenv local openjdk64-21.0.8    # 当前目录（项目级）
+>   java --version                 # 验证
 >   ```
 >
 > * 批量移除 jenv管理的 所有 Java 版本
@@ -1133,7 +1156,7 @@ install_jenv() {
 >   }
 >   ```
 
-#### 🎯 8、自检安装 🍺**`Homebrew.cocoapods`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 🎯 9、自检安装 🍺**`Homebrew.cocoapods`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 install_cocoapods() {
@@ -1152,7 +1175,7 @@ install_cocoapods() {
 }
 ```
 
-#### 🎯 9、自检安装 **`Rbenv`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 🎯 10、自检安装 **`Rbenv`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > `rbenv` 是一个 **Ruby 版本管理工具**
 
@@ -1176,7 +1199,7 @@ install_rbenv() {
 }
 ```
 
-#### 🎯 10、官方安装 **`Ruby`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 🎯 11、官方安装 **`Ruby`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 # 1. 克隆 rbenv 到本地
