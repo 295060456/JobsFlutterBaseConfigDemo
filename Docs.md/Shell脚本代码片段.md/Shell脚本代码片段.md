@@ -468,14 +468,13 @@ fi
 _abs_path() {
   local p="$1"
   [[ -z "$p" ]] && return 1
-  # 去掉包裹双引号
-  p="${p//\"/}"
-  # 去掉末尾斜杠（不影响根 /）
-  [[ "$p" != "/" ]] && p="${p%/}"
+  p="${p//\"/}"                                                         # ✅ 移除双引号，防止参数传递误差
+  [[ "$p" != "/" ]] && p="${p%/}"     												          # ✅ 去除末尾斜杠，标准化路径形式
+
   if [[ -d "$p" ]]; then
-    (cd "$p" 2>/dev/null && pwd -P)
+    (cd "$p" 2>/dev/null && pwd -P)                                     # ✅ 子 shell，避免污染当前目录
   elif [[ -f "$p" ]]; then
-    (cd "${p:h}" 2>/dev/null && printf "%s/%s\n" "$(pwd -P)" "${p:t}")
+    (cd "${p:h}" 2>/dev/null && printf "%s/%s\n" "$(pwd -P)" "${p:t}")  # ✅ 精准拼接
   else
     return 1
   fi
@@ -579,10 +578,10 @@ print_duration
 >
 >     ```shell
 >     cat <<EOF >> ~/.zshrc
->              
+>                
 >     # >>> Flutter 环境变量 >>>
 >     export PATH="\$HOME/.pub-cache/bin:\$PATH"
->              
+>                
 >     EOF
 >     ```
 >
@@ -598,10 +597,10 @@ print_duration
 >
 >     ```shell
 >      cat <<EOF > ~/.zshrc
->                   
+>                       
 >      # >>> Flutter 环境变量 >>>
 >      export PATH="\$HOME/.pub-cache/bin:\$PATH"
->                   
+>                       
 >      EOF
 >     ```
 >  
@@ -793,7 +792,7 @@ get_cpu_arch() {
 
 /// TODO
 
-### 🎯 💎[**rubygems**](https://rubygems.org/) 自检安装 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 🎯 💎[**Rubygems**](https://rubygems.org/) 自检安装 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 #### 🎯1、自检安装 💎**`Gem.CocoaPods`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -1130,15 +1129,15 @@ install_jenv() {
 >   ```shell
 >   jenv_remove_all_java() {
 >     echo "🧹 开始移除所有通过 Homebrew 安装并注册到 jenv 的 Java 版本..."
->   
+>     
 >     if [[ "$(uname -m)" == "arm64" ]]; then
 >       base_path="/opt/homebrew/opt"
 >     else
 >       base_path="/usr/local/opt"
 >     fi
->   
+>     
 >     found=false
->   
+>     
 >     for path in "$base_path"/openjdk*/libexec/openjdk.jdk/Contents/Home; do
 >       if [[ -d "$path" ]]; then
 >         echo "❌ 正在移除：$path"
@@ -1146,7 +1145,7 @@ install_jenv() {
 >         found=true
 >       fi
 >     done
->   
+>     
 >     if [[ "$found" == false ]]; then
 >       echo "⚠️ 未检测到任何已注册 Java 安装路径"
 >     else

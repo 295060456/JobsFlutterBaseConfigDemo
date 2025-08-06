@@ -90,7 +90,7 @@
 
 ### 3、[**VSCode**](https://code.visualstudio.com/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-* 如果[**VSCode**](https://code.visualstudio.com/)打开flutter项目以后没有办法通过`command`+`click`的形式点进去看，那么需要`command`+`shift`+`x` => 安装Dart/Flutter
+* 如果[**VSCode**](https://code.visualstudio.com/)打开[**Flutter**](https://flutter.dev/)项目以后没有办法通过`command`+`click`的形式点进去看，那么需要`command`+`shift`+`x` => 安装[**Dart**](https://dart.dev/)/[**Flutter**](https://flutter.dev/)
 
   ![image-20250713101322760](./assets/image-20250713101322760.png)
 
@@ -303,7 +303,7 @@ brew tap dart-lang/dart
   jenv versions --bare --verbose # 用这里的结果
   
   jenv global openjdk64-24.0.2   # 全局（所有项目默认）
-  jenv local openjdk64-21.0.8    # 当前目录（项目级）
+  jenv local openjdk64-17.0.16    # 当前目录（项目级）
   java --version                 # 验证
   ```
   
@@ -6779,7 +6779,7 @@ tasks.register("clean", Delete) {
 }
 ```
 
-### 3、🎯 Dart 命名规则大全（官方风格指南） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 3、🎯 **Dart** 命名规则大全（官方风格指南） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 类型            | 命名规则                                                     | 格式示例                             | 是否允许下划线 `_`  | 是否允许 `$`                                         |
 | --------------- | ------------------------------------------------------------ | ------------------------------------ | ------------------- | ---------------------------------------------------- |

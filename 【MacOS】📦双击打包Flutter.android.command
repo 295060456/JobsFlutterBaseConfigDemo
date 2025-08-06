@@ -54,6 +54,41 @@ init_environment() {
     eval "$(jenv init -)"
   fi
 }
+
+# ✅ 单行写文件（避免重复写入）
+inject_shellenv_block() {
+    local id="$1"           # 参数1：环境变量块 ID，如 "homebrew_env"
+    local shellenv="$2"     # 参数2：实际要写入的 shellenv 内容，如 'eval "$(/opt/homebrew/bin/brew shellenv)"'
+    local header="# >>> ${id} 环境变量 >>>"  # 自动生成注释头
+
+    # 参数校验
+    if [[ -z "$id" || -z "$shellenv" ]]; then
+    error_echo "❌ 缺少参数：inject_shellenv_block <id> <shellenv>"
+    return 1
+    fi
+
+    # 若用户未选择该 ID，则跳过写入
+    if [[ ! " ${selected_envs[*]} " =~ " $id " ]]; then
+    warn_echo "⏭️ 用户未选择写入环境：$id，跳过"
+    return 0
+    fi
+
+    # 避免重复写入
+    if grep -Fq "$header" "$PROFILE_FILE"; then
+      info_echo "📌 已存在 header：$header"
+    elif grep -Fq "$shellenv" "$PROFILE_FILE"; then
+      info_echo "📌 已存在 shellenv：$shellenv"
+    else
+      echo "" >> "$PROFILE_FILE"
+      echo "$header" >> "$PROFILE_FILE"
+      echo "$shellenv" >> "$PROFILE_FILE"
+      success_echo "✅ 已写入：$header"
+    fi
+
+    # 当前 shell 生效
+    eval "$shellenv"
+    success_echo "🟢 shellenv 已在当前终端生效"
+}
  
 # ✅ 判断芯片架构（ ARM64 / x86_64）
 get_cpu_arch() {
@@ -62,54 +97,75 @@ get_cpu_arch() {
 
 # ✅ 自检 Homebrew
 install_homebrew() {
-  arch=$(get_cpu_arch)
+  local arch="$(get_cpu_arch)"                   # 获取当前架构（arm64 或 x86_64）
+  local shell_path="${SHELL##*/}"                # 获取当前 shell 名称（如 zsh、bash）
+  local profile_file=""
+  local brew_bin=""
+  local shellenv_cmd=""
+
   if ! command -v brew &>/dev/null; then
-    color_echo "🧩 未检测到 Homebrew，正在安装 ($arch)..."
+    warn_echo "🧩 未检测到 Homebrew，正在安装中...（架构：$arch）"
+
     if [[ "$arch" == "arm64" ]]; then
       /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
-        color_echo "❌ Homebrew 安装失败"
+        error_echo "❌ Homebrew 安装失败（arm64）"
         exit 1
       }
+      brew_bin="/opt/homebrew/bin/brew"
     else
       arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
-        color_echo "❌ Homebrew 安装失败（x86_64）"
+        error_echo "❌ Homebrew 安装失败（x86_64）"
         exit 1
       }
+      brew_bin="/usr/local/bin/brew"
     fi
-    color_echo "✅ Homebrew 安装成功"
+
+    success_echo "✅ Homebrew 安装成功"
+
+    # ==== 注入 shellenv 到对应配置文件（自动生效） ====
+    shellenv_cmd="eval \"\$(${brew_bin} shellenv)\""
+
+    case "$shell_path" in
+      zsh)   profile_file="$HOME/.zprofile" ;;
+      bash)  profile_file="$HOME/.bash_profile" ;;
+      *)     profile_file="$HOME/.profile" ;;
+    esac
+
+    inject_shellenv_block "$profile_file" "$shellenv_cmd"
+
   else
-    color_echo "🔄 Homebrew 已安装，更新中..."
-    brew update && brew upgrade && brew cleanup
-    color_echo "✅ Homebrew 已更新"
+    info_echo "🔄 Homebrew 已安装，正在更新..."
+    brew update && brew upgrade && brew cleanup && brew doctor && brew -v
+    success_echo "✅ Homebrew 已更新"
   fi
 }
 
 # ✅ 自检 Homebrew.fzf
 install_fzf() {
   if ! command -v fzf &>/dev/null; then
-    method=$(fzf_select "通过 Homebrew 安装" "通过 Git 安装")
-    case $method in
-      *Homebrew*) brew install fzf;;
-      *Git*)
-        git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && ~/.fzf/install --all
-        ;;
-      *) err "❌ 取消安装 fzf";;
-    esac
+    note_echo "📦 未检测到 fzf，正在通过 Homebrew 安装..."
+    brew install fzf || { error_echo "❌ fzf 安装失败"; exit 1; }
+    success_echo "✅ fzf 安装成功"
   else
-    color_echo "🔄 fzf 已安装，升级中..."
-    brew upgrade fzf
-    color_echo "✅ fzf 已是最新版"
+    info_echo "🔄 fzf 已安装，升级中..."
+    brew upgrade fzf && brew cleanup
+    success_echo "✅ fzf 已是最新版"
   fi
 }
 
 # ✅ 转换路径为绝对路径
 _abs_path() {
-  local input="$1"
-  [[ -z "$input" ]] && return
-  if [[ -d "$input" ]]; then
-    cd "$input" && pwd -P
+  local p="$1"
+  [[ -z "$p" ]] && return 1
+  p="${p//\"/}"                                                         # ✅ 移除双引号，防止参数传递误差
+  [[ "$p" != "/" ]] && p="${p%/}"                                                               # ✅ 去除末尾斜杠，标准化路径形式
+
+  if [[ -d "$p" ]]; then
+    (cd "$p" 2>/dev/null && pwd -P)                                     # ✅ 子 shell，避免污染当前目录
+  elif [[ -f "$p" ]]; then
+    (cd "${p:h}" 2>/dev/null && printf "%s/%s\n" "$(pwd -P)" "${p:t}")  # ✅ 精准拼接
   else
-    cd "$(dirname "$input")" && echo "$(pwd -P)/$(basename "$input")"
+    return 1
   fi
 }
 
@@ -244,6 +300,27 @@ configure_java_env() {
   success_echo "✅ JAVA_HOME 已设置为：$JAVA_HOME"
 }
 
+# ✅ 打印 AGP 版本
+print_agp_version() {
+  local build_file=""
+  local agp_version=""
+
+  # 优先检查 build.gradle.kts
+  if [[ -f android/build.gradle.kts ]]; then
+    build_file="android/build.gradle.kts"
+    agp_version=$(grep -Eo 'com\.android\.tools\.build:gradle:\S+' "$build_file" | cut -d: -f3 | tr -d '"' | head -n1)
+  elif [[ -f android/build.gradle ]]; then
+    build_file="android/build.gradle"
+    agp_version=$(grep -E "^classpath\s+['\"]com\.android\.tools\.build:gradle:\S+['\"]" "$build_file" | sed -E "s/.*:gradle:([^'\"]+).*/\1/" | head -n1)
+  fi
+
+  if [[ -n "$agp_version" ]]; then
+    success_echo "✔ 检测到 AGP 版本：$agp_version（来源：$build_file）"
+  else
+    warn_echo "⚠️ 未在 build.gradle 中检测到 AGP 版本"
+  fi
+}
+
 # ✅ 构建信息打印
 print_agp_version() {
   local agp_version=""
@@ -274,27 +351,13 @@ print_sdk_versions() {
   done
 }
 
-# ✅ 执行构建
-run_flutter_build() {
-  local log_file="/tmp/flutter_build_log.txt"
-  rm -f "$log_file"
-  fix_jenv_java_version
-
-  info_echo "📦 JDK 版本："
-  java -version 2>&1 | tee -a "$log_file"
-
-  info_echo "📦 Gradle 版本："
-  ./android/gradlew -v | tee -a "$log_file"
-
-  print_agp_version | tee -a "$log_file"
-  print_sdk_versions | tee -a "$log_file"
-
-  info_echo "📦 sdkmanager 版本："
-  sdkmanager --version | tee -a "$log_file" || warn_echo "sdkmanager 未找到"
-
-  local build_cmd=("${flutter_cmd[@]}" build "$build_target" ${flavor_name:+--flavor "$flavor_name"} --"$build_mode")
-  success_echo "🚀 执行构建命令：${build_cmd[*]}"
-  "${build_cmd[@]}" | tee -a "$log_file"
+# ✅ 使用指定 JAVA_HOME 执行 Flutter 命令，确保构建环境一致
+run_flutter_with_java() {
+  JAVA_HOME="$JAVA_HOME" \
+  PATH="$JAVA_HOME/bin:$PATH" \
+  FVM_JAVA_HOME="$JAVA_HOME" \
+  JAVA_TOOL_OPTIONS="" \
+  env JAVA_HOME="$JAVA_HOME" PATH="$JAVA_HOME/bin:$PATH" "${flutter_cmd[@]}" "$@"
 }
 
 # ✅ 打开输出目录
@@ -307,6 +370,7 @@ open_output_folder() {
     open "$base/bundle/$build_mode" 2>/dev/null
   fi
 }
+
 # ✅ 判断是否使用 FVM
 _detect_flutter_cmd() {
   if command -v fvm >/dev/null 2>&1 && [[ -f ".fvm/fvm_config.json" ]]; then
@@ -336,7 +400,71 @@ maybe_flutter_clean_and_get() {
   fi
 }
 
-# ============================== 🚀 main 函数入口 ==============================
+# ✅ 环境信息输出
+print_env_diagnostics() {
+  local log_file="/tmp/flutter_build_log.txt"
+  rm -f "$log_file"
+  local java_env_cmd=(env JAVA_HOME="$JAVA_HOME" PATH="$JAVA_HOME/bin:$PATH")
+
+  {
+    color_echo "🩺 运行 flutter doctor -v 检查环境..."
+    "${flutter_cmd[@]}" doctor -v | tee -a "$log_file"
+  }
+
+  {
+    color_echo "📦 当前使用 JDK 版本："
+    java -version 2>&1 | tee -a "$log_file"
+  }
+
+  {
+    info_echo "📦 当前使用 Gradle wrapper（./android/gradlew）版本："
+    if [[ -x ./android/gradlew ]]; then
+      ./android/gradlew -v | tee -a "$log_file"
+    else
+      warn_echo "❌ 未找到 gradlew 脚本"
+    fi
+
+    info_echo "📦 当前系统 gradle（可能已劫持）版本："
+    if command -v gradle &>/dev/null; then
+      gradle -v | tee -a "$log_file"
+      info_echo "📦 gradle 路径：$(which gradle)" | tee -a "$log_file"
+    else
+      warn_echo "⚠️ 系统未安装 gradle"
+    fi
+  }
+
+  {
+    color_echo "📦 当前使用 AGP（Android Gradle Plugin）版本："
+    print_agp_version | tee -a "$log_file"
+  }
+
+  {
+    color_echo "📦 当前使用 sdkmanager 版本："
+    sdkmanager --list > /dev/null 2>&1 && sdkmanager --version | tee -a "$log_file" || err_echo "❌ sdkmanager 执行失败"
+
+    color_echo "📦 sdkmanager 来源路径："
+    which sdkmanager | tee -a "$log_file"
+  }
+
+  {
+    color_echo "📦 实际使用的 Android SDK 路径："
+    "${flutter_cmd[@]}" config --machine | grep -o '"androidSdkPath":"[^"]*"' | cut -d':' -f2- | tr -d '"' | tee -a "$log_file"
+  }
+
+  {
+    success_echo "🚀 构建命令：${flutter_cmd[*]} build $build_target ${flavor_name:+--flavor $flavor_name} --$build_mode"
+    "${flutter_cmd[@]}" build $build_target ${flavor_name:+--flavor $flavor_name} --$build_mode | tee -a "$log_file"
+  }
+}
+
+# ✅ 执行构建阶段
+run_flutter_build() {
+  local log_file="/tmp/flutter_build_log.txt"
+  success_echo "🚀 开始构建：${flutter_cmd[*]} build $build_target ${flavor_name:+--flavor $flavor_name} --$build_mode"
+  run_flutter_with_java build "$build_target" ${flavor_name:+--flavor "$flavor_name"} --"$build_mode" | tee -a "$log_file"
+}
+
+# ✅ 🚀 main 函数入口
 main() {
     cd "$(cd "$(dirname "$0")" && pwd -P)"      # ✅ 切换到脚本目录
     show_intro                                  # ✅ 自述信息
@@ -347,8 +475,11 @@ main() {
     prompt_flavor_and_mode                      # ✅ 选择 flavor 和构建模式（release/debug/profile）
     detect_flutter_command                      # ✅ 判断是否使用 FVM
     configure_java_env                          # ✅ 配置 Java 环境（支持记忆）
-    maybe_flutter_clean_and_get                 # ✅ 执行 flutter clean🧹 与 pub get
-    run_flutter_build                           # ✅ 执行 flutter build 命令
+    
+    print_env_diagnostics                       # ✅ 第一阶段：环境信息检查
+    maybe_flutter_clean_and_get                 # ✅ 第二阶段：flutter clean 与 pub get
+    run_flutter_build                           # ✅ 第三阶段：执行构建
+    
     open_output_folder                          # ✅ 打开构建产物目录
     success_echo "🎉 构建完成，日志保存在 /tmp/flutter_build_log.txt"
 }
