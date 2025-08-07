@@ -600,6 +600,57 @@ fi
     | `fvm global stable`  | 设置全局默认版本                                             | ✅（全局）                       |
     | `fvm upgrade`        | 1️⃣ **获取当前项目 `.fvm/fvm_config.json` 中配置的 `flutterSdkVersion` 所属 channel（如 stable、beta、dev、master）**；<br>2️⃣ 然后从该 **channel** 中 **升级到该 channel 的最新版本** | ✅（更新版本但不换 **channel**） |
 
+### 7、**Git**忽略文件 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```shell
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/settings.json
+#!.vscode/settings.local.json
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# FVM Version Cache
+.fvm/
+
+# 各平台编译
+/linux/
+/macos/
+/windows/
+/web/
+/ios/
+/android/
+```
+
 ## 三、💥代码讲解 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ### 1、🖨️打印方式 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
@@ -6652,13 +6703,31 @@ void main() {
 
 ## 四、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-### 1、📱关于**iOS**模拟器（最新版本[**XCode**](https://developer.apple.com/xcode/)：16.4） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 1、修复平台目录：定位到[**Flutter**](https://flutter.dev/)项目根目录，执行👉`flutter create .`  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+* 仅<font color=red>**生成/修复**</font>默认平台（通常是 [**Android**](https://www.android.com/) + **iOS**）
+
+  > 1️⃣ 如果**未开启桌面/web 支持**，不会创建 `linux/`、`macos/`、`windows/`、`web/`；
+  >
+  > 2️⃣ 如果`./android`或者`./ios`目录损害，应该由[**Flutter**](https://flutter.dev/)自动生成， **而不是从其他项目里面进行移植**
+
+  ```shell
+  flutter create .
+  ```
+
+* 显式<font color=red>**生成/修复**</font>指定平台
+
+  ```shell
+  flutter create --platforms=android,ios,web,linux,macos,windows .
+  ```
+
+### 2、📱关于**iOS**模拟器（最新版本[**XCode**](https://developer.apple.com/xcode/)：16.4） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * **iOS** 模拟器无法运行 **Profile** 模式的 [**Flutter**](https://flutter.dev/) APP（只支持 **Debug 模式运行**）
   
-  > **Profile**/**Release** => 只能构建 ARM 架构，模拟器无法运行
+  > **Profile**/**Release** => 只能构建**ARM**架构，模拟器无法运行
   >
-  > **iOS** 模拟器 => macOS 下运行的 x86_64/arm64 模拟环境
+  > **iOS** 模拟器 => **MacOS** 下运行的** x86_64/arm64** 模拟环境
   
 * 老版本的**iOS**模拟器的兼容
 
@@ -6744,7 +6813,7 @@ void main() {
     > - 通常这个目录在未特殊使用挂载卷的模拟器中是空的。
     > - 可被清理，[**XCode**](https://developer.apple.com/xcode/) 会在需要时自动重新创建。
 
-### 2、`/android/build.gradle`的配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 3、`/android/build.gradle`的配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```Groovy
 /// 显式声明了 Kotlin 版本
@@ -6779,7 +6848,7 @@ tasks.register("clean", Delete) {
 }
 ```
 
-### 3、🎯 **Dart** 命名规则大全（官方风格指南） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 4、🎯 [**Dart**](https://dart.dev/) 命名规则大全（官方风格指南） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 类型            | 命名规则                                                     | 格式示例                             | 是否允许下划线 `_`  | 是否允许 `$`                                         |
 | --------------- | ------------------------------------------------------------ | ------------------------------------ | ------------------- | ---------------------------------------------------- |
@@ -6790,7 +6859,7 @@ tasks.register("clean", Delete) {
 | 文件名 / 路径   | **蛇形命名法** snake_case：<br><font color=red>**每个空格皆以底线（_）取代的书写风格，<br/>且每个单字的第一个字母皆为小写**</font> | `user_model.dart`, `home_page.dart`  | ✅ 推荐              | ❌ 不推荐                                             |
 | 私有变量 / 方法 | 下划线开头<br>**只在当前 Dart 文件里能访问，其他文件即使导入了也访问不到** | `_user`, `_fetchData()`              | ✅ 必须用 `_`        | ❌ 不推荐                                             |
 
-### 4、🗺️ 重定向技巧  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 5、🗺️ 重定向技巧  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 保留多个构造方式（如 builder 模式 vs 普通 child 模式）；
 >
@@ -6811,9 +6880,9 @@ class Person {
 }
 ```
 
-### 5、💼 package <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 6、💼 package <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-* **package:**这种路径前缀只能用于 **`lib/` 目录下的 Dart 文件**。 表示从 `pubspec.yaml` 中定义的包或当前项目的 `lib/` 目录开始引用
+* **package:**这种路径前缀只能用于 **`lib/` 目录下的 [Dart](https://dart.dev/) 文件**。 表示从 `pubspec.yaml` 中定义的包或当前项目的 `lib/` 目录开始引用
 
   ❌ **不能使用 `package:` 的情况**：
 
@@ -6823,9 +6892,9 @@ class Person {
   | `lib/` 以外的文件夹 | 比如 `test/`、`bin/`、`web/`、`ios/`、`android/` 等不能被 `package:` 引用 |
   | `lib/` 外 Dart 文件 | 比如 `tools/util.dart`，不是 `lib/` 下的无法被 `package:` 访问 |
 
-### 6、🔥[**Firebase**](https://firebase.google.com/?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 7、🔥[**Firebase**](https://firebase.google.com/?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-* [**Firebase**](https://firebase.google.com/?hl=zh-cn)：**Google 提供的一整套后端云服务平台**，专门为移动 App（Android/iOS）、Web 应用开发者提供“后端即服务”（BaaS）能力
+* [**Firebase**](https://firebase.google.com/?hl=zh-cn)：**Google 提供的一整套后端云服务平台**，专门为移动 App（[**Android**](https://www.android.com/)/**iOS**）、Web 应用开发者提供“后端即服务”（BaaS）能力
 
   > 📦 一个不需要你自己搭服务器，就能拥有**推送通知、用户登录、数据库、文件存储、分析**等功能的一站式平台。
   >
@@ -6852,9 +6921,9 @@ class Person {
   | Unity   | ✅ 支持游戏开发                                               |
   | C++     | ✅ 支持部分模块                                               |
 
-### 7、📂[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/)系统文件目录 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 8、📂[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/)系统文件目录 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 7.1、📁`$HOME/.pub-cache/hosted/pub.dev/`文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 8.1、📁`$HOME/.pub-cache/hosted/pub.dev/`文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 存放从 [**pub.dev**](https://pub.dev) 下载的所有依赖包源码（包括版本号）
 
@@ -6880,7 +6949,7 @@ class Person {
   | ✅ 安全性         | ✔️ 官方支持，保守修复          | ⚠️ 有风险，完全清空，依赖全部重拉                          |
   | ✅ 使用场景       | 依赖异常、下载中断、构建失败  | 彻底清理后重建缓存、解决极端冲突                          |
 
-#### 7.2、📁`$HOME/.pub-cache/` 文件夹<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 8.2、📁`$HOME/.pub-cache/` 文件夹<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 路径                               | 说明                                                         | 是否可删                             |
 | ---------------------------------- | ------------------------------------------------------------ | ------------------------------------ |
@@ -6889,13 +6958,13 @@ class Person {
 | `$HOME/.pub-cache/bin/`            | 全局安装的 [**Dart**](https://dart.dev/) 命令行工具（如 `webdev`, `melos` 等） | ⚠️ 慎删，删了要重新` global activate` |
 | `$HOME/.pub-cache/_temp/`          | 临时下载缓存                                                 | ✅ 安全清理                           |
 
-#### 7.3、📁`$HOME/.flutter/`文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 8.3、📁`$HOME/.flutter/`文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 路径              | 说明                                                         | 是否可删                              |
 | ----------------- | ------------------------------------------------------------ | ------------------------------------- |
 | `$HOME/.flutter/` | [**Flutter**](https://flutter.dev/) 工具缓存（例如 [**Flutter**](https://flutter.dev/) Web 的调试资源） | ✅ 可删，运行任何 `flutter` 命令会重建 |
 
-#### 9.4、📁`$HOME/Library/Flutter/` 文件夹（按需出现，非必备）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 8.4、📁`$HOME/Library/Flutter/` 文件夹（按需出现，非必备）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 这个目录只有在你满足以下条件时才会出现：
 >
@@ -6911,7 +6980,7 @@ class Person {
 | ------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | `$HOME/Library/Flutter/` | **MacOS** 专属的 [**Flutter**](https://flutter.dev/) 工具缓存 | ✅ 可删， [**Flutter**](https://flutter.dev/)  会重新拉取所需工具 |
 
-#### 7.5、📁`$HOME/.dart/` 文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 8.5、📁`$HOME/.dart/` 文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 >  [**Dart**](https://dart.dev/) CLI 的缓存目录，只有在以下情况出现时才会生成：
 >
@@ -6927,17 +6996,15 @@ class Person {
 | -------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | `$HOME/.dart/` | [**Dart**](https://dart.dev/).**SDK** 和 tools 的缓存（部分版本依赖此目录） | ⚠️ 慎删，如果你使用 [**Dart**](https://dart.dev/)  CLI 频繁切换 SDK，建议保留 |
 
-#### 7.6、📁`$HOME/fvm/`文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 8.6、📁`$HOME/fvm/`文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 位于**MacOS**系统根目录下。[**FVM** ](https://fvm.app/) 的所有 [**Flutter**](https://flutter.dev/).**SDK** 存放地
 >
 > ⚠️ 慎删，删了旧版本就无法使用
 
-### 8、📂[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/)项目文件（夹） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 9、📂[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/)项目文件（夹） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-  * <font color=red>如果`./android`或者`./ios`目录损害，应该由[**Flutter**](https://flutter.dev/)自动生成（定位到[**Flutter**](https://flutter.dev/)项目根目录，执行👉）：`flutter create .`</font> **而不是从其他项目里面进行移植**
-
-#### 8.1、📁`Flutter项目根目录/.fvm/flutter_sdk` 文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.1、📁`Flutter项目根目录/.fvm/flutter_sdk` 文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > [**FVM（<font color=red>F</font>lutter <font color=red>V</font>ersion <font color=red>M</font>anagement）** ](https://fvm.app/) 相关：
 >
@@ -6945,7 +7012,7 @@ class Person {
 >
 > * 可以不加入 **Git** 管理
 
-#### 8.2、📁 `linux/` 文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.2、📁 `linux/` 文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 >如果只是专注于 **[Flutter](https://flutter.dev/) 移动端开发（Android / iOS）**，那么`inux/` 文件夹可以不加入 **Git** 管理
 
@@ -7005,7 +7072,7 @@ class Person {
     # https://dart.dev/guides/language/analysis-options
     ```
 
-#### 8.3、📁`.idea` 文件夹
+#### 9.3、📁`.idea` 文件夹
 
 > 1️⃣ 通常是 [**JetBrains**](https://www.jetbrains.com/) 的集成开发环境（IDE）如 [**IntelliJ IDEA**](https://www.jetbrains.com/idea/) 或 [**Android Studio**](https://developer.android.com/studio?hl=zh-cn) 在项目中生成的隐藏文件夹
 >
@@ -7022,7 +7089,7 @@ class Person {
 
 总的来说，`.idea` 文件夹是  [**JetBrains**](https://www.jetbrains.com/)  IDE 用于存储项目配置和元数据的文件夹，**它通常不应该被版本控制系统跟踪**，因为这些配置文件通常是特定于开发者的，并且可能会因为 IDE 版本的不同而有所变化。
 
-#### 8.4、📃`pubspec.yaml` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.4、📃`pubspec.yaml` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 是[**Dart**](https://dart.dev/)语言中用于管理项目依赖和元数据的文件。这个文件通常位于 [**Dart**](https://dart.dev/) 项目的根目录中，其中包含了项目的名称、版本、作者信息等基本元数据，以及项目所依赖的第三方库（通过 [**Dart**](https://dart.dev/) 包管理器 pub 安装）；
 >
@@ -7113,7 +7180,7 @@ assets: # 路径名不能有中文，否则可能无法正常读取
     flutter_unused_packages --fix
     ```
 
-#### 8.5、📃`pubspec.lock` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.5、📃`pubspec.lock` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 >  是 [**Dart**](https://dart.dev/) 项目中的自动生成文件，用于锁定项目依赖的版本信息。
 >
@@ -7139,7 +7206,7 @@ packages:
     version: "0.17.0"
 ```
 
-#### 8.6、📃`.metadata` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.6、📃`.metadata` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 >  是一个二进制文件，[**Dart**](https://dart.dev/) 项目中的一个隐藏文件，通常存储在项目的根目录下，用于保存与[**Dart**](https://dart.dev/) 包管理器 `pub` 相关的元数据信息。
 >
@@ -7151,7 +7218,7 @@ packages:
 >
 > 4️⃣ 删除 `.metadata` 文件后，`pub`  会重新生成一个新的 `.metadata` 文件，其中包含了当前项目的元数据信息；
 
-#### 8.7、📃`.flutter-plugins` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.7、📃`.flutter-plugins` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 是[**Flutter**](https://flutter.dev/)项目中的一个隐藏文件，它用于跟踪 [**Flutter**](https://flutter.dev/)插件的信息；
 >
@@ -7170,7 +7237,7 @@ camera=plugins/camera/
 location=plugins/location/
 ```
 
-#### 8.8、📃`.flutter-plugins-dependencies` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.8、📃`.flutter-plugins-dependencies` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 是一个用来存储 [**Flutter**](https://flutter.dev/)插件依赖信息的隐藏文件；
 >
@@ -7196,7 +7263,7 @@ dependencies:
 # 在这个示例中，`camera` 和 `image_picker` 是两个插件，它们分别有自己的依赖关系记录，包括依赖类型（`dependency`）、名称（`name`）、URL 和版本号。
 ```
 
-### 9、注解 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 10、注解 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 <font color=red>注解（以`@JsonSerializable() `为例） 🆚 OC 分类（Category）</font>
 
 * 确实都达到了**在不改动原类结构下，增加功能**的目的
@@ -7220,7 +7287,7 @@ dependencies:
   | 🧠 类型系统影响 | 有静态类型检查                 | 无类型检查，靠 runtime dispatch |
   | 📄 新增文件     | 会生成新文件                   | 不会生成新文件                  |
 
-### 10、Dart抽象类+`factory` 构造函数 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 11、[**Dart**](https://dart.dev/)抽象类+`factory` 构造函数 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > **Dart** 中的抽象类可以定义 `factory` 构造函数，它不能直接被实例化，但可以通过这个 `factory` 返回子类对象或其他实例，从而起到**工厂方法（类方法）+ 构造器**的双重作用。
 
@@ -7293,7 +7360,7 @@ dependencies:
       }
       ```
 
-    * 📌 **Dart** 单例完整封装模板（带线程安全/泛型支持）
+    * 📌 [**Dart**](https://dart.dev/) 单例完整封装模板（带线程安全/泛型支持）
 
       ```dart
       class Singleton<T> {
@@ -7341,7 +7408,7 @@ dependencies:
       }
       ```
 
-### 11、<font color=red>**abstract**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 12、<font color=red>**abstract**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ 防止被实例化
 >
@@ -7349,7 +7416,7 @@ dependencies:
 >
 > 常用于**纯静态工具类或常量容器类**的定义。提升代码的可读性和语义安全性，是一种更严谨的推荐写法
 
-### 12、Comparable <font color=red><b>&lt;T&gt;</b></font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 13、Comparable <font color=red><b>&lt;T&gt;</b></font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ **Dart** 中的一个接口（mixin），表示 **“可比较”类型**
 >
@@ -7367,13 +7434,13 @@ Comparable.compare(a, b)
 
   * 返回 **正数**：表示 `a > b`
 
-### 13、**纯静态类** 的（常见）写法 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 14、**纯静态类** 的（常见）写法 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> 1️⃣ Dart.Flutter里面没有反射（尤其是 release 模式）根本不支持 `dart:mirrors`（导入报错）
+> 1️⃣ [**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/)里面没有反射（尤其是 **release** 模式）根本不支持 `dart:mirrors`（导入报错）
 >
-> 2️⃣ 但是在Dart里面却可以有反射，可以绕过去。从语法层面来讲，使用 `enum`最安全。而事实上，因为Flutter不存在反射机制，所以下列3种写法都是安全的
+> 2️⃣ 但是在Dart里面却可以有反射，可以绕过去。从语法层面来讲，使用 `enum`最安全。而事实上，因为[**Flutter**](https://flutter.dev/)不存在反射机制，所以下列3种写法都是安全的
 >
-> 3️⃣ 如果只关注 Flutter | 用 `class Xxx._();` 就够了 ✅ ；如果写的是 Dart 公共包 / 命令行工具 / 未来也考虑服务端，那么用 `enum Xxx { ; }` 会更加的保险 ✅✅✅
+> 3️⃣ 如果只关注 [**Flutter**](https://flutter.dev/) | 用 `class Xxx._();` 就够了 ✅ ；如果写的是 [**Dart**](https://dart.dev/) 公共包 / 命令行工具 / 未来也考虑服务端，那么用 `enum Xxx { ; }` 会更加的保险 ✅✅✅
 
 * 私有构造函数方式（最常见）
 
@@ -7419,11 +7486,11 @@ Comparable.compare(a, b)
 
   > 1️⃣ enum 自带防实例化特性
   >
-  > 2️⃣ `;` 是 Dart 2.17+ 的语法，用于声明一个空的枚举体
+  > 2️⃣ `;` 是 [**Dart**](https://dart.dev/) 2.17+ 的语法，用于声明一个空的枚举体
   >
   > 3️⃣ 更安全，彻底禁止构造
   >
-  > 4️⃣ Dart版本要求 ≥ 2.17
+  > 4️⃣ [**Dart **](https://dart.dev/) 版本要求 ≥ 2.17
 
   ```dart
   enum AppUtils {
@@ -7437,14 +7504,14 @@ Comparable.compare(a, b)
   }
   ```
 
-### 14、✂️剪切板行为  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 15、✂️剪切板行为  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 操作                                     | 可同步剪贴板？ | 方向   |
 | ---------------------------------------- | -------------- | ------ |
 | 在 **macOS 上复制**，到 iOS 模拟器中粘贴 | ✅ 可以         | 💻 ➜ 📱  |
 | 在 **iOS 模拟器中复制**，到 macOS 上粘贴 | ❌ 不行         | 📱 🚫➜ 💻 |
 
-### 15、**Dart**.<font color=red>**`Symbol`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 16、**Dart**.<font color=red>**`Symbol`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ 写法为 `#标识符`。例如：`#name`, `#sayHello`, `#toString`
 >
@@ -7497,7 +7564,7 @@ Comparable.compare(a, b)
   | 用来告诉 Dart：我要操作这个名字 | 用来展示、存储内容  |
   | Dart 编译时会优化 Symbol        | String 是运行时的值 |
 
-### 16、上下文（**`BuildContext`**） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 17、上下文（**`BuildContext`**） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 🧠 举个比喻：
 >
@@ -7526,7 +7593,7 @@ Comparable.compare(a, b)
   /// 并不等于其父组件的 context
   ```
 
-### 17、<font id=InheritedWidget>`InheritedWidget`</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 18、<font id=InheritedWidget>`InheritedWidget`</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 官方定义：`InheritedWidget` 是一种可以**将数据从父`Widget`向下传递并提供响应式更新**的**`Widget`**
 
@@ -7576,7 +7643,7 @@ Comparable.compare(a, b)
   );
   ```
 
-### 18、🔧**自动化代码生成工具** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 19、🔧**自动化代码生成工具** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * [<font color=red>**build_runner**</font>](https://pub.dev/packages/build_runner)
 
@@ -7776,9 +7843,9 @@ Comparable.compare(a, b)
   | ✅ 测试 mock       | 自动生成 `@Mock()`、伪接口                         | `mockito` + `build_runner`                        |
   | ✅ Dart FFI        | 自动生成 FFI 对应的 dart wrapper                   | `ffigen`                                          |
 
-### 19、🏗️构造函数 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 20、🏗️构造函数 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 19.1、📚 各种构造函数形式讲解
+#### 20.1、📚 各种构造函数形式讲解
 
 * **默认构造函数**（<font color=red>**不能有两个默认构造函数（名字相同，参数不同也不行）**</font>）
 
@@ -7880,28 +7947,26 @@ Comparable.compare(a, b)
   }
   ```
 
-### 20、📦构建打包 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
-
-<font color=red>如果`./android`或者`./ios`目录损害，应该由[**Flutter**](https://flutter.dev/)自动生成（定位到[**Flutter**](https://flutter.dev/)项目根目录，执行👉）：`flutter create .`</font>
+### 21、📦构建打包 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ 打包慢，尤其[**Android**](https://www.android.com/)平台
 >
 > 2️⃣ [**Flutter**](https://flutter.dev/) 的3大构建模式
 >
-> | 对比项                     | `debug` 模式                                  | `profile` 模式                  | `release` 模式                     |
-> | -------------------------- | --------------------------------------------- | ------------------------------- | ---------------------------------- |
-> | ✅ **用途**                 | 开发调试阶段                                  | 性能分析阶段                    | 上线发布给用户                     |
-> | 🧠 **Dart 执行方式**        | JIT（即时编译）                               | AOT（提前编译）+ 部分调试支持   | 完整 AOT 编译（最高性能）          |
-> | 🚀 **性能优化**             | 无优化                                        | 启用大部分性能优化              | 完全优化                           |
-> | 📦 **包体积大小**           | 最大（含调试信息、Dart VM）                   | 中等                            | 最小（树摇优化、混淆、无调试信息） |
-> | 🔁 **支持热重载**           | ✅ 支持                                        | ❌ 不支持                        | ❌ 不支持                           |
-> | 🧪 **DevTools 支持**        | ✅ 支持调试和 DevTools                         | ✅ 支持部分 DevTools（性能分析） | ❌ 不支持调试工具                   |
-> | 🐞 **断点调试 / `print()`** | ✅ 支持断点和 `print()` 输出                   | ✅ 支持 `print()`（部分断点）    | ❌ `print()` 默认不输出 / 被裁剪    |
-> | 🔒 **混淆支持**             | ❌ 默认关闭                                    | ❌ 默认关闭                      | ✅ 可开启（需配置 Proguard / R8）   |
-> | 🧬 **代码签名**             | ❌ 不签名（开发包）                            | ✅ 可签名（需配置）              | ✅ 强制签名（发布包）               |
-> | 🔍 **Flutter inspector**    | ✅ 可用                                        | ❌ 不可用                        | ❌ 不可用                           |
-> | 🛠 **构建命令**             | `flutter build apk --debug`                   | `flutter build apk --profile`   | `flutter build apk --release`      |
-> | 📁 **输出路径**             | `build/app/outputs/flutter-apk/app-debug.apk` | `.../app-profile.apk`           | `.../app-release.apk`              |
+> | 对比项                     | `debug` 模式                                         | `profile` 模式                      | `release` 模式                     |
+> | -------------------------- | ---------------------------------------------------- | ----------------------------------- | ---------------------------------- |
+> | ✅ **用途**                 | 开发调试阶段                                         | 性能分析阶段                        | 上线发布给用户                     |
+> | 🧠 **Dart 执行方式**        | JIT（即时编译）                                      | AOT（提前编译）+ 部分调试支持       | 完整 AOT 编译（最高性能）          |
+> | 🚀 **性能优化**             | 无优化                                               | 启用大部分性能优化                  | 完全优化                           |
+> | 📦 **包体积大小**           | 最大（含调试信息、[**Dart**](https://dart.dev/) VM） | 中等                                | 最小（树摇优化、混淆、无调试信息） |
+> | 🔁 **支持热重载**           | ✅ 支持                                               | ❌ 不支持                            | ❌ 不支持                           |
+> | 🧪 **DevTools 支持**        | ✅ 支持调试和 DevTools                                | ✅ 支持部分 **DevTools**（性能分析） | ❌ 不支持调试工具                   |
+> | 🐞 **断点调试 / `print()`** | ✅ 支持断点和 `print()` 输出                          | ✅ 支持 `print()`（部分断点）        | ❌ `print()` 默认不输出 / 被裁剪    |
+> | 🔒 **混淆支持**             | ❌ 默认关闭                                           | ❌ 默认关闭                          | ✅ 可开启（需配置 Proguard / R8）   |
+> | 🧬 **代码签名**             | ❌ 不签名（开发包）                                   | ✅ 可签名（需配置）                  | ✅ 强制签名（发布包）               |
+> | 🔍 **Flutter inspector**    | ✅ 可用                                               | ❌ 不可用                            | ❌ 不可用                           |
+> | 🛠 **构建命令**             | `flutter build apk --debug`                          | `flutter build apk --profile`       | `flutter build apk --release`      |
+> | 📁 **输出路径**             | `build/app/outputs/flutter-apk/app-debug.apk`        | `.../app-profile.apk`               | `.../app-release.apk`              |
 
 * 构建环境清理与诊断命令对照表
 
@@ -7909,8 +7974,8 @@ Comparable.compare(a, b)
 
     | 📦 命令            | 💡 说明                                                       |
     | ----------------- | ------------------------------------------------------------ |
-    | `flutter clean`   | 清理 [**Flutter**](https://flutter.dev/) 构建产物（适用于 iOS 和 Android），解决异常构建、缓存问题 |
-    | `flutter pub get` | 重新获取 Dart 依赖（通常配合 clean 一起使用）                |
+    | `flutter clean`   | 清理 [**Flutter**](https://flutter.dev/) 构建产物（适用于 **iOS** 和 [**Android**](https://www.android.com/)），解决异常构建、缓存问题 |
+    | `flutter pub get` | 重新获取 [**Dart**](https://dart.dev/) 依赖（通常配合 clean 一起使用） |
 
   * 🍎 **iOS** 专用命令
 
@@ -7924,7 +7989,7 @@ Comparable.compare(a, b)
     | `flutter build ios --no-codesign`                            | 构建 **iOS** 项目但跳过签名，适用于 CI 或调试环境            |
     | `open ios/Runner.xcworkspace`                                | 用 [**XCode**](https://developer.apple.com/xcode/) 打开 **iOS** 工程（使用 [**CocoaPods**](https://cocoapods.org/) 管理时必须） |
 
-  * 🤖 **Android** 专用命令
+  * 🤖 [**Android**](https://www.android.com/) 专用命令
 
     | 命令                                                    | 说明                                                         |
     | ------------------------------------------------------- | ------------------------------------------------------------ |
@@ -7941,7 +8006,7 @@ Comparable.compare(a, b)
 
     | 命令                   | 说明                                                         |
     | ---------------------- | ------------------------------------------------------------ |
-    | `flutter doctor -v`    | 检查 [**Flutter**](https://flutter.dev/)、**Dart**、[**XCode**](https://developer.apple.com/xcode/)、[**Android**]([**Android**](https://www.android.com/))、[**CocoaPods**](https://cocoapods.org/)、**Java** 配置等所有环境 |
+    | `flutter doctor -v`    | 检查 [**Flutter**](https://flutter.dev/)、[**Dart**](https://dart.dev/)、[**XCode**](https://developer.apple.com/xcode/)、[**Android**]([**Android**](https://www.android.com/))、[**CocoaPods**](https://cocoapods.org/)、**Java** 配置等所有环境 |
     | `flutter pub outdated` | 检查 `pubspec.yaml` 中的依赖是否有更新                       |
     | `flutter analyze`      | 分析 **Dart** 代码规范与静态错误                             |
     | `flutter upgrade`      | 升级 [**Flutter**](https://flutter.dev/).**SDK** 到最新版本  |
@@ -7960,9 +8025,9 @@ Comparable.compare(a, b)
   | **dynamic**                        | [**Flutter**](https://flutter.dev/) 动态集成场景 | **JIT + AOT**      | 依项目配置 | 依项目配置   | Add-to-App 混合开发               | **Android**<br/>**iOS**               | 原生动态加载 Flutter            |
   | **flavor 模式**                    | `flutter build apk --flavor staging`             | 依所选模式         | 依所选模式 | 依所选模式   | 多环境打包（`staging`、`uat` 等） | **Android**<br/>**iOS**               | 非编译模式，属于构建配置        |
 
-#### 20.1、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)（较为复杂和繁琐） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 21.1、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)（较为复杂和繁琐） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-##### 20.1.1、 [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.1.1、 [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 >  [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) （<font color=red>**建议保持最新**</font>）是[**Android**](https://www.android.com/).**SDK**命令行工具：[Android **Command Line Tools**](https://developer.android.com/tools?hl=zh-cn)的一部分，用于管理 [**Android**](https://www.android.com/).**SDK** 的组件。它允许你从终端安装、更新、查看和卸载[**Android**](https://www.android.com/).**SDK**中的各种包，比如：
 >
@@ -8004,7 +8069,7 @@ Comparable.compare(a, b)
 
     * 用于自定义 **CI/CD** 环境（如 [**Docker**](https://www.docker.com/)镜像）
 
-##### 20.1.2、[**Gradle**](https://gradle.org/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.1.2、[**Gradle**](https://gradle.org/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 一个高度可配置、插件化、现代化的自动化构建工具（平台无关）
 
@@ -8074,7 +8139,7 @@ Comparable.compare(a, b)
   }
   ```
 
-##### 20.1.3、<font id=AGP>[<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) = <font color=red>**A**</font>ndroid <font color=red>**G**</font>radle <font color=red>**P**</font>lugin</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> 
+##### 21.1.3、<font id=AGP>[<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) = <font color=red>**A**</font>ndroid <font color=red>**G**</font>radle <font color=red>**P**</font>lugin</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> 
 
 * 🧱  [<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) 是连接 [**Gradle**](https://gradle.org/) 和 **Android 构建逻辑** 的桥梁
 
@@ -8119,7 +8184,7 @@ Comparable.compare(a, b)
   | 版本关系               | 不同 [<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn)  需配套不同 [**Gradle**](https://gradle.org/) | 独立更新                                           |
   | **Flutter** 项目中位置 | `build.gradle` 中的 `classpath`                              | `gradle-wrapper.properties` 中的 `distributionUrl` |
 
-##### 20.1.4、[**Android**](https://www.android.com/)  打包的产物 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.1.4、[**Android**](https://www.android.com/)  打包的产物 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 项目                 | <font color=red>**A**</font>ndroid <font color=red>**p**</font>ac<font color=red>**k**</font>age | <font color=red>**A**</font>ndroid <font color=red>**a**</font>pp <font color=red>**b**</font>undle |
 | -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -8134,7 +8199,7 @@ Comparable.compare(a, b)
 | **常见用途**         | 内部测试、第三方分发、安装包备份                             | 上传 [**Google Play**](https://play.google.com/) 商店        |
 | **是否推荐**         | ✅ 第三方或私有渠道使用                                       | ✅ [**Google**](https://www.google.com/) 官方推荐上传 [**Play**](https://play.google.com/) 商店使用 |
 
-##### 20.1.5、[**Flutter**](https://flutter.dev/)打[**Android**](https://www.android.com/) 包的流程图 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.1.5、[**Flutter**](https://flutter.dev/)打[**Android**](https://www.android.com/) 包的流程图 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```mermaid
 graph TD
@@ -8146,7 +8211,7 @@ graph TD
     F --> G[Generate final APK]
 ```
 
-##### 20.1.6、如何加快[**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)的打包速度？ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.1.6、如何加快[**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)的打包速度？ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 优化方式                                            | 操作说明                                                     |
 | --------------------------------------------------- | ------------------------------------------------------------ |
@@ -8159,7 +8224,7 @@ graph TD
 | ✅ **设置构建线程数**                                | [**Gradle**](https://gradle.org/) 中设置：`org.gradle.parallel=true` |
 | ✅ [**Flutter**](https://flutter.dev/) **版本更新**  | 新版本通常对构建性能有优化                                   |
 
-##### 20.1.7、🪖<font color=red>**构建指令**</font>：`flutter build apk` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.1.7、🪖<font color=red>**构建指令**</font>：`flutter build apk` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 模式      | 命令                                                   | 简称说明             |
 | --------- | ------------------------------------------------------ | -------------------- |
@@ -8195,7 +8260,7 @@ cd /path/to/flutter_project/build/app/.android
 | `-Psplit-debug-info`      | 是否分离调试信息                                |
 | `assembleRelease`         | 构建 release 产物，最终生成 `app-release.apk`   |
 
-##### 20.1.8、⚙️ 相关配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.1.8、⚙️ 相关配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/) 打包需要涉及到**Java**环境推荐使用[<font color=red>**openJDK**</font>](https://openjdk.org/)
 
@@ -8243,7 +8308,7 @@ cd /path/to/flutter_project/build/app/.android
       
 
 
-* [**Flutter**](https://flutter.dev/).**Android** 项目在首次构建或执行 `flutter clean` 后会重新下载👇
+* [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/) 项目在首次构建或执行 `flutter clean` 后会重新下载👇
 
   | 资源                                                         | 说明                                                         |
   | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -8253,17 +8318,503 @@ cd /path/to/flutter_project/build/app/.android
   | 第三方依赖                                                   | 来自 [**pub.dev**](https://pub.dev/) 的插件中声明的 AAR/JAR，如 [`image_gallery_saver`](https://pub.dev/packages/image_gallery_saver)、[`engagelab`](https://pub.dev/packages?q=engagelab) |
   | [**Google Maven**](https://maven.google.com/web/index.html) / [**JCenter**](https://mvnrepository.com/repos/jcenter) / [**MavenCentral**](https://central.sonatype.com/) | 默认构建源，国内访问会慢                                     |
 
-##### 20.1.9、📦 [**Flutter**](https://flutter.dev/).**Android** 打包脚本（MacOS）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.1.9、📦 [**Flutter**](https://flutter.dev/).**Android** 打包脚本（MacOS）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 <details>
 <summary>点击展开代码</summary>
 
 ```dart
-// TODO
+#!/bin/zsh
+
+# ✅ 日志与输出函数
+SCRIPT_BASENAME=$(basename "$0" | sed 's/\.[^.]*$//')   # 当前脚本名（去掉扩展名）
+LOG_FILE="/tmp/${SCRIPT_BASENAME}.log"                  # 设置对应的日志文件路径
+
+log()            { echo -e "$1" | tee -a "$LOG_FILE"; }
+color_echo()     { log "\033[1;32m$1\033[0m"; }         # ✅ 正常绿色输出
+info_echo()      { log "\033[1;34mℹ $1\033[0m"; }       # ℹ 信息
+success_echo()   { log "\033[1;32m✔ $1\033[0m"; }       # ✔ 成功
+warn_echo()      { log "\033[1;33m⚠ $1\033[0m"; }       # ⚠ 警告
+warm_echo()      { log "\033[1;33m$1\033[0m"; }         # 🟡 温馨提示（无图标）
+note_echo()      { log "\033[1;35m➤ $1\033[0m"; }       # ➤ 说明
+error_echo()     { log "\033[1;31m✖ $1\033[0m"; }       # ✖ 错误
+err_echo()       { log "\033[1;31m$1\033[0m"; }         # 🔴 错误纯文本
+debug_echo()     { log "\033[1;35m🐞 $1\033[0m"; }      # 🐞 调试
+highlight_echo() { log "\033[1;36m🔹 $1\033[0m"; }      # 🔹 高亮
+gray_echo()      { log "\033[0;90m$1\033[0m"; }         # ⚫ 次要信息
+bold_echo()      { log "\033[1m$1\033[0m"; }            # 📝 加粗
+underline_echo() { log "\033[4m$1\033[0m"; }            # 🔗 下划线
+
+# ✅ 自述信息
+show_intro() {
+  clear
+  color_echo "🛠️ Flutter Android 打包脚本（支持 FVM / fzf / flavor / JDK 选择）"
+  echo ""
+  note_echo "📌 功能说明："
+  note_echo "1️⃣ 自动识别当前 Flutter 项目路径（或拖入路径）"
+  note_echo "2️⃣ 自动检测是否使用 FVM，并用 fvm flutter 构建"
+  note_echo "3️⃣ 支持选择构建类型（仅 APK、仅 AAB、同时构建）"
+  note_echo "4️⃣ 支持 flavor 参数和构建模式（release/debug/profile）"
+  note_echo "5️⃣ 自动检测并配置 Java（openjdk），可选择版本"
+  note_echo "6️⃣ 自动记忆上次使用的 JDK（保存在 .java-version）"
+  note_echo "7️⃣ 构建前输出 📦 JDK / 📦 Gradle / 📦 AGP 三个版本信息"
+  note_echo "8️⃣ 构建后自动打开输出产物目录"
+  note_echo "9️⃣ 所有命令均统一交互：回车 = 执行，任意键 + 回车 = 跳过"
+  note_echo "🔟 构建日志自动保存到 /tmp/flutter_build_log.txt"
+  echo ""
+  warm_echo "👉 回车 = 执行默认 / 任意键 + 回车 = 跳过（统一交互）"
+  echo ""
+  read "?📎 按回车开始："
+}
+
+# ✅ 初始化路径与工具
+init_environment() {
+  cd "$(cd "$(dirname "$0")" && pwd -P)" || exit 1
+
+  # 添加 sdkmanager 路径
+  export PATH="/opt/homebrew/share/android-commandlinetools/cmdline-tools/latest/bin:$PATH"
+
+  # jenv 初始化
+  if [[ -d "$HOME/.jenv" ]]; then
+    export PATH="$HOME/.jenv/bin:$PATH"
+    eval "$(jenv init -)"
+  fi
+}
+
+# ✅ 单行写文件（避免重复写入）
+inject_shellenv_block() {
+    local id="$1"           # 参数1：环境变量块 ID，如 "homebrew_env"
+    local shellenv="$2"     # 参数2：实际要写入的 shellenv 内容，如 'eval "$(/opt/homebrew/bin/brew shellenv)"'
+    local header="# >>> ${id} 环境变量 >>>"  # 自动生成注释头
+
+    # 参数校验
+    if [[ -z "$id" || -z "$shellenv" ]]; then
+    error_echo "❌ 缺少参数：inject_shellenv_block <id> <shellenv>"
+    return 1
+    fi
+
+    # 若用户未选择该 ID，则跳过写入
+    if [[ ! " ${selected_envs[*]} " =~ " $id " ]]; then
+    warn_echo "⏭️ 用户未选择写入环境：$id，跳过"
+    return 0
+    fi
+
+    # 避免重复写入
+    if grep -Fq "$header" "$PROFILE_FILE"; then
+      info_echo "📌 已存在 header：$header"
+    elif grep -Fq "$shellenv" "$PROFILE_FILE"; then
+      info_echo "📌 已存在 shellenv：$shellenv"
+    else
+      echo "" >> "$PROFILE_FILE"
+      echo "$header" >> "$PROFILE_FILE"
+      echo "$shellenv" >> "$PROFILE_FILE"
+      success_echo "✅ 已写入：$header"
+    fi
+
+    # 当前 shell 生效
+    eval "$shellenv"
+    success_echo "🟢 shellenv 已在当前终端生效"
+}
+ 
+# ✅ 判断芯片架构（ ARM64 / x86_64）
+get_cpu_arch() {
+  [[ $(uname -m) == "arm64" ]] && echo "arm64" || echo "x86_64"
+}
+
+# ✅ 自检 Homebrew
+install_homebrew() {
+  local arch="$(get_cpu_arch)"                   # 获取当前架构（arm64 或 x86_64）
+  local shell_path="${SHELL##*/}"                # 获取当前 shell 名称（如 zsh、bash）
+  local profile_file=""
+  local brew_bin=""
+  local shellenv_cmd=""
+
+  if ! command -v brew &>/dev/null; then
+    warn_echo "🧩 未检测到 Homebrew，正在安装中...（架构：$arch）"
+
+    if [[ "$arch" == "arm64" ]]; then
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
+        error_echo "❌ Homebrew 安装失败（arm64）"
+        exit 1
+      }
+      brew_bin="/opt/homebrew/bin/brew"
+    else
+      arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
+        error_echo "❌ Homebrew 安装失败（x86_64）"
+        exit 1
+      }
+      brew_bin="/usr/local/bin/brew"
+    fi
+
+    success_echo "✅ Homebrew 安装成功"
+
+    # ==== 注入 shellenv 到对应配置文件（自动生效） ====
+    shellenv_cmd="eval \"\$(${brew_bin} shellenv)\""
+
+    case "$shell_path" in
+      zsh)   profile_file="$HOME/.zprofile" ;;
+      bash)  profile_file="$HOME/.bash_profile" ;;
+      *)     profile_file="$HOME/.profile" ;;
+    esac
+
+    inject_shellenv_block "$profile_file" "$shellenv_cmd"
+
+  else
+    info_echo "🔄 Homebrew 已安装，正在更新..."
+    brew update && brew upgrade && brew cleanup && brew doctor && brew -v
+    success_echo "✅ Homebrew 已更新"
+  fi
+}
+
+# ✅ 自检 Homebrew.fzf
+install_fzf() {
+  if ! command -v fzf &>/dev/null; then
+    note_echo "📦 未检测到 fzf，正在通过 Homebrew 安装..."
+    brew install fzf || { error_echo "❌ fzf 安装失败"; exit 1; }
+    success_echo "✅ fzf 安装成功"
+  else
+    info_echo "🔄 fzf 已安装，升级中..."
+    brew upgrade fzf && brew cleanup
+    success_echo "✅ fzf 已是最新版"
+  fi
+}
+
+# ✅ 转换路径为绝对路径
+_abs_path() {
+  local p="$1"
+  [[ -z "$p" ]] && return 1
+  p="${p//\"/}"                                                         # ✅ 移除双引号，防止参数传递误差
+  [[ "$p" != "/" ]] && p="${p%/}"                                                               # ✅ 去除末尾斜杠，标准化路径形式
+
+  if [[ -d "$p" ]]; then
+    (cd "$p" 2>/dev/null && pwd -P)                                     # ✅ 子 shell，避免污染当前目录
+  elif [[ -f "$p" ]]; then
+    (cd "${p:h}" 2>/dev/null && printf "%s/%s\n" "$(pwd -P)" "${p:t}")  # ✅ 精准拼接
+  else
+    return 1
+  fi
+}
+
+# ✅ 是否为 Flutter 项目的根目录
+_is_flutter_project_root() {
+  debug_echo "🔎 判断目录：$1"
+  debug_echo "📄 pubspec.yaml 是否存在：$(ls -l "$1/pubspec.yaml" 2>/dev/null || echo ❌)"
+  debug_echo "📁 lib 目录是否存在：$(ls -ld "$1/lib" 2>/dev/null || echo ❌)"
+  [[ -f "$1/pubspec.yaml" && -d "$1/lib" ]]
+}
+
+# ✅ Flutter 项目路径识别（回车默认用脚本目录）
+resolve_flutter_root() {
+
+  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
+  debug_echo "🔍 脚本目录：$script_dir"
+
+  if _is_flutter_project_root "$script_dir"; then
+    flutter_root="$script_dir"
+    cd "$flutter_root"
+    highlight_echo "📌 使用脚本所在目录作为 Flutter 项目根目录"
+    return
+  fi
+
+  if _is_flutter_project_root "$script_dir"; then
+    flutter_root="$script_dir"
+    cd "$flutter_root"
+    highlight_echo "📌 使用当前工作目录作为 Flutter 项目根目录"
+    return
+  fi
+
+  while true; do
+    warn_echo "📂 请拖入 Flutter 项目根目录（包含 pubspec.yaml 和 lib/）："
+    read -r input_path
+    input_path="${input_path//\"/}"
+    input_path=$(echo "$input_path" | xargs)
+
+    # ✅ 如果用户什么都不输入，就使用脚本所在目录
+    if [[ -z "$input_path" ]]; then
+      input_path="$script_dir"
+      info_echo "📎 未输入路径，默认使用脚本目录：$input_path"
+    fi
+
+    local abs=$(_abs_path "$input_path")
+    debug_echo "🧪 用户输入路径解析为：$abs"
+
+    if _is_flutter_project_root "$abs"; then
+      flutter_root="$abs"
+      cd "$flutter_root"
+      success_echo "✅ 识别成功：$flutter_root"
+      return
+    fi
+    error_echo "❌ 无效路径：$abs，请重试"
+  done
+}
+
+# ✅  构建参数选择
+select_build_target() {
+  warn_echo "📦 请选择构建类型："
+  local options=("只构建 APK" "只构建 AAB" "同时构建 APK 和 AAB")
+  local selected=$(printf '%s\n' "${options[@]}" | fzf)
+  case "$selected" in
+    "只构建 APK") build_target="apk" ;;
+    "只构建 AAB") build_target="appbundle" ;;
+    "同时构建 APK 和 AAB") build_target="all" ;;
+    *) build_target="apk" ;;
+  esac
+  success_echo "✅ 构建类型：$selected"
+}
+  
+# ✅ 选择 flavor 和构建模式（release/debug/profile）
+prompt_flavor_and_mode() {
+  read "flavor_name?📎 请输入 flavor（可留空）: "
+  local modes=("release" "debug" "profile")
+  warn_echo "⚙️ 请选择构建模式："
+  build_mode=$(printf '%s\n' "${modes[@]}" | fzf)
+  success_echo "✅ 模式：$build_mode"
+  [[ -n "$flavor_name" ]] && success_echo "✅ 使用 flavor：$flavor_name" || info_echo "📎 未指定 flavor"
+}
+
+# ✅ FVM 检测与 Flutter 命令
+detect_flutter_command() {
+  if command -v fvm >/dev/null && [[ -f "$flutter_root/.fvm/fvm_config.json" ]]; then
+    flutter_cmd=("fvm" "flutter")
+    warn_echo "🧩 检测到 FVM：使用 fvm flutter"
+  else
+    flutter_cmd=("flutter")
+    info_echo "📦 使用系统 flutter"
+  fi
+}
+
+# ✅ Java 环境配置
+fix_jenv_java_version() {
+  local jdk_path="/opt/homebrew/opt/openjdk@17"
+  if command -v jenv >/dev/null 2>&1 && [[ -d "$jdk_path" ]]; then
+    if ! jenv versions --bare | grep -q "^17"; then
+      warn_echo "📦 openjdk@17 未注册到 jenv，尝试添加..."
+      jenv add "$jdk_path"
+    fi
+  fi
+}
+# ✅ 配置 Java 环境（支持记忆）
+configure_java_env() {
+  local record_file="$flutter_root/.java-version"
+  local selected=""
+  local last_used=""
+  [[ -f "$record_file" ]] && last_used=$(cat "$record_file")
+
+  local available_versions=$(brew search openjdk@ | grep -E '^openjdk@\d+$' | sort -Vr)
+  if [[ -z "$available_versions" ]]; then
+    error_echo "❌ 未找到可用的 openjdk"
+    exit 1
+  fi
+
+  if [[ -n "$last_used" && "$available_versions" == *"$last_used"* ]]; then
+    success_echo "📦 上次使用的 JDK：$last_used"
+    read "?👉 是否继续使用？回车=是 / 任意键+回车=重新选择: "
+    [[ -z "$REPLY" ]] && selected="$last_used"
+  fi
+
+  if [[ -z "$selected" ]]; then
+    selected=$(echo "$available_versions" | fzf --prompt="☑️ 选择 openjdk 版本：" --height=40%)
+    [[ -z "$selected" ]] && error_echo "❌ 未选择 JDK" && exit 1
+  fi
+
+  local version_number="${selected#*@}"
+  brew list --formula | grep -q "^$selected$" || brew install "$selected"
+  sudo ln -sfn "/opt/homebrew/opt/$selected/libexec/openjdk.jdk" "/Library/Java/JavaVirtualMachines/${selected}.jdk" 2>/dev/null
+  export JAVA_HOME=$(/usr/libexec/java_home -v"$version_number")
+  export PATH="$JAVA_HOME/bin:$PATH"
+  echo "$selected" > "$record_file"
+  success_echo "✅ JAVA_HOME 已设置为：$JAVA_HOME"
+}
+
+# ✅ 打印 AGP 版本
+print_agp_version() {
+  local build_file=""
+  local agp_version=""
+
+  # 优先检查 build.gradle.kts
+  if [[ -f android/build.gradle.kts ]]; then
+    build_file="android/build.gradle.kts"
+    agp_version=$(grep -Eo 'com\.android\.tools\.build:gradle:\S+' "$build_file" | cut -d: -f3 | tr -d '"' | head -n1)
+  elif [[ -f android/build.gradle ]]; then
+    build_file="android/build.gradle"
+    agp_version=$(grep -E "^classpath\s+['\"]com\.android\.tools\.build:gradle:\S+['\"]" "$build_file" | sed -E "s/.*:gradle:([^'\"]+).*/\1/" | head -n1)
+  fi
+
+  if [[ -n "$agp_version" ]]; then
+    success_echo "✔ 检测到 AGP 版本：$agp_version（来源：$build_file）"
+  else
+    warn_echo "⚠️ 未在 build.gradle 中检测到 AGP 版本"
+  fi
+}
+
+# ✅ 构建信息打印
+print_agp_version() {
+  local agp_version=""
+  if [[ -f android/settings.gradle ]]; then
+    agp_version=$(grep -oE "com\\.android\\.application['\"]?\\s+version\\s+['\"]?[0-9.]+" android/settings.gradle |
+      head -n1 |
+      grep -oE "[0-9]+\\.[0-9]+(\\.[0-9]+)?")
+  fi
+  if [[ -z "$agp_version" && -f android/build.gradle ]]; then
+    agp_version=$(grep -oE "com\\.android\\.tools\\.build:gradle:[0-9.]+" android/build.gradle |
+      head -n1 |
+      cut -d: -f3)
+  fi
+  [[ -n "$agp_version" ]] && success_echo "📦 当前使用 AGP 版本：$agp_version" || warn_echo "📦 未检测到 AGP 版本"
+}
+
+print_sdk_versions() {
+  local file=""
+  for file in android/app/build.gradle android/app/build.gradle.kts; do
+    [[ -f "$file" ]] || continue
+    local compile_sdk=$(grep -E "compileSdk\s*[:=]\s*['\"]?[0-9]+['\"]?" "$file" | head -n1 | grep -oE "[0-9]+")
+    local target_sdk=$(grep -E "targetSdk\s*[:=]\s*['\"]?[0-9]+['\"]?" "$file" | head -n1 | grep -oE "[0-9]+")
+    local min_sdk=$(grep -E "minSdk\s*[:=]\s*['\"]?[0-9]+['\"]?" "$file" | head -n1 | grep -oE "[0-9]+")
+    [[ -n "$compile_sdk" ]] && info_echo "compileSdk：$compile_sdk" || warn_echo "未检测到 compileSdk"
+    [[ -n "$target_sdk" ]] && info_echo "targetSdk：$target_sdk" || warn_echo "未检测到 targetSdk"
+    [[ -n "$min_sdk" ]] && info_echo "minSdk：$min_sdk" || warn_echo "未检测到 minSdk"
+    break
+  done
+}
+
+# ✅ 使用指定 JAVA_HOME 执行 Flutter 命令，确保构建环境一致
+run_flutter_with_java() {
+  JAVA_HOME="$JAVA_HOME" \
+  PATH="$JAVA_HOME/bin:$PATH" \
+  FVM_JAVA_HOME="$JAVA_HOME" \
+  JAVA_TOOL_OPTIONS="" \
+  env JAVA_HOME="$JAVA_HOME" PATH="$JAVA_HOME/bin:$PATH" "${flutter_cmd[@]}" "$@"
+}
+
+# ✅ 打开输出目录
+open_output_folder() {
+  local base="build/app/outputs"
+  if [[ "$build_target" == "apk" || "$build_target" == "all" ]]; then
+    open "$base/flutter-apk" 2>/dev/null
+  fi
+  if [[ "$build_target" == "appbundle" || "$build_target" == "all" ]]; then
+    open "$base/bundle/$build_mode" 2>/dev/null
+  fi
+}
+
+# ✅ 判断是否使用 FVM
+_detect_flutter_cmd() {
+  if command -v fvm >/dev/null 2>&1 && [[ -f ".fvm/fvm_config.json" ]]; then
+    flutter_cmd=("fvm" "flutter")
+    info_echo "🧩 检测到 FVM 项目，使用命令：fvm flutter"
+  else
+    flutter_cmd=("flutter")
+    info_echo "📦 使用系统 Flutter 命令：flutter"
+  fi
+}
+
+# ✅ 确认步骤函数
+confirm_step() {
+  local step="$1"
+  read "REPLY?👉 是否执行【$step】？回车=是 / 任意键+回车=跳过: "
+  [[ -z "$REPLY" ]]
+}
+
+# ✅ 执行 flutter clean🧹 与 pub get
+maybe_flutter_clean_and_get() {
+  if confirm_step "flutter clean"; then
+    "${flutter_cmd[@]}" clean
+  fi
+
+  if confirm_step "flutter pub get"; then
+    "${flutter_cmd[@]}" pub get
+  fi
+}
+
+# ✅ 环境信息输出
+print_env_diagnostics() {
+  local log_file="/tmp/flutter_build_log.txt"
+  rm -f "$log_file"
+  local java_env_cmd=(env JAVA_HOME="$JAVA_HOME" PATH="$JAVA_HOME/bin:$PATH")
+
+  {
+    color_echo "🩺 运行 flutter doctor -v 检查环境..."
+    "${flutter_cmd[@]}" doctor -v | tee -a "$log_file"
+  }
+
+  {
+    color_echo "📦 当前使用 JDK 版本："
+    java -version 2>&1 | tee -a "$log_file"
+  }
+
+  {
+    info_echo "📦 当前使用 Gradle wrapper（./android/gradlew）版本："
+    if [[ -x ./android/gradlew ]]; then
+      ./android/gradlew -v | tee -a "$log_file"
+    else
+      warn_echo "❌ 未找到 gradlew 脚本"
+    fi
+
+    info_echo "📦 当前系统 gradle（可能已劫持）版本："
+    if command -v gradle &>/dev/null; then
+      gradle -v | tee -a "$log_file"
+      info_echo "📦 gradle 路径：$(which gradle)" | tee -a "$log_file"
+    else
+      warn_echo "⚠️ 系统未安装 gradle"
+    fi
+  }
+
+  {
+    color_echo "📦 当前使用 AGP（Android Gradle Plugin）版本："
+    print_agp_version | tee -a "$log_file"
+  }
+
+  {
+    color_echo "📦 当前使用 sdkmanager 版本："
+    sdkmanager --list > /dev/null 2>&1 && sdkmanager --version | tee -a "$log_file" || err_echo "❌ sdkmanager 执行失败"
+
+    color_echo "📦 sdkmanager 来源路径："
+    which sdkmanager | tee -a "$log_file"
+  }
+
+  {
+    color_echo "📦 实际使用的 Android SDK 路径："
+    "${flutter_cmd[@]}" config --machine | grep -o '"androidSdkPath":"[^"]*"' | cut -d':' -f2- | tr -d '"' | tee -a "$log_file"
+  }
+
+  {
+    success_echo "🚀 构建命令：${flutter_cmd[*]} build $build_target ${flavor_name:+--flavor $flavor_name} --$build_mode"
+    "${flutter_cmd[@]}" build $build_target ${flavor_name:+--flavor $flavor_name} --$build_mode | tee -a "$log_file"
+  }
+}
+
+# ✅ 执行构建阶段
+run_flutter_build() {
+  local log_file="/tmp/flutter_build_log.txt"
+  success_echo "🚀 开始构建：${flutter_cmd[*]} build $build_target ${flavor_name:+--flavor $flavor_name} --$build_mode"
+  run_flutter_with_java build "$build_target" ${flavor_name:+--flavor "$flavor_name"} --"$build_mode" | tee -a "$log_file"
+}
+
+# ✅ 🚀 main 函数入口
+main() {
+    cd "$(cd "$(dirname "$0")" && pwd -P)"      # ✅ 切换到脚本目录
+    show_intro                                  # ✅ 自述信息
+    install_homebrew                            # ✅ 自检 Homebrew
+    install_fzf                                 # ✅ 自检 Homebrew.fzf
+    resolve_flutter_root                        # ✅ 获取 Flutter 根目录
+    select_build_target                         # ✅ 选择 APK / AAB / All 构建类型
+    prompt_flavor_and_mode                      # ✅ 选择 flavor 和构建模式（release/debug/profile）
+    detect_flutter_command                      # ✅ 判断是否使用 FVM
+    configure_java_env                          # ✅ 配置 Java 环境（支持记忆）
+    
+    print_env_diagnostics                       # ✅ 第一阶段：环境信息检查
+    maybe_flutter_clean_and_get                 # ✅ 第二阶段：flutter clean 与 pub get
+    run_flutter_build                           # ✅ 第三阶段：执行构建
+    
+    open_output_folder                          # ✅ 打开构建产物目录
+    success_echo "🎉 构建完成，日志保存在 /tmp/flutter_build_log.txt"
+}
+
+main "$@"
 ```
 </details>
 
-##### 20.1.10、打包成品  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.1.10、打包成品  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > [**Flutter**](https://flutter.dev/) 和 [**Gradle**](https://gradle.org/)  的构建系统默认会将最新产物**覆盖上一次的构建产物**
 
@@ -8294,9 +8845,9 @@ cd /path/to/flutter_project/build/app/.android
 | 🚀 提测/发包                                         | `apk/release/app-release.apk`（需签名）                  |
 | 🌐 上架  [**Google Play**](https://play.google.com/) | `bundle/release/app-release.aab`                         |
 
-#### 20.2、📦 [**Flutter**](https://flutter.dev/).**iOS**（相对简单）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 21.2、📦 [**Flutter**](https://flutter.dev/).**iOS**（相对简单）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-##### 20.2.1、🪖<font color=red>**构建指令**</font>：`flutter build ios` 和 `flutter build ipa` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.2.1、🪖<font color=red>**构建指令**</font>：`flutter build ios` 和 `flutter build ipa` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > **iOS** 项目主流是使用[**XCode**](https://developer.apple.com/xcode/) + [**XCode**](https://developer.apple.com/xcode/) **build system** 来进行构建
 
@@ -8314,7 +8865,7 @@ cd /path/to/flutter_project/build/app/.android
 | `--export-options-plist` | `--export-options-plist=ios/ExportOptions.plist` | 指定导出 **ipa** 所需的 **plist**        |
 | `--no-codesign`          | `flutter build ios --no-codesign`                | 构建时跳过签名，常用于 CI 环境或手动签名 |
 
-##### 20.2.2、📁生成的包目录  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.2.2、📁生成的包目录  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > `build/ios/iphoneos/Runner.app`
 >
@@ -8340,13 +8891,13 @@ cd /path/to/flutter_project/build/app/.android
   └── 📄 ExportOptions.plist 👈 导出配置 plist（用于控制签名方式、是否上传等）📝
 ```
 
-##### 20.2.3、📦 打包脚本（TODO） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.2.3、📦 打包脚本（TODO） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 /// TODO
 ```
 
-##### 20.2.4、⚠️注意事项  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.2.4、⚠️注意事项  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 必须要有苹果的开发者账号（普通账户充值）
 

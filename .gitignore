@@ -47,3 +47,11 @@ app.*.map.json
 
 # FVM Version Cache
 .fvm/
+
+# 各平台编译
+/linux/
+/macos/
+/windows/
+/web/
+/ios/
+/android/
