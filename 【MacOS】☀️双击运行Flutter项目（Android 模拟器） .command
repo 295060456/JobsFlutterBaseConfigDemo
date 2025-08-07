@@ -337,7 +337,14 @@ check_android_environment() {
   fi
 
   JAVA_VERSION=$(java -version 2>&1 | grep 'version' | awk -F '"' '{print $2}')
-  success_echo "✅ JDK 版本为：$JAVA_VERSION"
+  JAVA_HOME_PATH=$(dirname "$(dirname "$(which java)")")
+
+  note_echo "📦 当前使用 JDK 版本为：$JAVA_VERSION"
+  note_echo "📂 JAVA_HOME 推断路径：$JAVA_HOME_PATH"
+
+  if [[ "$JAVA_HOME_PATH" == *Android\ Studio* ]]; then
+    warn_echo "⚠️ 当前使用的是 Android Studio 自带的 JDK"
+  fi
 
   # === sdkmanager 检查 + 版本 ===
   if ! command -v sdkmanager &>/dev/null; then

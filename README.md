@@ -237,8 +237,6 @@
   ```
   </details>
 
-
-
 ### 2、[**XCode**](https://developer.apple.com/xcode/)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ### 3、[**Android Studio**](https://developer.android.com/studio?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
@@ -279,11 +277,46 @@
 
 ### 4、[**VSCode**](https://code.visualstudio.com/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
+* 🔧 <font color=red>**安装插件**</font>
+
+  * [<font color=red>**Language Support for Java(TM) by Red Hat**</font>](https://marketplace.visualstudio.com/items?itemName=redhat.java)
+  
+    > 1️⃣ `command + shift + p` 👉
+    >
+    > ```shell
+    > Java: Clean Java Language Server Workspace # 清理Java语言服务器工作区
+    > Java: Configure Java Runtime 							 #
+    > ```
+    >
+    > 2️⃣ 如果显示不正常则需要删除该插件的目录，并且卸载以后，重新安装
+    >
+    > ```shell
+    > rm -rf ~/.vscode/extensions/redhat.java-*
+    > rm -rf ~/.vscode-java
+    > ```
+    >
+    > 3️⃣ 设置[**VSCode**](https://code.visualstudio.com/)关联的**JDK**版本
+    >
+    > <div style="text-align: center;">
+    > <img src="./assets/image-20250807185120627.png" alt="image-3" style="width:30%; display:inline-block; vertical-align: top;" />
+    > <img src="./assets/image-20250807185139263.png" alt="image-4" style="width:65%; display:inline-block; vertical-align: top;" />
+    > </div> 
+    >
+    > 4️⃣ 必要时重启[**VSCode**](https://code.visualstudio.com/)
+
+  * [**GitLens — Git supercharged**](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
+  
+  * [**Bracket Select**](https://marketplace.visualstudio.com/items?itemName=chunsen.bracket-select)（默认快捷键：`option` + `A`）
+  
+    > 选中括号内的内容以备操作
+  
 * 如果[**VSCode**](https://code.visualstudio.com/)打开[**Flutter**](https://flutter.dev/)项目以后没有办法通过`command`+`click`的形式点进去看，那么需要`command`+`shift`+`x` => 安装[**Dart**](https://dart.dev/)/[**Flutter**](https://flutter.dev/)
 
-  ![image-20250713101322760](./assets/image-20250713101322760.png)
-
-  ![image-20250713101045523](./assets/image-20250713101045523.png)
+  <div style="text-align: center;">
+  <img src="./assets/image-20250713101322760.png" alt="image-3" style="width:30%; display:inline-block; vertical-align: top;" />
+  <img src="./assets/image-20250713101045523.png" alt="image-4" style="width:65%; display:inline-block; vertical-align: top;" />
+  </div> 
+  
 
   * [**VSCode**](https://code.visualstudio.com/)的配置文件
 
@@ -406,14 +439,6 @@
     .vscode/settings.json
     !.vscode/settings.local.json
     ```
-  
-* 安装插件
-
-  * [**GitLens — Git supercharged**](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
-
-  * [**Bracket Select**](https://marketplace.visualstudio.com/items?itemName=chunsen.bracket-select)（默认快捷键：`option` + `A`）
-  
-    > 选中括号内的内容以备操作
 
 ### 5、[**ohmyz.sh**](https://ohmyz.sh/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -9367,8 +9392,9 @@ main "$@"
 
     > 和**MacOS**关闭**iOS模拟器**的热键冲突（**`command+.`**）。所以，需要进行更改为**`^+.`** ：
     >
-    > ![image-20250726184322012](./assets/README/image-20250726184322012.png)
-    >
-    > ![image-20250726184439831](./assets/README/image-20250726184439831.png)
-    
-    ![image-20250723010750938](./assets/README/image-20250723010750938.png)
+    > <div style="text-align: center;">
+    > <img src="./assets/README/image-20250726184322012.png" alt="image-1" style="width:30%; display:inline-block; vertical-align: top;" />
+    > <img src="./assets/README/image-20250726184439831.png" alt="image-2" style="width:65%; display:inline-block; vertical-align: top;" />
+    > <img src="./assets/README/image-20250723010750938.png" alt="image-2" style="width:65%; display:inline-block; vertical-align: top;" />
+    > </div>
+
