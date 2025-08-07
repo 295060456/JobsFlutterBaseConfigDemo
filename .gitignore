@@ -48,6 +48,11 @@ app.*.map.json
 # FVM Version Cache
 .fvm/
 
+# Flutter plugins metadata
+.flutter-plugins
+.flutter-plugins-dependencies
+plugins/
+
 # 各平台编译
 /linux/
 /macos/

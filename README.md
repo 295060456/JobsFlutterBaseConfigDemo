@@ -284,8 +284,10 @@
     > 1️⃣ `command + shift + p` 👉
     >
     > ```shell
-    > Java: Clean Java Language Server Workspace # 清理Java语言服务器工作区
-    > Java: Configure Java Runtime 							 #
+    > Java: Configure Java Runtime 							 # 图形化配置 Java 环境
+    > Java: Restart Language Server              # 重启 VS Code Java 插件
+    > Java: Clean Java Language Server Workspace # 清理Java语言服务器工作区，清除语言服务器缓存，修复错误
+    > ...
     > ```
     >
     > 2️⃣ 如果显示不正常则需要删除该插件的目录，并且卸载以后，重新安装
@@ -303,7 +305,7 @@
     > </div> 
     >
     > 4️⃣ 必要时重启[**VSCode**](https://code.visualstudio.com/)
-
+  
   * [**GitLens — Git supercharged**](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
   
   * [**Bracket Select**](https://marketplace.visualstudio.com/items?itemName=chunsen.bracket-select)（默认快捷键：`option` + `A`）
@@ -470,7 +472,7 @@ brew tap dart-lang/dart
 
 >涉及到[**Android**](https://www.android.com/)的部分需要[**Java**](https://www.java.com/zh-CN/)环境的支持（打包、运行）
 >
->[<font color=red>jenv</font>](https://github.com/jenv/jenv)不会自动下载/关联**JDK**，需要手动进行操作
+>[<font color=red>jenv</font>](https://github.com/jenv/jenv)不会自动下载/关联 **JDK**，需要手动进行操作
 >
 >如果使用[<font color=red>jenv</font>](https://github.com/jenv/jenv)那么系统全局环境变量里面就不能写  
 >
@@ -478,6 +480,15 @@ brew tap dart-lang/dart
 >'export JAVA_HOME=$(/usr/libexec/java_home)'
 >'export PATH="$JAVA_HOME/bin:$PATH"'
 >```
+
+* 环境变量
+
+  ```shell
+  export PATH="$HOME/.jenv/bin:$PATH"
+  eval "$(jenv init -)"
+  export JAVA_HOME="$HOME/.jenv/versions/$(jenv version-name)"
+  export PATH="$JAVA_HOME/bin:$PATH"
+  ```
 
 * ```shell
   jenv versions --bare --verbose
@@ -542,7 +553,7 @@ brew tap dart-lang/dart
 
 > 为每一个项目配置（锁定🔒）一个单独的[**Flutter**](https://flutter.dev/)环境，和系统环境区分开，方便切环境运行（测试）代码
 
-* 安装[**FVM**](https://fvm.app/)的大前提是先安装**dart**环境。🍺Homebrew 核心源中目前**没有**收录 Dart 的 `fvm` 工具
+* 安装[**FVM**](https://fvm.app/)的大前提是先安装**dart**环境。🍺[**Homebrew**](https://brew.sh/) 核心源中目前**没有**收录 [**Dart**](https://dart.dev/) 的 `fvm` 工具
 
   ```dart
   dart pub global activate fvm
@@ -599,13 +610,13 @@ brew tap dart-lang/dart
 
   ![image-20250724151315734](./assets/image-20250724151315734.png)
 
-  | 文件/路径                                                    | 位置               | 是否建议提交   | 作用                                                         | 备注说明                                                     |
-  | ------------------------------------------------------------ | ------------------ | -------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-  | `.fvmrc`                                                     | 项目根目录         | ✅ **建议提交** | 显式标记希望使用的 Flutter 版本（如 `3.32.6` 或 `stable`）方便团队协作、CI 自动读取 | 仅一行纯文本，不支持注释，适用于版本声明                     |
-  | `.fvm/fvm_config.json`                                       | 项目目录内 `.fvm/` | ❌ **建议忽略** | 实际执行时 FVM 内部记录的配置信息：包含 `flutterSdkVersion`、`channel`、`cachePath` 等 | [**FVM**](https://fvm.app/) 自动生成，用于代理和定位 SDK，不可手动编辑 |
-  | `.fvm/flutter_sdk`                                           | `.fvm/` 中软链接   | ❌ 忽略         | 指向你电脑上的实际 SDK 位置（`~/.fvm/versions/3.32.6`）      | 用于让 `fvm flutter` 命令生效，指向实际安装版本              |
-  | `~/.fvm/versions/<version>`                                  | 全局路径           | ✅ 本地缓存     | 实际安装的 SDK，供多个项目共用                               | 每个版本只安装一次，多项目共享此目录，无需提交               |
-  | `release` 文件<br>`.fvm/versions/<version>/version` 或 `release` | SDK 内部           | ❌ 不关心       | [**Flutter**](https://flutter.dev/).**SDK** 自带的版本描述文件，标识当前版本及 channel | 可用于诊断或展示 SDK 内部信息，一般无需关心或操作            |
+  | 文件/路径                                                    | 位置                                              | 是否建议提交   | 作用                                                         | 备注说明                                                     |
+  | ------------------------------------------------------------ | ------------------------------------------------- | -------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+  | `.fvmrc`                                                     | 项目根目录                                        | ✅ **建议提交** | 显式标记希望使用的 [**Flutter**](https://flutter.dev/) 版本（如 `3.32.6` 或 `stable`）方便团队协作、CI 自动读取 | 仅一行纯文本，不支持注释，适用于版本声明                     |
+  | `.fvm/fvm_config.json`                                       | 项目目录内 `.fvm/`                                | ❌ **建议忽略** | 实际执行时 FVM 内部记录的配置信息：包含 `flutterSdkVersion`、`channel`、`cachePath` 等 | [**FVM**](https://fvm.app/) 自动生成，用于代理和定位 [**Flutter**](https://flutter.dev/).**SDK** ，不可手动编辑 |
+  | `.fvm/flutter_sdk`                                           | `.fvm/` 中软链接                                  | ❌ 忽略         | 指向你电脑上的实际 [**Flutter**](https://flutter.dev/).**SDK**  位置（`~/.fvm/versions/3.32.6`） | 用于让 `fvm flutter` 命令生效，指向实际安装版本              |
+  | `~/.fvm/versions/<version>`                                  | 全局路径                                          | ✅ 本地缓存     | 实际安装的 [**Flutter**](https://flutter.dev/).**SDK** ，供多个项目共用 | 每个版本只安装一次，多项目共享此目录，无需提交               |
+  | `release` 文件<br>`.fvm/versions/<version>/version` 或 `release` | [**Flutter**](https://flutter.dev/).**SDK**  内部 | ❌ 不关心       | [**Flutter**](https://flutter.dev/).**SDK** 自带的版本描述文件，标识当前版本及 channel | 可用于诊断或展示 [**Flutter**](https://flutter.dev/).**SDK**  内部信息，一般无需关心或操作 |
   
 * 🧰[**FVM**](https://fvm.app/)命令行使用方式：
 
@@ -706,6 +717,11 @@ migrate_working_dir/
 # FVM Version Cache
 .fvm/
 
+# Flutter plugins metadata
+.flutter-plugins
+.flutter-plugins-dependencies
+plugins/
+
 # 各平台编译
 /linux/
 /macos/
@@ -727,13 +743,13 @@ migrate_working_dir/
 FlutterPluginEngagelab.printMy(xxx);
 ```
 
-| 优点                    | 说明                    |
-| ----------------------- | ----------------------- |
-| ✅ 统一管理日志输出      | 方便集中控制            |
-| ✅ 可扩展（加颜色/时间） | 比原生 `print()` 更灵活 |
-| ✅ 可加日志等级 / tag    | 比如 `[INFO]` `[ERROR]` |
-| ✅ 可屏蔽 Release 输出   | 保证线上不暴露调试信息  |
-| ✅ 日志更美观 / 可写文件 | 后期接入文件记录也方便  |
+| 优点                      | 说明                    |
+| ------------------------- | ----------------------- |
+| ✅ 统一管理日志输出        | 方便集中控制            |
+| ✅ 可扩展（加颜色/时间）   | 比原生 `print()` 更灵活 |
+| ✅ 可加日志等级 / tag      | 比如 `[INFO]` `[ERROR]` |
+| ✅ 可屏蔽 **Release** 输出 | 保证线上不暴露调试信息  |
+| ✅ 日志更美观 / 可写文件   | 后期接入文件记录也方便  |
 
 #### 1.2、`debugPrint` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -1024,7 +1040,7 @@ WidgetsFlutterBinding.ensureInitialized();
 
 > 1️⃣ 因为 **iOS** 的网络权限和限制较多，`dart_ping` 需要通过原生插件配合实现 `ping`，所以需要先进行手动注册
 >
-> 2️⃣ 这个调用对 **Android 不需要**（在 [**Android**](https://www.android.com/) 上使用 `Ping` 不需要额外处理，直接用即可）
+> 2️⃣ 这个调用对 **[Android](https://www.android.com/) 不需要**（在 [**Android**](https://www.android.com/) 上使用 `Ping` 不需要额外处理，直接用即可）
 
 <details>
 <summary>注册</summary>
@@ -1396,17 +1412,17 @@ void configLoading() {
 >
 > 5️⃣ 设置调试模式等...
 
-| 方法                                          | 说明                                               |
-| --------------------------------------------- | -------------------------------------------------- |
-| **`addEventHandler({ onMTCommonReceiver })`** | 注册原生端发来的事件处理回调                       |
-| **`getRegistrationId()`**                     | 获取当前设备的 **Registration ID**（推送唯一标识） |
-| **`initIos({appKey, channel})`**              | 初始化 iOS 推送 SDK                                |
-| **`initAndroid()`**                           | 初始化 Android 推送 SDK                            |
-| **`setNotificationBadge(int count)`**         | 设置通知角标数（如：0）                            |
-| **`resetNotificationBadge()`**                | 重置角标                                           |
-| **`printMy(String msg)`**                     | 用于 **debug** 打印（SDK 内封装）                  |
-| **`checkNotificationAuthorizationIos()`**     | 检查 iOS 用户是否开启通知权限                      |
-| **`configDebugMode(bool)`**                   | 设置是否开启调试模式                               |
+| 方法                                          | 说明                                                    |
+| --------------------------------------------- | ------------------------------------------------------- |
+| **`addEventHandler({ onMTCommonReceiver })`** | 注册原生端发来的事件处理回调                            |
+| **`getRegistrationId()`**                     | 获取当前设备的 **Registration ID**（推送唯一标识）      |
+| **`initIos({appKey, channel})`**              | 初始化 iOS 推送 SDK                                     |
+| **`initAndroid()`**                           | 初始化 [**Android**](https://www.android.com/) 推送 SDK |
+| **`setNotificationBadge(int count)`**         | 设置通知角标数（如：0）                                 |
+| **`resetNotificationBadge()`**                | 重置角标                                                |
+| **`printMy(String msg)`**                     | 用于 **debug** 打印（SDK 内封装）                       |
+| **`checkNotificationAuthorizationIos()`**     | 检查 iOS 用户是否开启通知权限                           |
+| **`configDebugMode(bool)`**                   | 设置是否开启调试模式                                    |
 
 ```dart
 /// pubspec.yaml
@@ -2295,7 +2311,7 @@ LayoutBuilder(
 )
 ```
 
-### 16、Dart.**Object** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 16、[**Dart**](https://dart.dev/).**Object** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 在 Dart 中，**所有类最终都继承自 `Object`**，所以这些方法每个类都自动拥有
 
@@ -3680,20 +3696,20 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 | `PhysicalModel` | 控制阴影、抗锯齿、透明等底层视觉效果   |
 | `Material`      | 实现 **material** 效果（配合 **Ink**） |
 
-### 23、Dart.[**Flutter**](https://flutter.dev/)访问：🖼️相册、📹摄像头、🎤麦克风等系统级功能 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 23、[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/)访问：🖼️相册、📹摄像头、🎤麦克风等系统级功能 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> <font color=red>**办不到**</font>。**必须依赖原生平台能力（如 Android 的 Java/Kotlin、iOS 的 Objective-C/Swift）**，因此这类功能在 Dart 层都需要通过 **Platform Channel 或插件** 实现。
+> <font color=red>**办不到**</font>。**必须依赖原生平台能力（如 [**Android**](https://www.android.com/) 的 Java/Kotlin、iOS 的 Objective-C/Swift）**，因此这类功能在 [**Dart**](https://dart.dev/) 层都需要通过 **Platform Channel 或插件** 实现。
 >
-> Dart 本身是运行在 **Flutter 引擎之上（Flutter Engine）** 的语言，它运行在一个虚拟环境中，不能直接访问：
+> [**Dart**](https://dart.dev/) 本身是运行在 **[Flutter](https://flutter.dev/) 引擎之上** 的语言，它运行在一个虚拟环境中，不能直接访问：
 >
 > - 相册（Photo Gallery）
 > - 摄像头（Camera）
 > - 麦克风（Microphone）
 > - 蓝牙、NFC
-> - 文件系统（特指 Android/iOS 的私有路径）
+> - 文件系统（特指 [**Android**](https://www.android.com/)/**iOS** 的私有路径）
 > - 电池、传感器、GPS 等
 >
-> 这些都需要平台（Android/iOS）的 **原生 API 提供支持**。
+> 这些都需要平台（[**Android**](https://www.android.com/)/**iOS**）的 **原生 API 提供支持**。
 
 ### 24、👂监听 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -7136,7 +7152,7 @@ class Person {
 
 ### 9、📂[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/)项目文件（夹） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 9.1、📁`Flutter项目根目录/.fvm/flutter_sdk` 文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.1、  📁`./.fvm/flutter_sdk/` 文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > [**FVM（<font color=red>F</font>lutter <font color=red>V</font>ersion <font color=red>M</font>anagement）** ](https://fvm.app/) 相关：
 >
@@ -7144,7 +7160,7 @@ class Person {
 >
 > * 可以不加入 **Git** 管理
 
-#### 9.2、📁 `linux/` 文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.2、  📁 `./linux/` 文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 >如果只是专注于 **[Flutter](https://flutter.dev/) 移动端开发（Android / iOS）**，那么`inux/` 文件夹可以不加入 **Git** 管理
 
@@ -7204,7 +7220,7 @@ class Person {
     # https://dart.dev/guides/language/analysis-options
     ```
 
-#### 9.3、📁`.idea` 文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.3、  📁`./.idea/` 文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ 通常是 [**JetBrains**](https://www.jetbrains.com/) 的集成开发环境（IDE）如 [**IntelliJ IDEA**](https://www.jetbrains.com/idea/) 或 [**Android Studio**](https://developer.android.com/studio?hl=zh-cn) 在项目中生成的隐藏文件夹
 >
@@ -7221,7 +7237,60 @@ class Person {
 
 总的来说，`.idea` 文件夹是  [**JetBrains**](https://www.jetbrains.com/)  IDE 用于存储项目配置和元数据的文件夹，**它通常不应该被版本控制系统跟踪**，因为这些配置文件通常是特定于开发者的，并且可能会因为 IDE 版本的不同而有所变化。 
 
-#### 9.4、📃`.java-version` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.4、  📁`./plugins/` 文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+>1️⃣ `flutter` 项目根目录下的 `plugins/` 文件夹**并不是[Flutter](https://flutter.dev/)官方结构的一部分**
+>
+>2️⃣ 是 **用于记录插件注册信息** 的构建中间产物
+>
+>3️⃣ **不推荐将 `plugins/` 文件夹加入 Git 管理**
+
+#### 9.5、  📃`./.flutter-plugins` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> 是[**Flutter**](https://flutter.dev/)项目中的一个隐藏文件，它用于跟踪 [**Flutter**](https://flutter.dev/)插件的信息；
+>
+> 1️⃣ 是一个文本文件，通常使用 <font color=red>UTF-8 </font>编码。只是一种简单的（键值对格式）配置文件格式，并没有特定的编程语言与之关联
+>
+> 2️⃣ 这个文件的存在使得[**Flutter**](https://flutter.dev/)工具能够轻松地知道项目中使用了哪些插件，以及它们的路径。这对于构建、编译和打包应用程序是非常有用的，因为 **Flutter** 工具需要知道哪些插件需要包含在最终的应用程序包中。
+>
+> 3️⃣ [**Flutter**](https://flutter.dev/)插件是用来扩展[**Flutter**](https://flutter.dev/)应用程序功能的软件包，它们通常用于访问平台特定的功能，比如相机、地理位置、推送通知等；
+>
+> 4️⃣ 文件记录了项目中使用的[**Flutter**](https://flutter.dev/)插件的名称和路径信息。当你在[**Flutter**](https://flutter.dev/)中添加或移除 [**Flutter**](https://flutter.dev/)插件时，[**Flutter**](https://flutter.dev/)工具会自动更新这个文件；
+>
+> 5️⃣ 文件的格式通常是一个简单的键值对列表，其中键是插件的名称，值是插件所在的路径，如下所示：
+
+```
+camera=plugins/camera/
+location=plugins/location/
+```
+
+#### 9.6、  📃`./.flutter-plugins-dependencies` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> 是一个用来存储[**Flutter**](https://flutter.dev/)插件依赖信息的隐藏文件；
+>
+> 1️⃣ 这个文件通常由[**Flutter**](https://flutter.dev/)工具自动生成和维护，并且在使用 `flutter pub get` 或 `flutter pub upgrade` 命令时会被更新；
+>
+> 2️⃣ 文件记录了每个[**Flutter**](https://flutter.dev/)插件的依赖关系，包括主要插件和依赖插件。这些信息有助于[**Flutter**](https://flutter.dev/)工具更好地管理插件及其依赖关系，并确保项目中使用的所有插件及其相关的依赖都被正确地下载和管理；
+
+```yaml
+dependencies:
+  camera:
+    dependency: "direct main"
+    description:
+      name: camera
+      url: "https://pub.dev/packages/camera"
+      version: "0.9.4+9"
+  image_picker:
+    dependency: "direct main"
+    description:
+      name: image_picker
+      url: "https://pub.dev/packages/image_picker"
+      version: "0.8.4+3"
+
+# 在这个示例中，`camera` 和 `image_picker` 是两个插件，它们分别有自己的依赖关系记录，包括依赖类型（`dependency`）、名称（`name`）、URL 和版本号。
+```
+
+#### 9.7、  📃`./.java-version` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 此文件由[<font color=red>jenv</font>](https://github.com/jenv/jenv)生成。对单个[**Flutter**](https://flutter.dev/)项目锚定的[**Java**](https://www.java.com/zh-CN/)环境配置文件。如果没有，则向上查找，读取**MacOS**系统大环境的[**Java**](https://www.java.com/zh-CN/)环境
 
@@ -7239,7 +7308,7 @@ class Person {
     jenv local > 系统环境变量文件 > jenv global
     ```
 
-#### 9.5、📃`pubspec.yaml` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.8、  📃`./pubspec.yaml` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 是[**Dart**](https://dart.dev/)语言中用于管理项目依赖和元数据的文件。这个文件通常位于 [**Dart**](https://dart.dev/) 项目的根目录中，其中包含了项目的名称、版本、作者信息等基本元数据，以及项目所依赖的第三方库（通过 [**Dart**](https://dart.dev/) 包管理器 pub 安装）；
 >
@@ -7330,7 +7399,7 @@ assets: # 路径名不能有中文，否则可能无法正常读取
     flutter_unused_packages --fix
     ```
 
-#### 9.6、📃`pubspec.lock` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.9、  📃`./pubspec.lock` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 >  是 [**Dart**](https://dart.dev/) 项目中的自动生成文件，用于锁定项目依赖的版本信息。
 >
@@ -7356,7 +7425,7 @@ packages:
     version: "0.17.0"
 ```
 
-#### 9.7、📃`.metadata` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.10、📃`./.metadata` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 >  是一个二进制文件，[**Dart**](https://dart.dev/) 项目中的一个隐藏文件，通常存储在项目的根目录下，用于保存与[**Dart**](https://dart.dev/) 包管理器 `pub` 相关的元数据信息。
 >
@@ -7368,52 +7437,8 @@ packages:
 >
 > 4️⃣ 删除 `.metadata` 文件后，`pub`  会重新生成一个新的 `.metadata` 文件，其中包含了当前项目的元数据信息；
 
-#### 9.8、📃`.flutter-plugins` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
-
-> 是[**Flutter**](https://flutter.dev/)项目中的一个隐藏文件，它用于跟踪 [**Flutter**](https://flutter.dev/)插件的信息；
->
-> 1️⃣ 是一个文本文件，通常使用 <font color=red>UTF-8 </font>编码。只是一种简单的（键值对格式）配置文件格式，并没有特定的编程语言与之关联
->
-> 2️⃣ 这个文件的存在使得[**Flutter**](https://flutter.dev/)工具能够轻松地知道项目中使用了哪些插件，以及它们的路径。这对于构建、编译和打包应用程序是非常有用的，因为 **Flutter** 工具需要知道哪些插件需要包含在最终的应用程序包中。
->
-> 3️⃣ [**Flutter**](https://flutter.dev/)插件是用来扩展[**Flutter**](https://flutter.dev/)应用程序功能的软件包，它们通常用于访问平台特定的功能，比如相机、地理位置、推送通知等；
->
-> 4️⃣ 文件记录了项目中使用的[**Flutter**](https://flutter.dev/)插件的名称和路径信息。当你在[**Flutter**](https://flutter.dev/)中添加或移除 [**Flutter**](https://flutter.dev/)插件时，[**Flutter**](https://flutter.dev/)工具会自动更新这个文件；
->
-> 5️⃣ 文件的格式通常是一个简单的键值对列表，其中键是插件的名称，值是插件所在的路径，如下所示：
-
-```
-camera=plugins/camera/
-location=plugins/location/
-```
-
-#### 9.9、📃`.flutter-plugins-dependencies` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
-
-> 是一个用来存储[**Flutter**](https://flutter.dev/)插件依赖信息的隐藏文件；
->
-> 1️⃣ 这个文件通常由[**Flutter**](https://flutter.dev/)工具自动生成和维护，并且在使用 `flutter pub get` 或 `flutter pub upgrade` 命令时会被更新；
->
-> 2️⃣ 文件记录了每个[**Flutter**](https://flutter.dev/)插件的依赖关系，包括主要插件和依赖插件。这些信息有助于[**Flutter**](https://flutter.dev/)工具更好地管理插件及其依赖关系，并确保项目中使用的所有插件及其相关的依赖都被正确地下载和管理；
-
-```yaml
-dependencies:
-  camera:
-    dependency: "direct main"
-    description:
-      name: camera
-      url: "https://pub.dev/packages/camera"
-      version: "0.9.4+9"
-  image_picker:
-    dependency: "direct main"
-    description:
-      name: image_picker
-      url: "https://pub.dev/packages/image_picker"
-      version: "0.8.4+3"
-
-# 在这个示例中，`camera` 和 `image_picker` 是两个插件，它们分别有自己的依赖关系记录，包括依赖类型（`dependency`）、名称（`name`）、URL 和版本号。
-```
-
 ### 10、注解 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
 <font color=red>注解（以`@JsonSerializable() `为例） 🆚 OC 分类（Category）</font>
 
 * 确实都达到了**在不改动原类结构下，增加功能**的目的
@@ -7588,7 +7613,7 @@ Comparable.compare(a, b)
 
 > 1️⃣ [**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/)里面没有反射（尤其是 **release** 模式）根本不支持 `dart:mirrors`（导入报错）
 >
-> 2️⃣ 但是在Dart里面却可以有反射，可以绕过去。从语法层面来讲，使用 `enum`最安全。而事实上，因为[**Flutter**](https://flutter.dev/)不存在反射机制，所以下列3种写法都是安全的
+> 2️⃣ 但是在[**Dart**](https://dart.dev/)里面却可以有反射，可以绕过去。从语法层面来讲，使用 `enum`最安全。而事实上，因为[**Flutter**](https://flutter.dev/)不存在反射机制，所以下列3种写法都是安全的
 >
 > 3️⃣ 如果只关注 [**Flutter**](https://flutter.dev/) | 用 `class Xxx._();` 就够了 ✅ ；如果写的是 [**Dart**](https://dart.dev/) 公共包 / 命令行工具 / 未来也考虑服务端，那么用 `enum Xxx { ; }` 会更加的保险 ✅✅✅
 
@@ -7598,7 +7623,7 @@ Comparable.compare(a, b)
   >
   > 2️⃣ 类中只能包含 `static` 内容
   >
-  > 3️⃣ Dart版本要求 ≥ 2.0
+  > 3️⃣ [**Dart**](https://dart.dev/)版本要求 ≥ 2.0
 
   ```dart
   class AppUtils {
@@ -7620,7 +7645,7 @@ Comparable.compare(a, b)
   >
   > 3️⃣ 类中只能写 `static` 成员（因为没法 new）
   >
-  > 4️⃣ Dart版本要求 ≥ 2.0
+  > 4️⃣ [**Dart**](https://dart.dev/)版本要求 ≥ 2.0
 
   ```dart
   abstract class AppUtils {
@@ -7669,11 +7694,11 @@ Comparable.compare(a, b)
 >
 > 3️⃣ 常用于反射：动态访问对象的属性/方法
 >
-> 4️⃣ 编译期优化：**Symbol** 是 Dart 内部优化机制的一部分
+> 4️⃣ 编译期优化：**Symbol** 是 [**Dart**](https://dart.dev/) 内部优化机制的一部分
 >
 > 5️⃣ **不能当颜色值使用**
 >
-> 6️⃣ ✅ **99.9% 的 Flutter 项目中你都用不到 `Symbol`**
+> 6️⃣ ✅ **99.9% 的 [Flutter](https://flutter.dev/) 项目中你都用不到 `Symbol`**
 
 * 写法举例
 
@@ -8231,17 +8256,17 @@ Comparable.compare(a, b)
   | ---------------------------------------------- | ------------------------------------------------------------ |
   | [**🍎Apple**](https://www.apple.com/)官方不支持 | [**🍎Apple**](https://www.apple.com/) 的工具链是[**XCode**](https://developer.apple.com/xcode/).**build** / [**fastlane**](https://fastlane.tools/)，[**Gradle**](https://gradle.org/) 无法完全替代 |
   | 🔐 签名复杂                                     | **iOS** 构建涉及 :`代码签名`、`Provisioning Profile`、`Entitlements` 等，使用 [**Gradle**](https://gradle.org/)  不如[**XCode**](https://developer.apple.com/xcode/)原生工具顺畅 |
-  | 🔌 插件较少                                     | [**Gradle**](https://gradle.org/) 生态偏向 **Java**/**Android**，**iOS** 支持插件极少 |
+  | 🔌 插件较少                                     | [**Gradle**](https://gradle.org/) 生态偏向 [**Java**](https://www.java.com/zh-CN/)/[**Android**](https://www.android.com/)，**iOS** 支持插件极少 |
   | 👥 团队协作难                                   | 大部分 **iOS** 团队成员更熟悉 [**XCode**](https://developer.apple.com/xcode/)原生工具顺畅，不习惯使用 [**Gradle**](https://gradle.org/) |
 
   💡 例外情况：**Kotlin Multiplatform (KMM)**
 
-  如果使用 **Kotlin Multiplatform Mobile (KMM)** 开发 **iOS** + **Android** 双端代码：
+  如果使用 **Kotlin Multiplatform Mobile (KMM)** 开发 **iOS** + [**Android**](https://www.android.com/) 双端代码：
 
   - **Android**用 [**Gradle**](https://gradle.org/)  构建
-  - **iOS** 使用 [**Gradle**](https://gradle.org/)  生成共享模块（`.framework`），再由[**XCode**](https://developer.apple.com/xcode/) 集成
+  - **iOS** 使用 [**Gradle**](https://gradle.org/) 生成共享模块（`.framework`），再由[**XCode**](https://developer.apple.com/xcode/) 集成
 
-  📌 所以 **Gradle 可以参与构建 iOS 的一部分（共享逻辑），但最终生成和打包 IPA 仍然交给 [XCode](https://developer.apple.com/xcode/)完成**。
+  📌 所以  [**Gradle**](https://gradle.org/) 可以参与构建 iOS 的一部分（共享逻辑），但最终生成和打包 IPA 仍然交给 [XCode](https://developer.apple.com/xcode/)完成**。
 
 * [**Gradle**](https://gradle.org/)的优势
 
@@ -8291,7 +8316,7 @@ Comparable.compare(a, b)
 
 ##### 21.1.3、<font id=AGP>[<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) = <font color=red>**A**</font>ndroid <font color=red>**G**</font>radle <font color=red>**P**</font>lugin</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> 
 
-* 🧱  [<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) 是连接 [**Gradle**](https://gradle.org/) 和 **Android 构建逻辑** 的桥梁
+* 🧱  [<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) 是连接 [**Gradle**](https://gradle.org/) 和 **[Android](https://www.android.com/) 构建逻辑** 的桥梁
 
   | 功能          | 说明                                                         |
   | ------------- | ------------------------------------------------------------ |
@@ -8416,7 +8441,7 @@ cd /path/to/flutter_project/build/app/.android
 
 * <font color=red>为了不污染系统的开发环境，推荐用[**Homebrew**](https://brew.sh/)➕[**jenv**](https://formulae.brew.sh/formula/jenv)的形式。每个项目单独配置一个独属的**Java**环境</font>
 
-  * 铆定的**Java**版本号📝记录于[**Flutter**](https://flutter.dev/)项目根目录下的：`.java-version`
+  * 铆定的[**Java**](https://www.java.com/zh-CN/)版本号📝记录于[**Flutter**](https://flutter.dev/)项目根目录下的：`.java-version`
 
 * **`targetSdk`** 🆚 **`minSdk`** 🆚 **`compileSdk`**
 
@@ -8468,7 +8493,7 @@ cd /path/to/flutter_project/build/app/.android
   | 第三方依赖                                                   | 来自 [**pub.dev**](https://pub.dev/) 的插件中声明的 AAR/JAR，如 [`image_gallery_saver`](https://pub.dev/packages/image_gallery_saver)、[`engagelab`](https://pub.dev/packages?q=engagelab) |
   | [**Google Maven**](https://maven.google.com/web/index.html) / [**JCenter**](https://mvnrepository.com/repos/jcenter) / [**MavenCentral**](https://central.sonatype.com/) | 默认构建源，国内访问会慢                                     |
 
-##### 21.1.9、📦 [**Flutter**](https://flutter.dev/).**Android** 打包脚本（MacOS）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.1.9、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)打包脚本（MacOS）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 <details>
 <summary>点击展开代码</summary>
@@ -8961,6 +8986,7 @@ main() {
 }
 
 main "$@"
+
 ```
 </details>
 
@@ -9268,9 +9294,9 @@ main "$@"
   
 * ✅什么是`external`?
 
-  > 这个方法没有在 Dart 层实现，而是由 Dart VM 或平台原生层提供实现。
+  > 这个方法没有在 [**Dart**](https://dart.dev/) 层实现，而是由 [**Dart**](https://dart.dev/) VM 或平台原生层提供实现。
 
-* ✅为什么**Dart**.[**Flutter**](https://flutter.dev/)禁止反射机制？
+* ✅为什么[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/)禁止反射机制？
 
   👉 是为了保证 **更快启动、更小体积、更高性能的移动应用体验**，这是设计上的取舍
 
@@ -9340,7 +9366,7 @@ main "$@"
 
   * **特别的与众不同**
 
-    > <font color=red>目前主流平台里，只有 **Dart**.[**Flutter**](https://flutter.dev/) 推荐 “先自己初始化，再调用 `super.XXX`”。</font>
+    > <font color=red>目前主流平台里，只有 [**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/) 推荐 “先自己初始化，再调用 `super.XXX`”。</font>
     >
     > **父类不依赖子类状态，先初始化自己更安全**
   
