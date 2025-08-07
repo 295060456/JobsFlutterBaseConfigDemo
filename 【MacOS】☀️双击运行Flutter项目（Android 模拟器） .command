@@ -1,34 +1,113 @@
 #!/bin/zsh
 
-# ✅ 环境变量设置
-export ANDROID_HOME="${ANDROID_HOME:-$HOME/Library/Android/sdk}"
-export PATH="$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
-    
-# ✅ 获取脚本路径
+# ✅ 变量定义
 script_path="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
-flutter_project_root="$script_path"
-cd "$flutter_project_root"
+cd "$script_path"
+SCRIPT_BASENAME=$(basename "$0" | sed 's/\.[^.]*$//')
+LOG_FILE="/tmp/${SCRIPT_BASENAME}.log"
 script_file="$(basename "$0")"
 flutter_cmd=("flutter")
+entry_file="" # Flutter项目的入口
 
-# ✅ 彩色输出函数
+ # ✅ 彩色输出函数
 SCRIPT_BASENAME=$(basename "$0" | sed 's/\.[^.]*$//')   # 当前脚本名（去掉扩展名）
 LOG_FILE="/tmp/${SCRIPT_BASENAME}.log"                  # 设置对应的日志文件路径
 
 log()            { echo -e "$1" | tee -a "$LOG_FILE"; }
-color_echo()     { log "\033[1;32m$1\033[0m"; }        # ✅ 正常绿色输出
-info_echo()      { log "\033[1;34mℹ $1\033[0m"; }      # ℹ 信息
-success_echo()   { log "\033[1;32m✔ $1\033[0m"; }      # ✔ 成功
-warn_echo()      { log "\033[1;33m⚠ $1\033[0m"; }      # ⚠ 警告
-warm_echo()      { log "\033[1;33m$1\033[0m"; }        # 🟡 温馨提示（无图标）
-note_echo()      { log "\033[1;35m➤ $1\033[0m"; }      # ➤ 说明
-error_echo()     { log "\033[1;31m✖ $1\033[0m"; }      # ✖ 错误
-err_echo()       { log "\033[1;31m$1\033[0m"; }        # 🔴 错误纯文本
-debug_echo()     { log "\033[1;35m🐞 $1\033[0m"; }     # 🐞 调试
-highlight_echo() { log "\033[1;36m🔹 $1\033[0m"; }     # 🔹 高亮
-gray_echo()      { log "\033[0;90m$1\033[0m"; }        # ⚫ 次要信息
-bold_echo()      { log "\033[1m$1\033[0m"; }           # 📝 加粗
-underline_echo() { log "\033[4m$1\033[0m"; }           # 🔗 下划线
+color_echo()     { log "\033[1;32m$1\033[0m"; }         # ✅ 正常绿色输出
+info_echo()      { log "\033[1;34mℹ $1\033[0m"; }       # ℹ 信息
+success_echo()   { log "\033[1;32m✔ $1\033[0m"; }       # ✔ 成功
+warn_echo()      { log "\033[1;33m⚠ $1\033[0m"; }       # ⚠ 警告
+warm_echo()      { log "\033[1;33m$1\033[0m"; }         # 🟡 温馨提示（无图标）
+note_echo()      { log "\033[1;35m➤ $1\033[0m"; }       # ➤ 说明
+error_echo()     { log "\033[1;31m✖ $1\033[0m"; }       # ✖ 错误
+err_echo()       { log "\033[1;31m$1\033[0m"; }         # 🔴 错误纯文本
+debug_echo()     { log "\033[1;35m🐞 $1\033[0m"; }      # 🐞 调试
+highlight_echo() { log "\033[1;36m🔹 $1\033[0m"; }      # 🔹 高亮
+gray_echo()      { log "\033[0;90m$1\033[0m"; }         # ⚫ 次要信息
+bold_echo()      { log "\033[1m$1\033[0m"; }            # 📝 加粗
+underline_echo() { log "\033[4m$1\033[0m"; }            # 🔗 下划线
+
+# ✅ 自述信息
+show_intro() {
+  echo ""
+  bold_echo "===================================================================="
+  note_echo "🛠️ 脚本功能说明："
+  bold_echo "===================================================================="
+  note_echo "📌 脚本用途："
+  note_echo "将 Dart 文件运行到 Android 模拟器"
+  echo ""
+  note_echo "📦 功能列表："
+  success_echo " ✅ 拖入 Dart 文件或 Flutter 项目目录（含 lib/main.dart）"
+  success_echo " ✅ 自动判断是否使用 FVM"
+  success_echo " ✅ 自动检测和安装 Android SDK 工具"
+  success_echo " ✅ 自动创建和启动 AVD（支持 fzf 多选 + arm64 优化）"
+  success_echo " ✅ 支持构建模式（debug/release/profile）与 --flavor"
+  success_echo " ✅ 自动修复 adb / sdkmanager / namespace 等问题"
+  echo ""
+  warm_echo "🔁 可选步骤：[任意键=执行, 回车=跳过]"
+  bold_echo "===================================================================="
+  echo ""
+
+  # ✅ 等待用户输入，回车跳过，其他继续
+  print -n "⚙️  现在是否执行可选操作？（回车跳过 / 任意键执行）："
+  read user_choice
+
+  if [[ -z "$user_choice" ]]; then
+    return 1   # 跳过
+  else
+    return 0   # 执行
+  fi
+}
+
+# ✅ 启动 Android 模拟器
+# 检查模拟器是否存在；
+# 启动一个可用的；
+# 设置并返回 $device_id
+get_or_start_android_emulator() {
+  # ✅ 全局声明变量 device_id
+  typeset -g device_id
+
+  device_id=$(eval "${flutter_cmd[@]}" devices | grep -iE 'emulator|android' | awk -F '•' '{print $2}' | head -n1 | xargs)
+
+  if [[ -n "$device_id" ]]; then
+    success_echo "📱 已找到 Android 模拟器设备：$device_id"
+    return 0
+  fi
+
+  warn_echo "⚠️ 未找到 Android 模拟器，尝试自动启动..."
+
+  if ! command -v emulator &>/dev/null; then
+    error_echo "❌ 未找到 emulator 命令，请检查 ANDROID_HOME 设置"
+    return 1
+  fi
+
+  local avd_name
+  avd_name=$(avdmanager list avd | grep "Name:" | head -n1 | awk -F': ' '{print $2}' | xargs)
+
+  if [[ -z "$avd_name" ]]; then
+    error_echo "❌ 没有可用的 AVD，请先创建模拟器"
+    echo "你可以运行：avdmanager create avd -n your_avd_name -k \"system-images;android-30;google_apis;x86_64\""
+    return 1
+  fi
+
+  note_echo "🚀 启动模拟器：$avd_name"
+  nohup emulator -avd "$avd_name" >/dev/null 2>&1 &
+
+  local timeout=60
+  while [[ $timeout -gt 0 ]]; do
+    device_id=$(eval "${flutter_cmd[@]}" devices | grep -iE 'emulator|android' | awk -F '•' '{print $2}' | head -n1 | xargs)
+    if [[ -n "$device_id" ]]; then
+      success_echo "✅ 模拟器启动成功：$device_id"
+      return 0
+    fi
+    sleep 2
+    ((timeout-=2))
+  done
+
+  error_echo "❌ 模拟器启动超时（60秒）"
+  return 1
+}
 
 # ✅ 日志输出（日志文件名 == 脚本文件名）
 init_logging() {
@@ -67,200 +146,183 @@ create_shortcut() {
   fi
 }
 
-# ✅ 自述信息
-show_intro() {
-  echo ""
-  bold_echo "===================================================================="
-  note_echo "🛠️ 脚本功能说明："
-  bold_echo "===================================================================="
-  note_echo "📌 脚本用途："
-  note_echo "    ➤ 将 Dart 文件运行到 Android 模拟器"
-  echo ""
-  note_echo "📦 功能列表："
-  success_echo "    ✅ 拖入 Dart 文件或 Flutter 项目目录（含 lib/main.dart）"
-  success_echo "    ✅ 自动判断是否使用 FVM"
-  success_echo "    ✅ 自动检测和安装 Android SDK 工具"
-  success_echo "    ✅ 自动创建和启动 AVD（支持 fzf 多选 + arm64 优化）"
-  success_echo "    ✅ 支持构建模式（debug/release/profile）与 --flavor"
-  success_echo "    ✅ 自动修复 adb / sdkmanager / namespace 等问题"
-  echo ""
-  warm_echo "🔁 可选步骤：[任意键=执行, 回车=跳过]"
-  bold_echo "===================================================================="
-  echo ""
+# ✅ 判断芯片架构（ARM64/ x86_64）
+get_cpu_arch() {
+  [[ $(uname -m) == "arm64" ]] && echo "arm64" || echo "x86_64"
 }
 
-# ✅ 修复缺失 namespace
-fix_missing_namespace() {
-  local project_root="$1"
-  local gradle_files=($(find "$project_root/android" -type f -name "build.gradle" -not -path "*/build/*"))
-  for gradle_file in "${gradle_files[@]}"; do
-    if [[ "$(basename "$(dirname "$gradle_file")")" == "android" ]]; then continue; fi
-    local module_dir=$(dirname "$gradle_file")
-    if grep -q "namespace\s\+" "$gradle_file"; then
-      success_echo "✅ 已有 namespace：$gradle_file"
-      continue
+# ✅ 单行写文件（避免重复写入）
+inject_shellenv_block() {
+    local id="$1"           # 参数1：环境变量块 ID，如 "homebrew_env"
+    local shellenv="$2"     # 参数2：实际要写入的 shellenv 内容，如 'eval "$(/opt/homebrew/bin/brew shellenv)"'
+    local header="# >>> ${id} 环境变量 >>>"  # 自动生成注释头
+
+    # 参数校验
+    if [[ -z "$id" || -z "$shellenv" ]]; then
+    error_echo "❌ 缺少参数：inject_shellenv_block <id> <shellenv>"
+    return 1
     fi
-    local manifest_file="$module_dir/src/main/AndroidManifest.xml"
-    if [[ -f "$manifest_file" ]]; then
-      local package_name=$(grep -oP 'package="\K[^"]+' "$manifest_file")
-      if [[ -n "$package_name" ]]; then
-        if grep -q "android\s*{" "$gradle_file"; then
-          sed -i '' "/android\s*{/a\\
-          \ \ \ \ namespace \"$package_name\"
-          " "$gradle_file"
-          success_echo "🚀 已插入 namespace \"$package_name\" 到：$gradle_file"
-        else
-          warn_echo "⚠️ 未找到 android {} 块，跳过：$gradle_file"
-        fi
-      else
-        error_echo "❌ 无法从 Manifest 提取 package：$manifest_file"
-      fi
+
+    # 若用户未选择该 ID，则跳过写入
+    if [[ ! " ${selected_envs[*]} " =~ " $id " ]]; then
+    warn_echo "⏭️ 用户未选择写入环境：$id，跳过"
+    return 0
+    fi
+
+    # 避免重复写入
+    if grep -Fq "$header" "$PROFILE_FILE"; then
+      info_echo "📌 已存在 header：$header"
+    elif grep -Fq "$shellenv" "$PROFILE_FILE"; then
+      info_echo "📌 已存在 shellenv：$shellenv"
     else
-      warn_echo "⚠️ 未找到 AndroidManifest.xml：$manifest_file"
+      echo "" >> "$PROFILE_FILE"
+      echo "$header" >> "$PROFILE_FILE"
+      echo "$shellenv" >> "$PROFILE_FILE"
+      success_echo "✅ 已写入：$header"
     fi
-  done
+
+    # 当前 shell 生效
+    eval "$shellenv"
+    success_echo "🟢 shellenv 已在当前终端生效"
 }
 
-# ✅ 启动 Android 模拟器
-start_android_emulator() {
-  if adb devices | grep -q "device$"; then
-    success_echo "✅ 已检测到设备或模拟器"
-    return
-  fi
-  warm_echo "🖥️ 当前无模拟器运行，准备启动 AVD..."
-  if ! command -v fzf &>/dev/null; then
-    error_echo "❌ 未安装 fzf，请先安装：brew install fzf"
-    exit 1
-  fi
-  avds=($("$ANDROID_HOME/emulator/emulator" -list-avds))
-  if [[ ${#avds[@]} -eq 0 ]]; then
-    error_echo "❌ 未找到任何 AVD，请先使用 avdmanager 创建模拟器"
-    exit 1
-  fi
-  selected_avd=$(printf "%s\n" "${avds[@]}" | fzf --prompt="📱 选择要启动的模拟器：")
-  if [[ -z "$selected_avd" ]]; then
-    error_echo "❌ 未选择 AVD，已取消"
-    exit 1
-  fi
-  highlight_echo "🚀 启动模拟器：$selected_avd ..."
-  nohup "$ANDROID_HOME/emulator/emulator" -avd "$selected_avd" >/dev/null 2>&1 &
-  info_echo "⏳ 等待模拟器启动中，请稍候..."
-  for i in {1..30}; do
-    if adb devices | grep -q "device$"; then
-      success_echo "✅ 模拟器已就绪"
-      return
-    fi
-    sleep 2
-  done
-  error_echo "❌ 模拟器启动失败，请手动检查 AVD 是否可用"
-  exit 1
-}
+# ✅ 自检安装：🍺Homebrew
+install_homebrew() {
+  local arch="$(get_cpu_arch)"                   # 获取当前架构（arm64 或 x86_64）
+  local shell_path="${SHELL##*/}"                # 获取当前 shell 名称（如 zsh、bash）
+  local profile_file=""
+  local brew_bin=""
+  local shellenv_cmd=""
 
-# ✅ 检测入口文件
-detect_entry_file() {
-  while true; do
-    if [[ -f "$flutter_project_root/pubspec.yaml" && -d "$flutter_project_root/lib" ]]; then
-      cd "$flutter_project_root" || exit 1
+  if ! command -v brew &>/dev/null; then
+    warn_echo "🧩 未检测到 Homebrew，正在安装中...（架构：$arch）"
+
+    if [[ "$arch" == "arm64" ]]; then
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
+        error_echo "❌ Homebrew 安装失败（arm64）"
+        exit 1
+      }
+      brew_bin="/opt/homebrew/bin/brew"
     else
-      error_echo "❌ 当前目录不是 Flutter 项目根目录"
-      info_echo "📍 当前目录为：$flutter_project_root"
-      note_echo "📂 请拖入 Flutter 项目根目录（包含 pubspec.yaml 和 lib/）"
-      read -r user_input
-      user_input=${user_input//\"/}
-      user_input=${user_input%/}
-      if [[ -d "$user_input" && -f "$user_input/pubspec.yaml" && -d "$user_input/lib" ]]; then
-        flutter_project_root="$user_input"
-        cd "$flutter_project_root" || exit 1
-      else
-        continue
-      fi
+      arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
+        error_echo "❌ Homebrew 安装失败（x86_64）"
+        exit 1
+      }
+      brew_bin="/usr/local/bin/brew"
     fi
 
-    default_entry="lib/main.dart"
-    if [[ -f "$default_entry" ]]; then
-      dart_entry_file="$default_entry"
-    else
-      warn_echo "⚠️ 未找到默认入口 lib/main.dart"
-      while true; do
-        note_echo "📄 请手动拖入入口 Dart 文件（例如 lib/xxx.dart）："
-        read -r manual_entry
-        manual_entry=${manual_entry//\"/}
-        if [[ -f "$manual_entry" ]]; then
-          dart_entry_file="$manual_entry"
-          break
-        else
-          error_echo "❌ 无效的 Dart 文件路径"
-        fi
-      done
-    fi
+    success_echo "✅ Homebrew 安装成功"
 
-    break
-  done
+    # ==== 注入 shellenv 到对应配置文件（自动生效） ====
+    shellenv_cmd="eval \"\$(${brew_bin} shellenv)\""
 
-  success_echo "✅ 项目目录：$flutter_project_root"
-  success_echo "✅ 入口文件：$dart_entry_file"
+    case "$shell_path" in
+      zsh)   profile_file="$HOME/.zprofile" ;;
+      bash)  profile_file="$HOME/.bash_profile" ;;
+      *)     profile_file="$HOME/.profile" ;;
+    esac
 
-  read -r "?🧩 输入 flavor（可选，直接回车跳过）：" FLAVOR
-  read -r "?🧩 输入构建模式（debug / release / profile，默认 debug）：" BUILD_MODE
-  BUILD_MODE=${BUILD_MODE:-debug}
-}
+    inject_shellenv_block "$profile_file" "$shellenv_cmd"
 
-# ✅ FVM 监测
-detect_flutter_cmd() {
-  script_path="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
-  local fvm_config_path="$script_path/.fvm/fvm_config.json"
-  if command -v fvm >/dev/null 2>&1 && [[ -f "$fvm_config_path" ]]; then
-    flutter_cmd=("fvm" "flutter")
-    info_echo "🧩 检测到 FVM 项目，使用命令：fvm flutter"
   else
-    flutter_cmd=("flutter")
-    info_echo "📦 使用系统 Flutter 命令：flutter"
+    info_echo "🔄 Homebrew 已安装，正在更新..."
+    brew update && brew upgrade && brew cleanup && brew doctor && brew -v
+    success_echo "✅ Homebrew 已更新"
   fi
 }
 
-# ✅ 执行 flutter run
-run_flutter() {
-  note_echo "📦 自动执行：flutter pub upgrade"
-  eval "$flutter_cmd pub upgrade"
-
-  if grep -q "connectivity:" "$flutter_project_root/pubspec.yaml"; then
-    if grep -q "connectivity_plus:" "$flutter_project_root/pubspec.yaml"; then
-      warn_echo "⚠️ 已存在 connectivity_plus，跳过重复添加"
-      sed -i '' '/^\s*connectivity[: ].*/d' "$flutter_project_root/pubspec.yaml"
-    else
-      highlight_echo "🔁 自动替换 connectivity → connectivity_plus"
-      sed -i '' 's/^\s*connectivity:/  connectivity_plus:/g' "$flutter_project_root/pubspec.yaml"
-    fi
-    eval "$flutter_cmd pub get"
+# ✅ 自检安装：🍺Homebrew.jenv
+install_jenv() {
+  if ! command -v jenv &>/dev/null; then
+    info_echo "📦 未检测到 jenv，正在通过 Homebrew 安装..."
+    brew install jenv || { error_echo "❌ jenv 安装失败"; exit 1; }
+    success_echo "✅ jenv 安装成功"
+  else
+    info_echo "🔄 jenv 已安装，升级中..."
+    brew upgrade jenv && brew cleanup
+    success_echo "✅ jenv 已是最新版"
   fi
 
-  start_android_emulator
+  # ✅ 设置 jenv 环境变量（追加到 .zshrc 或 .bash_profile）
+  local shellrc="$HOME/.zshrc"
+  [[ -n "$ZSH_VERSION" ]] || shellrc="$HOME/.bash_profile"
 
-  device_id=$(eval "$flutter_cmd devices" | grep -iE 'emulator|android' | awk -F '•' '{print $2}' | head -n1 | xargs)
-  if [[ -z "$device_id" ]]; then
-    error_echo "❌ 未找到 Android 模拟器设备（flutter devices 无匹配）"
-    eval "$flutter_cmd devices"
+  if ! grep -q 'jenv init' "$shellrc"; then
+    info_echo "📎 正在写入 jenv 初始化配置到：$shellrc"
+    {
+      echo ''
+      echo '# >>> jenv 初始化 >>>'
+      echo 'export PATH="$HOME/.jenv/bin:$PATH"'
+      echo 'eval "$(jenv init -)"'
+      echo '# <<< jenv 初始化 <<<'
+    } >> "$shellrc"
+    success_echo "✅ jenv 初始化配置已写入 $shellrc"
+  else
+    info_echo "📌 jenv 初始化配置已存在于 $shellrc"
+  fi
+
+  # ✅ 当前 shell 生效
+  export PATH="$HOME/.jenv/bin:$PATH"
+  eval "$(jenv init -)"
+  success_echo "🟢 jenv 初始化完成并在当前终端生效"
+}
+
+# ✅ 初始化 jenv 并注入 JAVA_HOME（优先读取 .java-version）
+select_and_set_java_version() {
+  export PATH="$HOME/.jenv/bin:$PATH"
+  eval "$(jenv init - zsh)"
+
+  local java_version
+
+  # === 检查项目中的 .java-version 文件 ===
+    if [[ -f ".java-version" ]]; then
+      java_version=$(jenv version-name 2>/dev/null)
+
+      if [[ -n "$java_version" && -d "$HOME/.jenv/versions/$java_version" ]]; then
+        success_echo "📌 项目中存在 .java-version：$java_version"
+
+        print -n "⚠️ 检测到已有 Java 版本 $java_version，按回车默认使用，输入任意字符重新选择："
+        read confirm
+
+        if [[ -n "$confirm" ]]; then
+          note_echo "🔁 将忽略当前 .java-version，重新选择 Java 版本..."
+        else
+          export JAVA_HOME="$HOME/.jenv/versions/$java_version"
+          export PATH="$JAVA_HOME/bin:$PATH"
+          success_echo "✅ JAVA_HOME 设置为：$JAVA_HOME"
+          return
+        fi
+      else
+        warn_echo "⚠️ .java-version 存在但无效，将重新选择 Java 版本..."
+      fi
+    fi
+
+  # === fzf 手动选择流程 ===
+  local available_versions
+  available_versions=$(jenv versions --bare --verbose | grep -v '^$' || true)
+
+  if [[ -z "$available_versions" ]]; then
+    error_echo "❌ jenv 中未检测到任何 Java 版本，请先添加"
     exit 1
   fi
 
-  cmd="$flutter_cmd run -d $device_id -t $dart_entry_file --android-skip-build-dependency-validation"
-  [[ -n "$FLAVOR" ]] && cmd+=" --flavor $FLAVOR"
-  [[ "$BUILD_MODE" == "release" ]] && cmd+=" --release"
-  [[ "$BUILD_MODE" == "profile" ]] && cmd+=" --profile"
+  local selected_version
+  selected_version=$(echo "$available_versions" | fzf --prompt="🧩 选择 Java 版本: ")
 
-  highlight_echo "🚀 执行命令：$cmd"
-  eval "$cmd"
-
-  if [[ $? -ne 0 ]]; then
-    warn_echo "⚠️ 构建失败，执行自动修复流程..."
-    note_echo "🧹 清除项目构建产物和 pubspec.lock..."
-    rm -rf "$flutter_project_root/.dart_tool"
-    rm -rf "$flutter_project_root/build"
-    rm -f "$flutter_project_root/pubspec.lock"
-    eval "$flutter_cmd pub get"
-    note_echo "🔁 正在重试 flutter run..."
-    eval "$cmd"
+  if [[ -z "$selected_version" ]]; then
+    warn_echo "⚠️ 用户未选择 Java 版本，退出"
+    exit 1
   fi
+
+  success_echo "📌 已选择 Java 版本：$selected_version"
+  jenv local "$selected_version" || {
+    error_echo "❌ 设置 jenv local 失败"
+    exit 1
+  }
+
+  export JAVA_HOME="$HOME/.jenv/versions/$selected_version"
+  export PATH="$JAVA_HOME/bin:$PATH"
+  success_echo "✅ JAVA_HOME 设置为：$JAVA_HOME"
 }
 
 # ✅ Android 构建环境完整性检查
@@ -275,12 +337,7 @@ check_android_environment() {
   fi
 
   JAVA_VERSION=$(java -version 2>&1 | grep 'version' | awk -F '"' '{print $2}')
-  JAVA_MAJOR=$(echo "$JAVA_VERSION" | awk -F. '{print ($1 == "1") ? $2 : $1}')
-  if [[ "$JAVA_MAJOR" -lt 17 ]]; then
-    warn_echo "⚠ 当前 JDK 版本为 $JAVA_VERSION，建议使用 JDK 17+（AGP 8+ 要求）"
-  else
-    success_echo "✅ JDK 版本符合要求：$JAVA_VERSION"
-  fi
+  success_echo "✅ JDK 版本为：$JAVA_VERSION"
 
   # === sdkmanager 检查 + 版本 ===
   if ! command -v sdkmanager &>/dev/null; then
@@ -320,14 +377,11 @@ check_android_environment() {
     success_echo "✅ 已检测到平台 SDK：$latest_platform"
   fi
 
-  # === flutter doctor 简要摘要（仅 Android Toolchain） ===
-  flutter_output=$("${flutter_cmd[@]}" doctor | grep -i "android toolchain")
-  if [[ -n "$flutter_output" ]]; then
-    success_echo "🧾 Flutter 检测结果：$flutter_output"
-  else
-    warn_echo "⚠️ 未能获取 Flutter doctor 信息，请手动执行 flutter doctor 检查"
-  fi
-
+  # === flutter doctor 全量输出 ===
+  note_echo "🩺 正在执行 flutter doctor 检查环境..."
+  "${flutter_cmd[@]}" doctor
+  "${flutter_cmd[@]}" doctor | tee -a "$LOG_FILE"
+  
   # === Gradle Wrapper 检查 ===
   local wrapper_file="android/gradle/wrapper/gradle-wrapper.properties"
   if [[ -f "$wrapper_file" ]]; then
@@ -355,17 +409,231 @@ check_android_environment() {
   warm_echo "🔍 Android 构建环境监察完毕"
 }
 
-# ✅ 主执行函数
+# ✅ Flutter 命令检测
+detect_flutter_cmd() {
+  script_path="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
+  local fvm_config_path="$script_path/.fvm/fvm_config.json"
+  if command -v fvm >/dev/null 2>&1 && [[ -f "$fvm_config_path" ]]; then
+    flutter_cmd=("fvm" "flutter")
+    info_echo "🧩 检测到 FVM 项目，使用命令：fvm flutter"
+  else
+    flutter_cmd=("flutter")
+    info_echo "📦 使用系统 Flutter 命令：flutter"
+  fi
+}
+
+# ✅ 修复缺失 namespace
+fix_missing_namespace() {
+  local project_root="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
+  local gradle_files=($(find "$project_root/android" -type f -name "build.gradle" -not -path "*/build/*"))
+  for gradle_file in "${gradle_files[@]}"; do
+    if [[ "$(basename "$(dirname "$gradle_file")")" == "android" ]]; then continue; fi
+    local module_dir=$(dirname "$gradle_file")
+    if grep -q "namespace\s\+" "$gradle_file"; then
+      success_echo "✅ 已有 namespace：$gradle_file"
+      continue
+    fi
+    local manifest_file="$module_dir/src/main/AndroidManifest.xml"
+    if [[ -f "$manifest_file" ]]; then
+      local package_name=$(grep -oP 'package="\K[^"]+' "$manifest_file")
+      if [[ -n "$package_name" ]]; then
+        if grep -q "android\s*{" "$gradle_file"; then
+          sed -i '' "/android\s*{/a\\
+          \ \ \ \ namespace \"$package_name\"
+          " "$gradle_file"
+          success_echo "🚀 已插入 namespace \"$package_name\" 到：$gradle_file"
+        else
+          warn_echo "⚠️ 未找到 android {} 块，跳过：$gradle_file"
+        fi
+      else
+        error_echo "❌ 无法从 Manifest 提取 package：$manifest_file"
+      fi
+    else
+      warn_echo "⚠️ 未找到 AndroidManifest.xml：$manifest_file"
+    fi
+  done
+}
+
+# ✅ 判断当前目录是否为Flutter项目根目录
+is_flutter_project_root() {
+  [[ -f "$1/pubspec.yaml" && -d "$1/lib" ]]
+}
+
+# ✅ 转换路径为绝对路径
+abs_path() {
+  local p="$1"
+  [[ -z "$p" ]] && return 1
+  p="${p//\"/}"                                                         # ✅ 移除双引号，防止参数传递误差
+  [[ "$p" != "/" ]] && p="${p%/}"                                                               # ✅ 去除末尾斜杠，标准化路径形式
+
+  if [[ -d "$p" ]]; then
+    (cd "$p" 2>/dev/null && pwd -P)                                     # ✅ 子 shell，避免污染当前目录
+  elif [[ -f "$p" ]]; then
+    (cd "${p:h}" 2>/dev/null && printf "%s/%s\n" "$(pwd -P)" "${p:t}")  # ✅ 精准拼接
+  else
+    return 1
+  fi
+}
+
+# ✅ 检测入口文件
+detect_entry() {
+  script_path="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
+  
+  while true; do
+    warn_echo "📂 请拖入 Flutter 项目根目录或 Dart 单文件路径（回车即表示当前脚本的执行路径）："
+    read -r user_input
+    user_input="${user_input//\"/}"
+    user_input="${user_input%/}"
+
+    if [[ -z "$user_input" ]]; then
+      if is_flutter_project_root "$script_path"; then
+        flutter_root=$(abs_path "$script_path")
+        entry_file="$flutter_root/lib/main.dart"
+        highlight_echo "🎯 检测到脚本所在目录即 Flutter 根目录，自动使用。"
+        break
+      else
+        error_echo "❌ 当前目录不是 Flutter 项目根目录，请重新拖入。"
+        continue
+      fi
+    fi
+
+    if [[ -d "$user_input" ]]; then
+      if is_flutter_project_root "$user_input"; then
+        flutter_root=$(abs_path "$user_input")
+        entry_file="$flutter_root/lib/main.dart"
+        break
+      fi
+    elif [[ -f "$user_input" ]]; then
+      if is_dart_entry_file "$user_input"; then
+        entry_file=$(abs_path "$user_input")
+        flutter_root="${entry_file:h}"
+        break
+      fi
+    fi
+
+    error_echo "❌ 无效路径，请重新拖入 Flutter 根目录或 Dart 单文件。"
+  done
+
+  cd "$flutter_root" || { error_echo "无法进入项目目录：$flutter_root"; exit 1; }
+  success_echo "✅ 项目路径：$flutter_root"
+  success_echo "🎯 入口文件：$entry_file"
+}
+
+# ✅ 询问执行 flutter pub upgrade
+replace_connectivity_dependency() {
+  echo ""
+  warn_echo "有些时候执行此命令，会造成代码无法构建。"
+  warn_echo "默认不执行，请谨慎操作！"
+  read "?🔧 是否执行 flutter pub upgrade ？输入 y 执行，其它跳过: " confirm
+  if [[ ! "$confirm" =~ ^[yY]$ ]]; then
+    note_echo "⏩ 已跳过依赖替换操作"
+    return
+  fi
+
+  note_echo "📦 自动执行：flutter pub upgrade"
+  eval "${flutter_cmd[@]}" pub upgrade
+
+  local yaml_path="$flutter_project_root/pubspec.yaml"
+  if grep -q "connectivity:" "$yaml_path"; then
+    if grep -q "connectivity_plus:" "$yaml_path"; then
+      warn_echo "⚠️ 已存在 connectivity_plus，跳过重复添加"
+      sed -i '' '/^\s*connectivity[: ].*/d' "$yaml_path"
+    else
+      highlight_echo "🔁 自动替换 connectivity → connectivity_plus"
+      sed -i '' 's/^\s*connectivity:/  connectivity_plus:/g' "$yaml_path"
+    fi
+    eval "${flutter_cmd[@]}" pub get
+  else
+    info_echo "ℹ️ 未检测到 connectivity，无需替换"
+  fi
+}
+
+# ✅ 执行 flutter run
+run_flutter() {
+  note_echo "🧹 自动执行：flutter clean"
+  eval "${flutter_cmd[@]}" clean
+
+  replace_connectivity_dependency  # 询问是否 pub upgrade 并替换依赖
+
+  # ================================== 构建命令 ==================================
+  cmd=("${flutter_cmd[@]}" run -d "$device_id" -t "$entry_file")
+  [[ -n "$FLAVOR" ]] && cmd+=("--flavor" "$FLAVOR")
+  [[ "$BUILD_MODE" == "release" ]] && cmd+=("--release")
+  [[ "$BUILD_MODE" == "profile" ]] && cmd+=("--profile")
+
+  # ================================== 添加 --android-skip-build-dependency-validation ==================================
+  read "?🔧 是否跳过 Android 构建依赖验证？按回车添加，输入任意字符不添加: " confirm
+  if [[ -z "$confirm" ]]; then
+    cmd+=("--android-skip-build-dependency-validation")
+    note_echo "✅ 已添加参数：--android-skip-build-dependency-validation"
+  else
+    note_echo "⏩ 未添加该参数"
+  fi
+
+  # ================================== 前台/后台运行选择 ==================================
+  echo ""
+  read "?🎮 是否后台运行？按回车前台运行，输入任意字符后台运行（关闭终端不影响）: " run_mode
+  if [[ -z "$run_mode" ]]; then
+      # ✅ 回车 → 前台运行
+      "${cmd[@]}"
+      if [[ $? -ne 0 ]]; then
+        warn_echo "⚠️ 构建失败，执行自动修复流程..."
+        note_echo "🧹 清除项目构建产物和 pubspec.lock..."
+        rm -rf "$flutter_project_root/.dart_tool"
+        rm -rf "$flutter_project_root/build"
+        rm -f "$flutter_project_root/pubspec.lock"
+
+        eval "${flutter_cmd[@]}" clean
+        eval "${flutter_cmd[@]}" pub get
+
+        note_echo "🔁 正在重试 flutter run..."
+        "${cmd[@]}"
+    fi
+  else
+    # ❗ 任意字符 → 前台运行
+    nohup "${cmd[@]}" > /tmp/flutter_run.log 2>&1 &
+    disown
+    success_echo "✅ Flutter 已后台运行，日志写入：/tmp/flutter_run.log"
+  fi
+}
+
+# ✅ 询问用户是否用VSCode打开此Flutter项目
+maybe_open_in_vscode() {
+  print -n "🧭 是否用 VS Code 打开项目？（回车 = 打开，输入任意字符 = 跳过）："
+  read confirm
+
+  if [[ -z "$confirm" ]]; then
+    if command -v code >/dev/null 2>&1; then
+      open_path="$script_path"
+      success_echo "🚀 正在用 VS Code 打开项目目录：$open_path"
+      code "$open_path"
+    else
+      error_echo "❌ 未找到 VS Code 的命令行工具 code，请先在 VS Code 中启用 'Shell Command: Install code in PATH'"
+      color_echo '🔥配置 VSCode 环境变量 👉 export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"'
+    fi
+  else
+    note_echo "⏩ 已跳过 VS Code 打开操作"
+  fi
+}
+
+# ✅ 主函数
 main() {
-  clear
-  show_intro                                    # 自述信息
-  detect_flutter_cmd                            # FVM 监测
-  check_android_environment                     # 环境完整性检测
-  init_logging                                  # 日志输出
-  create_shortcut                               # 创建桌面快捷方式
-  fix_missing_namespace "$flutter_project_root" # 修复缺失 namespace
-  detect_entry_file                             # 检测入口文件
-  run_flutter                                   # 执行 flutter run
+    init_logging                             # ✅ 日志输出（日志文件名 == 脚本文件名）
+    detect_flutter_cmd                       # ✅ Flutter 命令检测
+    show_intro                               # ✅ 自述信息
+    get_or_start_android_emulator || exit 1  # ✅ 启动 Android 模拟器
+
+    install_homebrew                         # ✅ 自检安装：🍺Homebrew
+    install_jenv                             # ✅ 自检安装：🍺Homebrew.jenv
+    select_and_set_java_version              # ✅ Java 环境注入
+    check_android_environment                # ✅ Android 构建环境完整性检查
+
+    fix_missing_namespace                    # ✅ 修复缺失 namespace
+    detect_entry                             # ✅ 检测入口文件
+    run_flutter                              # ✅ 执行 flutter run（运行前先清理）
+ 
+    maybe_open_in_vscode                     # ✅ 询问用户是否用VSCode打开此Flutter项目
+    create_shortcut                          # ✅ 创建桌面快捷方式
 }
 
 main "$@"

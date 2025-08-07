@@ -27,6 +27,13 @@
 
 ## 二、💥 代码讲解 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
+### 🎯 **Debug** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```shell
+echo "📄 SCRIPT_PATH = $SCRIPT_PATH"
+read "?👉 按下回车开始执行，或 Ctrl+C 取消..."
+```
+
 ### 🎯 **Logo** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * ```shell
@@ -503,6 +510,93 @@ find_or_prompt_xcodeproj() {
 }
 ```
 
+### 🎯 [**Android**](https://www.android.com/) 模拟器🤖<a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+* 检查模拟器是否存在；启动一个可用的；设置并返回 `$device_id`
+
+  ```shell
+  get_or_start_android_emulator() {
+    # ✅ 全局声明变量 device_id
+    typeset -g device_id
+  
+    device_id=$(eval "${flutter_cmd[@]}" devices | grep -iE 'emulator|android' | awk -F '•' '{print $2}' | head -n1 | xargs)
+  
+    if [[ -n "$device_id" ]]; then
+      success_echo "📱 已找到 Android 模拟器设备：$device_id"
+      return 0
+    fi
+  
+    warn_echo "⚠️ 未找到 Android 模拟器，尝试自动启动..."
+  
+    if ! command -v emulator &>/dev/null; then
+      error_echo "❌ 未找到 emulator 命令，请检查 ANDROID_HOME 设置"
+      return 1
+    fi
+  
+    local avd_name
+    avd_name=$(avdmanager list avd | grep "Name:" | head -n1 | awk -F': ' '{print $2}' | xargs)
+  
+    if [[ -z "$avd_name" ]]; then
+      error_echo "❌ 没有可用的 AVD，请先创建模拟器"
+      echo "你可以运行：avdmanager create avd -n your_avd_name -k \"system-images;android-30;google_apis;x86_64\""
+      return 1
+    fi
+  
+    note_echo "🚀 启动模拟器：$avd_name"
+    nohup emulator -avd "$avd_name" >/dev/null 2>&1 &
+  
+    local timeout=60
+    while [[ $timeout -gt 0 ]]; do
+      device_id=$(eval "${flutter_cmd[@]}" devices | grep -iE 'emulator|android' | awk -F '•' '{print $2}' | head -n1 | xargs)
+      if [[ -n "$device_id" ]]; then
+        success_echo "✅ 模拟器启动成功：$device_id"
+        return 0
+      fi
+      sleep 2
+      ((timeout-=2))
+    done
+  
+    error_echo "❌ 模拟器启动超时（60秒）"
+    return 1
+  }
+  ```
+
+* ```shell
+  start_android_emulator() {
+    if adb devices | grep -q "device$"; then
+      success_echo "✅ 已检测到设备或模拟器"
+      return
+    fi
+    warm_echo "🖥️ 当前无模拟器运行，准备启动 AVD..."
+    if ! command -v fzf &>/dev/null; then
+      error_echo "❌ 未安装 fzf，请先安装：brew install fzf"
+      exit 1
+    fi
+    avds=($("$ANDROID_HOME/emulator/emulator" -list-avds))
+    if [[ ${#avds[@]} -eq 0 ]]; then
+      error_echo "❌ 未找到任何 AVD，请先使用 avdmanager 创建模拟器"
+      exit 1
+    fi
+    selected_avd=$(printf "%s\n" "${avds[@]}" | fzf --prompt="📱 选择要启动的模拟器：")
+    if [[ -z "$selected_avd" ]]; then
+      error_echo "❌ 未选择 AVD，已取消"
+      exit 1
+    fi
+    highlight_echo "🚀 启动模拟器：$selected_avd ..."
+    nohup "$ANDROID_HOME/emulator/emulator" -avd "$selected_avd" >/dev/null 2>&1 &
+    info_echo "⏳ 等待模拟器启动中，请稍候..."
+    for i in {1..30}; do
+      if adb devices | grep -q "device$"; then
+        success_echo "✅ 模拟器已就绪"
+        return
+      fi
+      sleep 2
+    done
+    error_echo "❌ 模拟器启动失败，请手动检查 AVD 是否可用"
+    exit 1
+  }
+  ```
+
 ### 🎯 **iOS** 模拟器📱<a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 #### 1、（检测）防止假后台  <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
@@ -604,7 +698,6 @@ print_duration
 >      EOF
 >     ```
 >  
->
 
 #### 🎯 1、单行写文件（避免重复写入） <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -790,7 +883,9 @@ get_cpu_arch() {
 
 ### 🎯 [**SDKMAN**](https://sdkman.io/)  <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
+```
 /// TODO
+```
 
 ### 🎯 💎[**Rubygems**](https://rubygems.org/) 自检安装 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -1342,7 +1437,7 @@ _is_flutter_project_root() {
 }
 ```
 
-#### 🎯 2、获取 **Flutter** 项目名称  <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 🎯 2、获取**Flutter**项目名称  <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 _get_flutter_project_name() {

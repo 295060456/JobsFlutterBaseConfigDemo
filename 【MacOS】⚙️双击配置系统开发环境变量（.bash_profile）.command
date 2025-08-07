@@ -241,7 +241,7 @@ write_block_to_profile() {
     10)
       block=(
         "# 🔥配置 sdkman"
-        '/// TODO'
+        '## // TODO'
       ) ;;
     11)
       block=(

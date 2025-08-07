@@ -50,31 +50,220 @@
 
 ## 二、🌱环境配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-### 1、[**XCode**](https://developer.apple.com/xcode/)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 1、📃`MacOS` 系统环境变量文件 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-### 2、[**Android Studio**](https://developer.android.com/studio?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+* ```shell
+  # ~/.bash_profile
+  # ~/.bashrc
+  # ~/.zshrc 是不同的 shell 配置文件，每个文件的优先级和作用取决于你使用的 shell 类型以及你在启动 shell 时的方式
+  # 以下是对它们的优先级和作用的详细说明：
+  
+  # Bash Shell
+  # ~/.bash_profile
+  # 这是一个用户级的启动文件，当以登录方式启动 Bash shell 时（例如通过终端登录或者 SSH 登录时），Bash 会读取并执行 ~/.bash_profile 中的内容。
+  # 如果 ~/.bash_profile 不存在，Bash 会尝试读取 ~/.bash_login 或者 ~/.profile。
+  
+  # ~/.bashrc
+  # 这是一个用户级的非登录 shell 启动文件，当启动一个非登录的 Bash shell 时（例如打开一个终端窗口或者执行一个新的 shell 命令时），Bash 会读取并执行 ~/.bashrc 中的内容。
+  # 通常在 ~/.bash_profile 中会有一行代码来手动加载 ~/.bashrc，以便确保登录 shell 和非登录 shell 都会执行 ~/.bashrc 中的配置。
+  
+  # bash
+  # 复制下列代码
+  # if [ -f ~/.bashrc ]; then
+  #    source ~/.bashrc
+  # fi
+  
+  # Zsh Shell
+  # ~/.zshrc
+  # 这是 Zsh 的配置文件，不论是登录 shell 还是非登录 shell，Zsh 启动时都会读取并执行 ~/.zshrc 中的内容。
+  # 对于 Zsh 而言，~/.zshrc 是主要的配置文件。
+  
+  # 优先级总结
+  # 对于 Bash：
+  # 登录 shell：先执行 ~/.bash_profile，如果在 ~/.bash_profile 中有 source ~/.bashrc，则会接着执行 ~/.bashrc。
+  # 非登录 shell：只执行 ~/.bashrc。
+  
+  # 对于 Zsh：
+  # 无论是登录 shell 还是非登录 shell，都只执行 ~/.zshrc。
+  # 根据你使用的 shell 类型和启动方式，这些文件的优先级和作用会有所不同。
+  # 对于大多数桌面用户来说，通常会配置 ~/.bashrc 或者 ~/.zshrc 来设置常用的环境变量和别名，而 ~/.bash_profile 则用来进行一些需要在登录时执行的初始化操作。
+  ```
 
-#### 2.1、[**点我👉下载Android Studio历史版本**](https://developer.android.com/studio/archive?utm_source=chatgpt.com&hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+* <font color=red>为了方便管理，只配置**`bash_profile`**和**`.zshrc`**</font>
+
+  <details>
+  <summary>.bash_profile</summary>
+
+  ```shell
+  # 每次打开终端默认进入桌面目录
+  cd "$HOME/Desktop"
+  
+  # 配置 Rbenv.ruby 环境变量（需安装 rbenv）
+  if command -v rbenv &>/dev/null; then
+    export PATH="$HOME/.rbenv/bin:$PATH"
+    eval "$(rbenv init -)"
+  else
+    echo "⚠️ 未检测到 rbenv，请执行 brew install rbenv 安装"
+  fi
+  if command -v ruby &>/dev/null; then
+    export PATH="/usr/local/opt/ruby/bin:$PATH"
+    export LDFLAGS="-L/usr/local/opt/ruby/lib"
+    export CPPFLAGS="-I/usr/local/opt/ruby/include"
+    export PKG_CONFIG_PATH="/usr/local/opt/ruby/lib/pkgconfig"
+  else
+    echo "⚠️ 未检测到 ruby，建议执行 brew install ruby"
+  fi
+  
+  # 配置 Curl 环境变量（需 Homebrew 安装）
+  if command -v curl &>/dev/null; then
+    export PATH="/usr/local/opt/curl/bin:$PATH"
+    export LDFLAGS="-L/usr/local/opt/curl/lib"
+    export CPPFLAGS="-I/usr/local/opt/curl/include"
+    export PKG_CONFIG_PATH="/usr/local/opt/curl/lib/pkgconfig"
+  else
+    echo "⚠️ curl 未通过 brew 安装，建议执行 brew install curl"
+  fi
+  
+  # 配置 VSCode 命令行（code）
+  if [[ -d "/Applications/Visual Studio Code.app/Contents/Resources/app/bin" ]]; then
+    export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
+    if ! command -v code &>/dev/null; then
+      echo "⚠️ VSCode 已安装但未配置 code 命令，请在 VSCode 中运行：Shell Command: Install code in PATH"
+    fi
+  else
+    echo "⚠️ 未检测到 VSCode，请先安装 Visual Studio Code 后再运行本脚本"
+  fi
+  
+  # 配置 Flutter 环境变量
+  if ! command -v fvm &>/dev/null; then
+    if [[ -d "/opt/homebrew/Caskroom/flutter/latest/flutter/bin" ]]; then
+      export PATH="/opt/homebrew/Caskroom/flutter/latest/flutter/bin:$PATH"
+    elif [[ -d "/usr/local/Caskroom/flutter/latest/flutter/bin" ]]; then
+      export PATH="/usr/local/Caskroom/flutter/latest/flutter/bin:$PATH"
+    elif [[ -d "$HOME/flutter/bin" ]]; then
+      export PATH="$HOME/flutter/bin:$PATH"
+    elif [[ -d "$HOME/Documents/GitHub.Jobs/Flutter.SDK/Flutter.SDK.last/bin" ]]; then
+      export PATH="$HOME/Documents/GitHub.Jobs/Flutter.SDK/Flutter.SDK.last/bin:$PATH"
+    else
+      echo "⚠️ 未找到 Flutter SDK，请手动配置路径"
+    fi
+  fi
+  export PUB_HOSTED_URL=https://pub.dartlang.org
+  export FLUTTER_STORAGE_BASE_URL=https://storage.googleapis.com
+  
+  # 配置 FVM 环境变量
+  export PATH="$HOME/.pub-cache/bin:$PATH"
+  if command -v fvm &>/dev/null; then
+    flutter() { fvm flutter "$@"; }
+  else
+    echo "⚠️ 未检测到 fvm，请执行 flutter pub global activate fvm 安装"
+  fi
+  
+  # 配置 Android SDK 环境变量
+  if [[ -d "$HOME/Library/Android/sdk" ]]; then
+    export ANDROID_SDK_ROOT="$HOME/Library/Android/sdk"
+    export PATH="$PATH:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/tools/bin"
+  else
+    echo "⚠️ 未检测到 Android SDK，请安装 Android Studio 或配置 ANDROID_SDK_ROOT"
+  fi
+  
+  # 配置 JDK / OpenJDK / SDKMAN
+  export JAVA_HOME="/opt/homebrew/opt/openjdk"  # 默认值（优先级最低）
+  if /usr/libexec/java_home &>/dev/null; then
+    export JAVA_HOME=$(/usr/libexec/java_home)
+  fi
+  case ":$PATH:" in
+    *":$JAVA_HOME/bin:"*) ;;
+    *) export PATH="$JAVA_HOME/bin:$PATH" ;;
+  esac
+  if [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
+    export SDKMAN_DIR="$HOME/.sdkman"
+    source "$HOME/.sdkman/bin/sdkman-init.sh"
+  else
+    echo "⚠️ 未检测到 SDKMAN，请访问 https://sdkman.io 安装"
+  fi
+  
+  # 配置 Gradle 环境变量
+  if command -v gradle &>/dev/null; then
+    export PATH="$HOME/Documents/Gradle/gradle-8.7/bin:$PATH"
+  else
+    echo "⚠️ 未检测到 gradle，建议执行 brew install gradle 安装"
+  fi
+  
+  # 配置 pipx 环境变量
+  if command -v pipx &>/dev/null; then
+    export PATH="$PATH:$HOME/.local/bin"
+  else
+    echo "⚠️ pipx 未安装，建议执行 brew install pipx"
+  fi
+  
+  ```
+  </details> 
+
+  <details>
+  <summary>.zshrc</summary>
+
+  ```dart
+  export ZSH="$HOME/.oh-my-zsh"
+  ZSH_THEME="robbyrussell"
+  plugins=(git)
+  source $ZSH/oh-my-zsh.sh
+  
+  flutter() { fvm flutter "$@"; }
+  
+  jobs() {
+    local files=(
+      "$HOME/.bash_profile"
+      "$HOME/.bashrc"
+      "$HOME/.zshrc"
+      "$HOME/.oh-my-zsh/oh-my-zsh.sh"
+    )
+    for file in "${files[@]}"; do
+      if [[ -f "$file" ]]; then
+        source "$file"
+        echo "\033[1;32m✅ 已加载配置文件：file://$file\033[0m"
+      else
+        echo "\033[1;33m⚠️ 未找到配置文件：file://$file\033[0m"
+      fi
+    done
+    echo "\n📎 ⌘Command + 点击路径可打开对应文件（macOS Terminal 支持）"
+  }
+  
+  if [[ -z "$JOBS_ALREADY_RUN" ]]; then
+    export JOBS_ALREADY_RUN=1
+    command -v jobs &>/dev/null && jobs
+  fi
+  
+  ```
+  </details>
+
+
+
+### 2、[**XCode**](https://developer.apple.com/xcode/)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+### 3、[**Android Studio**](https://developer.android.com/studio?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+#### 3.1、[**点我👉下载Android Studio历史版本**](https://developer.android.com/studio/archive?utm_source=chatgpt.com&hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 <img src="./assets/image-20250806172656678.png" alt="image-20250806172656678" style="zoom:50%;" />
 
-#### 2.2、<font color=red>**配置JDK的地方和其他SDK的不一样**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 3.2、<font color=red>**配置JDK的地方和其他SDK的不一样**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-* 配置JDK：
+* 配置**JDK**：
 
   <div style="text-align: center;">
     <img src="./assets/image-20250806165112135.png" alt="image-1" style="width:30%; display:inline-block; vertical-align: top;" />
     <img src="./assets/image-20250806165221354.png" alt="image-2" style="width:65%; display:inline-block; vertical-align: top;" />
   </div>
 
-* 配置其他的SDK：
+* 配置其他的**SDK**：
 
   <div style="text-align: center;">
   <img src="./assets/image-20250806165752073.png" alt="image-3" style="width:30%; display:inline-block; vertical-align: top;" />
   <img src="./assets/image-20250806165822643.png" alt="image-4" style="width:65%; display:inline-block; vertical-align: top;" />
   </div> 
 
-#### 2.3、**`./android/gradlew`**
+#### 3.3、**`./android/gradlew`**
 
 > 这个文件是来自：`android/gradle/wrapper/gradle-wrapper.propertie`
 >
@@ -88,7 +277,7 @@
 ./android/gradlew -v # 先定位到Flutter项目的根目录。运行成功的前提是指定项目使用的Jenv.JDK或者是全局配置的Java变量
 ```
 
-### 3、[**VSCode**](https://code.visualstudio.com/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 4、[**VSCode**](https://code.visualstudio.com/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 如果[**VSCode**](https://code.visualstudio.com/)打开[**Flutter**](https://flutter.dev/)项目以后没有办法通过`command`+`click`的形式点进去看，那么需要`command`+`shift`+`x` => 安装[**Dart**](https://dart.dev/)/[**Flutter**](https://flutter.dev/)
 
@@ -226,7 +415,7 @@
   
     > 选中括号内的内容以备操作
 
-### 4、[**ohmyz.sh**](https://ohmyz.sh/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 5、[**ohmyz.sh**](https://ohmyz.sh/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
@@ -238,13 +427,13 @@ or
 sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
 ```
 
-### 5、[**Homebrew**](https://brew.sh/)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 6、[**Homebrew**](https://brew.sh/)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-#### 5.1、[**Homebrew**](https://brew.sh/).[<font color=red>Dart</font>](https://dart.dev/)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 6.1、[**Homebrew**](https://brew.sh/).[<font color=red>Dart</font>](https://dart.dev/)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > [**Flutter**](https://flutter.dev/) 里面自带一个[Dart](https://dart.dev/) 环境，理论上是比最新的[Dart](https://dart.dev/) 版本落后的。如果系统里面既装了[Dart](https://dart.dev/) 环境又装了[**Flutter**](https://flutter.dev/)环境，那么[**Flutter**](https://flutter.dev/)项目默认使用[**Flutter**](https://flutter.dev/).SDK里面自带那个[Dart](https://dart.dev/) 环境
 
@@ -252,11 +441,11 @@ sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/ins
 brew tap dart-lang/dart
 ```
 
-#### 5.2、[**Homebrew**](https://brew.sh/).[<font color=red>jenv</font>](https://github.com/jenv/jenv)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 6.2、<font id=jenv>[**Homebrew**](https://brew.sh/).[<font color=red>jenv</font>](https://github.com/jenv/jenv) </font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 >涉及到[**Android**](https://www.android.com/)的部分需要[**Java**](https://www.java.com/zh-CN/)环境的支持（打包、运行）
 >
->[<font color=red>jenv</font>](https://github.com/jenv/jenv)不会自动下载/关联JDK，需要手动进行操作
+>[<font color=red>jenv</font>](https://github.com/jenv/jenv)不会自动下载/关联**JDK**，需要手动进行操作
 >
 >如果使用[<font color=red>jenv</font>](https://github.com/jenv/jenv)那么系统全局环境变量里面就不能写  
 >
@@ -269,9 +458,9 @@ brew tap dart-lang/dart
   jenv versions --bare --verbose
   ```
 
-  >在 shell 脚本中遍历所有已添加的 JDK 版本路径；
+  >在 **shell** 脚本中遍历所有已添加的 **JDK** 版本路径；
   >
-  >检查某个版本到底对应哪个目录（例如是否是 Homebrew 安装的、SDKMAN 安装的等）；
+  >检查某个版本到底对应哪个目录（例如是否是[**Homebrew**](https://brew.sh/)安装的、[**SDKMAN**](https://sdkman.io/) 安装的等）；
 
 * ```shell
   jenv add/remove JDK.path
@@ -303,7 +492,7 @@ brew tap dart-lang/dart
   jenv versions --bare --verbose # 用这里的结果
   
   jenv global openjdk64-24.0.2   # 全局（所有项目默认）
-  jenv local openjdk64-17.0.16    # 当前目录（项目级）
+  jenv local openjdk64-17.0.16    # 当前目录（项目级）。当即在Flutter项目根目录下生成 .java-version
   java --version                 # 验证
   ```
   
@@ -322,159 +511,9 @@ brew tap dart-lang/dart
   > ➜  flutter_tiyu_app git:(JobsBranch@永利（金）) ✗ 
   > ```
 
-#### 5.3、[**Typora**](https://typora.io/)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 7、[**Typora**](https://typora.io/)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 5.4、系统环境变量  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
-
-> <font color=red>为了方便管理，只配置**`bash_profile`**和**`.zshrc`**</font>
-
-<details>
-<summary>.bash_profile</summary>
-
-```shell
-# 每次打开终端默认进入桌面目录
-cd "$HOME/Desktop"
-
-# 配置 Rbenv.ruby 环境变量（需安装 rbenv）
-if command -v rbenv &>/dev/null; then
-  export PATH="$HOME/.rbenv/bin:$PATH"
-  eval "$(rbenv init -)"
-else
-  echo "⚠️ 未检测到 rbenv，请执行 brew install rbenv 安装"
-fi
-if command -v ruby &>/dev/null; then
-  export PATH="/usr/local/opt/ruby/bin:$PATH"
-  export LDFLAGS="-L/usr/local/opt/ruby/lib"
-  export CPPFLAGS="-I/usr/local/opt/ruby/include"
-  export PKG_CONFIG_PATH="/usr/local/opt/ruby/lib/pkgconfig"
-else
-  echo "⚠️ 未检测到 ruby，建议执行 brew install ruby"
-fi
-
-# 配置 Curl 环境变量（需 Homebrew 安装）
-if command -v curl &>/dev/null; then
-  export PATH="/usr/local/opt/curl/bin:$PATH"
-  export LDFLAGS="-L/usr/local/opt/curl/lib"
-  export CPPFLAGS="-I/usr/local/opt/curl/include"
-  export PKG_CONFIG_PATH="/usr/local/opt/curl/lib/pkgconfig"
-else
-  echo "⚠️ curl 未通过 brew 安装，建议执行 brew install curl"
-fi
-
-# 配置 VSCode 命令行（code）
-if [[ -d "/Applications/Visual Studio Code.app/Contents/Resources/app/bin" ]]; then
-  export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
-  if ! command -v code &>/dev/null; then
-    echo "⚠️ VSCode 已安装但未配置 code 命令，请在 VSCode 中运行：Shell Command: Install code in PATH"
-  fi
-else
-  echo "⚠️ 未检测到 VSCode，请先安装 Visual Studio Code 后再运行本脚本"
-fi
-
-# 配置 Flutter 环境变量
-if ! command -v fvm &>/dev/null; then
-  if [[ -d "/opt/homebrew/Caskroom/flutter/latest/flutter/bin" ]]; then
-    export PATH="/opt/homebrew/Caskroom/flutter/latest/flutter/bin:$PATH"
-  elif [[ -d "/usr/local/Caskroom/flutter/latest/flutter/bin" ]]; then
-    export PATH="/usr/local/Caskroom/flutter/latest/flutter/bin:$PATH"
-  elif [[ -d "$HOME/flutter/bin" ]]; then
-    export PATH="$HOME/flutter/bin:$PATH"
-  elif [[ -d "$HOME/Documents/GitHub.Jobs/Flutter.SDK/Flutter.SDK.last/bin" ]]; then
-    export PATH="$HOME/Documents/GitHub.Jobs/Flutter.SDK/Flutter.SDK.last/bin:$PATH"
-  else
-    echo "⚠️ 未找到 Flutter SDK，请手动配置路径"
-  fi
-fi
-export PUB_HOSTED_URL=https://pub.dartlang.org
-export FLUTTER_STORAGE_BASE_URL=https://storage.googleapis.com
-
-# 配置 FVM 环境变量
-export PATH="$HOME/.pub-cache/bin:$PATH"
-if command -v fvm &>/dev/null; then
-  flutter() { fvm flutter "$@"; }
-else
-  echo "⚠️ 未检测到 fvm，请执行 flutter pub global activate fvm 安装"
-fi
-
-# 配置 Android SDK 环境变量
-if [[ -d "$HOME/Library/Android/sdk" ]]; then
-  export ANDROID_SDK_ROOT="$HOME/Library/Android/sdk"
-  export PATH="$PATH:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/tools/bin"
-else
-  echo "⚠️ 未检测到 Android SDK，请安装 Android Studio 或配置 ANDROID_SDK_ROOT"
-fi
-
-# 配置 JDK / OpenJDK / SDKMAN
-export JAVA_HOME="/opt/homebrew/opt/openjdk"  # 默认值（优先级最低）
-if /usr/libexec/java_home &>/dev/null; then
-  export JAVA_HOME=$(/usr/libexec/java_home)
-fi
-case ":$PATH:" in
-  *":$JAVA_HOME/bin:"*) ;;
-  *) export PATH="$JAVA_HOME/bin:$PATH" ;;
-esac
-if [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
-  export SDKMAN_DIR="$HOME/.sdkman"
-  source "$HOME/.sdkman/bin/sdkman-init.sh"
-else
-  echo "⚠️ 未检测到 SDKMAN，请访问 https://sdkman.io 安装"
-fi
-
-# 配置 Gradle 环境变量
-if command -v gradle &>/dev/null; then
-  export PATH="$HOME/Documents/Gradle/gradle-8.7/bin:$PATH"
-else
-  echo "⚠️ 未检测到 gradle，建议执行 brew install gradle 安装"
-fi
-
-# 配置 pipx 环境变量
-if command -v pipx &>/dev/null; then
-  export PATH="$PATH:$HOME/.local/bin"
-else
-  echo "⚠️ pipx 未安装，建议执行 brew install pipx"
-fi
-
-```
-</details> 
-
-<details>
-<summary>.zshrc</summary>
-
-```dart
-export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME="robbyrussell"
-plugins=(git)
-source $ZSH/oh-my-zsh.sh
-
-flutter() { fvm flutter "$@"; }
-
-jobs() {
-  local files=(
-    "$HOME/.bash_profile"
-    "$HOME/.bashrc"
-    "$HOME/.zshrc"
-    "$HOME/.oh-my-zsh/oh-my-zsh.sh"
-  )
-  for file in "${files[@]}"; do
-    if [[ -f "$file" ]]; then
-      source "$file"
-      echo "\033[1;32m✅ 已加载配置文件：file://$file\033[0m"
-    else
-      echo "\033[1;33m⚠️ 未找到配置文件：file://$file\033[0m"
-    fi
-  done
-  echo "\n📎 ⌘Command + 点击路径可打开对应文件（macOS Terminal 支持）"
-}
-
-if [[ -z "$JOBS_ALREADY_RUN" ]]; then
-  export JOBS_ALREADY_RUN=1
-  command -v jobs &>/dev/null && jobs
-fi
-
-```
-</details>
-
-### 6、[<font color=red>**FVM**</font>](https://fvm.app/) = <font color=red>**F**</font>lutter <font color=red>**V**</font>ersion <font color=red>**M**</font>anagement <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 8、[<font color=red>**FVM**</font>](https://fvm.app/) = <font color=red>**F**</font>lutter <font color=red>**V**</font>ersion <font color=red>**M**</font>anagement <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 为每一个项目配置（锁定🔒）一个单独的[**Flutter**](https://flutter.dev/)环境，和系统环境区分开，方便切环境运行（测试）代码
 
@@ -600,7 +639,7 @@ fi
     | `fvm global stable`  | 设置全局默认版本                                             | ✅（全局）                       |
     | `fvm upgrade`        | 1️⃣ **获取当前项目 `.fvm/fvm_config.json` 中配置的 `flutterSdkVersion` 所属 channel（如 stable、beta、dev、master）**；<br>2️⃣ 然后从该 **channel** 中 **升级到该 channel 的最新版本** | ✅（更新版本但不换 **channel**） |
 
-### 7、**Git**忽略文件 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 9、**Git**忽略文件 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 # Flutter/Dart/Pub related
@@ -5952,7 +5991,7 @@ class FadeInImageDemo extends StatelessWidget {
 
 * 未完待续...
 
-### 33、Dart.[**Flutter**](https://flutter.dev/).**`Future`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 33、[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).**`Future`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * **`Future`** 有三种状态：
 
@@ -6208,7 +6247,7 @@ class FadeInImageDemo extends StatelessWidget {
   * 同步 （带阻塞性）
   * 异步（不带阻塞性）：类似于C语言中的Block，其实还是一条线程，只是等待完成后用处理的结果
 
-### 34、Dart.[**Flutter**](https://flutter.dev/) 多线程 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 34、[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/) 多线程 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > **在 Dart / [Flutter](https://flutter.dev/) 中，唯一支持的“多线程”机制就是 `Isolate`**，没有像其他语言（**Java**/**Kotlin**/**Swift**）那样的真正**多线程（共享内存线程）机制**。
 >
@@ -6268,7 +6307,7 @@ class FadeInImageDemo extends StatelessWidget {
     | 简单封装，只想隔离执行函数             | `easy_isolate` / `simple_isolate` ✅ |
     | 已使用 Bloc，希望脱离主线程逻辑        | `isolate_bloc` ✅                    |
 
-### 35、Dart.[**Flutter**](https://flutter.dev/).**Stream** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 35、[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).**Stream** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > `Stream` 就是一个可以 **持续发出数据（异步事件）** 的对象。
 >
@@ -6721,7 +6760,57 @@ void main() {
   flutter create --platforms=android,ios,web,linux,macos,windows .
   ```
 
-### 2、📱关于**iOS**模拟器（最新版本[**XCode**](https://developer.apple.com/xcode/)：16.4） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 2、模拟器  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+#### 2.1、🤖关于[**Android**](https://www.android.com/)模拟器  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+<font color=red>**`flutter run` 在执行时会自动下载项目依赖**，即使你刚刚执行了 `flutter clean`。</font>
+
+* 查看已有**AVD**模拟器
+
+  ```shell
+  avdmanager list avd
+  ```
+
+  > ```shell
+  > ➜  Desktop avdmanager list avd
+  > Available Android Virtual Devices:
+  > 
+  > The following Android Virtual Devices could not be loaded:
+  >        Name: Medium_Phone_API_36
+  >        Path: /Users/jobs/.android/avd/Medium_Phone_API_36.avd
+  >       Error: Missing system image for Google Play arm64-v8a Medium Phone API 36.
+  > ```
+
+* 运行[**Android**](https://www.android.com/)模拟器
+
+  ```shell
+  emulator -avd <运行avdmanager list avd以后拿到的Name>
+  ```
+
+  > ```
+  > emulator -avd Medium_Phone_API_36
+  > ```
+
+* 查看正在运行的模拟器设备
+
+  ```shell
+  adb devices
+  ```
+
+  > ```shell
+  > ➜  Desktop adb devices
+  > List of devices attached
+  > emulator-5554	device
+  > ```
+
+* 快速杀死所有模拟器实例
+
+  ```shell
+  adb emu kill
+  ```
+
+#### 2.2、📱关于**iOS**模拟器（最新版本[**XCode**](https://developer.apple.com/xcode/)：16.4） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * **iOS** 模拟器无法运行 **Profile** 模式的 [**Flutter**](https://flutter.dev/) APP（只支持 **Debug 模式运行**）
   
@@ -6729,27 +6818,28 @@ void main() {
   >
   > **iOS** 模拟器 => **MacOS** 下运行的** x86_64/arm64** 模拟环境
   
-* 老版本的**iOS**模拟器的兼容
-
-  在设备选择器里面点选了较低版本的**iOS**模拟器（比如说：iPhone 7），只能通过命令行进行实例化并打开
-
-  ```shell
-  xcrun simctl list devices | grep 'iPhone 7'
-  xcrun simctl boot "iPhone 7"
-  ```
-
-  ![image-20250716131840500](./assets/README/image-20250716131840500.png)
-  
-* 命令行唤起**iOS**模拟器
+* 命令行唤起**iOS**模拟器 / 打开上次模拟器
 
   ```shell
   open -a Simulator
   ```
 
-* 查看`Command Line Tools`版本
+* 启动特定设备（通过 UUID）：
 
   ```shell
-  pkgutil --pkg-info=com.apple.pkg.CLTools_Executables
+  xcrun simctl boot ABC1D2E3-456F-7890-ABCD-1234567890AB
+  ```
+
+* 关机所有模拟器
+
+  ```shell
+  xcrun simctl shutdown all
+  ```
+
+* 查看可用设备列表
+
+  ```shell
+  xcrun simctl list devices
   ```
 
 * 打印所有模拟器实例路径和设备名称
@@ -6770,13 +6860,30 @@ void main() {
   done
   ```
 
-* 查看目前有的**iOS**模拟器安装包
+* 📦 查看目前有的**iOS**模拟器安装包
 
   ```shell
   xcrun simctl list runtimes
   ```
 
-* **iOS**模拟器目录
+* 查看`Command Line Tools`版本
+
+  ```shell
+  pkgutil --pkg-info=com.apple.pkg.CLTools_Executables
+  ```
+
+* 老版本的**iOS**模拟器的兼容
+
+  在设备选择器里面点选了较低版本的**iOS**模拟器（比如说：iPhone 7），只能通过命令行进行实例化并打开
+  
+  ```shell
+  xcrun simctl list devices | grep 'iPhone 7'
+  xcrun simctl boot "iPhone 7"
+  ```
+  
+  ![image-20250716131840500](./assets/README/image-20250716131840500.png)
+  
+* 📁**iOS**模拟器目录
 
   * ```shell
     ~/Library/Developer/CoreSimulator/Devices/
@@ -7072,7 +7179,7 @@ class Person {
     # https://dart.dev/guides/language/analysis-options
     ```
 
-#### 9.3、📁`.idea` 文件夹
+#### 9.3、📁`.idea` 文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ 通常是 [**JetBrains**](https://www.jetbrains.com/) 的集成开发环境（IDE）如 [**IntelliJ IDEA**](https://www.jetbrains.com/idea/) 或 [**Android Studio**](https://developer.android.com/studio?hl=zh-cn) 在项目中生成的隐藏文件夹
 >
@@ -7087,9 +7194,27 @@ class Person {
 > * 📁**inspectionProfiles** 文件夹：包含了代码检查和静态分析的配置文件，用于定义代码风格和质量检查的规则。
 > * 其他可能的配置文件和文件夹，比如代码模板、文件模板、版本控制配置等。
 
-总的来说，`.idea` 文件夹是  [**JetBrains**](https://www.jetbrains.com/)  IDE 用于存储项目配置和元数据的文件夹，**它通常不应该被版本控制系统跟踪**，因为这些配置文件通常是特定于开发者的，并且可能会因为 IDE 版本的不同而有所变化。
+总的来说，`.idea` 文件夹是  [**JetBrains**](https://www.jetbrains.com/)  IDE 用于存储项目配置和元数据的文件夹，**它通常不应该被版本控制系统跟踪**，因为这些配置文件通常是特定于开发者的，并且可能会因为 IDE 版本的不同而有所变化。 
 
-#### 9.4、📃`pubspec.yaml` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.4、📃`.java-version` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+* 此文件由[<font color=red>jenv</font>](https://github.com/jenv/jenv)生成。对单个[**Flutter**](https://flutter.dev/)项目锚定的[**Java**](https://www.java.com/zh-CN/)环境配置文件。如果没有，则向上查找，读取**MacOS**系统大环境的[**Java**](https://www.java.com/zh-CN/)环境
+
+  * 如果配置了[<font color=red>jenv</font>](https://github.com/jenv/jenv)，那么系统全局的**JDK**变量实效。即由[<font color=red>jenv</font>](https://github.com/jenv/jenv)进行接管
+
+    ```
+    # 🔥配置 系统全局的JDK（如果配置了jenv，即失效）    
+    export JAVA_HOME=$(/usr/libexec/java_home)
+    export PATH="$JAVA_HOME/bin:$PATH"
+    ```
+
+  * 优先级一览。详见👉<a href="#jenv" style="font-size:17px; color:green;"><b>Homebrew.jenv</b></a>
+
+    ```
+    jenv local > 系统环境变量文件 > jenv global
+    ```
+
+#### 9.5、📃`pubspec.yaml` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 是[**Dart**](https://dart.dev/)语言中用于管理项目依赖和元数据的文件。这个文件通常位于 [**Dart**](https://dart.dev/) 项目的根目录中，其中包含了项目的名称、版本、作者信息等基本元数据，以及项目所依赖的第三方库（通过 [**Dart**](https://dart.dev/) 包管理器 pub 安装）；
 >
@@ -7180,7 +7305,7 @@ assets: # 路径名不能有中文，否则可能无法正常读取
     flutter_unused_packages --fix
     ```
 
-#### 9.5、📃`pubspec.lock` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.6、📃`pubspec.lock` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 >  是 [**Dart**](https://dart.dev/) 项目中的自动生成文件，用于锁定项目依赖的版本信息。
 >
@@ -7206,7 +7331,7 @@ packages:
     version: "0.17.0"
 ```
 
-#### 9.6、📃`.metadata` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.7、📃`.metadata` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 >  是一个二进制文件，[**Dart**](https://dart.dev/) 项目中的一个隐藏文件，通常存储在项目的根目录下，用于保存与[**Dart**](https://dart.dev/) 包管理器 `pub` 相关的元数据信息。
 >
@@ -7218,7 +7343,7 @@ packages:
 >
 > 4️⃣ 删除 `.metadata` 文件后，`pub`  会重新生成一个新的 `.metadata` 文件，其中包含了当前项目的元数据信息；
 
-#### 9.7、📃`.flutter-plugins` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.8、📃`.flutter-plugins` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 是[**Flutter**](https://flutter.dev/)项目中的一个隐藏文件，它用于跟踪 [**Flutter**](https://flutter.dev/)插件的信息；
 >
@@ -7237,11 +7362,11 @@ camera=plugins/camera/
 location=plugins/location/
 ```
 
-#### 9.8、📃`.flutter-plugins-dependencies` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.9、📃`.flutter-plugins-dependencies` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> 是一个用来存储 [**Flutter**](https://flutter.dev/)插件依赖信息的隐藏文件；
+> 是一个用来存储[**Flutter**](https://flutter.dev/)插件依赖信息的隐藏文件；
 >
-> 1️⃣ 这个文件通常由 [**Flutter**](https://flutter.dev/)工具自动生成和维护，并且在使用 `flutter pub get` 或 `flutter pub upgrade` 命令时会被更新；
+> 1️⃣ 这个文件通常由[**Flutter**](https://flutter.dev/)工具自动生成和维护，并且在使用 `flutter pub get` 或 `flutter pub upgrade` 命令时会被更新；
 >
 > 2️⃣ 文件记录了每个[**Flutter**](https://flutter.dev/)插件的依赖关系，包括主要插件和依赖插件。这些信息有助于[**Flutter**](https://flutter.dev/)工具更好地管理插件及其依赖关系，并确保项目中使用的所有插件及其相关的依赖都被正确地下载和管理；
 
