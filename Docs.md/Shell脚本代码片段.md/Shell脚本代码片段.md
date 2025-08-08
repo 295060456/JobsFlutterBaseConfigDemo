@@ -321,37 +321,31 @@ is_in_china() {
 
 #### 1、<font color=red>**获取：脚本所在目录的绝对路径**</font> <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-  >- **${BASH_SOURCE[0]:-${(%):-%x}}**
+  >- **${BASH_SOURCE[0]:-${(%):-%x}}**：获取当前脚本路径，兼容 **bash** 和 **zsh**。🔔 `:-` 是默认值语法（如果前者不存在就用后者）
+  >  * **bash** 用 `BASH_SOURCE[0]`
+  >   * **zsh**用 `${(%):-%x}`
   >
-  >  获取当前脚本路径，兼容 bash 和 zsh：
+  > - **dirname**：提取文件路径中的目录部分，例如：/a/b/c.sh → /a/b
+  > 
+  > - **cd "$(dirname ...)"**：切换到脚本所在的目录，准备获取绝对路径
   >
-  >  - bash 用 BASH_SOURCE[0]
-  >  - zsh 用 ${(%):-%x}
-  >  - :- 是默认值语法（如果前者不存在就用后者）
+  >- **pwd**：获取当前目录的**绝对路径**，即脚本所在目录的绝对路径
   >
-  >- **dirname**
+  > - **整体结构 $(...)**：使用命令替换，将整个执行结果赋值给变量
   >
-  >  提取文件路径中的目录部分，例如：/a/b/c.sh → /a/b
+  >- **最终变量 `SCRIPT_DIR`=...**：：将脚本自身所在目录的**绝对路径**保存到 `SCRIPT_DIR` 中，适用于引用、路径拼接等
   >
-  >- **cd "$(dirname ...)”**
-  >
-  >  切换到脚本所在的目录，准备获取绝对路径
-  >
-  >- **pwd**
-  >
-  >  获取当前目录的**绝对路径**，即脚本所在目录的绝对路径
-  >
-  >- **整体结构 $(...)**
-  >
-  >  使用命令替换，将整个执行结果赋值给变量
-  >
-  >- **最终变量 `SCRIPT_DIR`=...**
-  >
-  >  将脚本自身所在目录的**绝对路径**保存到 `SCRIPT_DIR` 中，适用于引用、路径拼接等
 
   ```shell
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
   ```
+
+```shell
+cd "$SCRIPT_DIR" || {
+      echo "❌ 无法进入脚本目录：$SCRIPT_DIR"
+      exit 1
+}
+```
 
 #### 2、**获取：当前脚本文件名** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -472,7 +466,7 @@ fi
 > **将用户输入的路径（文件或文件夹）转换为“绝对路径（不含软链接）”**，并去掉多余的双引号或末尾斜杠，增强兼容性。
 
 ```shell
-_abs_path() {
+abs_path() {
   local p="$1"
   [[ -z "$p" ]] && return 1
   p="${p//\"/}"                                                         # ✅ 移除双引号，防止参数传递误差
@@ -672,10 +666,10 @@ print_duration
 >
 >     ```shell
 >     cat <<EOF >> ~/.zshrc
->                  
+>                    
 >     # >>> Flutter 环境变量 >>>
 >     export PATH="\$HOME/.pub-cache/bin:\$PATH"
->                  
+>                    
 >     EOF
 >     ```
 >
@@ -691,10 +685,10 @@ print_duration
 >
 >     ```shell
 >      cat <<EOF > ~/.zshrc
->                           
+>                               
 >      # >>> Flutter 环境变量 >>>
 >      export PATH="\$HOME/.pub-cache/bin:\$PATH"
->                           
+>                               
 >      EOF
 >     ```
 >  
@@ -1224,15 +1218,15 @@ install_jenv() {
 >   ```shell
 >   jenv_remove_all_java() {
 >     echo "🧹 开始移除所有通过 Homebrew 安装并注册到 jenv 的 Java 版本..."
->       
+>         
 >     if [[ "$(uname -m)" == "arm64" ]]; then
 >       base_path="/opt/homebrew/opt"
 >     else
 >       base_path="/usr/local/opt"
 >     fi
->       
+>         
 >     found=false
->       
+>         
 >     for path in "$base_path"/openjdk*/libexec/openjdk.jdk/Contents/Home; do
 >       if [[ -d "$path" ]]; then
 >         echo "❌ 正在移除：$path"
@@ -1240,7 +1234,7 @@ install_jenv() {
 >         found=true
 >       fi
 >     done
->       
+>         
 >     if [[ "$found" == false ]]; then
 >       echo "⚠️ 未检测到任何已注册 Java 安装路径"
 >     else
@@ -1432,7 +1426,7 @@ fi
 #### 🎯 1、判断当前目录是否为[**Flutter**](https://flutter.dev/)项目根目录 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
-_is_flutter_project_root() {
+is_flutter_project_root() {
   [[ -f "$1/pubspec.yaml" && -d "$1/lib" ]]
 }
 ```
@@ -1442,7 +1436,7 @@ _is_flutter_project_root() {
 ```shell
 _get_flutter_project_name() {
   local root="$1"
-  if _is_flutter_project_root "$root"; then
+  if is_flutter_project_root "$root"; then
     flutter_project_name=$(grep -m1 '^name:' "$root/pubspec.yaml" | awk '{print $2}')
     [[ -z "$flutter_project_name" ]] && flutter_project_name="Flutter项目"
   else
@@ -1464,7 +1458,7 @@ _get_flutter_project_name() {
 ```shell
 _is_dart_entry_file() {
   local f="$1"
-  local abs=$(_abs_path "$f") || return 1
+  local abs=$(abs_path "$f") || return 1
   [[ $abs == *.dart ]] || return 1
 
   # ✅ 支持 main() {...} 和 main() => ... 写法
@@ -1477,7 +1471,7 @@ _is_dart_entry_file() {
 
 ```dart
 detect_entry() {
-  SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd -P)"
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
   SCRIPT_PATH="${SCRIPT_DIR}/$(basename -- "$0")"
 
   while true; do
@@ -1547,7 +1541,7 @@ resolve_flutter_root() {
     # ✅ 用户直接回车：尝试脚本目录是否为 Flutter 项目
     if [[ -z "$user_input" ]]; then
       debug_echo "🐞 用户未输入路径，尝试使用 SCRIPT_DIR 检测"
-      if _is_flutter_project_root "$SCRIPT_DIR"; then
+      if is_flutter_project_root "$SCRIPT_DIR"; then
         flutter_root="$SCRIPT_DIR"
         entry_file="$flutter_root/lib/main.dart"
         highlight_echo "🎯 检测到脚本所在目录是 Flutter 根目录，自动使用"

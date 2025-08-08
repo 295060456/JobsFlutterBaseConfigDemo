@@ -1,95 +1,185 @@
 #!/bin/zsh
 
-# ✅ 日志与输出函数
-SCRIPT_BASENAME=$(basename "$0" | sed 's/\.[^.]*$//')   # 当前脚本名（去掉扩展名）
-LOG_FILE="/tmp/${SCRIPT_BASENAME}.log"                  # 设置对应的日志文件路径
+# ================================== 全局变量 ==================================
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
+SCRIPT_PATH="${SCRIPT_DIR}/$(basename -- "$0")"
+flutter_cmd=("flutter")
+SCRIPT_BASENAME=$(basename "$0" | sed 's/\.[^.]*$//')
+LOG_FILE="/tmp/${SCRIPT_BASENAME}.log"
 
+# ================================== 彩色输出函数 ==================================
 log()            { echo -e "$1" | tee -a "$LOG_FILE"; }
-color_echo()     { log "\033[1;32m$1\033[0m"; }         # ✅ 正常绿色输出
-info_echo()      { log "\033[1;34mℹ $1\033[0m"; }       # ℹ 信息
-success_echo()   { log "\033[1;32m✔ $1\033[0m"; }       # ✔ 成功
-warn_echo()      { log "\033[1;33m⚠ $1\033[0m"; }       # ⚠ 警告
-warm_echo()      { log "\033[1;33m$1\033[0m"; }         # 🟡 温馨提示（无图标）
-note_echo()      { log "\033[1;35m➤ $1\033[0m"; }       # ➤ 说明
-error_echo()     { log "\033[1;31m✖ $1\033[0m"; }       # ✖ 错误
-err_echo()       { log "\033[1;31m$1\033[0m"; }         # 🔴 错误纯文本
-debug_echo()     { log "\033[1;35m🐞 $1\033[0m"; }      # 🐞 调试
-highlight_echo() { log "\033[1;36m🔹 $1\033[0m"; }      # 🔹 高亮
-gray_echo()      { log "\033[0;90m$1\033[0m"; }         # ⚫ 次要信息
-bold_echo()      { log "\033[1m$1\033[0m"; }            # 📝 加粗
-underline_echo() { log "\033[4m$1\033[0m"; }            # 🔗 下划线
+color_echo()     { log "\033[1;32m$1\033[0m"; }
+info_echo()      { log "\033[1;34mℹ $1\033[0m"; }
+success_echo()   { log "\033[1;32m✔ $1\033[0m"; }
+warn_echo()      { log "\033[1;33m⚠ $1\033[0m"; }
+warm_echo()      { log "\033[1;33m$1\033[0m"; }
+note_echo()      { log "\033[1;35m➤ $1\033[0m"; }
+error_echo()     { log "\033[1;31m✖ $1\033[0m"; }
+err_echo()       { log "\033[1;31m$1\033[0m"; }
+debug_echo()     { log "\033[1;35m🐞 $1\033[0m"; }
+highlight_echo() { log "\033[1;36m🔹 $1\033[0m"; }
+gray_echo()      { log "\033[0;90m$1\033[0m"; }
+bold_echo()      { log "\033[1m$1\033[0m"; }
+underline_echo() { log "\033[4m$1\033[0m"; }
 
-# ✅ 自述信息
-print_intro() {
-    echo ""
-    highlight_echo "🛠️ 本脚本用于将 Xcode 构建出的 .app 包装为 .ipa 文件"
-    info_echo "📌 功能概览："
-    info_echo "1️⃣ 自动查找 Xcode 项目的 .app 文件"
-    info_echo "2️⃣ 自动复制 .app 至 Payload 并打包成 .ipa"
-    info_echo "3️⃣ 打包结果输出到 macOS 桌面"
-    echo ""
-    read "?📎 按回车开始执行，或 Ctrl+C 取消..."
+# ================================== 项目信息输出 ==================================
+print_self_intro() {
+  bold_echo "🛠️ Flutter iOS 打包脚本"
+  note_echo "功能说明："
+  gray_echo  "  1️⃣ 检查 Xcode 与 CocoaPods 环境（自动安装缺失组件）"
+  gray_echo  "  2️⃣ 调用 Flutter 构建 iOS Release 产物"
+  gray_echo  "  3️⃣ 构建完成后自动打开 IPA 输出文件夹"
+  gray_echo  "  4️⃣ 记录完整日志到：$LOG_FILE"
+  note_echo "注意事项："
+  gray_echo  "  ⚠ 请提前在 Xcode 中配置好签名证书和 Provisioning Profile"
+  echo ""
 }
 
-# ✅ 项目路径检测与初始化
-detect_xcode_project() {
-    CURRENT_DIR=$(cd "$(dirname "$0")" && pwd)
-    highlight_echo "📂 当前目录: $CURRENT_DIR"
+# ================================== Flutter 项目路径判断 ==================================
+is_flutter_project_root() {
+  [[ -f "$1/pubspec.yaml" && -d "$1/lib" ]]
+}
 
-    PROJECT_FILES=($(find "$CURRENT_DIR" -maxdepth 1 -name "*.xcodeproj"))
-    if [[ ${#PROJECT_FILES[@]} -eq 0 ]]; then
-        error_echo "❌ 未找到 .xcodeproj 文件，请确保在项目目录下运行"
-        exit 1
-    elif [[ ${#PROJECT_FILES[@]} -gt 1 ]]; then
-        error_echo "❌ 检测到多个 .xcodeproj 文件，请确保目录下仅有一个"
-        for file in "${PROJECT_FILES[@]}"; do warn_echo "⚠️ $file"; done
-        exit 1
+is_dart_entry_file() {
+  [[ "$1" == *.dart && -f "$1" ]]
+}
+
+abs_path() {
+  local p="$1"
+  [[ -z "$p" ]] && return 1
+  p="${p//\"/}"
+  [[ "$p" != "/" ]] && p="${p%/}"
+  if [[ -d "$p" ]]; then
+    (cd "$p" 2>/dev/null && pwd -P)
+  elif [[ -f "$p" ]]; then
+    (cd "${p:h}" 2>/dev/null && printf "%s/%s\n" "$(pwd -P)" "${p:t}")
+  else
+    return 1
+  fi
+}
+
+# ================================== 入口检测（更新 flutter_root） ==================================
+detect_entry() {
+  while true; do
+    warn_echo "📂 请拖入 Flutter 项目根目录或 Dart 单文件路径（直接回车 = 使用脚本所在目录）："
+    read -r user_input
+    user_input="${user_input//\"/}"
+    user_input="${user_input%/}"
+
+    if [[ -z "$user_input" ]]; then
+      if is_flutter_project_root "$SCRIPT_DIR"; then
+        flutter_root=$(abs_path "$SCRIPT_DIR")
+        entry_file="$flutter_root/lib/main.dart"
+        highlight_echo "🎯 检测到脚本目录为 Flutter 根目录，自动使用。"
+        break
+      else
+        error_echo "❌ 脚本所在目录不是 Flutter 项目根目录，请拖入有效路径。"
+        continue
+      fi
     fi
 
-    PROJECT_NAME=$(basename "${PROJECT_FILES[1]}" .xcodeproj)
-    success_echo "✅ 发现 Xcode 项目: $PROJECT_NAME"
-}
-
-# ✅ 查找 .app 文件路径
-find_latest_app() {
-    USER_NAME=$(whoami)
-    DERIVED_BASE="/Users/$USER_NAME/Library/Developer/Xcode/DerivedData"
-    APP_DIR=$(ls -td "$DERIVED_BASE/${PROJECT_NAME}-"*/Build/Products/Debug-iphoneos/*.app 2>/dev/null | head -n 1)
-
-    if [[ ! -d "$APP_DIR" ]]; then
-        error_echo "❌ 未找到 .app 文件，请确认 Xcode 已构建成功"
-        exit 1
+    if [[ -d "$user_input" ]]; then
+      if is_flutter_project_root "$user_input"; then
+        flutter_root=$(abs_path "$user_input")
+        entry_file="$flutter_root/lib/main.dart"
+        highlight_echo "📂 已识别 Flutter 项目路径：$flutter_root"
+        break
+      else
+        error_echo "❌ 该目录不是 Flutter 项目根目录，请重新拖入。"
+        continue
+      fi
+    elif [[ -f "$user_input" ]]; then
+      if is_dart_entry_file "$user_input"; then
+        entry_file=$(abs_path "$user_input")
+        flutter_root="${entry_file:h}"
+        highlight_echo "📄 已识别 Dart 文件：$entry_file"
+        break
+      else
+        error_echo "❌ 非 Dart 入口文件，请重新拖入。"
+        continue
+      fi
     fi
 
-    success_echo "✅ 找到 .app 文件: $APP_DIR"
+    error_echo "❌ 无效路径，请重新拖入 Flutter 根目录或 Dart 单文件。"
+  done
+
+  IPA_OUTPUT_DIR="$flutter_root/build/ios/ipa"
+  cd "$flutter_root" || { error_echo "❌ 无法进入项目目录：$flutter_root"; exit 1; }
+  success_echo "✅ 项目路径：$flutter_root"
+  success_echo "🎯 入口文件：$entry_file"
 }
 
-# ✅ 执行打包
-package_to_ipa() {
-    DESKTOP_PATH="/Users/$(whoami)/Desktop"
-    PAYLOAD_PATH="$DESKTOP_PATH/Payload"
-    IPA_PATH="$DESKTOP_PATH/$PROJECT_NAME.ipa"
-
-    [[ -d "$PAYLOAD_PATH" ]] && warn_echo "⚠️ 已存在 Payload 目录，正在删除..." && rm -rf "$PAYLOAD_PATH"
-
-    mkdir -p "$PAYLOAD_PATH"
-    success_echo "✅ 创建 Payload 文件夹"
-
-    cp -R "$APP_DIR" "$PAYLOAD_PATH"
-    success_echo "✅ 复制 .app 到 Payload"
-
-    cd "$DESKTOP_PATH" || exit 1
-    zip -qr "$PROJECT_NAME.ipa" Payload
-    rm -rf "$PAYLOAD_PATH"
-    success_echo "📦 打包完成：$IPA_PATH"
+# ================================== 环境检查 ==================================
+check_env() {
+  info_echo "检查环境..."
+  if ! command -v xcodebuild &>/dev/null; then
+    error_echo "未找到 Xcode，请安装后重试。"
+    exit 1
+  fi
+  if ! command -v pod &>/dev/null; then
+    error_echo "未找到 CocoaPods，请安装后重试。"
+    exit 1
+  fi
+  success_echo "环境检查通过 ✅"
 }
 
-# ✅ 主函数入口
+# ================================== 执行 Flutter 构建 ==================================
+flutter_build_ios() {
+  cd "$flutter_root" || {
+    error_echo "❌ 无法进入项目目录：$flutter_root"
+    exit 1
+  }
+
+  info_echo "开始构建 Flutter iOS Release 产物..."
+  "${flutter_cmd[@]}" clean
+  "${flutter_cmd[@]}" pub get
+  "${flutter_cmd[@]}" build ipa --release
+  success_echo "Flutter 构建完成 ✅"
+}
+
+# ================================== 验证构建输出 ==================================
+verify_ipa_output() {
+  if [[ -d "$IPA_OUTPUT_DIR" && -n "$(ls "$IPA_OUTPUT_DIR"/*.ipa 2>/dev/null)" ]]; then
+    success_echo "📦 成功生成 IPA 文件："
+    ls -lh "$IPA_OUTPUT_DIR"/*.ipa | tee -a "$LOG_FILE"
+  else
+    error_echo "❌ 未找到 IPA 文件，请检查构建日志"
+    exit 1
+  fi
+}
+
+# ================================== 打开输出目录 ==================================
+open_output_dir() {
+  info_echo "打开 IPA 文件夹..."
+  open "$IPA_OUTPUT_DIR"
+}
+
+# ================================== 耗时统计 ==================================
+print_duration() {
+  END_TIME=$(date +%s)
+  DURATION=$((END_TIME - START_TIME))
+  success_echo "⚙️ 脚本总耗时：${DURATION}s"
+}
+
+# ================================== 主流程 ==================================
 main() {
-    print_intro                     # ✅ 自述信息
-    detect_xcode_project            # ✅ 检查当前目录是否包含 Xcode 项目
-    find_latest_app                 # ✅ 查找 DerivedData 中最新构建的 .app
-    package_to_ipa                  # ✅ 执行打包流程并清理临时目录
+  print_self_intro
+  wait_for_user_to_start
+  detect_entry
+  START_TIME=$(date +%s)
+  check_env
+  flutter_build_ios
+  verify_ipa_output
+  open_output_dir
+  print_duration
+  success_echo "全部完成 🎉"
+}
+
+wait_for_user_to_start() {
+  echo ""
+  read "?👉 按下回车开始执行，或 Ctrl+C 取消..."
+  echo ""
 }
 
 main "$@"

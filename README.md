@@ -426,7 +426,7 @@
   <img src="./assets/image-20250806165822643.png" alt="image-4" style="width:65%; display:inline-block; vertical-align: top;" />
   </div> 
 
-#### 3.3、**`./android/gradlew`** **</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 3.3、**`./android/gradlew`** </font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 这个文件是来自：`android/gradle/wrapper/gradle-wrapper.propertie`
 >
@@ -9186,23 +9186,24 @@ main "$@"
 
 ![image-20250724174253656](./assets/README/image-20250724174253656.png)
 
-```
-📁 build
-└── 📁 app
-    └── 📁 outputs
-        ├── 📁 flutter-apk
-        │   ├── 📄 app-debug.apk         👈 Flutter 层生成的 APK，适用于 flutter install、调试部署
-        │   └── 📄 app-debug.apk.sha1    👈 SHA1 校验文件，用于验证 APK 完整性（Flutter 层产物）🔐
-        │
-        ├── 📁 apk
-        │   └── 📁 debug
-        │       ├── 📄 app-debug.apk      👈 Gradle 层标准构建产物，CI 系统读取、签名校验等使用
-        │       └── 📄 output-metadata.json 👈 包含构建产物的元信息（版本号、构建类型等）🧾
-        │
-        └── 📁 bundle
-            └── 📁 debug
-                ├── 📄 app.aab           👈 Android App Bundle 格式（适用于 Google Play 上架）📦
-                └── 📄 output-metadata.json 👈 构建元信息，记录构建时间、flavor 等信息
+```mermaid
+graph TD
+    A[📁 build] --> B[📁 app]
+    B --> C[📁 outputs]
+    %% flutter-apk
+    C --> D[📁 flutter-apk]
+    D --> D1[📄 app-debug.apk<br/>Flutter 层生成的 APK<br/>📱 flutter install / 调试部署]
+    D --> D2[📄 app-debug.apk.sha1<br/>SHA1 校验文件<br/>🔐 验证 APK 完整性]
+    %% apk
+    C --> E[📁 apk]
+    E --> E1[📁 debug]
+    E1 --> E1a[📄 app-debug.apk<br/>Gradle 层标准构建产物<br/>用于 CI 签名/校验]
+    E1 --> E1b[📄 output-metadata.json<br/>构建产物元信息<br/>🧾 版本号/构建类型]
+    %% bundle
+    C --> F[📁 bundle]
+    F --> F1[📁 debug]
+    F1 --> F1a[📄 app.aab<br/>Android App Bundle 格式<br/>📦 Google Play 上架]
+    F1 --> F1b[📄 output-metadata.json<br/>构建元信息<br/>🧾 构建时间/Flavor]
 ```
 
 | 场景                                                | 应该使用                                                 |
@@ -9219,9 +9220,9 @@ main "$@"
 
 | 构建类型          | 构建命令                                      | 说明                                                         |
 | ----------------- | --------------------------------------------- | ------------------------------------------------------------ |
-| **Debug** 构建    | `flutter build ios --debug`                   | 构建用于调试的 iOS 包（默认使用模拟器架构）                  |
+| **Debug** 构建    | `flutter build ios --debug`                   | 构建用于调试的 **iOS** 包（默认使用模拟器架构）              |
 | **Profile** 构建  | `flutter build ios --profile`                 | 构建用于性能分析的中间态包                                   |
-| **Release** 构建  | `flutter build ios --release`                 | 构建用于发布的 iOS 包（仅支持真机）                          |
+| **Release** 构建  | `flutter build ios --release`                 | 构建用于发布的 **iOS** 包（仅支持真机）                      |
 | 构建 `.xcarchive` | `flutter build ipa --export-method app-store` | 构建用于 App Store 提交的归档包（需配置 [**XCode**](https://developer.apple.com/xcode/) 导出选项） |
 | 构建 `.ipa` 包    | `flutter build ipa`                           | 自动使用 Release 模式归档并导出 `.ipa` 文件（默认导出方式为 development） |
 
@@ -9233,34 +9234,262 @@ main "$@"
 
 ##### 21.2.2、📁生成的包目录  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> `build/ios/iphoneos/Runner.app`
->
-> 并非iOS工程文件下的`Products/xxx.app` （未验证❓）
+> 虽然[**Flutter**](https://flutter.dev/)构建**iOS**的`.ipa`包最终还是调用**Xcode**的内部组件，<font color=red>但是生成的`.ipa`包的物理位置，与**Xcode**打正常的**iOS**原生`.ipa`是不同的</font>
 
+* 原生**iOS**构建生成的`*.ipa` 包路径👉**`$HOME/Library/Developer/Xcode/DerivedData/具体的Xcode.iOS项目名/Build/Products/Debug-iphoneos/*.app`**
+
+```Mermaid
+graph TD
+    A[📁 $HOME/Library/Developer/Xcode/DerivedData] --> B[📁 具体的Xcode.iOS项目名]
+    B --> C[📁 Build]
+    C --> D[📁 Products]
+    D --> E[📁 Debug-iphoneos]
+    E --> F[📄 *.app<br/>真机调试用 App 包<br/>📱 Debug 模式生成]
+    F --> F1[📄 Info.plist<br/>应用配置]
+    F --> F2[📄 Assets.car<br/>图片与资源]
+    F --> F3[📄 Frameworks/<br/>依赖库目录]
+    F --> F4[📄 PkgInfo<br/>包信息]
+    F --> F5[📄 Embedded.mobileprovision<br/>签名配置]
 ```
-📁 build
-└── 📁 ios
- └── 📁 iphoneos
-  ├── 📄 Runner.app           👈 真机用的 App 包（Release 模式时会生成）📱
-  └── 📄 App.framework        👈 Dart 编译后的核心二进制（AOT）💡
- 
- └── 📁 simulator
-  └── 📄 Runner.app           👈 模拟器用 App（Debug 构建默认产物）🖥️
- 
-└── 📁 ios
- └── 📁 archive
-  └── 📁 Runner.xcarchive   👈 归档产物，用于导出 .ipa 或上传到 TestFlight/App Store 📦
- 
-└── 📁 ios
- └── 📁 ipa
-  ├── 📄 Runner.ipa            👈 实际可安装的 iOS 安装包（通过 flutter build ipa 生成）📲
-  └── 📄 ExportOptions.plist 👈 导出配置 plist（用于控制签名方式、是否上传等）📝
+
+* [**Flutter**](https://flutter.dev/)构建生成的`*.ipa` 包路径👉 **`Flutter项目根目录/build/ios/ipa/*.app`**
+
+```Mermaid
+graph TD
+    A[📁 build] --> B[📁 ios]
+    %% iphoneos
+    B --> C[📁 iphoneos]
+    C --> C1[📄 Runner.app<br/>真机用的 App 包<br/>📱 Release 模式生成]
+    C --> C2[📄 App.framework<br/>Dart 编译后的核心二进制<br/>💡 AOT]
+    %% simulator
+    B --> D[📁 simulator]
+    D --> D1[📄 Runner.app<br/>模拟器用 App<br/>🖥️ Debug 默认产物]
+    %% archive
+    B --> E[📁 archive]
+    E --> E1[📁 Runner.xcarchive<br/>归档产物<br/>📦 导出 ipa 或上传 TestFlight]
+    %% ipa
+    B --> F[📁 ipa]
+    F --> F1[📄 Runner.ipa<br/>实际可安装的 iOS 安装包<br/>📲 flutter build ipa]
+    F --> F2[📄 ExportOptions.plist<br/>导出配置文件<br/>📝 控制签名/上传方式]
 ```
 
 ##### 21.2.3、📦 打包脚本（TODO） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
-/// TODO
+#!/bin/zsh
+
+# ✅ 全局变量
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
+IPA_OUTPUT_DIR="$SCRIPT_DIR/build/ios/ipa"
+
+# Flutter 命令数组（支持 FVM）
+flutter_cmd=("flutter")
+
+# ✅ 🌈彩色输出函数
+SCRIPT_BASENAME=$(basename "$0" | sed 's/\.[^.]*$//')   # 当前脚本名（去掉扩展名）
+LOG_FILE="/tmp/${SCRIPT_BASENAME}.log"                  # 设置对应的日志文件路径
+
+log()            { echo -e "$1" | tee -a "$LOG_FILE"; }
+color_echo()     { log "\033[1;32m$1\033[0m"; }         # ✅ 正常绿色输出
+info_echo()      { log "\033[1;34mℹ $1\033[0m"; }       # ℹ 信息
+success_echo()   { log "\033[1;32m✔ $1\033[0m"; }       # ✔ 成功
+warn_echo()      { log "\033[1;33m⚠ $1\033[0m"; }       # ⚠ 警告
+warm_echo()      { log "\033[1;33m$1\033[0m"; }         # 🟡 温馨提示（无图标）
+note_echo()      { log "\033[1;35m➤ $1\033[0m"; }       # ➤ 说明
+error_echo()     { log "\033[1;31m✖ $1\033[0m"; }       # ✖ 错误
+err_echo()       { log "\033[1;31m$1\033[0m"; }         # 🔴 错误纯文本
+debug_echo()     { log "\033[1;35m🐞 $1\033[0m"; }      # 🐞 调试
+highlight_echo() { log "\033[1;36m🔹 $1\033[0m"; }      # 🔹 高亮
+gray_echo()      { log "\033[0;90m$1\033[0m"; }         # ⚫ 次要信息
+bold_echo()      { log "\033[1m$1\033[0m"; }            # 📝 加粗
+underline_echo() { log "\033[4m$1\033[0m"; }            # 🔗 下划线
+
+# ✅ 自述信息 ==================================
+print_self_intro() {
+    bold_echo "🛠️ Flutter iOS 打包脚本"
+    note_echo "功能说明："
+    gray_echo  "  1️⃣ 检查 Xcode 与 CocoaPods 环境（自动安装缺失组件）"
+    gray_echo  "  2️⃣ 调用 Flutter 构建 iOS Release 产物"
+    gray_echo  "  3️⃣ 构建完成后自动打开 IPA 输出文件夹"
+    gray_echo  "  4️⃣ 记录完整日志到：$LOG_FILE"
+
+    note_echo "构建流程："
+    gray_echo  "  📂 脚本目录      ：$SCRIPT_DIR"
+    gray_echo  "  📦 构建产物目录  ：$SCRIPT_DIR/build/ios"
+    gray_echo  "  📲 IPA 输出目录  ：$IPA_OUTPUT_DIR"
+    gray_echo  "  📝 日志文件路径  ：$LOG_FILE"
+
+    note_echo "注意事项："
+    gray_echo  "  ⚠ 请提前在 Xcode 中配置好签名证书和 Provisioning Profile"
+    gray_echo  "  ⚠ 如果需要生成 IPA，请使用 'flutter build ipa --release' 替换 build ios"
+
+    echo ""
+}
+
+# ✅ 执行耗时
+print_duration() {
+  END_TIME=$(date +%s)
+  DURATION=$((END_TIME - START_TIME))
+  success_echo "⚙️ 脚本总耗时：${DURATION}s"
+}
+
+# ✅ 单行写文件（避免重复写入）
+inject_shellenv_block() {
+    local id="$1"           # 参数1：环境变量块 ID，如 "homebrew_env"
+    local shellenv="$2"     # 参数2：实际要写入的 shellenv 内容，如 'eval "$(/opt/homebrew/bin/brew shellenv)"'
+    local header="# >>> ${id} 环境变量 >>>"  # 自动生成注释头
+
+    # 参数校验
+    if [[ -z "$id" || -z "$shellenv" ]]; then
+    error_echo "❌ 缺少参数：inject_shellenv_block <id> <shellenv>"
+    return 1
+    fi
+
+    # 若用户未选择该 ID，则跳过写入
+    if [[ ! " ${selected_envs[*]} " =~ " $id " ]]; then
+    warn_echo "⏭️ 用户未选择写入环境：$id，跳过"
+    return 0
+    fi
+
+    # 避免重复写入
+    if grep -Fq "$header" "$PROFILE_FILE"; then
+      info_echo "📌 已存在 header：$header"
+    elif grep -Fq "$shellenv" "$PROFILE_FILE"; then
+      info_echo "📌 已存在 shellenv：$shellenv"
+    else
+      echo "" >> "$PROFILE_FILE"
+      echo "$header" >> "$PROFILE_FILE"
+      echo "$shellenv" >> "$PROFILE_FILE"
+      success_echo "✅ 已写入：$header"
+    fi
+
+    # 当前 shell 生效
+    eval "$shellenv"
+    success_echo "🟢 shellenv 已在当前终端生效"
+}
+
+# ✅ 判断芯片架构（`ARM64` / `x86_64`）
+get_cpu_arch() {
+  [[ $(uname -m) == "arm64" ]] && echo "arm64" || echo "x86_64"
+}
+
+# ✅ 自检安装 🍺Homebrew（自动架构判断，包含环境注入）
+install_homebrew() {
+  local arch="$(get_cpu_arch)"                   # 获取当前架构（arm64 或 x86_64）
+  local shell_path="${SHELL##*/}"                # 获取当前 shell 名称（如 zsh、bash）
+  local profile_file=""
+  local brew_bin=""
+  local shellenv_cmd=""
+
+  if ! command -v brew &>/dev/null; then
+    warn_echo "🧩 未检测到 Homebrew，正在安装中...（架构：$arch）"
+
+    if [[ "$arch" == "arm64" ]]; then
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
+        error_echo "❌ Homebrew 安装失败（arm64）"
+        exit 1
+      }
+      brew_bin="/opt/homebrew/bin/brew"
+    else
+      arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
+        error_echo "❌ Homebrew 安装失败（x86_64）"
+        exit 1
+      }
+      brew_bin="/usr/local/bin/brew"
+    fi
+
+    success_echo "✅ Homebrew 安装成功"
+
+    # ==== 注入 shellenv 到对应配置文件（自动生效） ====
+    shellenv_cmd="eval \"\$(${brew_bin} shellenv)\""
+
+    case "$shell_path" in
+      zsh)   profile_file="$HOME/.zprofile" ;;
+      bash)  profile_file="$HOME/.bash_profile" ;;
+      *)     profile_file="$HOME/.profile" ;;
+    esac
+
+    inject_shellenv_block "$profile_file" "$shellenv_cmd"
+
+  else
+    info_echo "🔄 Homebrew 已安装，正在更新..."
+    brew update && brew upgrade && brew cleanup && brew doctor && brew -v
+    success_echo "✅ Homebrew 已更新"
+  fi
+}
+
+# ✅ 自检安装 🍺Homebrew.cocoapods
+install_cocoapods() {
+  if ! command -v pod &>/dev/null; then
+    info_echo "📦 未检测到 CocoaPods，正在通过 Homebrew 安装..."
+    brew install cocoapods || { error_echo "❌ CocoaPods 安装失败"; exit 1; }
+    success_echo "✅ CocoaPods 安装成功"
+  else
+    info_echo "🔄 CocoaPods 已安装，升级中..."
+    brew upgrade cocoapods && brew cleanup
+    success_echo "✅ CocoaPods 已是最新版"
+  fi
+
+  # ✅ 打印版本并写入日志
+  pod --version | tee -a "$LOG_FILE"
+}
+
+# ✅ 检查环境
+check_env() {
+    info_echo "检查环境..."
+    if ! command -v xcodebuild &>/dev/null; then
+        error_echo "未找到 Xcode，请安装后重试。"
+        exit 1
+    fi
+    if ! command -v pod &>/dev/null; then
+        error_echo "未找到 CocoaPods，请安装后重试。"
+        install_homebrew  # ✅ 自检安装 🍺Homebrew（自动架构判断，包含环境注入）
+        install_cocoapods # ✅ 自检安装 🍺Homebrew.cocoapods
+        exit 1
+    fi
+    success_echo "环境检查通过 ✅"
+}
+
+# ✅ 构建 Flutter iOS 产物
+flutter_build_ios() {
+  cd "$SCRIPT_DIR" || {
+      echo "❌ 无法进入脚本目录：$SCRIPT_DIR"
+      exit 1
+  }
+
+  info_echo "开始构建 Flutter iOS Release 产物..."
+  "${flutter_cmd[@]}" clean
+  "${flutter_cmd[@]}" pub get
+  "${flutter_cmd[@]}" build ipa --release
+  success_echo "Flutter 构建完成 ✅"
+}
+
+# ✅ 打开 IPA 文件夹
+open_output_dir() {
+    info_echo "打开 IPA 文件夹..."
+    open "$IPA_OUTPUT_DIR"
+}
+
+# ✅ 等待用户
+wait_for_user_to_start() {
+  echo ""
+  read "?👉 按下回车开始执行，或 Ctrl+C 取消..."
+  echo ""
+}
+
+# ✅ 主函数
+main() {
+    print_self_intro                    # ✅ 自述信息
+    wait_for_user_to_start              # ✅ 等待用户
+    START_TIME=$(date +%s)
+    check_env                           # ✅ 检查环境
+    flutter_build_ios                   # ✅ 构建 Flutter iOS 产物
+    open_output_dir                     # ✅ 打开 IPA 文件夹
+    print_duration                      # ✅ 执行耗时
+    success_echo "全部完成 🎉"
+}
+
+main "$@"
 ```
 
 ##### 21.2.4、⚠️注意事项  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
@@ -9271,7 +9500,7 @@ main "$@"
 
 * <font color=red>无法通过**[XCode](https://developer.apple.com/xcode/)**直接编译</font>[**Flutter**](https://flutter.dev/)<font color=red>项目</font>
 
-  > 是因为其中的`Podfile`是通过[**Flutter**](https://flutter.dev/)进行唤起的，并非标准的iOS `Podfile` 文件格式
+  > 是因为其中的`Podfile`是通过[**Flutter**](https://flutter.dev/)进行唤起的，并非标准的**iOS** `Podfile` 文件格式
   >
   > ====================================================================
   >
