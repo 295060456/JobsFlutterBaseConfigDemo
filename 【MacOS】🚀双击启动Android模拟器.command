@@ -63,79 +63,65 @@ get_cpu_arch() {
     [[ $(uname -m) == "arm64" ]] && echo "arm64" || echo "x86_64"
 }
 
-# ✅ 安装 Homebrew（含环境注入）
+# ✅ 安装 Homebrew（自动架构判断，包含环境注入）
 install_homebrew() {
-    local arch="$(get_cpu_arch)"
-    local shell_path="${SHELL##*/}"
-    local profile_file=""
-    local brew_bin=""
-    local shellenv_cmd=""
+  local arch="$(get_cpu_arch)"                   # 获取当前架构（arm64 或 x86_64）
+  local shell_path="${SHELL##*/}"                # 获取当前 shell 名称（如 zsh、bash）
+  local profile_file=""
+  local brew_bin=""
+  local shellenv_cmd=""
 
-    if ! command -v brew &>/dev/null; then
-        _color_echo yellow "🧩 未检测到 Homebrew，正在安装 ($arch)..."
+  if ! command -v brew &>/dev/null; then
+    warn_echo "🧩 未检测到 Homebrew，正在安装中...（架构：$arch）"
 
     if [[ "$arch" == "arm64" ]]; then
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
-        _color_echo red "❌ Homebrew 安装失败"
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
+        error_echo "❌ Homebrew 安装失败（arm64）"
         exit 1
-        }
-        brew_bin="/opt/homebrew/bin/brew"
+      }
+      brew_bin="/opt/homebrew/bin/brew"
     else
-        arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
-        _color_echo red "❌ Homebrew 安装失败（x86_64）"
+      arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
+        error_echo "❌ Homebrew 安装失败（x86_64）"
         exit 1
-        }
-        brew_bin="/usr/local/bin/brew"
+      }
+      brew_bin="/usr/local/bin/brew"
     fi
 
-    _color_echo green "✅ Homebrew 安装成功"
+    success_echo "✅ Homebrew 安装成功"
 
-    # ==== 设置 brew 环境 ====
+    # ==== 注入 shellenv 到对应配置文件（自动生效） ====
     shellenv_cmd="eval \"\$(${brew_bin} shellenv)\""
+
     case "$shell_path" in
-          zsh)   profile_file="$HOME/.zprofile" ;;
-          bash)  profile_file="$HOME/.bash_profile" ;;
-          *)     profile_file="$HOME/.profile" ;;
+      zsh)   profile_file="$HOME/.zprofile" ;;
+      bash)  profile_file="$HOME/.bash_profile" ;;
+      *)     profile_file="$HOME/.profile" ;;
     esac
 
-    # 避免重复写入
-    if grep -qF "$shellenv_cmd" "$profile_file" 2>/dev/null; then
-        _color_echo blue "🔁 brew shellenv 已存在于 $profile_file，无需重复添加"
-    else
-        echo "$shellenv_cmd" >> "$profile_file"
-        _color_echo green "📝 已写入 brew shellenv 到 $profile_file"
-    fi
+    inject_shellenv_block "$profile_file" "$shellenv_cmd"
 
-    # 当前会话立即生效
-    eval "$shellenv_cmd"
-        _color_echo green "✅ brew 环境变量已在当前终端生效"
-
-    else
-        _color_echo blue "🔄 Homebrew 已安装，更新中..."
-        brew update && brew upgrade && brew cleanup
-        _color_echo green "✅ Homebrew 已更新"
-    fi
+  else
+    info_echo "🔄 Homebrew 已安装，正在更新..."
+    brew update && brew upgrade && brew cleanup && brew doctor && brew -v
+    success_echo "✅ Homebrew 已更新"
+  fi
 }
 
 # ✅ 自检安装 Homebrew.fzf
 install_fzf() {
-    if ! command -v fzf &>/dev/null; then
-        method=$(fzf_select "通过 Homebrew 安装" "通过 Git 安装")
-        case $method in
-          *Homebrew*) brew install fzf;;
-          *Git*)
-            git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && ~/.fzf/install --all
-            ;;
-          *) err "❌ 取消安装 fzf";;
-        esac
-    else
-        _color_echo blue "🔄 fzf 已安装，升级中..."
-        brew upgrade fzf
-        _color_echo green "✅ fzf 已是最新版"
-    fi
+  if ! command -v fzf &>/dev/null; then
+    note_echo "📦 未检测到 fzf，正在通过 Homebrew 安装..."
+    brew install fzf || { error_echo "❌ fzf 安装失败"; exit 1; }
+    success_echo "✅ fzf 安装成功"
+  else
+    info_echo "🔄 fzf 已安装，升级中..."
+    brew upgrade fzf && brew cleanup
+    success_echo "✅ fzf 已是最新版"
+  fi
 }
 
-# ✅ 检查工具链状态
+# ✅ 检查工具链：emulator 状态
 check_emulator() {
     if ! command -v emulator &>/dev/null; then
         error_echo "未找到 emulator 命令，请检查 \$ANDROID_HOME 是否配置正确"
@@ -143,6 +129,7 @@ check_emulator() {
     fi
 }
 
+# ✅ 检查工具链：sdkmanager / avdmanager 状态
 check_sdk_tools() {
     if [[ ! -x "$CMDLINE_TOOLS_BIN/sdkmanager" || ! -x "$CMDLINE_TOOLS_BIN/avdmanager" ]]; then
         error_echo "缺少 sdkmanager 或 avdmanager"
@@ -158,12 +145,12 @@ create_avd_if_needed() {
     if [[ ${#avds[@]} -eq 0 ]]; then
         warn_echo "本机尚未创建任何模拟器，准备创建..."
 
-        selected=$(cat <<EOF | fzf --prompt="请选择要创建的模拟器：" --height=10 --border
-            Pixel 5 (pixel_5) + system-images;android-34;google_apis;x86_64
-            Pixel 4 (pixel_4) + system-images;android-33;google_apis;x86_64
-            Pixel 3 (pixel_3) + system-images;android-31;google_apis;x86_64
-            EOF
-        )
+selected=$(cat <<EOF | fzf --prompt="请选择要创建的模拟器：" --height=10 --border
+Pixel 5 (pixel_5) + system-images;android-34;google_apis;x86_64
+Pixel 4 (pixel_4) + system-images;android-33;google_apis;x86_64
+Pixel 3 (pixel_3) + system-images;android-31;google_apis;x86_64
+EOF
+)
 
         [[ -z "$selected" ]] && warn_echo "已取消模拟器创建" && exit 0
 
@@ -211,20 +198,14 @@ start_avd() {
 # ✅ 主函数入口
 main() {
     clear
-    # ==== 1、自述信息 ====
-    print_script_intro_and_path_check
+    print_script_intro_and_path_check                  # ✅ 自述信息
     read "?⏎ 按回车继续执行，或 Ctrl+C 退出..."
-    # ==== 2、安装 Homebrew（自动检测与架构判断） ====
-    install_brew_if_needed
-    # ==== 3、安装或升级 Homebrew.fzf（用于交互选择） ====
-    install_or_upgrade_fzf
-    # ==== 4、检查 emulator / sdkmanager / avdmanager 是否可用 ====
-    check_emulator
-    check_sdk_tools
-    # ==== 5、若本机无 AVD，fzf 选择创建模拟器并自动启动 ====
-    create_avd_if_needed
-    # ==== 6、若已有 AVD，fzf 选择并启动模拟器 ====
-    start_avd
+    install_homebrew                                   # ✅ 安装 Homebrew（自动架构判断，包含环境注入）
+    install_fzf                                        # ✅ 自检安装 Homebrew.fzf
+    check_emulator                                     # ✅ 检查工具链：emulator 状态
+    check_sdk_tools                                    # ✅ 检查工具链：sdkmanager / avdmanager 状态
+    create_avd_if_needed                               # ✅ 创建模拟器
+    start_avd                                          # ✅ 启动已存在模拟器
 }
 
 main "$@"

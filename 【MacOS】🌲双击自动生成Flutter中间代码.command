@@ -57,7 +57,7 @@ maybe_run_upgrade_clean_get() {
 # ✅ 切换至 android 目录并显示路径
 enter_android_directory() {
   local script_dir
-  script_dir="$(cd "$(dirname "$0")" && pwd)"
+  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
   cd "$script_dir/android" || {
     error_echo "❌ 无法进入 android 目录：$script_dir/android"
     exit 1

@@ -33,7 +33,7 @@ print_intro() {
 
 # ✅ 项目路径获取
 detect_flutter_project_dir() {
-    local dir="$(cd "$(dirname "$0")" && pwd)"
+    local dir="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
     if [[ -f "$dir/pubspec.lock" && -f "$dir/pubspec.yaml" ]]; then
         flutter_project_dir="$dir"
         success_echo "✅ 已自动识别 Flutter 项目目录：$flutter_project_dir"
@@ -60,12 +60,22 @@ detect_flutter_project_dir() {
     gray_echo "📂 当前目录：$flutter_project_dir"
 }
 
-# ✅ 查询依赖版本
+# ✅ 查询依赖版本（持续循环）
 query_dependencies_loop() {
   while true; do
     echo ""
-    read "?📦 请输入依赖包名（多个空格分隔，直接回车退出）： " package_line
-    [[ -z "$package_line" ]] && close_terminal
+    read "?📦 请输入依赖包名（多个空格分隔，输入 exit 退出）： " package_line
+
+    # 用户输入 exit 或 quit 才退出
+    if [[ "$package_line" == "exit" || "$package_line" == "quit" ]]; then
+      close_terminal
+    fi
+
+    # 如果用户直接回车，不退出，而是提醒重新输入
+    if [[ -z "$package_line" ]]; then
+      warn_echo "⚠️ 请输入至少一个依赖名（或输入 exit 退出）"
+      continue
+    fi
 
     local package_list=(${(z)package_line})
     local all_not_found=true
@@ -87,14 +97,11 @@ query_dependencies_loop() {
     echo "──────────────────────────────────────────────"
 
     if [[ "$all_not_found" == true ]]; then
-        echo ""
-        warn_echo "⚠️ 没有任何有效依赖，请重新输入（或直接回车退出）"
+        warn_echo "⚠️ 没有任何有效依赖，请重新输入"
         continue
     fi
 
-    success_echo "✅ 查询完成，窗口将自动关闭..."
-    sleep 2
-    close_terminal
+    success_echo "✅ 查询完成，可继续输入新的依赖名（或输入 exit 退出）"
   done
 }
 

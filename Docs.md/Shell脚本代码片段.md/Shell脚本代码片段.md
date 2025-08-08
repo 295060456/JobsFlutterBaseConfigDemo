@@ -345,9 +345,9 @@ is_in_china() {
   >
   >  使用命令替换，将整个执行结果赋值给变量
   >
-  >- **最终变量 SCRIPT_DIR=...**
+  >- **最终变量 `SCRIPT_DIR`=...**
   >
-  >  将脚本自身所在目录的**绝对路径**保存到 SCRIPT_DIR 中，适用于引用、路径拼接等
+  >  将脚本自身所在目录的**绝对路径**保存到 `SCRIPT_DIR` 中，适用于引用、路径拼接等
 
   ```shell
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
@@ -395,12 +395,12 @@ SCRIPT_PATH="${SCRIPT_DIR}/$(basename -- "$0")"
   user="$(logname)" 
   ```
 
-  | 表达式    | 类型     | 含义说明                                                 |
-  | --------- | -------- | -------------------------------------------------------- |
-  | `"$USER"` | 环境变量 | 当前 shell 会话中的用户名变量（快捷方式）                |
-  | `whoami`  | 命令     | 实际正在运行当前 shell 进程的用户名                      |
-  | `id -un`  | 命令     | 当前有效用户的用户名（与 `whoami` 通常一样，但更底层）   |
-  | `logname` | 命令     | 最初登录系统的用户（在 `sudo` 场景下可能与当前用户不同） |
+| 表达式    | 类型     | 含义说明                                                 |
+| --------- | -------- | -------------------------------------------------------- |
+| `"$USER"` | 环境变量 | 当前 **shell** 会话中的用户名变量（快捷方式）            |
+| `whoami`  | 命令     | 实际正在运行当前 **shell** 进程的用户名                  |
+| `id -un`  | 命令     | 当前有效用户的用户名（与 `whoami` 通常一样，但更底层）   |
+| `logname` | 命令     | 最初登录系统的用户（在 `sudo` 场景下可能与当前用户不同） |
 
 #### 6、**获取：🍏 Xcode 信息 **<a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -672,10 +672,10 @@ print_duration
 >
 >     ```shell
 >     cat <<EOF >> ~/.zshrc
->                
+>                  
 >     # >>> Flutter 环境变量 >>>
 >     export PATH="\$HOME/.pub-cache/bin:\$PATH"
->                
+>                  
 >     EOF
 >     ```
 >
@@ -691,10 +691,10 @@ print_duration
 >
 >     ```shell
 >      cat <<EOF > ~/.zshrc
->                       
+>                           
 >      # >>> Flutter 环境变量 >>>
 >      export PATH="\$HOME/.pub-cache/bin:\$PATH"
->                       
+>                           
 >      EOF
 >     ```
 >  
@@ -915,7 +915,7 @@ install_cocoaPods() {
 }
 ```
 
-#### 🎯1、自检安装 💎**`Gem.bundler`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 🎯2、自检安装 💎**`Gem.bundler`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 install_bundler() {
@@ -941,7 +941,7 @@ install_bundler() {
 
 ### 🎯 🍺**`Homebrew`** 自检安装 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 🎯 1、自检安装 🍺**`Homebrew`** （自动架构判断）<a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 🎯 1、自检安装 🍺**`Homebrew`** （自动架构判断，包含环境注入）<a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 install_homebrew() {
@@ -1224,15 +1224,15 @@ install_jenv() {
 >   ```shell
 >   jenv_remove_all_java() {
 >     echo "🧹 开始移除所有通过 Homebrew 安装并注册到 jenv 的 Java 版本..."
->     
+>       
 >     if [[ "$(uname -m)" == "arm64" ]]; then
 >       base_path="/opt/homebrew/opt"
 >     else
 >       base_path="/usr/local/opt"
 >     fi
->     
+>       
 >     found=false
->     
+>       
 >     for path in "$base_path"/openjdk*/libexec/openjdk.jdk/Contents/Home; do
 >       if [[ -d "$path" ]]; then
 >         echo "❌ 正在移除：$path"
@@ -1240,7 +1240,7 @@ install_jenv() {
 >         found=true
 >       fi
 >     done
->     
+>       
 >     if [[ "$found" == false ]]; then
 >       echo "⚠️ 未检测到任何已注册 Java 安装路径"
 >     else
@@ -1323,11 +1323,11 @@ rbenv global 3.3.0
 ruby -v
 ```
 
-### 🎯 （Dart官方推荐）自检安装 **`fvm`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 🎯 （[**Dart**](https://dart.dev/)官方推荐）自检安装 **`fvm`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > <font color=red>**安装`fvm`的大前提是预先安装`dart`环境 **</font>
 >
-> <font color=red>🍺Homebrew 核心源中目前**没有**收录 Dart 的 `fvm` 工具</font>
+> <font color=red>🍺[**Homebrew**](https://brew.sh/) 核心源中目前**没有**收录 [**Dart**](https://dart.dev/) 的 `fvm` 工具</font>
 
 ```shell
 install_fvm() {
@@ -1366,7 +1366,7 @@ set_gem_source() {
 
 ### 🎯 镜像切换 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 1、**CocoaPods** 镜像切换 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 1、[**CocoaPods**](https://cocoapods.org/) 镜像切换 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 switch_cocoapods_source() {
@@ -1406,7 +1406,7 @@ set_gem_source() {
 }
 ```
 
-### 🎯 检测本地**`Java`**环境是否已经安装 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 🎯 检测本地[**Java**](https://www.java.com/zh-CN/)环境是否已经安装 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > **`command -v java`**：检查 `java` 命令是否存在于 `PATH` 中；
 >
@@ -1437,7 +1437,7 @@ _is_flutter_project_root() {
 }
 ```
 
-#### 🎯 2、获取**Flutter**项目名称  <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 🎯 2、获取 [**Flutter**](https://flutter.dev/)项目名称  <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 _get_flutter_project_name() {
@@ -1521,9 +1521,9 @@ detect_entry() {
 }
 ```
 
-#### 🎯 4、统一获取[**Flutter**](https://flutter.dev/)项目路径 和 **Dart** 入口文件路径 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 🎯 4、统一获取[**Flutter**](https://flutter.dev/)项目路径和[**Dart**](https://dart.dev/)入口文件路径 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> 兼容用户拖入目录、拖入 **Dart** 文件、或直接回车（默认为当前目录为[**Flutter**](https://flutter.dev/)项目根目录）三种用法
+> 兼容用户拖入目录、拖入[**Dart**](https://dart.dev/)文件、或直接回车（默认为当前目录为[**Flutter**](https://flutter.dev/)项目根目录）三种用法
 
 ```shell
 resolve_flutter_root() {
@@ -1631,10 +1631,12 @@ fi
  update() {
      brew update && brew upgrade && brew cleanup && brew doctor && brew -v # Homebrew
      dart pub global activate fvm                                          # fvm
+     gem update && gem clean
+     pod repo update --verbose
  }
  ```
 
-### 🎯 删除🍺**`Homebrew`** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 🎯 删除🍺[**Homebrew**](https://brew.sh/) <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 # 1. 尝试 untap & 清理

@@ -1,54 +1,19 @@
-// 🚫 本文件为个人本地 VS Code 设置，仅供自己使用，不推荐加入 Git 管理
 {
-// ✅ 指定 CMake 项目的源代码目录（用于 CMake 插件）
-"cmake.sourceDirectory": "/Users/jobs/Documents/GitHub/JobsFlutterBaseConfig/jobs_flutter_base_config/linux",
-
-// ✅ Java 编译时的空值分析模式（自动启用 null 安全检查）
-"java.compile.nullAnalysis.mode": "automatic",
-
-// ✅ Dart 编辑器：整理 import 时总是使用 package 引用风格
-"dart.editImports": "always_use_package_imports",
-
-// ✅ Flutter SDK 路径（使用 FVM 管理的版本路径）
-"dart.flutterSdkPath": ".fvm/versions/3.32.8",
-
-// ✅ 每次保存文件时自动格式化代码
-"editor.formatOnSave": true,
-
-// ✅ 当窗口失焦时自动保存
-"files.autoSave": "afterDelay",
-
-// ✅ 自动保存延迟，100ms
-"files.autoSaveDelay": 100,
-
-// ✅ 关闭窗口时自动保存未保存文件（热退出）
-"files.hotExit": "onExitAndWindowClose",
-
-// ✅ 每次保存时自动移除每行末尾多余的空格
-"files.trimTrailingWhitespace": true,
-
-// ✅ 文件末尾自动插入一个换行符，符合编码规范
-"files.insertFinalNewline": true,
-
-// ✅ 保存文件时如有冲突，自动覆盖磁盘上的版本（避免弹出冲突提示）
-"files.saveConflictResolution": "overwriteFileOnDisk",
-
-// ✅ 启动时恢复上次打开的文件
-"window.restoreWindows": "all",
-
-// ✅ 显示括号对的引导线（active 表示仅在光标位于括号上时显示）
-"editor.guides.bracketPairs": "active",
-
-// ✅ 启用括号颜色匹配功能
-"editor.bracketPairColorization.enabled": true,
-
-// ✅ 始终高亮当前括号对
-"editor.matchBrackets": "always",
-
-// ✅ Flutter SDK 路径（优先 .fvm）
-"dart.flutterSdkPath": ".fvm/flutter_sdk",
-"dart.sdkPath": ".fvm/flutter_sdk/bin/cache/dart-sdk",
-
-// ✅ 让 VSCode 终端继承 Shell 环境（通常默认 true）
-"terminal.integrated.inheritEnv": true,
+  "cmake.sourceDirectory": "/Users/jobs/Documents/GitHub/JobsFlutterBaseConfig/jobs_flutter_base_config/linux",
+  "java.compile.nullAnalysis.mode": "automatic",
+  "dart.editImports": "always_use_package_imports",
+  "dart.flutterSdkPath": ".fvm/versions/stable",
+  "editor.formatOnSave": true,
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 100,
+  "files.hotExit": "onExitAndWindowClose",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.saveConflictResolution": "overwriteFileOnDisk",
+  "window.restoreWindows": "all",
+  "editor.guides.bracketPairs": "active",
+  "editor.bracketPairColorization.enabled": true,
+  "editor.matchBrackets": "always",
+  "dart.sdkPath": ".fvm/flutter_sdk/bin/cache/dart-sdk",
+  "terminal.integrated.inheritEnv": true
 }
