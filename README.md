@@ -52,42 +52,207 @@
 
 ### 1、📃`MacOS` 系统环境变量文件 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-* ```shell
-  # ~/.bash_profile
-  # ~/.bashrc
-  # ~/.zshrc 是不同的 shell 配置文件，每个文件的优先级和作用取决于你使用的 shell 类型以及你在启动 shell 时的方式
-  # 以下是对它们的优先级和作用的详细说明：
+* 写于`.zshrc`里面的函数，**在终端直接通过函数名进行调用**（不断更新中...）
   
-  # Bash Shell
-  # ~/.bash_profile
-  # 这是一个用户级的启动文件，当以登录方式启动 Bash shell 时（例如通过终端登录或者 SSH 登录时），Bash 会读取并执行 ~/.bash_profile 中的内容。
-  # 如果 ~/.bash_profile 不存在，Bash 会尝试读取 ~/.bash_login 或者 ~/.profile。
+  ```shell
+  # ✅ 一键重新加载常见配置文件
+  save() {
+    local files=(
+      "$HOME/.bash_profile"
+      "$HOME/.bashrc"
+      "$HOME/.zshrc"
+      "$HOME/.profile"
+      "$HOME/.oh-my-zsh/oh-my-zsh.sh"  # Oh My Zsh 主文件
+    )
   
-  # ~/.bashrc
-  # 这是一个用户级的非登录 shell 启动文件，当启动一个非登录的 Bash shell 时（例如打开一个终端窗口或者执行一个新的 shell 命令时），Bash 会读取并执行 ~/.bashrc 中的内容。
-  # 通常在 ~/.bash_profile 中会有一行代码来手动加载 ~/.bashrc，以便确保登录 shell 和非登录 shell 都会执行 ~/.bashrc 中的配置。
+    for file in "${files[@]}"; do
+      if [[ -f "$file" ]]; then
+        source "$file"
+        echo -e "\033[1;32m✅ 已加载配置文件：file://$file\033[0m"
+      else
+        echo -e "\033[1;33m⚠️ 未找到配置文件：file://$file\033[0m"
+      fi
+    done
   
-  # bash
-  # 复制下列代码
-  # if [ -f ~/.bashrc ]; then
-  #    source ~/.bashrc
-  # fi
+    echo -e "\n📎 ⌘Command + 点击路径可打开对应文件（macOS Terminal 支持）"
+  }
   
-  # Zsh Shell
-  # ~/.zshrc
-  # 这是 Zsh 的配置文件，不论是登录 shell 还是非登录 shell，Zsh 启动时都会读取并执行 ~/.zshrc 中的内容。
-  # 对于 Zsh 而言，~/.zshrc 是主要的配置文件。
-  
-  # 优先级总结
-  # 对于 Bash：
-  # 登录 shell：先执行 ~/.bash_profile，如果在 ~/.bash_profile 中有 source ~/.bashrc，则会接着执行 ~/.bashrc。
-  # 非登录 shell：只执行 ~/.bashrc。
-  
-  # 对于 Zsh：
-  # 无论是登录 shell 还是非登录 shell，都只执行 ~/.zshrc。
-  # 根据你使用的 shell 类型和启动方式，这些文件的优先级和作用会有所不同。
-  # 对于大多数桌面用户来说，通常会配置 ~/.bashrc 或者 ~/.zshrc 来设置常用的环境变量和别名，而 ~/.bash_profile 则用来进行一些需要在登录时执行的初始化操作。
+  # ✅ 仅首次执行 save 函数，防止递归
+  if [[ -z "$JOBS_ALREADY_RUN" ]]; then
+    export JOBS_ALREADY_RUN=1
+    command -v save &>/dev/null && save
+  fi
   ```
+  
+  ```shell
+  # ✅ 重启终端
+  rb() {
+    exec "$SHELL"
+  }
+  ```
+  
+  ```
+  # ✅ 更新
+  update() {
+      brew update && brew upgrade && brew cleanup && brew doctor && brew -v # Homebrew
+      dart pub global activate fvm                                          # fvm
+  }
+  ```
+  
+  ```shell
+  # ================================== Flutter 命令重载（优先 FVM） ==================================
+  # 功能：
+  #   1. 如果项目目录存在 `.fvm/fvm_config.json`，优先使用该项目绑定的 FVM Flutter SDK。
+  #   2. 检测 FVM 是否可用（VSCode 内最容易失效的情况）：
+  #        - 如果 `fvm` 命令不可用，自动执行：
+  #            a) dart pub global deactivate fvm    # 卸载现有 FVM 快照
+  #            b) dart pub global activate fvm      # 重新全局激活 FVM
+  #            c) hash -r                           # 刷新命令缓存
+  #   3. 如果 FVM 可用，使用 `fvm flutter` 执行；
+  #      如果 FVM 依然不可用，则直接调用 `.fvm/flutter_sdk/bin/flutter` 兜底。
+  #   4. 如果当前目录不是 FVM 项目，调用系统全局 Flutter。
+  # 作用：
+  #   - 保证无论是终端、VSCode 还是脚本运行，始终优先用项目内的 Flutter SDK，
+  #     并且自动修复 FVM 失效问题，避免因为环境切换导致构建失败。
+  # 注意：
+  #   - 避免递归调用，使用 `command` 明确调用系统命令。
+  #   - 要放在 `~/.zshrc` 或 `~/.bashrc` 中，确保所有 shell 会话生效。
+  flutter() {
+    # 项目里有 .fvm 就优先用项目 SDK；没有就走系统 flutter
+    if [[ -f .fvm/fvm_config.json && -x .fvm/flutter_sdk/bin/flutter ]]; then
+      # 先试 fvm 是否可用，不可用就修复快照（VSCode 里最容易坏）
+      if ! command -v fvm >/dev/null 2>&1 || ! fvm --version >/dev/null 2>&1; then
+        if command -v dart >/dev/null 2>&1; then
+          dart pub global deactivate fvm >/dev/null 2>&1 || true
+          dart pub global activate  fvm >/dev/null 2>&1 || true
+          hash -r
+        fi
+      fi
+  
+      # 如果 fvm 现在可用，就走 fvm；否则直接用项目本地 flutter 二进制兜底
+      if command -v fvm >/dev/null 2>&1 && fvm --version >/dev/null 2>&1; then
+        command fvm flutter "$@"
+      else
+        command .fvm/flutter_sdk/bin/flutter "$@"
+      fi
+    else
+      # 非 fvm 项目：调用系统里的 flutter（避免递归用 `command`）
+      command flutter "$@"
+    fi
+  }
+  ```
+  
+  ```shell
+  # 场景：
+  #   当执行 flutter / fvm 时出现以下错误：
+  #     "Can't load Kernel binary: Invalid kernel binary format version."
+  #     "fvm as globally activated doesn't support Dart X.X.X"
+  #   原因：
+  #     全局安装的 fvm 是用旧版本 Dart SDK 编译的，与当前 Dart SDK 内核版本不匹配。
+  #   解决：
+  #     1. 卸载旧的全局 fvm
+  #     2. 用当前 Dart SDK 重新全局安装 fvm（会重新编译成当前版本可用的 kernel）
+  #     3. 清除 shell 的命令缓存，让新安装的 fvm 生效
+  fixfvm() {
+    echo "🔍 检查并修复 fvm 与 Dart SDK 的内核版本不匹配问题..."
+  
+    # 1️⃣ 卸载旧的全局 fvm
+    dart pub global deactivate fvm || true 
+    rm -rf ~/.pub-cache/bin/fvm* ~/.pub-cache/global_packages/fvm
+  
+    # 2️⃣ 使用当前 Dart SDK 重新安装 fvm
+    dart pub global activate fvm 
+  
+    # 3️⃣ 清空 shell 命令缓存，确保调用到新版本
+    hash -r
+    
+    echo "✅ fvm 已重新安装并与当前 Dart SDK 匹配"
+  }
+  ```
+  
+  ```shell
+  # ✅ 检查 Dart / FVM / Flutter 版本信息
+  check1() {
+    echo "===================================================================="
+    echo " 1️⃣ Dart 位置 & 版本"
+    echo "===================================================================="
+    echo "📍 which dart:"; which dart
+    echo "🔖 dart --version:"; dart --version
+    echo ""
+  
+    echo "===================================================================="
+    echo " 2️⃣ FVM 位置 & 版本"
+    echo "===================================================================="
+    echo "📍 which fvm:"; which fvm
+    echo "🔖 fvm --version:"; fvm --version
+    echo ""
+  
+    echo "===================================================================="
+    echo " 3️⃣ Flutter 位置 & 版本（通过 fvm/flutter）"
+    echo "===================================================================="
+    # zsh: 判断 flutter 是否为函数
+    if whence -v flutter | grep -q "shell function"; then
+      echo "📍 flutter 是 shell function(打印函数体（便于排查重载逻辑）)："
+      functions flutter
+      echo "📍 flutter 可执行路径（忽略函数优先找可执行文件）："
+      whence -p flutter || echo "（无同名可执行文件，只有函数）"
+    else
+      echo "📍 flutter 路径："
+      whence -p flutter      # 等价于只查 PATH 中的可执行文件
+    fi
+  
+    echo "🔖 flutter --version:"; flutter --version
+    echo "===================================================================="
+  }
+  ```
+  
+  ```shell
+  # ✅ 快捷打开系统配置文件
+  a(){
+    open $HOME/.bash_profile
+  }
+  
+  b(){
+    open $HOME/.zshrc
+  }
+  ```
+  
+* **Shell** 启动配置文件优先级（从高到低）
+  
+  * 1️⃣ `~/.bash_profile`
+  
+    * **触发时机**：Bash 登录 Shell（macOS 默认终端首次启动 Bash、SSH 登录等）。
+    * **说明**：<font color=red>**优先级最高**</font>如果存在该文件，Bash **不会**再读取 `~/.bash_login` 或 `~/.profile`。
+  
+  * 2️⃣ `~/.bash_login`
+  
+    * **触发时机**：仅在 `~/.bash_profile` 不存在时，Bash 登录 Shell 才会读取它。
+    * **说明**：**使用频率低**，作用与 `~/.bash_profile` 基本相同。
+  
+  * 3️⃣ `~/.profile`
+  
+    * **触发时机**：登录 Shell 启动时（Bash、Zsh、Sh 等）。
+  
+    * **说明**：通用 POSIX 登录 Shell 配置。
+  
+      >Bash 登录 Shell 会在 `~/.bash_profile` 和 `~/.bash_login` 都不存在时读取它。
+      >
+      >适合放**跨 Shell 通用**的环境变量（如 JAVA_HOME、PATH）。
+  
+  * 4️⃣ `~/.bashrc`
+  
+    * **触发时机**：Bash 非登录 Shell（如新开一个终端标签、`bash` 命令启动）。
+  
+    * **说明**：更常用
+  
+      > 常放**别名**、**函数**、**交互式提示符**等交互配置。
+      >
+      > 如果想在登录 Shell 中也执行 `.bashrc`，需在 `.bash_profile` 里 `source` 它。
+  
+  * 5️⃣  `~/.zshrc`
+  
+    * **触发时机**：任何情况下启动 Zsh（登录和非登录都执行）。
+    * **说明**：**Zsh 独立配置（对 Zsh 来说是最高优先）**。<font color=red>**macOS** **Catalina** 及以后默认 Shell</font>。
 
 * <font color=red>为了方便管理，只配置**`bash_profile`**和**`.zshrc`**</font>
 
@@ -261,7 +426,7 @@
   <img src="./assets/image-20250806165822643.png" alt="image-4" style="width:65%; display:inline-block; vertical-align: top;" />
   </div> 
 
-#### 3.3、**`./android/gradlew`**
+#### 3.3、**`./android/gradlew`** **</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 这个文件是来自：`android/gradle/wrapper/gradle-wrapper.propertie`
 >
@@ -276,6 +441,8 @@
 ```
 
 ### 4、[**VSCode**](https://code.visualstudio.com/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+* 🔔温馨提示：[**VSCode**](https://code.visualstudio.com/) 里面有一个终端，是实际上运行项目时候调用的。
 
 * 🔧 <font color=red>**安装插件**</font>
 
@@ -334,10 +501,10 @@
         └── tasks.json               🔁 自定义任务（如自动构建、格式化）（✅ 推荐加入 Git）
     ```
 
-    * `extensions.json`
+    * `extensions.json` 👉 <font color=green>推荐加入**Git**管理</font>
   
       ```json
-      /// 推荐使用的插件清单（团队统一）✅推荐加入Git管理
+      /// 推荐使用的插件清单（团队统一）
       {
           "recommendations": [
               // ✅ Flutter/Dart 支持
@@ -360,10 +527,10 @@
       }
       ```
   
-    * `launch.json`
+    * `launch.json` 👉 <font color=green>推荐加入**Git**管理</font>
   
       ```json
-      /// 调试配置（如 Flutter 调试参数）。✅推荐加入Git管理
+      /// 调试配置（如 Flutter 调试参数）
       {
           // 使用 IntelliSense 了解相关属性。
           // 悬停以查看现有属性的描述。
@@ -375,7 +542,11 @@
                   "request": "launch", // 调试器请求类型，通常为 "launch" 或 "attach"
                   "type": "dart", // 调试器类型，通常为 "dart" 或 "flutter"
                   "program": "lib/调用本地相册+调用本机摄像头拍照（全部验证通过）/CameraDemo.dart", // ❤️要调试的程序的入口点
-                  "flutterMode": "debug"
+                  "flutterMode": "debug",
+                  "env": {// 配置Java环境（Android运行打包需要）
+                    "JAVA_HOME": "/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home",
+                    "PATH": "/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home/bin:${env:PATH}"
+                  }
               },
               // {
               //     "name": "JobsFlutterBaseConfigDemo (profile mode)",
@@ -393,53 +564,72 @@
       }
       ```
   
-    * `settings.json`
+    * `settings.json` 👉 <font color=red>不推荐加入**Git**管理</font>
   
       ```json
-      /// 个人本地设置配置。❌不推荐加入Git管理
+      // 🚫 本文件为个人本地 VS Code 设置，仅供自己使用，不推荐加入 Git 管理
       {
-        "_comment": "🚫 本文件为个人本地 VS Code 设置，仅供自己使用，❌ 不推荐加入 Git 管理",
-        "__cmake_note": "✅ 指定 CMake 项目的源代码目录（用于 CMake 插件）",
-        "cmake.sourceDirectory": "/Users/jobs/Documents/GitHub/JobsFlutterBaseConfig/jobs_flutter_base_config/linux",
-        "__java_note": "✅ Java 编译时的空值分析模式（自动启用 null 安全检查）",
-        "java.compile.nullAnalysis.mode": "automatic",
-        "__dart_imports_note": "✅ Dart 编辑器：整理 import 时总是使用 package 引用风格",
-        "dart.editImports": "always_use_package_imports",
-        "__flutter_sdk_note": "✅ Flutter SDK 路径（使用 FVM 管理的版本路径）",
-        "dart.flutterSdkPath": ".fvm/versions/3.32.6",
-        "__format_note": "✅ 每次保存文件时自动格式化代码",
-        "editor.formatOnSave": true,
-        "__autosave_note": "✅ 当窗口失焦时自动保存",
-        "files.autoSave": "afterDelay",
-        "__autosave_delay_note": "✅ 自动保存延迟，100ms",
-        "files.autoSaveDelay": 100,
-        "__hot_exit_note": "✅ 关闭窗口时自动保存未保存文件（热退出）",
-        "files.hotExit": "onExitAndWindowClose",
-        "__trim_whitespace_note": "✅ 每次保存时自动移除每行末尾多余的空格",
-        "files.trimTrailingWhitespace": true,
-        "__final_newline_note": "✅ 文件末尾自动插入一个换行符，符合编码规范",
-        "files.insertFinalNewline": true,
-        "__save_conflict_note": "✅ 保存文件时如有冲突，自动覆盖磁盘上的版本（避免弹出冲突提示）",
-        "files.saveConflictResolution": "overwriteFileOnDisk",
-        "__restoreWindows_note": "✅ 启动时恢复上次打开的文件",
-        "window.restoreWindows": "all",
-        "__bracket_guides_note": "✅ 显示括号对的引导线，方便查看嵌套结构（active 表示仅在光标位于括号上时显示）",
-        "editor.guides.bracketPairs": "active",
-        "__bracket_colorization_note": "✅ 启用括号颜色匹配功能，为不同层级的括号着色",
-        "editor.bracketPairColorization.enabled": true,
-        "__bracket_match_note": "✅ 始终高亮当前括号对，便于匹配括号位置",
-        "editor.matchBrackets": "always",
+      // ✅ 指定 CMake 项目的源代码目录（用于 CMake 插件）
+      "cmake.sourceDirectory": "/Users/jobs/Documents/GitHub/JobsFlutterBaseConfig/jobs_flutter_base_config/linux",
+      
+      // ✅ Java 编译时的空值分析模式（自动启用 null 安全检查）
+      "java.compile.nullAnalysis.mode": "automatic",
+      
+      // ✅ Dart 编辑器：整理 import 时总是使用 package 引用风格
+      "dart.editImports": "always_use_package_imports",
+      
+      // ✅ Flutter SDK 路径（使用 FVM 管理的版本路径）
+      "dart.flutterSdkPath": ".fvm/versions/3.32.8",
+      
+      // ✅ 每次保存文件时自动格式化代码
+      "editor.formatOnSave": true,
+      
+      // ✅ 当窗口失焦时自动保存
+      "files.autoSave": "afterDelay",
+      
+      // ✅ 自动保存延迟，100ms
+      "files.autoSaveDelay": 100,
+      
+      // ✅ 关闭窗口时自动保存未保存文件（热退出）
+      "files.hotExit": "onExitAndWindowClose",
+      
+      // ✅ 每次保存时自动移除每行末尾多余的空格
+      "files.trimTrailingWhitespace": true,
+      
+      // ✅ 文件末尾自动插入一个换行符，符合编码规范
+      "files.insertFinalNewline": true,
+      
+      // ✅ 保存文件时如有冲突，自动覆盖磁盘上的版本（避免弹出冲突提示）
+      "files.saveConflictResolution": "overwriteFileOnDisk",
+      
+      // ✅ 启动时恢复上次打开的文件
+      "window.restoreWindows": "all",
+      
+      // ✅ 显示括号对的引导线（active 表示仅在光标位于括号上时显示）
+      "editor.guides.bracketPairs": "active",
+      
+      // ✅ 启用括号颜色匹配功能
+      "editor.bracketPairColorization.enabled": true,
+      
+      // ✅ 始终高亮当前括号对
+      "editor.matchBrackets": "always",
+      
+      // ✅ Flutter SDK 路径（优先 .fvm）
+      "dart.flutterSdkPath": ".fvm/flutter_sdk",
+      "dart.sdkPath": ".fvm/flutter_sdk/bin/cache/dart-sdk",
+      
+      // ✅ 让 VSCode 终端继承 Shell 环境（通常默认 true）
+      "terminal.integrated.inheritEnv": true,
       }
       ```
   
-  * **Git**忽略文件`.gitignore`对于[**VSCode**](https://code.visualstudio.com/)的配置文件的处理
+  * **Git**忽略文件对于[**VSCode**](https://code.visualstudio.com/)的配置文件的处理：**团队开发一般不建议Git同步**
   
-    ```plaintext
-    # The .vscode folder contains launch configuration and tasks you configure in
-    # VS Code which you may wish to be included in version control, so this line
-    # is commented out by default.
-    .vscode/settings.json
-    !.vscode/settings.local.json
+    ```
+    # 当前文件：Flutter项目根目录/.gitignore
+    
+    # VSCode
+    .vscode/
     ```
 
 ### 5、[**ohmyz.sh**](https://ohmyz.sh/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
@@ -3785,7 +3975,7 @@ builder: (context, child) {
 
 ### 25、富文本 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 25.1、🍎 **iOS** 🆚 🐦 [**Flutter**](https://flutter.dev/)
+#### 25.1、🍎 **iOS** 🆚 🐦 [**Flutter**](https://flutter.dev/) **</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 🍎 iOS 的富文本能力（`NSAttributedString`），几乎无所不能
 
@@ -3799,7 +3989,7 @@ builder: (context, child) {
   | ❌ 图片/**WidgetSpan** 兼容差 | 不能很好地与文字混排，溢出等问题                             |
   | ❌ 没有富文本输入控件         | iOS **UITextView** 自带，[**Flutter**](https://flutter.dev/) 需要用第三方 |
 
-#### 25.2、🧠 为什么会这样？
+#### 25.2、🧠 为什么会这样？**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 [**Flutter**](https://flutter.dev/) 是跨平台框架，它的核心设计理念是“自己画 UI（**Skia**）”，所有文本渲染都是**自绘**：
 
