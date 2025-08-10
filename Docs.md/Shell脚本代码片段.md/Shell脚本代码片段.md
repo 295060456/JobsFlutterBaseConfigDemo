@@ -93,6 +93,40 @@ read "?👉 按下回车开始执行，或 Ctrl+C 取消..."
 ### 🎯 🖨️打印输出彩色函数 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * ```shell
+  SCRIPT_BASENAME=$(basename "$0" | sed 's/\.[^.]*$//')   # 当前脚本名（去掉扩展名）
+  LOG_FILE="/tmp/${SCRIPT_BASENAME}.log"                  # 设置对应的日志文件路径
+  
+  log()            { echo -e "$1" | tee -a "$LOG_FILE"; }
+  color_echo()     { log "\033[1;32m$1\033[0m"; }         # ✅ 正常绿色输出
+  info_echo()      { log "\033[1;34mℹ $1\033[0m"; }       # ℹ 信息
+  success_echo()   { log "\033[1;32m✔ $1\033[0m"; }       # ✔ 成功
+  warn_echo()      { log "\033[1;33m⚠ $1\033[0m"; }       # ⚠ 警告
+  warm_echo()      { log "\033[1;33m$1\033[0m"; }         # 🟡 温馨提示（无图标）
+  note_echo()      { log "\033[1;35m➤ $1\033[0m"; }       # ➤ 说明
+  error_echo()     { log "\033[1;31m✖ $1\033[0m"; }       # ✖ 错误
+  err_echo()       { log "\033[1;31m$1\033[0m"; }         # 🔴 错误纯文本
+  debug_echo()     { log "\033[1;35m🐞 $1\033[0m"; }      # 🐞 调试
+  highlight_echo() { log "\033[1;36m🔹 $1\033[0m"; }      # 🔹 高亮
+  gray_echo()      { log "\033[0;90m$1\033[0m"; }         # ⚫ 次要信息
+  bold_echo()      { log "\033[1m$1\033[0m"; }            # 📝 加粗
+  underline_echo() { log "\033[4m$1\033[0m"; }            # 🔗 下划线
+  ```
+
+  > ```
+  > # ✅ 示例用法
+  > # success_echo "安装成功"
+  > # error_echo "安装失败"
+  > # info_echo "开始执行脚本..."
+  > # warn_echo "检测到风险配置"
+  > # note_echo "请注意版本兼容性"
+  > # debug_echo "当前变量值：\$VAR=xxx"
+  > # highlight_echo "推荐使用该功能"
+  > # bold_echo "这是加粗文本"
+  > # underline_echo "点击链接查看详情"
+  > # gray_echo "跳过无关文件"
+  > ```
+
+* ```shell
   # ============================= 日志输出函数 =============================
   # 默认日志文件路径（可被外部覆盖）
   LOG_FILE="${LOG_FILE:-/tmp/script_log.txt}"
@@ -113,48 +147,18 @@ read "?👉 按下回车开始执行，或 Ctrl+C 取消..."
   bold()        { log "\033[1m$1\033[0m"; }          # 📝 加粗
   gray()        { log "\033[0;90m$1\033[0m"; }       # ⚫ 灰色（弱提示）
   underline()   { log "\033[4m$1\033[0m"; }          # 🔗 下划线
-  
-  # ✅ 示例用法
-  # success "安装成功"
-  # warn "即将覆盖文件"
-  # error "安装失败"
-  # debug "路径为 $HOME/bin"
-  # note "下一步执行 flutter build"
-  # bold "重要步骤"
   ```
-
-* ```shell
-  SCRIPT_BASENAME=$(basename "$0" | sed 's/\.[^.]*$//')   # 当前脚本名（去掉扩展名）
-  LOG_FILE="/tmp/${SCRIPT_BASENAME}.log"                  # 设置对应的日志文件路径
   
-  log()            { echo -e "$1" | tee -a "$LOG_FILE"; }
-  color_echo()     { log "\033[1;32m$1\033[0m"; }         # ✅ 正常绿色输出
-  info_echo()      { log "\033[1;34mℹ $1\033[0m"; }       # ℹ 信息
-  success_echo()   { log "\033[1;32m✔ $1\033[0m"; }       # ✔ 成功
-  warn_echo()      { log "\033[1;33m⚠ $1\033[0m"; }       # ⚠ 警告
-  warm_echo()      { log "\033[1;33m$1\033[0m"; }         # 🟡 温馨提示（无图标）
-  note_echo()      { log "\033[1;35m➤ $1\033[0m"; }       # ➤ 说明
-  error_echo()     { log "\033[1;31m✖ $1\033[0m"; }       # ✖ 错误
-  err_echo()       { log "\033[1;31m$1\033[0m"; }         # 🔴 错误纯文本
-  debug_echo()     { log "\033[1;35m🐞 $1\033[0m"; }      # 🐞 调试
-  highlight_echo() { log "\033[1;36m🔹 $1\033[0m"; }      # 🔹 高亮
-  gray_echo()      { log "\033[0;90m$1\033[0m"; }         # ⚫ 次要信息
-  bold_echo()      { log "\033[1m$1\033[0m"; }            # 📝 加粗
-  underline_echo() { log "\033[4m$1\033[0m"; }            # 🔗 下划线
+  > ```shell
+  > # ✅ 示例用法
+  > # success "安装成功"
+  > # warn "即将覆盖文件"
+  > # error "安装失败"
+  > # debug "路径为 $HOME/bin"
+  > # note "下一步执行 flutter build"
+  > # bold "重要步骤"
+  > ```
   
-  # ✅ 示例用法
-  # success_echo "安装成功"
-  # error_echo "安装失败"
-  # info_echo "开始执行脚本..."
-  # warn_echo "检测到风险配置"
-  # note_echo "请注意版本兼容性"
-  # debug_echo "当前变量值：\$VAR=xxx"
-  # highlight_echo "推荐使用该功能"
-  # bold_echo "这是加粗文本"
-  # underline_echo "点击链接查看详情"
-  # gray_echo "跳过无关文件"
-  ```
-
 * ```shell
   _color_echo() {
     local color="$1"; shift
@@ -182,27 +186,29 @@ read "?👉 按下回车开始执行，或 Ctrl+C 取消..."
       *)          printf "%s\n" "$text" ;;  # 默认普通输出
     esac
   }
-  
-  # ✅ 示例用法
-  # _color_echo red "❌ 出错了"
-  # _color_echo green "✅ 成功完成任务"
-  # _color_echo yellow "⚠️ 警告信息"
-  # _color_echo blue "📘 蓝色提示"
-  # _color_echo purple "🟣 紫色调试"
-  # _color_echo cyan "💠 青色辅助"
-  # _color_echo white "⚪ 普通白色输出"
-  # _color_echo gray "⚫ 灰色信息"
-  
-  # _color_echo bold "📝 加粗文字"
-  # _color_echo underline "🔗 下划线文字"
-  
-  # _color_echo success "✔ 操作成功（绿色 + 图标）"
-  # _color_echo error "✖ 操作失败（红色 + 图标）"
-  # _color_echo info "ℹ 信息提示（蓝色 + 图标）"
-  # _color_echo warning "⚠ 注意风险（黄色 + 图标）"
-  # _color_echo note "➤ 额外提示（紫色 + 图标）"
   ```
-
+  
+  > ```shell
+  > # ✅ 示例用法
+  > # _color_echo red "❌ 出错了"
+  > # _color_echo green "✅ 成功完成任务"
+  > # _color_echo yellow "⚠️ 警告信息"
+  > # _color_echo blue "📘 蓝色提示"
+  > # _color_echo purple "🟣 紫色调试"
+  > # _color_echo cyan "💠 青色辅助"
+  > # _color_echo white "⚪ 普通白色输出"
+  > # _color_echo gray "⚫ 灰色信息"
+  > 
+  > # _color_echo bold "📝 加粗文字"
+  > # _color_echo underline "🔗 下划线文字"
+  > 
+  > # _color_echo success "✔ 操作成功（绿色 + 图标）"
+  > # _color_echo error "✖ 操作失败（红色 + 图标）"
+  > # _color_echo info "ℹ 信息提示（蓝色 + 图标）"
+  > # _color_echo warning "⚠ 注意风险（黄色 + 图标）"
+  > # _color_echo note "➤ 额外提示（紫色 + 图标）"
+  > ```
+  
 * ```shell
   _JobsPrint() {
     local COLOR="$1"
@@ -221,19 +227,21 @@ read "?👉 按下回车开始执行，或 Ctrl+C 取消..."
   _JobsPrint_Gray()       { _JobsPrint "\033[0;90m" "$1"; }   # ⚫ 灰色（次要信息）
   _JobsPrint_Bold()       { _JobsPrint "\033[1m"     "$1"; }   # 📝 粗体
   _JobsPrint_Underline()  { _JobsPrint "\033[4m"     "$1"; }   # 🔗 下划线
-  
-  # ✅ 示例用法
-  # _JobsPrint_Red "❌ 安装失败"
-  # _JobsPrint_Green "✅ 安装成功"
-  # _JobsPrint_Yellow "⚠️ 请注意：配置存在风险"
-  # _JobsPrint_Blue "📘 正在拉取远程资源..."
-  # _JobsPrint_Purple "🟣 进入调试模式"
-  # _JobsPrint_Cyan "🔵 正在初始化辅助模块..."
-  # _JobsPrint_White "⚪ 普通提示：操作完成"
-  # _JobsPrint_Gray "⚫ 跳过无关文件"
-  # _JobsPrint_Bold "📝 加粗强调：重要内容"
-  # _JobsPrint_Underline "🔗 文档地址：https://example.com"
   ```
+  
+  > ```shell
+  > # ✅ 示例用法
+  > # _JobsPrint_Red "❌ 安装失败"
+  > # _JobsPrint_Green "✅ 安装成功"
+  > # _JobsPrint_Yellow "⚠️ 请注意：配置存在风险"
+  > # _JobsPrint_Blue "📘 正在拉取远程资源..."
+  > # _JobsPrint_Purple "🟣 进入调试模式"
+  > # _JobsPrint_Cyan "🔵 正在初始化辅助模块..."
+  > # _JobsPrint_White "⚪ 普通提示：操作完成"
+  > # _JobsPrint_Gray "⚫ 跳过无关文件"
+  > # _JobsPrint_Bold "📝 加粗强调：重要内容"
+  > # _JobsPrint_Underline "🔗 文档地址：https://example.com"
+  > ```
 
 ### 🎯 📔日志输出 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
