@@ -666,10 +666,10 @@ print_duration
 >
 >     ```shell
 >     cat <<EOF >> ~/.zshrc
->                    
+>                      
 >     # >>> Flutter 环境变量 >>>
 >     export PATH="\$HOME/.pub-cache/bin:\$PATH"
->                    
+>                      
 >     EOF
 >     ```
 >
@@ -685,10 +685,10 @@ print_duration
 >
 >     ```shell
 >      cat <<EOF > ~/.zshrc
->                               
+>                                   
 >      # >>> Flutter 环境变量 >>>
 >      export PATH="\$HOME/.pub-cache/bin:\$PATH"
->                               
+>                                   
 >      EOF
 >     ```
 >  
@@ -1218,15 +1218,15 @@ install_jenv() {
 >   ```shell
 >   jenv_remove_all_java() {
 >     echo "🧹 开始移除所有通过 Homebrew 安装并注册到 jenv 的 Java 版本..."
->         
+>           
 >     if [[ "$(uname -m)" == "arm64" ]]; then
 >       base_path="/opt/homebrew/opt"
 >     else
 >       base_path="/usr/local/opt"
 >     fi
->         
+>           
 >     found=false
->         
+>           
 >     for path in "$base_path"/openjdk*/libexec/openjdk.jdk/Contents/Home; do
 >       if [[ -d "$path" ]]; then
 >         echo "❌ 正在移除：$path"
@@ -1234,7 +1234,7 @@ install_jenv() {
 >         found=true
 >       fi
 >     done
->         
+>           
 >     if [[ "$found" == false ]]; then
 >       echo "⚠️ 未检测到任何已注册 Java 安装路径"
 >     else
@@ -1555,7 +1555,7 @@ resolve_flutter_root() {
     # ✅ 用户拖入路径
     if [[ -d "$user_input" ]]; then
       debug_echo "🐞 检测到输入是目录"
-      if _is_flutter_project_root "$user_input"; then
+      if is_flutter_project_root "$user_input"; then
         flutter_root="$user_input"
         entry_file="$flutter_root/lib/main.dart"
         highlight_echo "🎯 成功识别 Flutter 根目录：$flutter_root"

@@ -717,9 +717,36 @@ brew tap dart-lang/dart
   ```shell
   jenv versions --bare --verbose # 用这里的结果
   
-  jenv global openjdk64-24.0.2   # 全局（所有项目默认）
-  jenv local openjdk64-17.0.16   # 当前目录（项目级）。当即在Flutter项目根目录下生成 .java-version
-  java --version                 # 验证
+  # 删除构建失败的 jenv 中间件
+  rm -f ~/.jenv/shims/.jenv-shim
+  
+  # 1、让 jenv 在当前 shell 生效
+  eval "$(jenv init -)"
+  
+  # 2、启用 export 插件（自动导出 JAVA_HOME）
+  jenv enable-plugin export
+  
+  # 3、让 jenv 识别本机 JDK 17（若已识别可跳过）
+  jenv add "$(/usr/libexec/java_home -v 17)" >/dev/null 2>&1
+  
+  # 4、更新 shims（新增 JDK 后建议做一次）
+  jenv rehash
+  
+  # 5、在项目内锁定到 JDK 17（JDK 版本号按 jenv versions 里显示来）
+  jenv local openjdk64-17.0.16 # 或者 17.0.16
+  
+  # 6、全局（所有项目默认）
+  jenv global openjdk64-24.0.2   
+  
+  # 7、重新加载环境（让 export 插件立刻生效）
+  jenv shell openjdk64-17.0.16
+  
+  # 8、 验证
+  echo ""
+  java -version
+  echo ""
+  echo "JAVA_HOME=$JAVA_HOME"
+  echo ""
   ```
   
   > **整个MacOS系统里面用最新的JDK；而在具体的[Flutter](https://flutter.dev/)项目里面用指定版本的JDK**
@@ -8596,34 +8623,40 @@ graph TD
 | `debug`   | `flutter build apk --debug --verbose` 或 `flutter run` | 开发调试用，功能全   |
 | `release` | `flutter build apk --release --verbose`                | 发布用，高性能最小包 |
 
-**`flutter build apk`** 等价于👇
+* 构建参数的差异：**`debug`** 🆚 **`release`**
 
-```shell
-cd /path/to/flutter_project/build/app/.android
+  * **`flutter run`** 默认是 **debug**
+  * **`flutter build apk`**默认是**`release`**，其他模式要显式写出来。**`release`** 会走更严格的资源校验/压缩/签名流程；**`debug`** 不会
+  * 能**`flutter build apk --debug`**但是不能**`flutter build apk --release`**是常见的。两者不是同一条流水线
+  
+* **`flutter build apk`** 等价于👇
 
-./gradlew \
-  -I /path/to/flutter/bin/cache/artifacts/engine/android-arm-release/flutter.gradle \
-  -Ptarget=/path/to/flutter_project/lib/main.dart \
-  -Ptarget-platform=android-arm,android-arm64 \
-  -Pdart-defines= \
-  -Pdart-obfuscation=false \
-  -Ptrack-widget-creation=true \
-  -Ptree-shake-icons=false \
-  -Psplit-debug-info= \
-  assembleRelease
-```
+  ```shell
+  cd /path/to/flutter_project/build/app/.android
+  
+  ./gradlew \
+    -I /path/to/flutter/bin/cache/artifacts/engine/android-arm-release/flutter.gradle \
+    -Ptarget=/path/to/flutter_project/lib/main.dart \
+    -Ptarget-platform=android-arm,android-arm64 \
+    -Pdart-defines= \
+    -Pdart-obfuscation=false \
+    -Ptrack-widget-creation=true \
+    -Ptree-shake-icons=false \
+    -Psplit-debug-info= \
+    assembleRelease
+  ```
 
-| 参数                      | 含义                                            |
-| ------------------------- | ----------------------------------------------- |
-| `-I flutter.gradle`       | 插入 Flutter 初始化脚本（来自 Flutter SDK）     |
-| `-Ptarget=xxx`            | 要构建的 Dart 入口文件路径                      |
-| `-Ptarget-platform=xxx`   | 目标平台，通常是 `android-arm`、`android-arm64` |
-| `-Pdart-defines`          | 编译期定义，例如 `flutter.env=prod` 等          |
-| `-Pdart-obfuscation`      | 是否混淆 Dart 代码                              |
-| `-Ptrack-widget-creation` | 是否启用 widget 追踪（影响 DevTools）           |
-| `-Ptree-shake-icons`      | 是否移除未使用的图标资源                        |
-| `-Psplit-debug-info`      | 是否分离调试信息                                |
-| `assembleRelease`         | 构建 release 产物，最终生成 `app-release.apk`   |
+  | 参数                      | 含义                                            |
+  | ------------------------- | ----------------------------------------------- |
+  | `-I flutter.gradle`       | 插入 Flutter 初始化脚本（来自 Flutter SDK）     |
+  | `-Ptarget=xxx`            | 要构建的 Dart 入口文件路径                      |
+  | `-Ptarget-platform=xxx`   | 目标平台，通常是 `android-arm`、`android-arm64` |
+  | `-Pdart-defines`          | 编译期定义，例如 `flutter.env=prod` 等          |
+  | `-Pdart-obfuscation`      | 是否混淆 Dart 代码                              |
+  | `-Ptrack-widget-creation` | 是否启用 widget 追踪（影响 DevTools）           |
+  | `-Ptree-shake-icons`      | 是否移除未使用的图标资源                        |
+  | `-Psplit-debug-info`      | 是否分离调试信息                                |
+  | `assembleRelease`         | 构建 release 产物，最终生成 `app-release.apk`   |
 
 ##### 21.1.8、⚙️ 相关配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
