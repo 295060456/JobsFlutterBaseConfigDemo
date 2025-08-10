@@ -32,7 +32,7 @@ print_intro() {
 
 # ✅ 获取目录信息
 init_vars() {
-  SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
   SCRIPT_NAME=$(basename "$0" .command)
   TARGET_DIR="$SCRIPT_DIR/$SCRIPT_NAME"
 }
