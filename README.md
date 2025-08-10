@@ -718,7 +718,7 @@ brew tap dart-lang/dart
   jenv versions --bare --verbose # 用这里的结果
   
   jenv global openjdk64-24.0.2   # 全局（所有项目默认）
-  jenv local openjdk64-17.0.16    # 当前目录（项目级）。当即在Flutter项目根目录下生成 .java-version
+  jenv local openjdk64-17.0.16   # 当前目录（项目级）。当即在Flutter项目根目录下生成 .java-version
   java --version                 # 验证
   ```
   
@@ -9273,7 +9273,7 @@ graph TD
     F --> F2[📄 ExportOptions.plist<br/>导出配置文件<br/>📝 控制签名/上传方式]
 ```
 
-##### 21.2.3、📦 打包脚本（TODO） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 21.2.3、📦 打包脚本 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 #!/bin/zsh
