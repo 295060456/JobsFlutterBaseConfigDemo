@@ -3152,6 +3152,23 @@ class XXX extends Object{}
 
 ##### 19.1.2、<font id=Column>`Column`</font> <a href="#线性布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
 
+```dart
+/// 无数据占位图
+Column(
+  children: [
+    SizedBox(height: 5.h),
+    SvgPicture.asset(
+    Assets.theme1.images.home.iconListEmpty,
+    width: 300.w,
+    ),
+    Text(
+     '暂无数据',
+      style: TextStyle(fontSize: 40.sp),
+    ),
+  ],
+)
+```
+
 ##### 19.1.3、<font id=Flex>`Flex`</font> <a href="#线性布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
 
 ```dart
@@ -5922,10 +5939,41 @@ class FadeInImageDemo extends StatelessWidget {
 #### 30.3、字符串（≥）拼接➕数据（int）截取3位（3个0，即：参数1000） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
-'≥${(data ?? 0) ~/ 1000}',
+ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>'≥${(data ?? 0) ~/ 1000}',
 ```
 
-#### 30.4、♻️<font color=red>**循环处理数据**</font>（以下写法等价） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 30.4、数字位分隔符 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+* 千分位（3位分隔）
+
+  ```dart
+  final amount = 10000000;
+  final formatted3 = NumberFormat('#,###').format(amount);
+  print(formatted3); // 10,000,000
+  ```
+
+* 四位分隔
+
+  ```dart
+  String formatFourDigits(int value) {
+    final s = value.toString();
+    final buffer = StringBuffer();
+    for (int i = 0; i < s.length; i++) {
+      if (i != 0 && (s.length - i) % 4 == 0) {
+        buffer.write(',');
+      }
+      buffer.write(s[i]);
+    }
+    return buffer.toString();
+  }
+  
+  void main() {
+    final amount = 10000000;
+    print(formatFourDigits(amount)); // 1,0000,0000
+  }
+  ```
+
+#### 30.5、♻️<font color=red>**循环处理数据**</font>（以下写法等价） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 final rows = [
@@ -7092,6 +7140,148 @@ void main() {
 }
 ```
 </details>
+
+### 40、模型处理`Json`字符串（一种优雅的`json_serializable`框架的高级用法）
+
+> 平时我们 `fromJson` 都是在整个 model 级别改逻辑，但那样会污染整个类。
+>
+> 用 `JsonConverter` 注解，可以让 **特定字段**（比如 `actionCfg`）单独用自己的一套转换逻辑。
+>
+> 而且多个 model 如果都有这个字段，可以直接复用这个 `ActionCfgConverter`。
+>
+> <font color=red>这个写法已经是 **解耦 + 兼容 + 类型安全** 三合一的最佳实践</font>
+
+* 定义处理工具（注解类）`ActionCfgConverter` 更加可维护
+
+  ```dart
+  import 'dart:convert';
+  import 'package:flutter_tiyu_app/app/modules/activity/data/activity_turntable_detail_model/action_cfg.dart';
+  import 'package:json_annotation/json_annotation.dart';
+  
+  /// 保持类型安全：明确声明输入是 Object?（因为 JSON 解析时可能是任意类型），输出是 ActionCfg?
+  /// 即使后端数据很乱，也不会影响其他字段的正常反序列化。
+  class ActionCfgConverter implements JsonConverter<ActionCfg?, Object?> {
+    const ActionCfgConverter();
+  
+    @override
+    ActionCfg? fromJson(Object? json) {
+      if (json == null) return null;
+  
+      // 兼容多种数据格式：直接是 Map 的情况
+      if (json is Map<String, dynamic>) {
+        return ActionCfg.fromJson(json);
+      }
+  
+      // 兼容多种数据格式：如果是字符串，尝试 decode
+      if (json is String && json.isNotEmpty) {
+        try {
+          final decoded = jsonDecode(json);
+          if (decoded is Map<String, dynamic>) {
+            return ActionCfg.fromJson(decoded);
+          }
+        } catch (_) {
+          // 不是有效 JSON，可以直接忽略或抛异常
+        }
+      }
+  
+      throw FormatException('actionCfg 类型不支持: ${json.runtimeType}');
+    }
+  
+    /// 双向转换：不光是 fromJson，连 toJson 时也能正确转换成 Map 结构，保证序列化一致性。
+    @override
+    Object? toJson(ActionCfg? object) => object?.toJson();
+  }
+  ```
+
+* 定义锚定的字段模型`ActionCfg`
+
+  ```dart
+  import 'package:json_annotation/json_annotation.dart';
+  import 'task_config.dart';
+  import 'wheel_config.dart';
+  part 'action_cfg.g.dart';
+  
+  @JsonSerializable()
+  @JsonSerializable()
+  class ActionCfg {
+    Map<String, String>? gameType;
+    String? popupContent;
+    String? postLoginModal;
+    String? preLoginModal;
+    List<SingleRechargeConfig>? singleRechargeConfigs;
+    List<dynamic>? taskConfigs;
+    int? type;
+    int? validityTime;
+    List<WheelConfig>? wheelConfigs;
+    List<int>? wheelSwitch;
+    dynamic betSource;
+  
+    ActionCfg({
+      this.gameType,
+      this.popupContent,
+      this.postLoginModal,
+      this.preLoginModal,
+      this.singleRechargeConfigs,
+      this.taskConfigs,
+      this.type,
+      this.validityTime,
+      this.wheelConfigs,
+      this.wheelSwitch,
+      this.betSource,
+    });
+  
+    factory ActionCfg.fromJson(Map<String, dynamic> json) =>
+        _$ActionCfgFromJson(json);
+  
+    Map<String, dynamic> toJson() => _$ActionCfgToJson(this);
+  }
+  
+  @JsonSerializable()
+  class SingleRechargeConfig {
+    int? amount; // // 充值门槛金额（单位：分）。例如：10000 表示 10.00 元
+    int? configId; // 配置项ID（唯一标识）
+    double? giftPercentage; // 赠送百分比（小数形式）。例如：0.1 表示 10%，0.15 表示 15%
+  
+    SingleRechargeConfig({
+      this.amount,
+      this.configId,
+      this.giftPercentage,
+    });
+  
+    factory SingleRechargeConfig.fromJson(Map<String, dynamic> json) =>
+        _$SingleRechargeConfigFromJson(json);
+  
+    Map<String, dynamic> toJson() => _$SingleRechargeConfigToJson(this);
+  }
+  ```
+
+* 使用
+
+  ```dart
+  import 'dart:convert';
+  import 'package:flutter_tiyu_app/app/modules/activity/controllers/action_cfg_converter.dart';
+  import 'package:json_annotation/json_annotation.dart';
+  import 'action_cfg.dart';
+  part 'activity_turntable_detail_model.g.dart';
+  
+  @JsonSerializable()
+  class ActivityTurntableDetailModel {
+    int? tid;
+  
+    @ActionCfgConverter() // ✅ 兼容 Map / String 两种返回
+    ActionCfg? actionCfg;
+  
+    ActivityTurntableDetailModel({
+      this.tid,
+      this.actionCfg,
+    });
+  
+    factory ActivityTurntableDetailModel.fromJson(Map<String, dynamic> json) =>
+        _$ActivityTurntableDetailModelFromJson(json);
+  
+    Map<String, dynamic> toJson() => _$ActivityTurntableDetailModelToJson(this);
+  }
+  ```
 
 ## 四、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
