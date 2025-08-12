@@ -20,12 +20,11 @@
 
 ## 🔥<font id=前言>前言</font>
 
+>温馨提示🔔：本文较长，需要⏬下载到本地以后，方能完整阅读。推荐阅读器👉[**Typora**](https://typora.io/)
+
 * **工欲善其事必先利其器**
 * **站在巨人的肩膀上，才能看得更远**
 * **面向信仰编程**
-* 🔔 温馨提示：👉  [⏬ <font color=red>**下载本文档**</font>](https://raw.githubusercontent.com/295060456/JobsFlutterBaseConfigDemo/master/README.md)
-
-<a href="https://raw.githubusercontent.com/295060456/JobsFlutterBaseConfigDemo/master/README.md" download>📥 下载 README.md</a>
 
 
 ## 💾 参考资料
