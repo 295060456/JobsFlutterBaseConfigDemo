@@ -23,7 +23,7 @@
 * **工欲善其事必先利其器**
 * **站在巨人的肩膀上，才能看得更远**
 * **面向信仰编程**
-* 🔔 温馨提示：👉  [<font color=red>**完整展示本文档**</font>](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/README.md)
+* 🔔 温馨提示：👉  [⏬ <font color=red>**下载本文档**</font>](https://raw.githubusercontent.com/295060456/JobsFlutterBaseConfigDemo/master/README.md)
 
 ## 💾 参考资料
 
