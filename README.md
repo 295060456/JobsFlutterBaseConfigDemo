@@ -25,6 +25,9 @@
 * **面向信仰编程**
 * 🔔 温馨提示：👉  [⏬ <font color=red>**下载本文档**</font>](https://raw.githubusercontent.com/295060456/JobsFlutterBaseConfigDemo/master/README.md)
 
+<a href="https://raw.githubusercontent.com/295060456/JobsFlutterBaseConfigDemo/master/README.md" download>📥 下载 README.md</a>
+
+
 ## 💾 参考资料
 
 * [**Flutter 实战@第二版**](https://book.flutterchina.club/)
