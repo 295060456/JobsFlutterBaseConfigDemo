@@ -3063,68 +3063,399 @@ class XXX extends Object{}
 
 > 虽然本质是响应用户输入（如点击、滑动、拖动、缩放等），但它们的使用方式**确实也是通过 `Widget` 实现的**
 >
-> ```
-> ┌────────────────────────────┐
-> │ Pointer 原始事件层         │ → Listener / MouseRegion
-> ├────────────────────────────┤
-> │ 手势识别封装层             │ → GestureDetector / RawGestureDetector
-> ├────────────────────────────┤
-> │ 手势 + 可视化反馈层         │ → InkWell / InkResponse / 按钮类
-> ├────────────────────────────┤
-> │ 拖拽、滑动等复杂交互封装     │ → Draggable / Dismissible / RefreshIndicator
-> └────────────────────────────┘
-> ```
 
-* [**Flutter**](https://flutter.dev/) 中的手势系统本质（由三层机制组成）
+```mermaid
+flowchart LR
+    A[Pointer 原始事件层<br/>Listener / MouseRegion]
+    B[手势识别封装层<br/>GestureDetector / RawGestureDetector]
+    C[手势 + 可视化反馈层<br/>InkWell / InkResponse / 按钮类]
+    D[拖拽、滑动等复杂交互封装<br/>Draggable / Dismissible / RefreshIndicator]
 
-  | 层级   | 名称                     | 说明                                                         |
-  | ------ | ------------------------ | ------------------------------------------------------------ |
-  | 1️⃣ 底层 | `Listener`               | 原始事件监听（如 **pointerDown**、**pointerMove**）          |
-  | 2️⃣ 中层 | `GestureDetector`        | 对原始事件进行识别封装（如 **tap**、**double tap**、**drag**） |
-  | 3️⃣ 高层 | `InkWell`, `InkResponse` | 组件化的手势 + 视觉反馈（如水波纹）                          |
+    A --> B
+    B --> C
+    C --> D
+```
 
-* ✅[**Flutter**](https://flutter.dev/) 中所有手势相关 **`Widget`** 一览（全量分类）
+#### 18.1、[**Flutter**](https://flutter.dev/) 中的手势系统本质（由三层机制组成）
 
-  * 🔹原始指针事件层（Pointer 级）：处理最底层的触摸事件（**pointer down** / **move** / **up** 等）
+| 层级   | 名称                     | 说明                                                         |
+| ------ | ------------------------ | ------------------------------------------------------------ |
+| 1️⃣ 底层 | `Listener`               | 原始事件监听（如 **pointerDown**、**pointerMove**）          |
+| 2️⃣ 中层 | `GestureDetector`        | 对原始事件进行识别封装（如 **tap**、**double tap**、**drag**） |
+| 3️⃣ 高层 | `InkWell`, `InkResponse` | 组件化的手势 + 视觉反馈（如水波纹）                          |
 
-    | Widget               | 说明                                                         |
-    | -------------------- | ------------------------------------------------------------ |
-    | **`Listener`**       | 监听原始 **Pointer** 事件（触摸按下、移动、抬起、取消、进入、离开等） |
-    | `MouseRegion`        | 专门处理鼠标事件（进入、悬停、离开、位置）                   |
-    | `RawGestureDetector` | 手动构建手势识别器，适合自定义复杂手势识别逻辑               |
-    | `IgnorePointer`      | 禁用子组件对 **Pointer** 事件的响应                          |
-    | `AbsorbPointer`      | 拦截 **Pointer** 事件（自身响应但不传递给子组件）            |
+#### 18.2、[**Flutter**](https://flutter.dev/) 中所有手势相关 **`Widget`** 一览（全量分类）
 
-  * 🔹手势识别层（Gesture 级）：对原始 **Pointer** 的封装，负责识别出“点击/拖动/缩放”等语义手势
+* 🔹原始指针事件层（Pointer 级）：处理最底层的触摸事件（**pointer down** / **move** / **up** 等）
 
-    | Widget                                                       | 说明                                                         |
-    | ------------------------------------------------------------ | ------------------------------------------------------------ |
-    | **`GestureDetector`**                                        | 支持 **tap**、**double tap**、**long press**、**drag**、**scale** 等完整手势<br/>❌ 无视觉反馈 |
-    | `Dismissible`                                                | 支持滑动删除手势，内置动画                                   |
-    | **`Draggable`**                                              | 可拖拽组件<br/>✅ 内建拖动逻辑                                |
-    | `LongPressDraggable`                                         | 长按后触发拖拽                                               |
-    | **`DragTarget`**                                             | 拖拽目标区，可接收拖拽数据<br/>✅ 内建拖动逻辑                |
-    | `InteractiveViewer`                                          | 支持缩放、拖动、旋转的交互容器                               |
-    | `GestureDetectorWithMultipleCustomGestureRecognizer`（自定义组合） | 自己组合多个识别器<br/>需 RawGestureDetector                 |
+  | Widget               | 说明                                                         |
+  | -------------------- | ------------------------------------------------------------ |
+  | **`Listener`**       | 监听原始 **Pointer** 事件（触摸按下、移动、抬起、取消、进入、离开等） |
+  | `MouseRegion`        | 专门处理鼠标事件（进入、悬停、离开、位置）                   |
+  | `RawGestureDetector` | 手动构建手势识别器，适合自定义复杂手势识别逻辑               |
+  | `IgnorePointer`      | 禁用子组件对 **Pointer** 事件的响应                          |
+  | `AbsorbPointer`      | 拦截 **Pointer** 事件（自身响应但不传递给子组件）            |
 
-  * 🔹手势 + 视觉反馈层（带交互视觉）：这些组件不仅支持手势识别，还附带点击反馈（如水波纹）
+* 🔹手势识别层（Gesture 级）：对原始 **Pointer** 的封装，负责识别出“点击/拖动/缩放”等语义手势
 
-    | Widget                                                       | 说明                                                         |
-    | ------------------------------------------------------------ | ------------------------------------------------------------ |
-    | **`InkWell`**                                                | 点击水波纹效果，配合 `Material` 使用                         |
-    | **`InkResponse`**                                            | 更灵活控制水波纹范围的点击组件<br>更灵活的 Ink 效果<br/>支持圆形<br/>可调点击区域等 |
-    | `CupertinoButton`                                            | iOS 风格按钮，自带点击高亮反馈                               |
-    | `MaterialButton` / `ElevatedButton` / `TextButton` / `OutlinedButton` | 都是封装了点击反馈的组件                                     |
+  | Widget                                                       | 说明                                                         |
+  | ------------------------------------------------------------ | ------------------------------------------------------------ |
+  | **`GestureDetector`**                                        | 支持 **tap**、**double tap**、**long press**、**drag**、**scale** 等完整手势<br/>❌ 无视觉反馈 |
+  | `Dismissible`                                                | 支持滑动删除手势，内置动画                                   |
+  | **`Draggable`**                                              | 可拖拽组件<br/>✅ 内建拖动逻辑                                |
+  | `LongPressDraggable`                                         | 长按后触发拖拽                                               |
+  | **`DragTarget`**                                             | 拖拽目标区，可接收拖拽数据<br/>✅ 内建拖动逻辑                |
+  | `InteractiveViewer`                                          | 支持缩放、拖动、旋转的交互容器                               |
+  | `GestureDetectorWithMultipleCustomGestureRecognizer`（自定义组合） | 自己组合多个识别器<br/>需 RawGestureDetector                 |
 
-  * 🔹组合行为类组件（复杂手势交互）
+* 🔹手势 + 视觉反馈层（带交互视觉）：这些组件不仅支持手势识别，还附带点击反馈（如水波纹）
 
-    | Widget                   | 说明                                          |
-    | ------------------------ | --------------------------------------------- |
-    | `PageView`               | 可横向/纵向滑动分页（内部使用拖拽手势）       |
-    | **`Dismissible`**        | 处理左右滑动删除的手势（✅ 内建动画）          |
-    | `RefreshIndicator`       | 下拉刷新（配合滚动手势触发）                  |
-    | `Slider` / `RangeSlider` | 拖动滑块（拖拽 + tap）                        |
-    | `Switch` / `Checkbox`    | 也支持手势（tap）但通常不直接作为手势组件使用 |
+  | Widget                                                       | 说明                                                         |
+  | ------------------------------------------------------------ | ------------------------------------------------------------ |
+  | **`InkWell`**                                                | 点击水波纹效果，配合 `Material` 使用                         |
+  | **`InkResponse`**                                            | 更灵活控制水波纹范围的点击组件<br>更灵活的 Ink 效果<br/>支持圆形<br/>可调点击区域等 |
+  | `CupertinoButton`                                            | iOS 风格按钮，自带点击高亮反馈                               |
+  | `MaterialButton` / `ElevatedButton` / `TextButton` / `OutlinedButton` | 都是封装了点击反馈的组件                                     |
+
+* 🔹组合行为类组件（复杂手势交互）
+
+  | Widget                   | 说明                                          |
+  | ------------------------ | --------------------------------------------- |
+  | `PageView`               | 可横向/纵向滑动分页（内部使用拖拽手势）       |
+  | **`Dismissible`**        | 处理左右滑动删除的手势（✅ 内建动画）          |
+  | `RefreshIndicator`       | 下拉刷新（配合滚动手势触发）                  |
+  | `Slider` / `RangeSlider` | 拖动滑块（拖拽 + tap）                        |
+  | `Switch` / `Checkbox`    | 也支持手势（tap）但通常不直接作为手势组件使用 |
+
+### 18.3、🍬手势语法糖 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+<details>
+<summary>Widget关于手势的拓展</summary>
+
+```dart
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+
+// ============================================================================
+// 🖐️ Widget Extension - 常用布局 & 手势聚合工具
+// ============================================================================
+extension WidgetExtension on Widget {
+  // ==================== 🎯 常用布局糖 ====================
+  Widget center() => Center(child: this);
+  Widget padding(EdgeInsetsGeometry p) => Padding(padding: p, child: this);
+  Widget margin(EdgeInsetsGeometry m) => Container(margin: m, child: this);
+  Widget infinity() =>
+      SizedBox(width: double.infinity, height: double.infinity, child: this);
+
+  // ==================== 🖐️ 手势聚合（推荐） ====================
+  Widget gestures({
+    Key? key,
+    HitTestBehavior? behavior,
+    bool excludeFromSemantics = false,
+    DragStartBehavior dragStartBehavior = DragStartBehavior.start,
+
+    // ==== Tap ====
+    GestureTapDownCallback? onTapDown,
+    GestureTapUpCallback? onTapUp,
+    GestureTapCallback? onTap,
+    GestureTapCancelCallback? onTapCancel,
+
+    // ==== Secondary Tap ====
+    GestureTapDownCallback? onSecondaryTapDown,
+    GestureTapUpCallback? onSecondaryTapUp,
+    GestureTapCallback? onSecondaryTap,
+    GestureTapCancelCallback? onSecondaryTapCancel,
+
+    // ==== Tertiary Tap ====
+    GestureTapDownCallback? onTertiaryTapDown,
+    GestureTapUpCallback? onTertiaryTapUp,
+    GestureTapCancelCallback? onTertiaryTapCancel,
+
+    // ==== Double Tap ====
+    GestureTapDownCallback? onDoubleTapDown,
+    GestureTapCallback? onDoubleTap,
+    GestureTapCancelCallback? onDoubleTapCancel,
+
+    // ==== Long Press ====
+    GestureLongPressDownCallback? onLongPressDown,
+    GestureLongPressCallback? onLongPress,
+    GestureLongPressStartCallback? onLongPressStart,
+    GestureLongPressMoveUpdateCallback? onLongPressMoveUpdate,
+    GestureLongPressUpCallback? onLongPressUp,
+    GestureLongPressEndCallback? onLongPressEnd,
+
+    // ==== Pan（自由拖拽）====
+    GestureDragStartCallback? onPanStart,
+    GestureDragUpdateCallback? onPanUpdate,
+    GestureDragEndCallback? onPanEnd,
+    GestureDragCancelCallback? onPanCancel,
+
+    // ==== 水平拖拽 ====
+    GestureDragStartCallback? onHorizontalDragStart,
+    GestureDragUpdateCallback? onHorizontalDragUpdate,
+    GestureDragEndCallback? onHorizontalDragEnd,
+    GestureDragCancelCallback? onHorizontalDragCancel,
+
+    // ==== 垂直拖拽 ====
+    GestureDragStartCallback? onVerticalDragStart,
+    GestureDragUpdateCallback? onVerticalDragUpdate,
+    GestureDragEndCallback? onVerticalDragEnd,
+    GestureDragCancelCallback? onVerticalDragCancel,
+
+    // ==== 缩放（Pan 的超集）====
+    GestureScaleStartCallback? onScaleStart,
+    GestureScaleUpdateCallback? onScaleUpdate,
+    GestureScaleEndCallback? onScaleEnd,
+  }) {
+    // ==== 🚨 冲突检测：Scale 与 Pan 系列不能同时使用 ====
+    final hasScale =
+        onScaleStart != null || onScaleUpdate != null || onScaleEnd != null;
+    final hasAnyPan = onPanStart != null ||
+        onPanUpdate != null ||
+        onPanEnd != null ||
+        onPanCancel != null ||
+        onHorizontalDragStart != null ||
+        onHorizontalDragUpdate != null ||
+        onHorizontalDragEnd != null ||
+        onHorizontalDragCancel != null ||
+        onVerticalDragStart != null ||
+        onVerticalDragUpdate != null ||
+        onVerticalDragEnd != null ||
+        onVerticalDragCancel != null;
+
+    assert(
+        !(hasScale && hasAnyPan),
+        '❌ GestureDetector 冲突：Scale 已包含 Pan 功能，不可同时声明。'
+        '👉 如果需要拖拽 + 缩放，请仅使用 Scale 系列回调（focalPointDelta 处理平移，scale 处理缩放）。');
+
+    // ==== Release 环境自动屏蔽冲突 ====
+    final enablePan = !hasScale;
+
+    return GestureDetector(
+      key: key,
+      behavior: behavior ?? HitTestBehavior.opaque,
+      excludeFromSemantics: excludeFromSemantics,
+      dragStartBehavior: dragStartBehavior,
+
+      // Tap
+      onTapDown: onTapDown,
+      onTapUp: onTapUp,
+      onTap: onTap,
+      onTapCancel: onTapCancel,
+
+      // Secondary
+      onSecondaryTapDown: onSecondaryTapDown,
+      onSecondaryTapUp: onSecondaryTapUp,
+      onSecondaryTap: onSecondaryTap,
+      onSecondaryTapCancel: onSecondaryTapCancel,
+
+      // Tertiary
+      onTertiaryTapDown: onTertiaryTapDown,
+      onTertiaryTapUp: onTertiaryTapUp,
+      onTertiaryTapCancel: onTertiaryTapCancel,
+
+      // Double Tap
+      onDoubleTapDown: onDoubleTapDown,
+      onDoubleTap: onDoubleTap,
+      onDoubleTapCancel: onDoubleTapCancel,
+
+      // Long Press
+      onLongPressDown: onLongPressDown,
+      onLongPress: onLongPress,
+      onLongPressStart: onLongPressStart,
+      onLongPressMoveUpdate: onLongPressMoveUpdate,
+      onLongPressUp: onLongPressUp,
+      onLongPressEnd: onLongPressEnd,
+
+      // Pan / Drag（仅当未使用 Scale 时才生效）
+      onPanStart: enablePan ? onPanStart : null,
+      onPanUpdate: enablePan ? onPanUpdate : null,
+      onPanEnd: enablePan ? onPanEnd : null,
+      onPanCancel: enablePan ? onPanCancel : null,
+
+      onHorizontalDragStart: enablePan ? onHorizontalDragStart : null,
+      onHorizontalDragUpdate: enablePan ? onHorizontalDragUpdate : null,
+      onHorizontalDragEnd: enablePan ? onHorizontalDragEnd : null,
+      onHorizontalDragCancel: enablePan ? onHorizontalDragCancel : null,
+
+      onVerticalDragStart: enablePan ? onVerticalDragStart : null,
+      onVerticalDragUpdate: enablePan ? onVerticalDragUpdate : null,
+      onVerticalDragEnd: enablePan ? onVerticalDragEnd : null,
+      onVerticalDragCancel: enablePan ? onVerticalDragCancel : null,
+
+      // Scale
+      onScaleStart: onScaleStart,
+      onScaleUpdate: onScaleUpdate,
+      onScaleEnd: onScaleEnd,
+
+      child: this,
+    );
+  }
+
+  // ==================== 🎯 常用手势语法糖 ====================
+  Widget onTap(GestureTapCallback? fn,
+          {HitTestBehavior behavior = HitTestBehavior.opaque}) =>
+      gestures(onTap: fn, behavior: behavior);
+
+  Widget onDoubleTap(GestureTapCallback? fn,
+          {HitTestBehavior behavior = HitTestBehavior.opaque}) =>
+      gestures(onDoubleTap: fn, behavior: behavior);
+
+  Widget onLongPress(GestureLongPressCallback? fn,
+          {HitTestBehavior behavior = HitTestBehavior.opaque}) =>
+      gestures(onLongPress: fn, behavior: behavior);
+
+  Widget onPan({
+    GestureDragStartCallback? start,
+    GestureDragUpdateCallback? update,
+    GestureDragEndCallback? end,
+    GestureDragCancelCallback? cancel,
+    HitTestBehavior behavior = HitTestBehavior.opaque,
+  }) =>
+      gestures(
+        onPanStart: start,
+        onPanUpdate: update,
+        onPanEnd: end,
+        onPanCancel: cancel,
+        behavior: behavior,
+      );
+
+  Widget onHorizontalDrag({
+    GestureDragStartCallback? start,
+    GestureDragUpdateCallback? update,
+    GestureDragEndCallback? end,
+    GestureDragCancelCallback? cancel,
+    HitTestBehavior behavior = HitTestBehavior.opaque,
+  }) =>
+      gestures(
+        onHorizontalDragStart: start,
+        onHorizontalDragUpdate: update,
+        onHorizontalDragEnd: end,
+        onHorizontalDragCancel: cancel,
+        behavior: behavior,
+      );
+
+  Widget onVerticalDrag({
+    GestureDragStartCallback? start,
+    GestureDragUpdateCallback? update,
+    GestureDragEndCallback? end,
+    GestureDragCancelCallback? cancel,
+    HitTestBehavior behavior = HitTestBehavior.opaque,
+  }) =>
+      gestures(
+        onVerticalDragStart: start,
+        onVerticalDragUpdate: update,
+        onVerticalDragEnd: end,
+        onVerticalDragCancel: cancel,
+        behavior: behavior,
+      );
+
+  Widget onScale({
+    GestureScaleStartCallback? start,
+    GestureScaleUpdateCallback? update,
+    GestureScaleEndCallback? end,
+    HitTestBehavior behavior = HitTestBehavior.opaque,
+  }) =>
+      gestures(
+        onScaleStart: start,
+        onScaleUpdate: update,
+        onScaleEnd: end,
+        behavior: behavior,
+      );
+}
+```
+</details>
+
+<details>
+<summary>使用方式</summary>
+
+```dart
+import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart';
+
+void main() =>
+    runApp(const JobsMaterialRunner(GestureDemoPage(), title: '手势扩展示例'));
+
+class GestureDemoPage extends StatefulWidget {
+  const GestureDemoPage({super.key});
+
+  @override
+  State<GestureDemoPage> createState() => _GestureDemoPageState();
+}
+
+class _GestureDemoPageState extends State<GestureDemoPage> {
+  String _log = "等待手势...";
+
+  void _updateLog(String text) {
+    setState(() => _log = text);
+    debugPrint(text);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const SizedBox(height: 20),
+        // 聚合 gestures 用法
+        Container(
+          color: Colors.blue,
+          height: 100,
+          width: 200,
+          alignment: Alignment.center,
+          child: const Text(
+            "🖐 演示区\n可单击、双击、长按、拖动、缩放、鼠标中键点击",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white, fontSize: 14),
+          ),
+        ).center().gestures(
+              onTap: () => _updateLog("👉 Tap"),
+              onDoubleTap: () => _updateLog("👉 Double Tap"),
+              onLongPress: () => _updateLog("👉 Long Press"),
+              onScaleUpdate: (details) {
+                // 平移：details.focalPointDelta
+                final dx = details.focalPointDelta.dx;
+                final dy = details.focalPointDelta.dy;
+
+                // 缩放：details.scale（=1 表示纯平移）
+                final scale = details.scale;
+
+                _updateLog(
+                    "👉 Scale pan(dx=$dx, dy=$dy), zoom=${scale.toStringAsFixed(2)}");
+              },
+              onTertiaryTapUp: (_) => _updateLog("👉 中键点击 (Tertiary Tap Up)"),
+            ),
+
+        const SizedBox(height: 20),
+
+        // 单一糖函数写法
+        Container(
+          color: Colors.green,
+          height: 80,
+          width: 180,
+          alignment: Alignment.center,
+          child: const Text(
+            "🖐 演示区\n可单击、长按",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white, fontSize: 14),
+          ),
+        )
+            .center()
+            .onTap(() => _updateLog("✅ 单击"))
+            .onLongPress(() => _updateLog("✅ 长按")),
+
+        const SizedBox(height: 20),
+
+        // 日志输出
+        Text(
+          _log,
+          style: const TextStyle(fontSize: 16, color: Colors.black87),
+        ),
+      ],
+    );
+  }
+}
+
+```
+</details>
 
 ### 19、<font id=线性布局>🧱</font> [**Flutter**](https://flutter.dev/)中，涉及到布局的**`Widget`**  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -7476,6 +7807,208 @@ void main() {
       );
     }
     ```
+
+### 42、🛜 网络请求 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+#### 42.1、[**Dio**](https://pub.dev/packages/dio) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+* 执行链  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+  * [**Retrofit**](https://pub.dev/packages/retrofit) ➕ [**Dio**](https://pub.dev/packages/dio) ➕ [**HttpClient**](https://pub.dev/packages/http_client) 
+
+    ```mermaid
+    %%{init: {"flowchart": {"htmlLabels": false}} }%%
+    flowchart TD
+        A["业务代码<br/>调用 getLog('Hello')"] --> B["Retrofit 生成的 _LogClient 实现类"]
+        B --> C["构造 RequestOptions\n拼接 URL/Headers/参数"]
+        C --> D["Dio 实例<br/>执行 fetch() 请求"]
+        D --> E["HttpClient<br/>(dart:io 底层 HTTP API)"]
+        E --> F["TCP / Socket<br/>建立连接并传输"]
+        F --> G["服务器<br/>接收并处理请求"]
+        G --> H["返回 HTTP 响应数据"]
+        H --> I["Dio 自动反序列化 JSON<br/>转成 Map"]
+        I --> J["调用 LogData.fromJson()<br/>生成 Dart 模型对象"]
+        J --> K["返回 LogData 给业务代码"]
+    ```
+
+  * 单次请求生命周期（含 Token 刷新、超时、取消、重试）
+
+    ```mermaid
+    sequenceDiagram
+    autonumber
+    actor UI as UI/调用方
+    participant API as ApiClient(封装层)
+    participant DIO as Dio
+    participant REQ as Request Interceptor(s)
+    participant NET as 网络/服务器
+    participant RESP as Response Interceptor(s)
+    participant ERR as Error Interceptor(s)
+    
+    UI->>API: getUser(page=1)
+    API->>DIO: dio.get("/users", query)
+    DIO->>REQ: 进入请求拦截链(onRequest)
+    REQ->>REQ: 加 headers/签名/埋点/日志
+    REQ-->>DIO: 放行(handler.next)
+    
+    alt 已取消(CancelToken)
+      DIO-->>UI: 抛 DioException(type=canceled)
+    else 未取消
+      DIO->>NET: 发送HTTP请求
+      alt 超时/断网
+        NET--xDIO: 抛 DioException(type=timeout/connectionError)
+        DIO->>ERR: 进入错误拦截链(onError)
+        opt 可重试策略
+          ERR->>DIO: 计算重试(backoff/次数)
+          DIO->>NET: 重试请求
+          NET-->>DIO: 成功或再次失败
+        end
+        alt 仍失败
+          ERR-->>API: 抛错误(包装统一错误码/文案)
+          API-->>UI: 返回失败
+        else 重试成功
+          DIO->>RESP: 进入响应拦截链(onResponse)
+          RESP-->>API: 统一解析/模型化
+          API-->>UI: 返回成功数据
+        end
+      else 有响应
+        NET-->>DIO: HTTP 2xx/4xx/5xx
+        alt 401 未授权
+          DIO->>ERR: 进入错误拦截链(onError)
+          ERR->>API: 触发刷新Token(refresh)
+          API->>DIO: 刷新成功? 更新Token
+          alt 刷新成功
+            ERR->>DIO: 重新发起原请求(request.clone)
+            DIO->>NET: 重试请求
+            NET-->>DIO: 返回2xx
+            DIO->>RESP: onResponse
+            RESP-->>API: 解析返回
+            API-->>UI: 返回成功
+          else 刷新失败
+            ERR-->>API: 抛未登录/跳转登录
+            API-->>UI: 返回失败(需登录)
+          end
+        else 2xx/业务成功
+          DIO->>RESP: onResponse(解包/规范化)
+          RESP-->>API: 返回模型或Map
+          API-->>UI: 返回成功
+        else 4xx/5xx 业务失败
+          DIO->>ERR: onError(统一错误码/降级)
+          ERR-->>API: 抛错误
+          API-->>UI: 返回失败
+        end
+      end
+    end
+    ```
+
+  * 拦截器链与数据流（请求→响应→错误）
+
+    ```mermaid
+    flowchart TD
+      subgraph Client["Dio 客户端"]
+        A["发起请求<br/>dio.request()"] --> B["请求拦截器链<br/>onRequest..."]
+        B -->|handler.next| C["HTTP 发送"]
+        C -->|成功| D["响应拦截器链<br/>onResponse..."]
+        C -->|失败/异常| E["错误拦截器链<br/>onError..."]
+      end
+    
+      D --> F["数据规范化/解包"]
+      F --> G["返回给调用方"]
+    
+      E -->|可恢复: 刷新Token/重试| H{"可继续?"}
+      H -->|是| C
+      H -->|否| I["抛出DioException/业务异常"]
+    
+      style A rounded
+      style G rounded
+      style I rounded
+    ```
+
+  * 常见拦截器职责分层（建议实践）
+
+    ```mermaid
+    graph TD
+      subgraph Interceptors
+        I1[AuthInterceptor<br/>加/刷新Token, 401重试]
+        I2[HeaderInterceptor<br/>UA/签名/TraceId]
+        I3[LoggerInterceptor<br/>请求/响应/耗时]
+        I4[RetryInterceptor<br/>幂等请求重试, 指数退避]
+        I5[ErrorMappingInterceptor<br/>错误码标准化/文案]
+        I6[ResponseAdapter<br/>解包 data/统一模型]
+      end
+    
+      A[请求] --> I2 --> I1 --> I3 --> I4 --> B[发出HTTP]
+      B --> C[收到响应]
+      C --> I6 --> I3 --> D[返回成功]
+      C -.错误.-> I5 -.-> I4 -.-> I1 -.-> E[返回失败或重试]
+    ```
+
+* [**http**](https://pub.dev/packages/http) 是底层：[**Flutter**](https://flutter.dev/)原生Api；[**Dio**](https://pub.dev/packages/dio) 是基于它的增强封装
+
+  * 简单示例
+
+    ```dart
+    import 'package:dio/dio.dart';
+    
+    void main() async {
+      final dio = Dio(BaseOptions(
+        baseUrl: "https://api.example.com",
+        connectTimeout: const Duration(seconds: 5),
+        receiveTimeout: const Duration(seconds: 3),
+        headers: {"Authorization": "Bearer token123"},
+      ));
+    
+      try {
+        final response = await dio.get("/users", queryParameters: {"page": 1});
+        print(response.data);
+      } on DioException catch (e) {
+        print("请求失败: ${e.message}");
+      }
+    }
+    ```
+
+  * 拦截器示例
+
+    ```dart
+    dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) {
+        print("请求前: ${options.uri}");
+        options.headers["Custom-Header"] = "123";
+        return handler.next(options);
+      },
+      onResponse: (response, handler) {
+        print("响应数据: ${response.data}");
+        return handler.next(response);
+      },
+      onError: (e, handler) {
+        print("错误: ${e.message}");
+        return handler.next(e);
+      },
+    ));
+    ```
+
+  * 文件**上传**/**下载**示例
+
+    ```dart
+    // 上传
+    final formData = FormData.fromMap({
+      "name": "file",
+      "file": await MultipartFile.fromFile("./example.png", filename: "example.png"),
+    });
+    await dio.post("/upload", data: formData);
+    
+    // 下载
+    await dio.download(
+      "https://example.com/file.zip",
+      "./file.zip",
+      onReceiveProgress: (count, total) {
+        print("进度: ${(count / total * 100).toStringAsFixed(0)}%");
+      },
+    );
+    ```
+  
+* <font color=red>**`@RestApi`**</font>：是 [**Retrofit**](https://pub.dev/packages/retrofit)  提供的一个注解，用来声明一个 HTTP API 客户端接口，它的作用是**让 [Retrofit](https://pub.dev/packages/retrofit)  自动生成实现类，帮你把 Dart 方法和 HTTP 请求绑定起来**，这样就不用手写繁琐的 Dio 请求逻辑
+
+### 43、💻（网络请求以后的）数据建模处理 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ## 四、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 

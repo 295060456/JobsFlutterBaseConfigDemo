@@ -12,7 +12,7 @@ import 'package:jobs_flutter_base_config/JobsDemoTools/Data/Data.3rd/本地数�
 import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/AppLifecycleCtrl.dart';
 import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/AppNavigatorObserver.dart';
 import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/CommonColor.dart';
-import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/Extensions/string_utils.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/Extensions/string_ext.dart';
 import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/JobsCommonUtil.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
