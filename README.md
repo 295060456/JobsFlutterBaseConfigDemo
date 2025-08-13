@@ -1227,7 +1227,7 @@ SystemChrome.setPreferredOrientations([
 ```
 </details>
 
-### 5、`WidgetsFlutterBinding`确保 **Flutter** 框架与底层平台（如 MethodChannel、插件）之间的桥梁已完成初始化 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 5、`WidgetsFlutterBinding`确保[**Flutter**](https://flutter.dev/)框架与底层平台（如 `MethodChannel`、插件）之间的桥梁已完成初始化 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > [**Flutter**](https://flutter.dev/) 有一个叫做 **`WidgetsBinding`** 的东西，它是所有 **`Widget`** 框架的核心，它负责：
 >
@@ -4011,13 +4011,153 @@ builder: (context, child) {
 * 语言切换
 * 内存压力警告等
 
-#### 24.3、👂滚动的监听（未完待续） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 24.3、👂监听@滚动（未完待续） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 24.4、👂数据变化通知的监听（未完待续） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 24.4、👂监听@数据变化通知（未完待续） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 24.5、👂键盘（弹起/落下）的监听（未完待续） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 24.5、👂<font id=监听@键盘（弹起&落下）>监听@键盘（弹起&落下）</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 24.6、👂网络的监听（未完待续） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+* 全局键盘状态管理器，不依赖第三方，任何地方都能拿到
+
+  >1️⃣ 键盘高度 `KeyboardService.instance.keyboardHeight`
+  >
+  >2️⃣ 监听可见性/高度变化（`ValueNotifier`）
+  >
+  >3️⃣ 一键收起键盘 `KeyboardService.instance.dismiss()`
+
+  ```dart
+  /// keybord_service.dart
+  import 'package:flutter/widgets.dart';
+  
+  class KeyboardService with WidgetsBindingObserver {
+    KeyboardService._();
+    static final KeyboardService instance = KeyboardService._();
+  
+    /// 是否可见 & 高度（用 ValueNotifier 方便全局监听）
+    final ValueNotifier<bool> isVisible = ValueNotifier<bool>(false);
+    final ValueNotifier<double> height = ValueNotifier<double>(0);
+  
+    /// 初始化：在 main() 里调用一次
+    void init() {
+      WidgetsBinding.instance.addObserver(this); // 注册监听
+      // 启动时同步一次
+      final bottom = WidgetsBinding.instance.window.viewInsets.bottom;
+      _update(bottom);
+    }
+  
+    /// 可选：进程结束前调用
+    void disposeService() {
+      WidgetsBinding.instance.removeObserver(this); // 移除监听
+    }
+  
+    /// 键盘变化回调
+    @override
+    void didChangeMetrics() {
+      final bottom = WidgetsBinding.instance.window.viewInsets.bottom;
+      _update(bottom);
+      if (bottom > 0) {
+        debugPrint("键盘弹起，高度: $bottom");
+      } else {
+        debugPrint("键盘收起");
+      }
+    }
+  
+    /// 工具：收起键盘
+    void dismiss() {
+      FocusManager.instance.primaryFocus?.unfocus();
+    }
+  
+    /// 便捷 getter
+    bool get visible => isVisible.value;
+    double get keyboardHeight => height.value;
+  
+    void _update(double bottomInset) {
+      final vis = bottomInset > 0;
+      if (isVisible.value != vis) isVisible.value = vis;
+      if (height.value != bottomInset) height.value = bottomInset;
+    }
+  }
+  ```
+
+  ```dart
+  /// main.dart 
+  import 'package:flutter/material.dart';
+  import 'keyboard_service.dart';
+  
+  void main() {
+    WidgetsFlutterBinding.ensureInitialized();
+    KeyboardService.instance.init(); // 全局只需一次
+    runApp(const MyApp());
+  }
+  ```
+
+  ```dart
+  /// 便捷扩展
+  import 'package:flutter/widgets.dart';
+  
+  extension KeyboardX on BuildContext {
+    bool get keyboardVisible => MediaQuery.of(this).viewInsets.bottom > 0;
+    double get keyboardHeight => MediaQuery.of(this).viewInsets.bottom;
+  }
+  
+  final v = context.keyboardVisible;
+  final h = context.keyboardHeight;
+  ```
+
+* 适配`GetxService`
+
+  ```dart
+  import 'package:flutter/widgets.dart';
+  import 'package:get/get.dart';
+  
+  class KeyboardController extends GetxService with WidgetsBindingObserver {
+    final visible = false.obs;
+    final height = 0.0.obs;
+  
+    @override
+    void onInit() {
+      super.onInit();
+      WidgetsBinding.instance.addObserver(this);
+      final bottom = WidgetsBinding.instance.window.viewInsets.bottom;
+      _update(bottom);
+    }
+  
+    @override
+    void onClose() {
+      WidgetsBinding.instance.removeObserver(this);
+      super.onClose();
+    }
+  
+    @override
+    void didChangeMetrics() {
+      final bottom = WidgetsBinding.instance.window.viewInsets.bottom;
+      _update(bottom);
+    }
+  
+    void dismiss() => FocusManager.instance.primaryFocus?.unfocus();
+  
+    void _update(double bottom) {
+      height.value = bottom;
+      visible.value = bottom > 0;
+    }
+  }
+  ```
+
+  ```dart
+  /// 注册
+  await Get.putAsync<KeyboardController>(() async => KeyboardController());
+  ```
+
+  ```dart
+  /// 使用
+  Obx(() {
+    final v = Get.find<KeyboardController>().visible.value;
+    final h = Get.find<KeyboardController>().height.value;
+    return Text(v ? '键盘高度: $h' : '键盘收起');
+  });
+  ```
+
+#### 24.6、👂监听@网络（未完待续） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ### 25、富文本 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -7285,6 +7425,58 @@ void main() {
   }
   ```
 
+### 41、⌨️键盘行为 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+* <a href="#监听@键盘（弹起&落下）" style="font-size:17px; color:green;"><b>👂监听@键盘（弹起&落下）</b></a>
+
+* 全局收键盘
+
+  * 工具方法
+
+    ```dart
+    void hideKeyboard() {
+      FocusManager.instance.primaryFocus?.unfocus();
+    }
+    ```
+
+  * 封装成一个 `Widget`
+
+    ```dart
+    import 'package:flutter/material.dart';
+    
+    class KeyboardDismissWrapper extends StatelessWidget {
+      final Widget child;
+      const KeyboardDismissWrapper({super.key, required this.child});
+      @override
+      Widget build(BuildContext context) {
+        return GestureDetector(
+          behavior: HitTestBehavior.translucent, // 点击空白区域也能触发
+          onTap: hideKeyboard,
+          child: child,
+        );
+      }
+    }
+    ```
+
+  * 使用方法
+
+    ```dart
+    @override
+    Widget build(BuildContext context) {
+      return KeyboardDismissWrapper(
+        child: Scaffold(
+          appBar: AppBar(title: Text('示例')),
+          body: Column(
+            children: [
+              TextField(),
+              TextField(),
+            ],
+          ),
+        ),
+      );
+    }
+    ```
+
 ## 四、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ### 1、修复平台目录：定位到[**Flutter**](https://flutter.dev/)项目根目录，执行👉`flutter create .`  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
@@ -8113,7 +8305,44 @@ Comparable.compare(a, b)
 
   * 返回 **正数**：表示 `a > b`
 
-### 14、**纯静态类** 的（常见）写法 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 14、全局事件监听器：**`WidgetsBindingObserver`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+* 无需额外依赖，原生[**Flutter**](https://flutter.dev/).**API**：**观察者接口（Mixin）**
+
+  * 能捕捉 **App 生命周期**（前台/后台）
+  * 能捕捉 **UI 窗口变化**（旋转、键盘）
+  * 能捕捉 **系统环境变化**（语言、主题、字体）
+
+* 本质上是 **观察 `WidgetsBinding`**（[**Flutter**](https://flutter.dev/)应用的核心事件分发器）的状态变化
+
+  * `WidgetsBinding` 是 Flutter 框架和宿主平台（[**Android**](https://www.android.com/)/**iOS**/桌面）之间的桥梁
+  * `Observer` 是监听这些事件的工具
+
+* 使用要点
+
+  * 必须注册/移除监听
+
+    ```dart
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
+    ```
+
+  * 适合用在 `State`、`Service`、`Controller` 里
+
+  * 事件重写
+
+    | 方法                                                      | 触发时机                                | 常用场景                       |
+    | --------------------------------------------------------- | --------------------------------------- | ------------------------------ |
+    | **`didChangeAppLifecycleState(AppLifecycleState state)`** | App 生命周期变化（前台/后台/挂起/恢复） | 前后台切换、暂停动画、释放资源 |
+    | **`didChangeMetrics()`**                                  | 窗口尺寸变化（屏幕旋转、键盘弹起/收起） | 监听键盘状态、UI 自适应        |
+    | **`didChangeLocales(List<Locale>? locale)`**              | 系统语言变化                            | 多语言切换                     |
+    | **`didChangePlatformBrightness()`**                       | 系统主题变化（亮色/暗色）               | 自动切换深色模式               |
+    | **`didHaveMemoryPressure()`**                             | 系统内存紧张                            | 释放缓存                       |
+    | **`didChangeTextScaleFactor()`**                          | 系统字体缩放变化                        | 字体适配                       |
+
+  * 和 `MediaQuery` 区别：`MediaQuery` 是构建 UI 时读状态，`WidgetsBindingObserver` 是实时监听变化。
+
+### 15、**纯静态类** 的（常见）写法 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ [**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/)里面没有反射（尤其是 **release** 模式）根本不支持 `dart:mirrors`（导入报错）
 >
@@ -8183,14 +8412,14 @@ Comparable.compare(a, b)
   }
   ```
 
-### 15、✂️剪切板行为  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 16、✂️剪切板行为  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 操作                                     | 可同步剪贴板？ | 方向   |
 | ---------------------------------------- | -------------- | ------ |
 | 在 **macOS 上复制**，到 iOS 模拟器中粘贴 | ✅ 可以         | 💻 ➜ 📱  |
 | 在 **iOS 模拟器中复制**，到 macOS 上粘贴 | ❌ 不行         | 📱 🚫➜ 💻 |
 
-### 16、**Dart**.<font color=red>**`Symbol`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 17、**Dart**.<font color=red>**`Symbol`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ 写法为 `#标识符`。例如：`#name`, `#sayHello`, `#toString`
 >
@@ -8237,13 +8466,13 @@ Comparable.compare(a, b)
 
 * 🧠 为什么要有 **`Symbol`**？和 **`String`** 有啥区别？
 
-  | Symbol                          | String              |
-  | ------------------------------- | ------------------- |
-  | 是“名字”或“符号”                | 是文字内容          |
-  | 用来告诉 Dart：我要操作这个名字 | 用来展示、存储内容  |
-  | Dart 编译时会优化 Symbol        | String 是运行时的值 |
+  | Symbol                                             | String              |
+  | -------------------------------------------------- | ------------------- |
+  | 是“名字”或“符号”                                   | 是文字内容          |
+  | 用来告诉 Dart：我要操作这个名字                    | 用来展示、存储内容  |
+  | [**Dart**](https://dart.dev/)  编译时会优化 Symbol | String 是运行时的值 |
 
-### 17、上下文（**`BuildContext`**） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 18、上下文**`BuildContext`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 🧠 举个比喻：
 >
@@ -8256,7 +8485,7 @@ Comparable.compare(a, b)
 >
 > 都要靠这个 `context`。
 
-* **不是变量传递**，是 **Flutter** 框架在构建 **`Widget`** 树时自动提供的
+* **不是变量传递**，是[**Flutter**](https://flutter.dev/)框架在构建 **`Widget`** 树时自动提供的
 
   ```dart
   class A extends StatelessWidget {
@@ -8271,8 +8500,22 @@ Comparable.compare(a, b)
   /// 可以用来访问 Theme.of(context)、MediaQuery.of(context)、Navigator.of(context) 等
   /// 并不等于其父组件的 context
   ```
+  
+* 也可以对上下文**`BuildContext`**进行拓展
 
-### 18、<font id=InheritedWidget>`InheritedWidget`</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+  ```dart
+  import 'package:flutter/widgets.dart';
+  
+  extension KeyboardX on BuildContext {
+    bool get keyboardVisible => MediaQuery.of(this).viewInsets.bottom > 0;
+    double get keyboardHeight => MediaQuery.of(this).viewInsets.bottom;
+  }
+  
+  final v = context.keyboardVisible;
+  final h = context.keyboardHeight;
+  ```
+
+### 19、<font id=InheritedWidget>**`InheritedWidget`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 官方定义：`InheritedWidget` 是一种可以**将数据从父`Widget`向下传递并提供响应式更新**的**`Widget`**
 
@@ -8322,11 +8565,73 @@ Comparable.compare(a, b)
   );
   ```
 
-### 19、🔧**自动化代码生成工具** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 20、混入<font color=red>**`with`**👈**`mixin`**👉**`on`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> **类似多继承，但更轻量**
+>
+> **mixin**：造模块（功能集）
+>
+> **with**：用模块（混入类）
+>
+> **on**：限定模块（必须基于谁才能用）
+
+* <font color=red size=5>**`with`**👈**`mixin`**</font>
+
+  * <font color=red>**最常见**</font>：`with` + `mixin`：在 [**Flutter**](https://flutter.dev/) 源码中，`with` 后面 99% 的情况是 `mixin`
+
+    ```dart
+    mixin Logger {
+      void log(String msg) => print(msg);
+    }
+    
+    class MyClass with Logger {}
+    ```
+
+  * `with` + `mixin class`（<font color=red>**Dart 3 推荐**</font>）
+
+    ```dart
+    mixin class Logger {
+      void log(String msg) => print(msg);
+    }
+    
+    class MyClass with Logger {}
+    ```
+
+  * `with` + 普通类（老语法，受限）
+
+    ```dart
+    class A {
+      void hello() => print('hi');
+    }
+    
+    class B with A {} // Dart 2.x 允许，但有局限
+    ```
+
+* <font color=red size=5>**`mixin`**👉**`on`**</font>
+
+  ```dart
+  class Animal {
+    void eat() => print("Eating...");
+  }
+  
+  mixin Walker on Animal {
+    void walk() {
+      print("Walking...");
+      eat(); // 可以直接调用，因为 on Animal 约束了
+    }
+  }
+  ```
+
+  ```dart
+  class Dog extends Animal with Walker {} // ✅ 可以，因为 Dog 是 Animal 的子类
+  class Car with Walker {} // ❌ 报错，因为 Car 不是 Animal
+  ```
+
+### 21、🔧**自动化代码生成工具** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * [<font color=red>**build_runner**</font>](https://pub.dev/packages/build_runner)
 
-  > **Dart 的代码生成引擎**，用于根据规则自动生成 Dart 代码
+  > **[Dart](https://dart.dev/) 的代码生成引擎**，用于根据规则自动生成 [**Dart**](https://dart.dev/) 代码
   >
   > 📦 它本身不生成代码，但**驱动其他插件去生成代码**。
 
@@ -8336,7 +8641,7 @@ Comparable.compare(a, b)
   | `flutter pub run build_runner watch` | 监听源码变化自动生成代码           |
   | `flutter pub run build_runner clean` | 清除 `.dart_tool` 中生成的缓存代码 |
   
-  * `build_runner` 是建筑工人 🧱（实际干活的）
+  * `build_runner` 是建筑工人👷（实际干活的）
     * `json_serializable`、`flutter_gen_runner`、`freezed` 等是设计图 📐（告诉你该建什么）
     * `.g.dart`、`.gen.dart` 文件是建筑成果 🏠（自动生成的代码）
 
@@ -8522,9 +8827,9 @@ Comparable.compare(a, b)
   | ✅ 测试 mock       | 自动生成 `@Mock()`、伪接口                         | `mockito` + `build_runner`                        |
   | ✅ Dart FFI        | 自动生成 FFI 对应的 dart wrapper                   | `ffigen`                                          |
 
-### 20、🏗️构造函数 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 22、🏗️构造函数 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 20.1、📚 各种构造函数形式讲解
+#### 22.1、📚 各种构造函数形式讲解
 
 * **默认构造函数**（<font color=red>**不能有两个默认构造函数（名字相同，参数不同也不行）**</font>）
 
@@ -8626,7 +8931,7 @@ Comparable.compare(a, b)
   }
   ```
 
-### 21、📦构建打包 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 23、📦构建打包 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ 打包慢，尤其[**Android**](https://www.android.com/)平台
 >
@@ -8704,9 +9009,9 @@ Comparable.compare(a, b)
   | **dynamic**                        | [**Flutter**](https://flutter.dev/) 动态集成场景 | **JIT + AOT**      | 依项目配置 | 依项目配置   | Add-to-App 混合开发               | **Android**<br/>**iOS**               | 原生动态加载 Flutter            |
   | **flavor 模式**                    | `flutter build apk --flavor staging`             | 依所选模式         | 依所选模式 | 依所选模式   | 多环境打包（`staging`、`uat` 等） | **Android**<br/>**iOS**               | 非编译模式，属于构建配置        |
 
-#### 21.1、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)（较为复杂和繁琐） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 23.1、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)（较为复杂和繁琐） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-##### 21.1.1、 [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 23.1.1、 [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 >  [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) （<font color=red>**建议保持最新**</font>）是[**Android**](https://www.android.com/).**SDK**命令行工具：[Android **Command Line Tools**](https://developer.android.com/tools?hl=zh-cn)的一部分，用于管理 [**Android**](https://www.android.com/).**SDK** 的组件。它允许你从终端安装、更新、查看和卸载[**Android**](https://www.android.com/).**SDK**中的各种包，比如：
 >
@@ -8748,11 +9053,11 @@ Comparable.compare(a, b)
 
     * 用于自定义 **CI/CD** 环境（如 [**Docker**](https://www.docker.com/)镜像）
 
-##### 21.1.2、[**Gradle**](https://gradle.org/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 23.1.2、[**Gradle**](https://gradle.org/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 一个高度可配置、插件化、现代化的自动化构建工具（平台无关）
 
-* 从 [**Flutter**](https://flutter.dev/) **3.16 起**，[**Flutter**](https://flutter.dev/) 官方默认使用 [**Kotlin DSL**](https://docs.gradle.org/current/userguide/kotlin_dsl.html)作为 **Android** 构建脚本（为了更好支持类型提示和现代化 [**Gradle**](https://gradle.org/) 构建）
+* 从 [**Flutter**](https://flutter.dev/) **3.16 起**，[**Flutter**](https://flutter.dev/) 官方默认使用 [**Kotlin DSL**](https://docs.gradle.org/current/userguide/kotlin_dsl.html)作为[**Android**](https://www.android.com/)构建脚本（为了更好支持类型提示和现代化 [**Gradle**](https://gradle.org/) 构建）
 
 * [**Gradle**](https://gradle.org/) 官方并<font color=red>**不支持**</font> iOS 构建
 
@@ -8818,7 +9123,7 @@ Comparable.compare(a, b)
   }
   ```
 
-##### 21.1.3、<font id=AGP>[<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) = <font color=red>**A**</font>ndroid <font color=red>**G**</font>radle <font color=red>**P**</font>lugin</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> 
+##### 23.1.3、<font id=AGP>[<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) = <font color=red>**A**</font>ndroid <font color=red>**G**</font>radle <font color=red>**P**</font>lugin</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> 
 
 * 🧱  [<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) 是连接 [**Gradle**](https://gradle.org/) 和 **[Android](https://www.android.com/) 构建逻辑** 的桥梁
 
@@ -8863,7 +9168,7 @@ Comparable.compare(a, b)
   | 版本关系               | 不同 [<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn)  需配套不同 [**Gradle**](https://gradle.org/) | 独立更新                                           |
   | **Flutter** 项目中位置 | `build.gradle` 中的 `classpath`                              | `gradle-wrapper.properties` 中的 `distributionUrl` |
 
-##### 21.1.4、[**Android**](https://www.android.com/)  打包的产物 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 23.1.4、[**Android**](https://www.android.com/)  打包的产物 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 项目                 | <font color=red>**A**</font>ndroid <font color=red>**p**</font>ac<font color=red>**k**</font>age | <font color=red>**A**</font>ndroid <font color=red>**a**</font>pp <font color=red>**b**</font>undle |
 | -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -8878,7 +9183,7 @@ Comparable.compare(a, b)
 | **常见用途**         | 内部测试、第三方分发、安装包备份                             | 上传 [**Google Play**](https://play.google.com/) 商店        |
 | **是否推荐**         | ✅ 第三方或私有渠道使用                                       | ✅ [**Google**](https://www.google.com/) 官方推荐上传 [**Play**](https://play.google.com/) 商店使用 |
 
-##### 21.1.5、[**Flutter**](https://flutter.dev/)打[**Android**](https://www.android.com/) 包的流程图 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 23.1.5、[**Flutter**](https://flutter.dev/)打[**Android**](https://www.android.com/) 包的流程图 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```mermaid
 graph TD
@@ -8890,7 +9195,7 @@ graph TD
     F --> G[Generate final APK]
 ```
 
-##### 21.1.6、如何加快[**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)的打包速度？ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 23.1.6、如何加快[**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)的打包速度？ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 优化方式                                            | 操作说明                                                     |
 | --------------------------------------------------- | ------------------------------------------------------------ |
@@ -8903,7 +9208,7 @@ graph TD
 | ✅ **设置构建线程数**                                | [**Gradle**](https://gradle.org/) 中设置：`org.gradle.parallel=true` |
 | ✅ [**Flutter**](https://flutter.dev/) **版本更新**  | 新版本通常对构建性能有优化                                   |
 
-##### 21.1.7、🪖<font color=red>**构建指令**</font>：`flutter build apk` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 23.1.7、🪖<font color=red>**构建指令**</font>：`flutter build apk` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 模式      | 命令                                                   | 简称说明             |
 | --------- | ------------------------------------------------------ | -------------------- |
@@ -8945,7 +9250,7 @@ graph TD
   | `-Psplit-debug-info`      | 是否分离调试信息                                |
   | `assembleRelease`         | 构建 release 产物，最终生成 `app-release.apk`   |
 
-##### 21.1.8、⚙️ 相关配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 23.1.8、⚙️ 相关配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/) 打包需要涉及到**Java**环境推荐使用[<font color=red>**openJDK**</font>](https://openjdk.org/)
 
@@ -9003,7 +9308,7 @@ graph TD
   | 第三方依赖                                                   | 来自 [**pub.dev**](https://pub.dev/) 的插件中声明的 AAR/JAR，如 [`image_gallery_saver`](https://pub.dev/packages/image_gallery_saver)、[`engagelab`](https://pub.dev/packages?q=engagelab) |
   | [**Google Maven**](https://maven.google.com/web/index.html) / [**JCenter**](https://mvnrepository.com/repos/jcenter) / [**MavenCentral**](https://central.sonatype.com/) | 默认构建源，国内访问会慢                                     |
 
-##### 21.1.9、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)打包脚本（MacOS）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 23.1.9、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)打包脚本（MacOS）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 <details>
 <summary>点击展开代码</summary>
@@ -9500,7 +9805,7 @@ main "$@"
 ```
 </details>
 
-##### 21.1.10、打包成品  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 23.1.10、打包成品  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > [**Flutter**](https://flutter.dev/) 和 [**Gradle**](https://gradle.org/)  的构建系统默认会将最新产物**覆盖上一次的构建产物**
 
@@ -9532,9 +9837,9 @@ graph TD
 | 🚀 提测/发包                                         | `apk/release/app-release.apk`（需签名）                  |
 | 🌐 上架  [**Google Play**](https://play.google.com/) | `bundle/release/app-release.aab`                         |
 
-#### 21.2、📦 [**Flutter**](https://flutter.dev/).**iOS**（相对简单）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 23.2、📦 [**Flutter**](https://flutter.dev/).**iOS**（相对简单）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-##### 21.2.1、🪖<font color=red>**构建指令**</font>：`flutter build ios` 和 `flutter build ipa` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 23.2.1、🪖<font color=red>**构建指令**</font>：`flutter build ios` 和 `flutter build ipa` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > **iOS** 项目主流是使用[**XCode**](https://developer.apple.com/xcode/) + [**XCode**](https://developer.apple.com/xcode/) **build system** 来进行构建
 
@@ -9552,7 +9857,7 @@ graph TD
 | `--export-options-plist` | `--export-options-plist=ios/ExportOptions.plist` | 指定导出 **ipa** 所需的 **plist**        |
 | `--no-codesign`          | `flutter build ios --no-codesign`                | 构建时跳过签名，常用于 CI 环境或手动签名 |
 
-##### 21.2.2、📁生成的包目录  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 23.2.2、📁生成的包目录  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 虽然[**Flutter**](https://flutter.dev/)构建**iOS**的`.ipa`包最终还是调用**Xcode**的内部组件，<font color=red>但是生成的`.ipa`包的物理位置，与**Xcode**打正常的**iOS**原生`.ipa`是不同的</font>
 
@@ -9593,7 +9898,7 @@ graph TD
     F --> F2[📄 ExportOptions.plist<br/>导出配置文件<br/>📝 控制签名/上传方式]
 ```
 
-##### 21.2.3、📦 打包脚本 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 23.2.3、📦 打包脚本 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 #!/bin/zsh
@@ -9812,7 +10117,7 @@ main() {
 main "$@"
 ```
 
-##### 21.2.4、⚠️注意事项  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 23.2.4、⚠️注意事项  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 必须要有苹果的开发者账号（普通账户充值）
 
