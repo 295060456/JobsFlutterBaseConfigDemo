@@ -952,7 +952,7 @@ plugins/
 
 ## 三、💥代码讲解 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-### 1、🖨️打印方式 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 1、🖨️调试打印 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 #### 1.1、 <font id=极光原生推送>🌌</font><a href="#极光原生推送" style="font-size:20px; color:green;"><b>极光原生推送</b></a>封装的全局打印（🧨强烈推荐）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> 
 
@@ -1000,6 +1000,181 @@ void JobsPrint(Object? message) {
   FlutterPluginEngagelab.printMy('[$logLine] ${_messageToString(message)}');
 }
 ```
+
+####  1.4、打印对象
+
+> 引入此文件到需要打印的文件里面去
+
+```dart
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
+/// 命名po，延续iOS开发中打印对象的方法命名的传统
+void po(
+  dynamic input, {
+  String? path, // 点语法: 't.actionCfg.gameType'
+  int maxDepth = 6, // 最大展开层级
+  int maxItems = 30, // 每层最多多少元素
+  int maxString = 200, // 字符串显示最大长度
+  bool showTypes = true,
+}) {
+  dynamic obj = input;
+
+  // 如果是类似 NetworkResponse/Response 且有 data 属性，默认先拿 data
+  try {
+    if (!(obj is Map || obj is List) && (obj as dynamic?)?.data != null) {
+      obj = (obj as dynamic).data;
+    }
+  } catch (_) {}
+
+  // 点路径（逐层时也会自动解码 JSON 字符串）
+  if (path != null && path.isNotEmpty) {
+    for (final k in path.split('.')) {
+      obj = _decodeIfJsonString(obj);
+      if (obj is Map && obj.containsKey(k)) {
+        obj = obj[k];
+      } else {
+        debugPrint('<Key not found: $k>');
+        return;
+      }
+    }
+  }
+
+  // 根也尝试一次解码
+  obj = _decodeIfJsonString(obj);
+
+  final seen = <int>{}; // 简单循环保护
+  void walk(dynamic v, int depth, String indent, String? k) {
+    final prefix = k == null ? '' : '$k: ';
+    final type = showTypes ? ' <${v.runtimeType}>' : '';
+
+    if (v == null) {
+      debugPrint('$indent${prefix}null$type');
+      return;
+    }
+
+    // 循环引用保护
+    final id = identityHashCode(v);
+    if (v is Map || v is List) {
+      if (seen.contains(id)) {
+        debugPrint('$indent${prefix}<cyclic>$type');
+        return;
+      }
+      seen.add(id);
+    }
+
+    // 字符串里包着 JSON，自动解一次
+    if (v is String) {
+      final decoded = _tryDecodeJson(v);
+      if (decoded != null) {
+        walk(decoded, depth, indent, k);
+        return;
+      }
+    }
+
+    if (v is Map) {
+      final entries = v.entries.toList();
+      debugPrint('$indent${prefix}{${entries.length}}$type');
+      if (depth >= maxDepth) {
+        debugPrint('$indent  … <maxDepth>');
+        return;
+      }
+      final limit = entries.length.clamp(0, maxItems);
+      for (var i = 0; i < limit; i++) {
+        final e = entries[i];
+        walk(e.value, depth + 1, '$indent  ', e.key.toString());
+      }
+      if (entries.length > limit) {
+        debugPrint('$indent  … and ${entries.length - limit} more');
+      }
+      return;
+    }
+
+    if (v is List) {
+      debugPrint('$indent${prefix}[${v.length}]$type');
+      if (depth >= maxDepth) {
+        debugPrint('$indent  … <maxDepth>');
+        return;
+      }
+      final limit = v.length.clamp(0, maxItems);
+      for (var i = 0; i < limit; i++) {
+        walk(v[i], depth + 1, '$indent  ', '[$i]');
+      }
+      if (v.length > limit) {
+        debugPrint('$indent  … and ${v.length - limit} more');
+      }
+      return;
+    }
+
+    // 普通值
+    var s = v.toString();
+    if (s.length > maxString) s = '${s.substring(0, maxString)}…';
+    debugPrint('$indent$prefix$s$type');
+  }
+
+  walk(obj, 0, '', null);
+}
+
+dynamic _decodeIfJsonString(dynamic v) {
+  if (v is String) {
+    final decoded = _tryDecodeJson(v);
+    if (decoded != null) return decoded;
+  }
+  return v;
+}
+
+dynamic _tryDecodeJson(String s) {
+  final trimmed = s.trimLeft();
+  if (trimmed.isEmpty) return null;
+  final firstChar = trimmed[0];
+  if (!(firstChar == '{' || firstChar == '[')) return null;
+  try {
+    final d = jsonDecode(s);
+    return (d is Map || d is List) ? d : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+/// 语法糖：任何对象上直接 .jobsee()
+extension InspectX on Object? {
+  /// 方法名前加前缀，避免与内置方法冲突
+  void jobsee({
+    String? path,
+    int maxDepth = 6,
+    int maxItems = 30,
+    int maxString = 200,
+    bool showTypes = true,
+  }) =>
+      po(
+        this,
+        path: path,
+        maxDepth: maxDepth,
+        maxItems: maxItems,
+        maxString: maxString,
+        showTypes: showTypes,
+      );
+}
+```
+
+> ```dart
+> // 假数据
+> final mockData = {
+>   "status": "success",
+>   "user": {
+>     "id": 1,
+>     "name": "Alice",
+>     "settingsJson": '{"theme":"dark","lang":"en"}', // JSON字符串
+>     "roles": ["admin", "user"]
+>   }
+> };
+> ```
+>
+> ```dart
+> // 打印整个对象
+> po(mockData);
+> // 打印指定路径
+> po(mockData, path: 'user.settingsJson');
+> ```
 
 ### 2、`SystemChrome`常用于设置<u>**状态栏和系统底部导航栏样式**</u>的配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -3127,7 +3302,7 @@ flowchart LR
   | `Slider` / `RangeSlider` | 拖动滑块（拖拽 + tap）                        |
   | `Switch` / `Checkbox`    | 也支持手势（tap）但通常不直接作为手势组件使用 |
 
-### 18.3、🍬手势语法糖 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 18.3、🍬手势语法糖 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 <details>
 <summary>Widget关于手势的拓展</summary>
@@ -3136,18 +3311,8 @@ flowchart LR
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-// ============================================================================
-// 🖐️ Widget Extension - 常用布局 & 手势聚合工具
-// ============================================================================
+/// 🍬语法糖：手势聚合
 extension WidgetExtension on Widget {
-  // ==================== 🎯 常用布局糖 ====================
-  Widget center() => Center(child: this);
-  Widget padding(EdgeInsetsGeometry p) => Padding(padding: p, child: this);
-  Widget margin(EdgeInsetsGeometry m) => Container(margin: m, child: this);
-  Widget infinity() =>
-      SizedBox(width: double.infinity, height: double.infinity, child: this);
-
-  // ==================== 🖐️ 手势聚合（推荐） ====================
   Widget gestures({
     Key? key,
     HitTestBehavior? behavior,
@@ -3363,6 +3528,7 @@ extension WidgetExtension on Widget {
         behavior: behavior,
       );
 }
+
 ```
 </details>
 
@@ -3371,6 +3537,7 @@ extension WidgetExtension on Widget {
 
 ```dart
 import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/Extensions/WidgetExtension/JobsWidgetExtension.dart';
 
 void main() =>
     runApp(const JobsMaterialRunner(GestureDemoPage(), title: '手势扩展示例'));
@@ -7765,13 +7932,21 @@ void main() {
   * 工具方法
 
     ```dart
+    /// 让当前聚焦控件失去焦点
     void hideKeyboard() {
+      /// 写法一：人为创建一个全新的、未绑定到任何输入控件的 FocusNode，然后请求焦点到它。
+      /// 当前的焦点会切换到“空节点”，等价于“把焦点丢给一个不存在的地方”。
+      /// 适合需要立即切换到其他输入控件的情况
+      FocusScope.of(Get.context!).requestFocus(FocusNode()); 
+      /// 写法二：
+      /// 焦点会回到 null（没有任何控件拥有焦点）。
+      /// 简单直接，适合单纯收键盘
       FocusManager.instance.primaryFocus?.unfocus();
     }
     ```
-
+  
   * 封装成一个 `Widget`
-
+  
     ```dart
     import 'package:flutter/material.dart';
     
@@ -7788,9 +7963,9 @@ void main() {
       }
     }
     ```
-
+  
   * 使用方法
-
+  
     ```dart
     @override
     Widget build(BuildContext context) {
@@ -8009,6 +8184,495 @@ void main() {
 * <font color=red>**`@RestApi`**</font>：是 [**Retrofit**](https://pub.dev/packages/retrofit)  提供的一个注解，用来声明一个 HTTP API 客户端接口，它的作用是**让 [Retrofit](https://pub.dev/packages/retrofit)  自动生成实现类，帮你把 Dart 方法和 HTTP 请求绑定起来**，这样就不用手写繁琐的 Dio 请求逻辑
 
 ### 43、💻（网络请求以后的）数据建模处理 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+### 44、🍬**`Widget`**拓展语法糖 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+extension JobsBasePageWrapper on Widget {
+  Widget withBasePage(BuildContext context, {PreferredSizeWidget? appBar}) {
+    final bottomInset = View.of(context).viewInsets.bottom;
+    return SafeArea(
+      child: Scaffold(
+        appBar: appBar,
+        resizeToAvoidBottomInset: true,
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(bottom: bottomInset),
+            child: this,
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+> ```dart
+> @override
+> Widget build(BuildContext context) {
+>   return Column(
+>     children: [
+>       Text('标题'),
+>       TextField(),
+>     ],
+>   ).withBasePage(context, appBar: AppBar(title: Text('首页')));
+> }
+> ```
+
+```dart
+/// 🍬语法糖：简化代码，方便阅读📖
+extension JobsWidgetExtension on Widget {
+  /// 居中
+  Widget center() => Center(child: this);
+  /// 居左
+  Widget alignLeft() => Align(alignment: Alignment.centerLeft, child: this);
+  /// 居右
+  Widget alignRight() => Align(alignment: Alignment.centerRight, child: this);
+  /// 居上
+  Widget alignTop() => Align(alignment: Alignment.topCenter, child: this);
+  /// 居下
+  Widget alignBottom() => Align(alignment: Alignment.bottomCenter, child: this);
+  /// 指定对齐方式
+  Widget align(AlignmentGeometry alignment) =>
+      Align(alignment: alignment, child: this);
+  /// 添加 Padding
+  Widget padding(EdgeInsetsGeometry padding) =>
+      Padding(padding: padding, child: this);
+  /// 添加 Margin
+  Widget margin(EdgeInsetsGeometry margin) =>
+      Container(margin: margin, child: this);
+  /// 添加背景色
+  Widget backgroundColor(Color color) =>
+      Container(color: color, child: this);
+  /// 添加边框
+  Widget border({
+    Color color = Colors.black,
+    double width = 1.0,
+    BorderRadiusGeometry? radius,
+  }) =>
+      Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: color, width: width),
+          borderRadius: radius,
+        ),
+        child: this,
+      );
+
+  /// 添加圆角
+  Widget radius([double r = 8.0]) => ClipRRect(
+        borderRadius: BorderRadius.circular(r),
+        child: this,
+      );
+  /// 添加固定宽高
+  Widget size({double? width, double? height}) =>
+      SizedBox(width: width, height: height, child: this);
+  /// 占满父容器
+  Widget infinity() =>
+      SizedBox(width: double.infinity, height: double.infinity, child: this);
+  /// 添加 Tooltip 提示
+  Widget tooltip(String message) => Tooltip(
+        message: message,
+        child: this,
+      );
+  /// 设置透明度
+  Widget opacity(double value) => Opacity(opacity: value, child: this);
+  /// 设置旋转角度（单位：弧度）
+  Widget rotate(double radians) => Transform.rotate(
+        angle: radians,
+        child: this,
+      );
+  /// 添加缩放
+  Widget scale(double factor) => Transform.scale(
+        scale: factor,
+        child: this,
+      );
+  /// 添加 Transform（可旋转/缩放/位移）
+  Widget transform(Matrix4 matrix) => Transform(
+        transform: matrix,
+        child: this,
+      );
+  /// 添加 Hero 动画（需配合 tag 使用）
+  Widget hero(String tag) => Hero(tag: tag, child: this);
+  /// 添加 ClipOval 圆形裁剪
+  Widget clipOval() => ClipOval(child: this);
+  /// 添加 SafeArea 包裹
+  Widget safeArea() => SafeArea(child: this);
+  /// 可滚动包裹
+  Widget scrollable({Axis scrollDirection = Axis.vertical}) =>
+      SingleChildScrollView(
+        scrollDirection: scrollDirection,
+        child: this,
+      );
+}
+```
+
+> ```dart
+> Text("点我试试,试试就试试")
+>   .center()                                      // 居中
+>   .align(Alignment.bottomRight)                  // 指定对齐方式
+>   .padding(const EdgeInsets.all(12))             // 内边距
+>   .margin(const EdgeInsets.only(bottom: 20))     // 外边距
+>   .backgroundColor(Colors.blueAccent)            // 背景色
+>   .border(color: Colors.white, width: 2)         // 边框
+>   .radius(16)                                    // 圆角
+>   .size(width: 200, height: 60)                  // 固定宽高
+>   .tooltip("这是一个按钮")                         // Tooltip 提示
+>   .opacity(0.9)                                  // 透明度
+>   .rotate(0.1)                                   // 旋转（单位是弧度）
+>   .scale(1.1)                                    // 缩放
+>   .transform(Matrix4.translationValues(5, 0, 0)) // 位移变换
+>   .clipOval()                                    // 裁剪成圆形
+>   .hero("myHeroTag")                             // Hero 动画（需配合页面跳转）
+>   .safeArea()                                    // SafeArea 包裹
+>   .scrollable()                                  // 可滚动包裹
+> ```
+
+```dart
+/// 🍬语法糖：手势聚合
+extension WidgetExtension on Widget {
+  Widget gestures({
+    Key? key,
+    HitTestBehavior? behavior,
+    bool excludeFromSemantics = false,
+    DragStartBehavior dragStartBehavior = DragStartBehavior.start,
+
+    // ==== Tap ====
+    GestureTapDownCallback? onTapDown,
+    GestureTapUpCallback? onTapUp,
+    GestureTapCallback? onTap,
+    GestureTapCancelCallback? onTapCancel,
+
+    // ==== Secondary Tap ====
+    GestureTapDownCallback? onSecondaryTapDown,
+    GestureTapUpCallback? onSecondaryTapUp,
+    GestureTapCallback? onSecondaryTap,
+    GestureTapCancelCallback? onSecondaryTapCancel,
+
+    // ==== Tertiary Tap ====
+    GestureTapDownCallback? onTertiaryTapDown,
+    GestureTapUpCallback? onTertiaryTapUp,
+    GestureTapCancelCallback? onTertiaryTapCancel,
+
+    // ==== Double Tap ====
+    GestureTapDownCallback? onDoubleTapDown,
+    GestureTapCallback? onDoubleTap,
+    GestureTapCancelCallback? onDoubleTapCancel,
+
+    // ==== Long Press ====
+    GestureLongPressDownCallback? onLongPressDown,
+    GestureLongPressCallback? onLongPress,
+    GestureLongPressStartCallback? onLongPressStart,
+    GestureLongPressMoveUpdateCallback? onLongPressMoveUpdate,
+    GestureLongPressUpCallback? onLongPressUp,
+    GestureLongPressEndCallback? onLongPressEnd,
+
+    // ==== Pan（自由拖拽）====
+    GestureDragStartCallback? onPanStart,
+    GestureDragUpdateCallback? onPanUpdate,
+    GestureDragEndCallback? onPanEnd,
+    GestureDragCancelCallback? onPanCancel,
+
+    // ==== 水平拖拽 ====
+    GestureDragStartCallback? onHorizontalDragStart,
+    GestureDragUpdateCallback? onHorizontalDragUpdate,
+    GestureDragEndCallback? onHorizontalDragEnd,
+    GestureDragCancelCallback? onHorizontalDragCancel,
+
+    // ==== 垂直拖拽 ====
+    GestureDragStartCallback? onVerticalDragStart,
+    GestureDragUpdateCallback? onVerticalDragUpdate,
+    GestureDragEndCallback? onVerticalDragEnd,
+    GestureDragCancelCallback? onVerticalDragCancel,
+
+    // ==== 缩放（Pan 的超集）====
+    GestureScaleStartCallback? onScaleStart,
+    GestureScaleUpdateCallback? onScaleUpdate,
+    GestureScaleEndCallback? onScaleEnd,
+  }) {
+    // ==== 🚨 冲突检测：Scale 与 Pan 系列不能同时使用 ====
+    final hasScale =
+        onScaleStart != null || onScaleUpdate != null || onScaleEnd != null;
+    final hasAnyPan = onPanStart != null ||
+        onPanUpdate != null ||
+        onPanEnd != null ||
+        onPanCancel != null ||
+        onHorizontalDragStart != null ||
+        onHorizontalDragUpdate != null ||
+        onHorizontalDragEnd != null ||
+        onHorizontalDragCancel != null ||
+        onVerticalDragStart != null ||
+        onVerticalDragUpdate != null ||
+        onVerticalDragEnd != null ||
+        onVerticalDragCancel != null;
+
+    assert(
+        !(hasScale && hasAnyPan),
+        '❌ GestureDetector 冲突：Scale 已包含 Pan 功能，不可同时声明。'
+        '👉 如果需要拖拽 + 缩放，请仅使用 Scale 系列回调（focalPointDelta 处理平移，scale 处理缩放）。');
+
+    // ==== Release 环境自动屏蔽冲突 ====
+    final enablePan = !hasScale;
+
+    return GestureDetector(
+      key: key,
+      behavior: behavior ?? HitTestBehavior.opaque,
+      excludeFromSemantics: excludeFromSemantics,
+      dragStartBehavior: dragStartBehavior,
+
+      // Tap
+      onTapDown: onTapDown,
+      onTapUp: onTapUp,
+      onTap: onTap,
+      onTapCancel: onTapCancel,
+
+      // Secondary
+      onSecondaryTapDown: onSecondaryTapDown,
+      onSecondaryTapUp: onSecondaryTapUp,
+      onSecondaryTap: onSecondaryTap,
+      onSecondaryTapCancel: onSecondaryTapCancel,
+
+      // Tertiary
+      onTertiaryTapDown: onTertiaryTapDown,
+      onTertiaryTapUp: onTertiaryTapUp,
+      onTertiaryTapCancel: onTertiaryTapCancel,
+
+      // Double Tap
+      onDoubleTapDown: onDoubleTapDown,
+      onDoubleTap: onDoubleTap,
+      onDoubleTapCancel: onDoubleTapCancel,
+
+      // Long Press
+      onLongPressDown: onLongPressDown,
+      onLongPress: onLongPress,
+      onLongPressStart: onLongPressStart,
+      onLongPressMoveUpdate: onLongPressMoveUpdate,
+      onLongPressUp: onLongPressUp,
+      onLongPressEnd: onLongPressEnd,
+
+      // Pan / Drag（仅当未使用 Scale 时才生效）
+      onPanStart: enablePan ? onPanStart : null,
+      onPanUpdate: enablePan ? onPanUpdate : null,
+      onPanEnd: enablePan ? onPanEnd : null,
+      onPanCancel: enablePan ? onPanCancel : null,
+
+      onHorizontalDragStart: enablePan ? onHorizontalDragStart : null,
+      onHorizontalDragUpdate: enablePan ? onHorizontalDragUpdate : null,
+      onHorizontalDragEnd: enablePan ? onHorizontalDragEnd : null,
+      onHorizontalDragCancel: enablePan ? onHorizontalDragCancel : null,
+
+      onVerticalDragStart: enablePan ? onVerticalDragStart : null,
+      onVerticalDragUpdate: enablePan ? onVerticalDragUpdate : null,
+      onVerticalDragEnd: enablePan ? onVerticalDragEnd : null,
+      onVerticalDragCancel: enablePan ? onVerticalDragCancel : null,
+
+      // Scale
+      onScaleStart: onScaleStart,
+      onScaleUpdate: onScaleUpdate,
+      onScaleEnd: onScaleEnd,
+
+      child: this,
+    );
+  }
+
+  // ==================== 🎯 常用手势语法糖 ====================
+  Widget onTap(GestureTapCallback? fn,
+          {HitTestBehavior behavior = HitTestBehavior.opaque}) =>
+      gestures(onTap: fn, behavior: behavior);
+
+  Widget onDoubleTap(GestureTapCallback? fn,
+          {HitTestBehavior behavior = HitTestBehavior.opaque}) =>
+      gestures(onDoubleTap: fn, behavior: behavior);
+
+  Widget onLongPress(GestureLongPressCallback? fn,
+          {HitTestBehavior behavior = HitTestBehavior.opaque}) =>
+      gestures(onLongPress: fn, behavior: behavior);
+
+  Widget onPan({
+    GestureDragStartCallback? start,
+    GestureDragUpdateCallback? update,
+    GestureDragEndCallback? end,
+    GestureDragCancelCallback? cancel,
+    HitTestBehavior behavior = HitTestBehavior.opaque,
+  }) =>
+      gestures(
+        onPanStart: start,
+        onPanUpdate: update,
+        onPanEnd: end,
+        onPanCancel: cancel,
+        behavior: behavior,
+      );
+
+  Widget onHorizontalDrag({
+    GestureDragStartCallback? start,
+    GestureDragUpdateCallback? update,
+    GestureDragEndCallback? end,
+    GestureDragCancelCallback? cancel,
+    HitTestBehavior behavior = HitTestBehavior.opaque,
+  }) =>
+      gestures(
+        onHorizontalDragStart: start,
+        onHorizontalDragUpdate: update,
+        onHorizontalDragEnd: end,
+        onHorizontalDragCancel: cancel,
+        behavior: behavior,
+      );
+
+  Widget onVerticalDrag({
+    GestureDragStartCallback? start,
+    GestureDragUpdateCallback? update,
+    GestureDragEndCallback? end,
+    GestureDragCancelCallback? cancel,
+    HitTestBehavior behavior = HitTestBehavior.opaque,
+  }) =>
+      gestures(
+        onVerticalDragStart: start,
+        onVerticalDragUpdate: update,
+        onVerticalDragEnd: end,
+        onVerticalDragCancel: cancel,
+        behavior: behavior,
+      );
+
+  Widget onScale({
+    GestureScaleStartCallback? start,
+    GestureScaleUpdateCallback? update,
+    GestureScaleEndCallback? end,
+    HitTestBehavior behavior = HitTestBehavior.opaque,
+  }) =>
+      gestures(
+        onScaleStart: start,
+        onScaleUpdate: update,
+        onScaleEnd: end,
+        behavior: behavior,
+      );
+}
+```
+
+> ```dart
+> // =============== 示例 1：点击/双击/长按 =================
+> Center(
+>   child: Text(
+>     '点我试试（Tap / DoubleTap / LongPress）',
+>     style: const TextStyle(color: Colors.white),
+>   )
+>       .padding(const EdgeInsets.symmetric(
+>           horizontal: 16, vertical: 12))
+>       .backgroundColor(Colors.blueAccent)
+>       .radius(12)
+>       // 语法糖：点击
+>       .onTap(() => _setLog('👆 onTap'))
+>       // 语法糖：双击
+>       .onDoubleTap(() => _setLog('👆👆 onDoubleTap'))
+>       // 语法糖：长按
+>       .onLongPress(() => _setLog('✋ onLongPress'))
+> ),
+> ```
+>
+> ```dart
+> // =============== 示例 2：自由拖拽（Pan 系列） =================
+> Positioned(
+>   left: _pos.dx,
+>   top: _pos.dy,
+>   child: Container(
+>     width: 120,
+>     height: 120,
+>     alignment: Alignment.center,
+>     decoration: BoxDecoration(
+>       color: Colors.redAccent,
+>       borderRadius: BorderRadius.circular(16),
+>     ),
+>     child: const Text(
+>       '拖我（Pan）',
+>       style: TextStyle(color: Colors.white),
+>     ),
+>   ).onPan(
+>     start: (d) => _setLog('🧲 panStart: ${d.globalPosition}'),
+>     update: (d) {
+>       setState(() => _pos += d.delta);
+>       _setLog('📦 panUpdate: Δ=${d.delta}');
+>     },
+>     end: (d) => _setLog('🏁 panEnd: v=${d.velocity.pixelsPerSecond}'),
+>   ),
+> ),
+> ```
+>
+> ```dart
+> // =============== 示例 3：缩放+平移（仅 Scale 系列） =================
+> // 注意：使用 onScale* 后，你的扩展会自动禁用 Pan 系列，避免冲突。
+> Positioned.fill(
+>   child: Transform.translate(
+>     offset: _canvasOffset,
+>     child: Transform.scale(
+>       scale: _scale,
+>       alignment: Alignment.center,
+>       child: Container(
+>         width: 160,
+>         height: 160,
+>         alignment: Alignment.center,
+>         decoration: BoxDecoration(
+>           color: Colors.teal,
+>           borderRadius: BorderRadius.circular(20),
+>         ),
+>         child: const Text(
+>           '捏合缩放 / 两指拖动画布\n(Scale 系列)',
+>           textAlign: TextAlign.center,
+>           style: TextStyle(color: Colors.white),
+>         ),
+>       )
+>           // 语法糖：Scale（含平移：用 focalPointDelta 实现）
+>           .onScale(
+>         start: (details) {
+>           _scaleStart = _scale;
+>           _setLog('🔍 scaleStart: f=${details.focalPoint}');
+>         },
+>         update: (details) {
+>           // 缩放
+>           final newScale =
+>               (_scaleStart * details.scale).clamp(0.5, 3.0);
+>           // 平移（两指拖动时 focalPointDelta 生效；单指也会有）
+>           final delta = details.focalPointDelta;
+> 
+>           setState(() {
+>             _scale = newScale;
+>             _canvasOffset += delta;
+>           });
+> 
+>           _setLog(
+>               '🔎 scaleUpdate: scale=${newScale.toStringAsFixed(2)} '
+>               'Δ=${delta.dx.toStringAsFixed(1)},${delta.dy.toStringAsFixed(1)}');
+>         },
+>         end: (details) => _setLog('✅ scaleEnd'),
+>       ),
+>     ),
+>   ),
+> ),
+> ```
+>
+> ```dart
+> // ====== （可选）示例 4：二级/三级点击（桌面/鼠标有用，移动端通常无效） ======
+> Positioned(
+>   right: 16,
+>   bottom: 16,
+>   child: Container(
+>     padding:
+>         const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+>     decoration: BoxDecoration(
+>       color: Colors.black87,
+>       borderRadius: BorderRadius.circular(8),
+>     ),
+>     child: const Text(
+>       'Secondary / Tertiary Tap\n(鼠标右键/中键)',
+>       style: TextStyle(color: Colors.white),
+>       textAlign: TextAlign.center,
+>     ),
+>   ).gestures(
+>     // 右键（secondary）、中键（tertiary）在桌面/网页更有意义
+>     onSecondaryTapDown: (_) => _setLog('🖱 onSecondaryTapDown'),
+>     onSecondaryTap: () => _setLog('🖱 onSecondaryTap'),
+>     onTertiaryTapDown: (_) => _setLog('🖱 onTertiaryTapDown'),
+>     onTertiaryTapCancel: () => _setLog('🖱 onTertiaryTapCancel'),
+>   ),
+> ),
+> ```
 
 ## 四、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
