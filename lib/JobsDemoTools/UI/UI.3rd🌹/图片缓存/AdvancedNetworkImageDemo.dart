@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_networkimage_2/provider.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/%E8%B0%83%E8%AF%95/JobsCommonUtil.dart';
 import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsGetXRunner.dart';
-import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/JobsCommonUtil.dart';
 
 void main() => runApp(JobsGetRunner(const AdvancedNetworkImageDemo(),
     title: 'AdvancedNetworkImage 全属性示例'));
