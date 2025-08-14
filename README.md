@@ -6570,19 +6570,41 @@ class FadeInImageDemo extends StatelessWidget {
 | `double.parse("3.14")`             | `3.14`       | `double` | ❌ 否         | String → double                                              |
 | `num.parse("5.5")`                 | `5.5`        | `num`    | ❌ 否         | String → 自动识别 int 或 double                              |
 
-#### 30.2、小数=>百分比%  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 30.2、有效数据 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+* 直接取**整数**，小数部分会被丢掉
+
+  ```dart
+  '≥${(e.amount ?? 0) ~/ 1000}',
+  ```
+
+* 保留 2 位小数
+
+  ```dart
+  '≥${((e.amount ?? 0) / 1000).toStringAsFixed(2)}'
+  ```
+
+* 保留两位小数但去掉多余的 `.00`（比如 12.00 → 12）
+
+  ```dart
+  final value = (e.amount ?? 0) / 1000;
+  final text = value.toStringAsFixed(().truncateToDouble() == value ? 0 : 2);
+  print('≥$text');
+  ```
+
+#### 30.3、小数=>百分比%  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 '${((data ?? 0) * 100).toStringAsFixed(0)}%'
 ```
 
-#### 30.3、字符串（≥）拼接➕数据（int）截取3位（3个0，即：参数1000） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 30.4、字符串（≥）拼接➕数据（int）截取3位（3个0，即：参数1000） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>'≥${(data ?? 0) ~/ 1000}',
 ```
 
-#### 30.4、数字位分隔符 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 30.5、数字位分隔符 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 千分位（3位分隔）
 
@@ -6613,7 +6635,7 @@ class FadeInImageDemo extends StatelessWidget {
   }
   ```
 
-#### 30.5、♻️<font color=red>**循环处理数据**</font>（以下写法等价） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 30.6、♻️<font color=red>**循环处理数据**</font>（以下写法等价） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 final rows = [
