@@ -3568,7 +3568,7 @@ class XXX extends Object{}
   | `pull_to_refresh`                    | 下拉刷新/上拉加载的封装库                                    |
   | `flutter_easyrefresh`（已停更）      | 曾经流行的刷新库（不推荐新项目用）                           |
 
-### 18、👋手势 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 18、👋<font color=red>**手势**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 虽然本质是响应用户输入（如点击、滑动、拖动、缩放等），但它们的使用方式**确实也是通过 `Widget` 实现的**
 >
@@ -3585,7 +3585,7 @@ flowchart LR
     C --> D
 ```
 
-#### 18.1、[**Flutter**](https://flutter.dev/) 中的手势系统本质（由三层机制组成）
+#### 18.1、[**Flutter**](https://flutter.dev/) 中的手势系统本质（由三层机制组成）🔼</b></a>
 
 | 层级   | 名称                     | 说明                                                         |
 | ------ | ------------------------ | ------------------------------------------------------------ |
@@ -3593,7 +3593,7 @@ flowchart LR
 | 2️⃣ 中层 | `GestureDetector`        | 对原始事件进行识别封装（如 **tap**、**double tap**、**drag**） |
 | 3️⃣ 高层 | `InkWell`, `InkResponse` | 组件化的手势 + 视觉反馈（如水波纹）                          |
 
-#### 18.2、[**Flutter**](https://flutter.dev/) 中所有手势相关 **`Widget`** 一览（全量分类）
+#### 18.2、[**Flutter**](https://flutter.dev/) 中所有手势相关 **`Widget`** 一览（全量分类）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 🔹原始指针事件层（Pointer 级）：处理最底层的触摸事件（**pointer down** / **move** / **up** 等）
 
@@ -3626,6 +3626,20 @@ flowchart LR
   | `CupertinoButton`                                            | iOS 风格按钮，自带点击高亮反馈                               |
   | `MaterialButton` / `ElevatedButton` / `TextButton` / `OutlinedButton` | 都是封装了点击反馈的组件                                     |
 
+  * ```dart
+    /// 默认情况下，splashColor 和 highlightColor 都是从 Theme 里取的（一般是浅灰色），所以即使背景透明，也会看到点击的涟漪或暗色变化。
+    /// 想让点击时完全没有视觉反应
+    InkWell(
+      onTap: onTap,
+      onDoubleTap: onDoubleTap,
+      onLongPress: onLongPress,
+      borderRadius: borderRadius,
+      splashColor: Colors.transparent, // 改成透明,
+      highlightColor: Colors.transparent, // 改成透明,
+      child: child,
+    )
+    ```
+
 * 🔹组合行为类组件（复杂手势交互）
 
   | Widget                   | 说明                                          |
@@ -3636,7 +3650,580 @@ flowchart LR
   | `Slider` / `RangeSlider` | 拖动滑块（拖拽 + tap）                        |
   | `Switch` / `Checkbox`    | 也支持手势（tap）但通常不直接作为手势组件使用 |
 
-#### 18.3、🍬手势语法糖 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 18.3、通用点击组件 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+/// - ripple=true 走 Material+InkWell（有水波纹）
+/// - ripple=false 走 GestureDetector（零视觉反馈）
+/// - 支持 behavior（点击区域扩展）与 onPanUpdate（拖动手势）
+/// - 可自定义圆角与水波纹/高亮颜色（不传则走 Theme）
+class CommonRipple extends StatelessWidget {
+  final Widget child; // 显示内容
+  final GestureTapCallback? onTap; // 点击
+  final GestureTapCallback? onDoubleTap; // 双击
+  final GestureLongPressCallback? onLongPress; // 长按
+  final GestureDragUpdateCallback? onPanUpdate; // 拖动
+  final HitTestBehavior behavior; // 命中策略（默认 Opaque 扩大可点区域）
+  final BorderRadius borderRadius; // 圆角
+  final bool ripple; // 是否显示水波纹
+  final Color? splashColor; // 水波纹颜色（ripple=true 时生效）
+  final Color? highlightColor; // 高亮颜色（ripple=true 时生效）
+
+  const CommonRipple({
+    super.key,
+    required this.child,
+    this.onTap,
+    this.onDoubleTap,
+    this.onLongPress,
+    this.onPanUpdate,
+    this.behavior = HitTestBehavior.opaque,
+    this.borderRadius = BorderRadius.zero,
+    this.ripple = true,
+    this.splashColor, // 不传走 Theme；传 Colors.transparent 可“隐形水波纹”
+    this.highlightColor, // 同上
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (!ripple) {
+      // 纯手势，无任何视觉反馈
+      return GestureDetector(
+        behavior: behavior,
+        onTap: onTap,
+        onDoubleTap: onDoubleTap,
+        onLongPress: onLongPress,
+        onPanUpdate: onPanUpdate,
+        child: child,
+      );
+    }
+
+    // 有水波纹：InkWell 负责点击反馈；外层 GestureDetector 只负责拖动（不抢 tap）
+    final ink = Material(
+      color: Colors.transparent,
+      shape: RoundedRectangleBorder(borderRadius: borderRadius),
+      child: InkWell(
+        onTap: onTap,
+        onDoubleTap: onDoubleTap,
+        onLongPress: onLongPress,
+        borderRadius: borderRadius,
+        splashColor: splashColor,
+        highlightColor: highlightColor,
+        child: child,
+      ),
+    );
+
+    // 仅当需要拖动时才包一层，避免不必要的手势竞争
+    if (onPanUpdate == null && behavior == HitTestBehavior.opaque) {
+      return ink;
+    }
+    return GestureDetector(
+      behavior: behavior,
+      // 这里只放拖动相关，避免与 InkWell 抢 tap/longPress
+      onPanUpdate: onPanUpdate,
+      child: ink,
+    );
+  }
+}
+```
+
+>**用法示例**
+>
+>```dart
+>// 1) 有水波纹（主题色），并限制在圆角内
+>CommonRipple(
+>  borderRadius: BorderRadius.circular(16),
+>  onTap: () => print('tap'),
+>  child: Container(height: 48, alignment: Alignment.center, child: Text('Go')),
+>);
+>
+>// 2) 有水波纹，但“隐形反馈”（不想看到涟漪/高亮）
+>CommonRipple(
+>  splashColor: Colors.transparent,
+>  highlightColor: Colors.transparent,
+>  onTap: () {},
+>  child: const Icon(Icons.play_arrow),
+>);
+>
+>// 3) 无水波纹，行为为 Opaque 扩大可点区域，同时支持拖动
+>CommonRipple(
+>  ripple: false,
+>  behavior: HitTestBehavior.opaque,
+>  onPanUpdate: (d) => print('dx=${d.delta.dx}, dy=${d.delta.dy}'),
+>  child: const SizedBox(width: 200, height: 40, child: Text('Drag me')),
+>);
+>```
+
+#### 18.4、<font color=red>**手势竞争**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+##### 18.4.1、手势竞争的原理 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+* 事件发生后，所有对此事件感兴趣的手势识别器（recognizers）都会进入这个 **Gesture Arena**；
+* 这些识别器先处于 **待定（pending）** 状态，等待更多事件来判断是否要**放弃**或**胜出**；
+* 一旦某个识别器确认可以处理这个手势，就会尝试 **宣告胜利**；
+* 其他竞争者可以选择放弃，也可能还在等待，但一旦胜者确定，其余的都被强制取消；
+
+##### 18.4.2、胜负决策规则 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> 优先级不是全局固定的，不同 recognizer 之间的实现有差异
+
+```mermaid
+flowchart TD
+    A[PointerDown] --> B[加入 Gesture Arena]
+    B --> C[等待更多 PointerMove/Up]
+    C --> D{识别器判断}
+    D -->|成功| E[acceptGesture 胜利]
+    D -->|放弃| F[rejectGesture 退出]
+    E --> G[其他全部 cancel]
+    F --> H[等待剩余识别器决出胜负]
+```
+
+* 如果一个手势识别器 **主动认输**（`rejectGesture`），它就退出竞争；
+* 如果一个手势识别器 **先确定识别成功**（`acceptGesture`），就会成为赢家，其他全部失败；
+* 如果大家都没明确放弃，[**Flutter**](https://flutter.dev/) 会根据**优先级规则**决定赢家（比如拖拽比点击优先）；
+
+##### 18.4.3、常用的手势冲突场景以及解决技巧（范式） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> **尽早决策**：基于位移阈值（6~10px）尽快确定方向，另一方向立刻**沉默**
+>
+> **命中区域**：点击类交互，优先 `HitTestBehavior.translucent/opaque`，避免**只能点到文本**
+>
+> **水波纹**：任何 `Ink` 波纹都**必须有 `Material` 祖先**
+>
+> **混合滚动**：父子滚动**明确轴向**，必要时给一方 `NeverScrollableScrollPhysics`
+>
+> **原始监听**：统计/埋点走 `Listener`，不要和手势识别器抢
+
+###### 18.4.3.1、`ListView` 滑动 🆚 `GestureDetector` onTap
+
+> **现象**：轻扫/轻移后点击不触发，或只能点到文字不点空白
+>
+> **根因**：**Drag** 识别器与 **沉默** 竞争；命中区域小
+>
+> **范式**：`behavior: translucent/opaque` + 用 `onTapUp`（更稳）
+
+<details>
+<summary>点击查看代码</summary>
+
+```dart
+class ListViewTapFix extends StatelessWidget {
+  const ListViewTapFix({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: 20,
+      itemBuilder: (_, i) => GestureDetector(
+        behavior: HitTestBehavior.translucent, // 整行都可点
+        onTapUp: (_) => debugPrint('Tap item $i'),
+        child: const Padding(
+          padding: EdgeInsets.all(16),
+          child: Text('点整行都行，轻微滑动也能识别'),
+        ),
+      ),
+    );
+  }
+}
+```
+</details>
+
+###### 18.4.3.2、`HorizontalDrag` 🆚  `VerticalDrag` 冲突
+
+> **现象**：横竖两个拖拽识别器互相抢手势
+>
+> **根因**：两者同时入场；先赢者清场
+>
+> **范式**：用 `RawGestureDetector` 同时注册，按位移阈值决定优先方向（早决策，另一方放弃）
+
+<details>
+<summary>点击查看代码</summary>
+
+```dart
+class DragAxisArbiter extends StatefulWidget {
+  const DragAxisArbiter({super.key});
+  @override State<DragAxisArbiter> createState() => _S();
+}
+class _S extends State<DragAxisArbiter> {
+  double dx=0, dy=0; bool decided=false; bool horizontalWin=false;
+
+  @override
+  Widget build(BuildContext context) {
+    return RawGestureDetector(
+      gestures: {
+        HorizontalDragGestureRecognizer:
+          GestureRecognizerFactoryWithHandlers<HorizontalDragGestureRecognizer>(
+        () => HorizontalDragGestureRecognizer()
+          ..onStart = (_) { dx=dy=0; decided=false; }
+          ..onUpdate = (d) {
+            dx += d.delta.dx.abs(); dy += d.delta.dy.abs();
+            if (!decided && (dx>6 || dy>6)) { // 阈值
+              decided = true; horizontalWin = dx >= dy;
+            }
+            if (!horizontalWin) return; // 竖向赢就忽略横向逻辑
+            // 横向拖动逻辑...
+          }, (r) {}),
+        VerticalDragGestureRecognizer:
+          GestureRecognizerFactoryWithHandlers<VerticalDragGestureRecognizer>(
+        () => VerticalDragGestureRecognizer()
+          ..onUpdate = (d) {
+            if (decided && horizontalWin) return; // 横向赢时忽略纵向
+            // 纵向拖动逻辑...
+          }, (r) {})
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        height: 160, alignment: Alignment.center, color: Colors.amber.shade200,
+        child: const Text('按位移阈值决定横/竖优先'),
+      ),
+    );
+  }
+}
+```
+</details>
+
+###### 18.4.3.3、嵌套 `InkWell` / `GestureDetector`（内层不触发或波纹丢失）
+
+> **现象**：外层先赢导致内层不响应；波纹不显示
+>
+> **根因**：父子手势竞争，父先接受；没有 `Material` 载体
+>
+> **范式**：给内层包 `Material`；必要时父层用 `IgnorePointer`/`absorbing=false`
+
+<details>
+<summary>点击查看代码</summary>
+
+```dart
+class NestedInkWellFix extends StatelessWidget {
+  const NestedInkWellFix({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector( // 父层只做非冲突逻辑，避免 onTap 抢手势
+      onLongPress: () => debugPrint('父层长按'),
+      child: Material( // 提供墨水层
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => debugPrint('内层点击（有水波纹）'),
+          child: const Padding(
+            padding: EdgeInsets.all(16), child: Text('内层 InkWell'),
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+</details>
+
+###### 18.4.3.4、`PageView`（横向滚动）嵌在可垂直滚动的父容器
+
+> **现象**：横向翻页与父容器纵向滚动抢手势，翻页吃力。
+>
+> **根因**：两层滚动手势竞争。
+>
+> **范式**：限制父容器只纵向，子容器只横向；必要时用 `physics` 定向。
+
+<details>
+<summary>点击查看代码</summary>
+
+```dart
+class PageInScrollFix extends StatelessWidget {
+  const PageInScrollFix({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      physics: const ClampingScrollPhysics(), // 只纵向
+      children: [
+        SizedBox(
+          height: 200,
+          child: PageView( // 只横向
+            physics: const PageScrollPhysics(),
+            children: const [ColoredBox(color: Colors.red), ColoredBox(color: Colors.blue)],
+          ),
+        ),
+        const SizedBox(height: 800, child: Text('下面随便滚')),
+      ],
+    );
+  }
+}
+```
+</details>
+
+##### 18.4.3.5、`GestureDetector` + `ListView` 同时存在，希望：点击 + 长按拖动排序
+
+> **现象**：拖动排序和点击互斥，偶发点击不触发
+>
+> **根因**：**Tap** 与 **Drag** 竞争
+>
+> **范式**：点击用 `onTapUp`；拖动加**最小位移阈值**确认进入拖动模式
+
+<details>
+<summary>点击查看代码</summary>
+
+```dart
+class TapAndDragThreshold extends StatefulWidget {
+  const TapAndDragThreshold({super.key});
+  @override State<TapAndDragThreshold> createState() => _S();
+}
+class _S extends State<TapAndDragThreshold> {
+  Offset? down; bool dragging=false;
+  @override
+  Widget build(BuildContext context) {
+    return Listener( // 记录原始位移，独立于 GestureArena
+      onPointerDown: (e){ down = e.position; dragging=false; },
+      onPointerMove: (e){
+        if (down!=null && (e.position - down!).distance > 6) dragging=true;
+      },
+      child: ListView.builder(
+        itemCount: 20,
+        itemBuilder: (_, i) => GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTapUp: (_) { if(!dragging) debugPrint('Tap $i'); },
+          onLongPressMoveUpdate: (_) => debugPrint('拖动中 $i'), // 你的排序逻辑
+          child: Padding(
+            padding: const EdgeInsets.all(16), child: Text('Item $i'),
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+</details>
+
+###### 18.4.3.6、`InteractiveViewer`（可缩放/拖拽）内的点击热区失效
+
+> **现象**：里层按钮/点击不触发
+>
+> **根因**：`InteractiveViewer` 抢走了拖拽/缩放手势
+>
+> **范式**：给子项用 `InkWell` + `behavior`；或把点击层放到 `Stack` 的上层并配 `IgnorePointer`/`AbsorbPointer` 精准控制
+
+<details>
+<summary>点击查看代码</summary>
+
+```dart
+class InteractiveViewerTapFix extends StatelessWidget {
+  const InteractiveViewerTapFix({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        InteractiveViewer(
+          minScale: 1, maxScale: 3,
+          child: Image.asset('assets/large_map.png', fit: BoxFit.cover),
+        ),
+        // 顶层可点热区
+        Positioned(
+          left: 40, top: 80,
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => debugPrint('点到标记'),
+              child: const Icon(Icons.location_on, size: 32),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+```
+</details>
+
+###### 18.4.3.7、横向可滚容器中的纵向手势（或反之）
+
+> **现象**：内层短轴方向手势不灵
+>
+> **根因**：父子滚动方向混淆
+>
+> **范式**：用 `SingleChildScrollView` 明确方向/禁用另一方向；或 `NeverScrollableScrollPhysics` 交给外层
+
+<details>
+<summary>点击查看代码</summary>
+
+```dart
+class AxisClearanceFix extends StatelessWidget {
+  const AxisClearanceFix({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal, // 明确只横向
+      child: Row(
+        children: List.generate(5, (i) =>
+          SizedBox(
+            width: 260,
+            child: ListView( // 内层明确纵向滚
+              physics: const ClampingScrollPhysics(),
+              shrinkWrap: true,
+              children: List.generate(10, (j) =>
+                ListTile(title: Text('卡片 $i - 行 $j'))),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+</details>
+
+###### 18.4.3.8、父层 `GestureDetector` 抢走子层点击
+
+> **现象**：父层 `onTap` 吃掉事件，子层不触发
+>
+> **根因**：父先赢 Arena
+>
+> **范式**：父层监听非冲突事件（如长按/双击）；或在父层用 `behavior: deferToChild`；或对子层包 `IgnorePointer` 控制穿透
+
+<details>
+<summary>点击查看代码</summary>
+
+```dart
+class ParentStealFix extends StatelessWidget {
+  const ParentStealFix({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onLongPress: () => debugPrint('父层长按，不与子点击冲突'),
+      behavior: HitTestBehavior.deferToChild, // 优先子节点命中
+      child: Center(
+        child: Material(
+          child: InkWell(
+            onTap: () => debugPrint('子层点击OK'),
+            child: const Padding(
+              padding: EdgeInsets.all(24), child: Text('子按钮'),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+</details>
+
+###### 18.4.3.9、IgnorePointer / AbsorbPointer 精确阻断或穿透
+
+<details>
+<summary>点击查看代码</summary>
+
+```dart
+class DemoIgnoreAbsorb extends StatelessWidget {
+  const DemoIgnoreAbsorb({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        // 底层：可点击背景
+        Positioned.fill(
+          child: GestureDetector(
+            onTap: () => debugPrint('✅ 底层背景 tapped'),
+            child: Container(color: Colors.green.shade100),
+          ),
+        ),
+
+        // —— 二选一体验差异 ——
+        // 1) IgnorePointer：自己不响应，事件“穿透”给底层
+        // child: IgnorePointer(
+        //   ignoring: true,
+        //   child: _panel('IgnorePointer：点我会穿透到底层'),
+        // ),
+
+        // 2) AbsorbPointer：自己不响应，且“吸收”事件，不给底层
+        child: AbsorbPointer(
+          absorbing: true,
+          child: _panel('AbsorbPointer：点我不会触发任何层'),
+        ),
+      ],
+    );
+  }
+
+  Widget _panel(String text) => Align(
+        alignment: Alignment.center,
+        child: Container(
+          width: 260, height: 120, alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: Colors.blue.withOpacity(0.4),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Text(text, textAlign: TextAlign.center),
+        ),
+      );
+}
+```
+</details>
+
+###### 18.4.3.10、自定义 GestureRecognizer（精细控制胜负时机）
+
+<details>
+<summary>点击查看代码</summary>
+
+```dart
+import 'dart:async';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+
+/// 按住 >= 300ms 才算成功；成功后 accept，其他手势被取消
+class PressAndHoldGestureRecognizer extends OneSequenceGestureRecognizer {
+  PressAndHoldGestureRecognizer({this.onHold});
+  final VoidCallback? onHold;
+  Timer? _t; bool _won = false;
+
+  @override
+  void addPointer(PointerDownEvent event) {
+    startTrackingPointer(event.pointer);
+    resolve(GestureDisposition.pending);
+    _t = Timer(const Duration(milliseconds: 300), () {
+      if (_won) return;
+      _won = true;
+      resolve(GestureDisposition.accepted); // 宣布胜利
+      onHold?.call();
+    });
+  }
+
+  @override
+  void handleEvent(PointerEvent event) {
+    if (event is PointerUpEvent || event is PointerCancelEvent) {
+      stopTrackingPointer(event.pointer);
+      _t?.cancel();
+      if (!_won) resolve(GestureDisposition.rejected); // 未到 300ms 认输
+    }
+  }
+
+  @override String get debugDescription => 'pressAndHold';
+  @override void didStopTrackingLastPointer(int pointer) {}
+  @override void dispose() { _t?.cancel(); super.dispose(); }
+}
+
+class DemoCustomRecognizer extends StatelessWidget {
+  const DemoCustomRecognizer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: RawGestureDetector(
+        gestures: {
+          PressAndHoldGestureRecognizer:
+              GestureRecognizerFactoryWithHandlers<PressAndHoldGestureRecognizer>(
+            () => PressAndHoldGestureRecognizer(
+              onHold: () => debugPrint('✅ Hold >= 300ms，赢下 Arena'),
+            ),
+            (r) {},
+          ),
+        },
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          width: 220, height: 80, alignment: Alignment.center,
+          color: Colors.orange.shade200,
+          child: const Text('按住 ≥300ms 触发（自定义识别器）'),
+        ),
+      ),
+    );
+  }
+}
+```
+</details>
+
+#### 18.5、🍬手势语法糖 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 <details>
 <summary>Widget关于手势的拓展</summary>
@@ -10302,7 +10889,7 @@ String <|.. Comparable~String~ : implements
 String <|.. Pattern : implements
 ```
 
-#### 21.7、List
+#### 21.7、List <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 abstract interface class List<E> implements Iterable<E>, _ListIterable<E> 
@@ -10400,86 +10987,86 @@ HideEfficientLengthIterable~T~ <|.. Iterable~T~ : implements
 
 ### 22、入参  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-* 必传入参
+#### 22.1、必传入参  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-  > <font color=red>**直接传，不用带参数名。但是序号不能乱**</font>
+> <font color=red>**直接传，不用带参数名。但是序号不能乱**</font>
 
-  ```dart
-  void printUserInfo(String name, int age) {
-    print('Name: $name, Age: $age');
-  }
-  
-  void main() {
-    printUserInfo('Jobs', 18);  // ✅ 正确
-    // printUserInfo(18, 'Jobs'); // ❌ 顺序错误，类型也不匹配
-    // printUserInfo('Jobs');     // ❌ 少传参数
-  }
-  ```
+```dart
+void printUserInfo(String name, int age) {
+  print('Name: $name, Age: $age');
+}
 
-* 可选入参
+void main() {
+  printUserInfo('Jobs', 18);  // ✅ 正确
+  // printUserInfo(18, 'Jobs'); // ❌ 顺序错误，类型也不匹配
+  // printUserInfo('Jobs');     // ❌ 少传参数
+}
+```
 
-  > 在众多的参数列表中，序号可以乱，但是必须带参数名
+#### 22.2、可选入参  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-  * 可选位置参数：传值时 **按顺序，但不带参数名** <font color=red>`[]`</font>
+> 在众多的参数列表中，序号可以乱，但是必须带参数名
 
-    ```dart
-    // 多个可选位置参数
-    void showTrip(
-      String passengerName,                // 必传位置参数
-      [String destination = 'Unknown',     // 可选位置参数 1
-       String transport = 'Car',           // 可选位置参数 2
-       String seatClass = 'Economy']       // 可选位置参数 3
-    ) {
-      print('👤 Passenger: $passengerName');
-      print('📍 Destination: $destination');
-      print('🚗 Transport: $transport');
-      print('💺 Seat Class: $seatClass');
-    }
-    
-    void main() {
-      // 只传必传参数
-      showTrip('Alice');
-      print('---');
-    
-      // 传必传 + 第1个可选
-      showTrip('Bob', 'Paris');
-      print('---');
-    
-      // 传必传 + 第1个 + 第2个可选
-      showTrip('Charlie', 'Tokyo', 'Plane');
-      print('---');
-    
-      // 全部传
-      showTrip('David', 'London', 'Train', 'First');
-    }
-    
-    ```
+##### 22.2.1、可选位置参数：传值时 **按顺序，但不带参数名** <font color=red>`[]`</font>   <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-  * 可选命名参数：传值时用 **参数名**，顺序无关 <font color=red>`{}`</font>
+```dart
+// 多个可选位置参数
+void showTrip(
+  String passengerName,                // 必传位置参数
+  [String destination = 'Unknown',     // 可选位置参数 1
+   String transport = 'Car',           // 可选位置参数 2
+   String seatClass = 'Economy']       // 可选位置参数 3
+) {
+  print('👤 Passenger: $passengerName');
+  print('📍 Destination: $destination');
+  print('🚗 Transport: $transport');
+  print('💺 Seat Class: $seatClass');
+}
 
-    ```dart
-    void greet(String name, {String suffix = ''}) {
-      print('Hello, $name$suffix');
-    }
-    
-    void main() {
-      greet('Jobs');                     // Hello, Jobs
-      greet('Jobs', suffix: '!!!');      // Hello, Jobs!!!
-    }
-    ```
+void main() {
+  // 只传必传参数
+  showTrip('Alice');
+  print('---');
 
-  * 可选入参中必传 <font color=red>**required 带参数名 **</font>
+  // 传必传 + 第1个可选
+  showTrip('Bob', 'Paris');
+  print('---');
 
-    ```dart
-    void greet(String name, {required String mood}) {
-      print('Hello, $name! You seem $mood today.');
-    }
-    
-    void main() {
-      greet('Jobs', mood: 'happy'); // ✅ 正确
-      // greet('Jobs');             // ❌ 报错：缺少必传参数 mood
-    }
-    ```
+  // 传必传 + 第1个 + 第2个可选
+  showTrip('Charlie', 'Tokyo', 'Plane');
+  print('---');
+
+  // 全部传
+  showTrip('David', 'London', 'Train', 'First');
+}
+
+```
+
+##### 22.2.2、可选命名参数：传值时用 **参数名**，顺序无关 <font color=red>`{}`</font>   <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+void greet(String name, {String suffix = ''}) {
+  print('Hello, $name$suffix');
+}
+
+void main() {
+  greet('Jobs');                     // Hello, Jobs
+  greet('Jobs', suffix: '!!!');      // Hello, Jobs!!!
+}
+```
+
+##### 22.2.3、可选入参中必传： <font color=red>**required 带参数名 **</font>  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+void greet(String name, {required String mood}) {
+  print('Hello, $name! You seem $mood today.');
+}
+
+void main() {
+  greet('Jobs', mood: 'happy'); // ✅ 正确
+  // greet('Jobs');             // ❌ 报错：缺少必传参数 mood
+}
+```
 
 ### 23、🔧**自动化代码生成工具** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
