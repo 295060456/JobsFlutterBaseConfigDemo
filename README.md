@@ -10398,7 +10398,90 @@ EfficientLengthIterable~T~ <|-- Iterable~T~ : extends
 HideEfficientLengthIterable~T~ <|.. Iterable~T~ : implements
 ```
 
-### 22、🔧**自动化代码生成工具** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 22、入参  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+* 必传入参
+
+  > <font color=red>**直接传，不用带参数名。但是序号不能乱**</font>
+
+  ```dart
+  void printUserInfo(String name, int age) {
+    print('Name: $name, Age: $age');
+  }
+  
+  void main() {
+    printUserInfo('Jobs', 18);  // ✅ 正确
+    // printUserInfo(18, 'Jobs'); // ❌ 顺序错误，类型也不匹配
+    // printUserInfo('Jobs');     // ❌ 少传参数
+  }
+  ```
+
+* 可选入参
+
+  > 在众多的参数列表中，序号可以乱，但是必须带参数名
+
+  * 可选位置参数：传值时 **按顺序，但不带参数名** <font color=red>`[]`</font>
+
+    ```dart
+    // 多个可选位置参数
+    void showTrip(
+      String passengerName,                // 必传位置参数
+      [String destination = 'Unknown',     // 可选位置参数 1
+       String transport = 'Car',           // 可选位置参数 2
+       String seatClass = 'Economy']       // 可选位置参数 3
+    ) {
+      print('👤 Passenger: $passengerName');
+      print('📍 Destination: $destination');
+      print('🚗 Transport: $transport');
+      print('💺 Seat Class: $seatClass');
+    }
+    
+    void main() {
+      // 只传必传参数
+      showTrip('Alice');
+      print('---');
+    
+      // 传必传 + 第1个可选
+      showTrip('Bob', 'Paris');
+      print('---');
+    
+      // 传必传 + 第1个 + 第2个可选
+      showTrip('Charlie', 'Tokyo', 'Plane');
+      print('---');
+    
+      // 全部传
+      showTrip('David', 'London', 'Train', 'First');
+    }
+    
+    ```
+
+  * 可选命名参数：传值时用 **参数名**，顺序无关 <font color=red>`{}`</font>
+
+    ```dart
+    void greet(String name, {String suffix = ''}) {
+      print('Hello, $name$suffix');
+    }
+    
+    void main() {
+      greet('Jobs');                     // Hello, Jobs
+      greet('Jobs', suffix: '!!!');      // Hello, Jobs!!!
+    }
+    ```
+
+  * 可选入参中必传 <font color=red>**required 带参数名 **</font>
+
+    ```dart
+    void greet(String name, {required String mood}) {
+      print('Hello, $name! You seem $mood today.');
+    }
+    
+    void main() {
+      greet('Jobs', mood: 'happy'); // ✅ 正确
+      // greet('Jobs');             // ❌ 报错：缺少必传参数 mood
+    }
+    ```
+
+### 23、🔧**自动化代码生成工具** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * [<font color=red>**build_runner**</font>](https://pub.dev/packages/build_runner)
 
@@ -10598,9 +10681,9 @@ HideEfficientLengthIterable~T~ <|.. Iterable~T~ : implements
   | ✅ 测试 mock       | 自动生成 `@Mock()`、伪接口                         | `mockito` + `build_runner`                        |
   | ✅ Dart FFI        | 自动生成 FFI 对应的 dart wrapper                   | `ffigen`                                          |
 
-### 23、🏗️构造函数 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 24、🏗️构造函数 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 23.1、**默认构造函数**（<font color=red>**不能有两个默认构造函数（名字相同，参数不同也不行）**</font>） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 24.1、**默认构造函数**（<font color=red>**不能有两个默认构造函数（名字相同，参数不同也不行）**</font>） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 默认构造函数 == 没写名字的命名构造函数。
 
@@ -10612,7 +10695,7 @@ class Person {
 }
 ```
 
-#### 23.2、**命名构造函数**（<font color=red>**可以有多个命名构造函数，但是：必须有唯一名字**</font>） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 24.2、**命名构造函数**（<font color=red>**可以有多个命名构造函数，但是：必须有唯一名字**</font>） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
  class Person {
@@ -10635,7 +10718,7 @@ void main() {
 }
 ```
 
-#### 23.3、**初始化列表构造函数** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 24.3、**初始化列表构造函数** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 class User {
@@ -10653,7 +10736,7 @@ void main() {
 }
 ```
 
-#### 23.4、**`const` 构造函数**（**`Widget`** 常用） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 24.4、**`const` 构造函数**（**`Widget`** 常用） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > | 作用                          | 好处                                                         |
 > | ----------------------------- | ------------------------------------------------------------ |
@@ -10687,7 +10770,7 @@ void main() {
 }
 ```
 
-#### 23.5、**`factory` 构造函数**（高级构建方式） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 24.5、**`factory` 构造函数**（高级构建方式） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 class Person {
@@ -10700,7 +10783,7 @@ class Person {
 }
 ```
 
-### 24、📦构建打包 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 25、📦构建打包 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ 打包慢，尤其[**Android**](https://www.android.com/)平台
 >
@@ -10778,9 +10861,9 @@ class Person {
   | **dynamic**                        | [**Flutter**](https://flutter.dev/) 动态集成场景 | **JIT + AOT**      | 依项目配置 | 依项目配置   | Add-to-App 混合开发               | **Android**<br/>**iOS**               | 原生动态加载 Flutter            |
   | **flavor 模式**                    | `flutter build apk --flavor staging`             | 依所选模式         | 依所选模式 | 依所选模式   | 多环境打包（`staging`、`uat` 等） | **Android**<br/>**iOS**               | 非编译模式，属于构建配置        |
 
-#### 24.1、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)（较为复杂和繁琐） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 25.1、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)（较为复杂和繁琐） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-##### 24.1.1、 [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 25.1.1、 [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 >  [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) （<font color=red>**建议保持最新**</font>）是[**Android**](https://www.android.com/).**SDK**命令行工具：[Android **Command Line Tools**](https://developer.android.com/tools?hl=zh-cn)的一部分，用于管理 [**Android**](https://www.android.com/).**SDK** 的组件。它允许你从终端安装、更新、查看和卸载[**Android**](https://www.android.com/).**SDK**中的各种包，比如：
 >
@@ -10822,7 +10905,7 @@ class Person {
 
     * 用于自定义 **CI/CD** 环境（如 [**Docker**](https://www.docker.com/)镜像）
 
-##### 24.1.2、[**Gradle**](https://gradle.org/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 25.1.2、[**Gradle**](https://gradle.org/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 一个高度可配置、插件化、现代化的自动化构建工具（平台无关）
 
@@ -10892,7 +10975,7 @@ class Person {
   }
   ```
 
-##### 24.1.3、<font id=AGP>[<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) = <font color=red>**A**</font>ndroid <font color=red>**G**</font>radle <font color=red>**P**</font>lugin</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> 
+##### 25.1.3、<font id=AGP>[<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) = <font color=red>**A**</font>ndroid <font color=red>**G**</font>radle <font color=red>**P**</font>lugin</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> 
 
 * 🧱  [<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) 是连接 [**Gradle**](https://gradle.org/) 和 **[Android](https://www.android.com/) 构建逻辑** 的桥梁
 
@@ -10937,7 +11020,7 @@ class Person {
   | 版本关系               | 不同 [<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn)  需配套不同 [**Gradle**](https://gradle.org/) | 独立更新                                           |
   | **Flutter** 项目中位置 | `build.gradle` 中的 `classpath`                              | `gradle-wrapper.properties` 中的 `distributionUrl` |
 
-##### 24.1.4、[**Android**](https://www.android.com/)  打包的产物 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 25.1.4、[**Android**](https://www.android.com/)  打包的产物 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 项目                 | <font color=red>**A**</font>ndroid <font color=red>**p**</font>ac<font color=red>**k**</font>age | <font color=red>**A**</font>ndroid <font color=red>**a**</font>pp <font color=red>**b**</font>undle |
 | -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -10952,7 +11035,7 @@ class Person {
 | **常见用途**         | 内部测试、第三方分发、安装包备份                             | 上传 [**Google Play**](https://play.google.com/) 商店        |
 | **是否推荐**         | ✅ 第三方或私有渠道使用                                       | ✅ [**Google**](https://www.google.com/) 官方推荐上传 [**Play**](https://play.google.com/) 商店使用 |
 
-##### 24.1.5、[**Flutter**](https://flutter.dev/)打[**Android**](https://www.android.com/) 包的流程图 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 25.1.5、[**Flutter**](https://flutter.dev/)打[**Android**](https://www.android.com/) 包的流程图 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```mermaid
 graph TD
@@ -10964,7 +11047,7 @@ graph TD
     F --> G[Generate final APK]
 ```
 
-##### 24.1.6、如何加快[**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)的打包速度？ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 25.1.6、如何加快[**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)的打包速度？ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 优化方式                                            | 操作说明                                                     |
 | --------------------------------------------------- | ------------------------------------------------------------ |
@@ -10977,7 +11060,7 @@ graph TD
 | ✅ **设置构建线程数**                                | [**Gradle**](https://gradle.org/) 中设置：`org.gradle.parallel=true` |
 | ✅ [**Flutter**](https://flutter.dev/) **版本更新**  | 新版本通常对构建性能有优化                                   |
 
-##### 24.1.7、🪖<font color=red>**构建指令**</font>：`flutter build apk` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 25.1.7、🪖<font color=red>**构建指令**</font>：`flutter build apk` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 模式      | 命令                                                   | 简称说明             |
 | --------- | ------------------------------------------------------ | -------------------- |
@@ -11019,7 +11102,7 @@ graph TD
   | `-Psplit-debug-info`      | 是否分离调试信息                                |
   | `assembleRelease`         | 构建 release 产物，最终生成 `app-release.apk`   |
 
-##### 24.1.8、⚙️ 相关配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 25.1.8、⚙️ 相关配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/) 打包需要涉及到**Java**环境推荐使用[<font color=red>**openJDK**</font>](https://openjdk.org/)
 
@@ -11077,7 +11160,7 @@ graph TD
   | 第三方依赖                                                   | 来自 [**pub.dev**](https://pub.dev/) 的插件中声明的 AAR/JAR，如 [`image_gallery_saver`](https://pub.dev/packages/image_gallery_saver)、[`engagelab`](https://pub.dev/packages?q=engagelab) |
   | [**Google Maven**](https://maven.google.com/web/index.html) / [**JCenter**](https://mvnrepository.com/repos/jcenter) / [**MavenCentral**](https://central.sonatype.com/) | 默认构建源，国内访问会慢                                     |
 
-##### 24.1.9、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)打包脚本（MacOS）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 25.1.9、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)打包脚本（MacOS）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 <details>
 <summary>点击展开代码</summary>
@@ -11574,7 +11657,7 @@ main "$@"
 ```
 </details>
 
-##### 24.1.10、打包成品  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 25.1.10、打包成品  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > [**Flutter**](https://flutter.dev/) 和 [**Gradle**](https://gradle.org/)  的构建系统默认会将最新产物**覆盖上一次的构建产物**
 
@@ -11606,9 +11689,9 @@ graph TD
 | 🚀 提测/发包                                         | `apk/release/app-release.apk`（需签名）                  |
 | 🌐 上架  [**Google Play**](https://play.google.com/) | `bundle/release/app-release.aab`                         |
 
-#### 24.2、📦 [**Flutter**](https://flutter.dev/).**iOS**（相对简单）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 25.2、📦 [**Flutter**](https://flutter.dev/).**iOS**（相对简单）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-##### 24.2.1、🪖<font color=red>**构建指令**</font>：`flutter build ios` 和 `flutter build ipa` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 25.2.1、🪖<font color=red>**构建指令**</font>：`flutter build ios` 和 `flutter build ipa` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > **iOS** 项目主流是使用[**XCode**](https://developer.apple.com/xcode/) + [**XCode**](https://developer.apple.com/xcode/) **build system** 来进行构建
 
@@ -11626,7 +11709,7 @@ graph TD
 | `--export-options-plist` | `--export-options-plist=ios/ExportOptions.plist` | 指定导出 **ipa** 所需的 **plist**        |
 | `--no-codesign`          | `flutter build ios --no-codesign`                | 构建时跳过签名，常用于 CI 环境或手动签名 |
 
-##### 23.2.2、📁生成的包目录  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 25.2.2、📁生成的包目录  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 虽然[**Flutter**](https://flutter.dev/)构建**iOS**的`.ipa`包最终还是调用**Xcode**的内部组件，<font color=red>但是生成的`.ipa`包的物理位置，与**Xcode**打正常的**iOS**原生`.ipa`是不同的</font>
 
@@ -11667,7 +11750,7 @@ graph TD
     F --> F2[📄 ExportOptions.plist<br/>导出配置文件<br/>📝 控制签名/上传方式]
 ```
 
-##### 24.2.3、📦 打包脚本 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 25.2.3、📦 打包脚本 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 #!/bin/zsh
@@ -11886,7 +11969,7 @@ main() {
 main "$@"
 ```
 
-##### 24.2.4、⚠️注意事项  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 25.2.4、⚠️注意事项  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 必须要有苹果的开发者账号（普通账户充值）
 
