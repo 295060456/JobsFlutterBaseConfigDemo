@@ -3946,7 +3946,7 @@ class PageInScrollFix extends StatelessWidget {
 ```
 </details>
 
-##### 18.4.3.5、`GestureDetector` + `ListView` 同时存在，希望：点击 + 长按拖动排序
+###### 18.4.3.5、`GestureDetector` + `ListView` 同时存在，希望：点击 + 长按拖动排序
 
 > **现象**：拖动排序和点击互斥，偶发点击不触发
 >
@@ -9845,7 +9845,7 @@ tasks.register("clean", Delete) {
 
 ### 5、🗺️ 重定向技巧  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-> 保留多个构造方式（如 builder 模式 vs 普通 child 模式）；
+> 保留多个构造方式（如 builder 模式 🆚 普通 child 模式）；
 >
 > 保证初始化逻辑只写一份；
 >
@@ -9864,7 +9864,7 @@ class Person {
 }
 ```
 
-### 6、💼 package <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 6、💼 **package** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * **package:**这种路径前缀只能用于 **`lib/` 目录下的 [Dart](https://dart.dev/) 文件**。 表示从 `pubspec.yaml` 中定义的包或当前项目的 `lib/` 目录开始引用
 
