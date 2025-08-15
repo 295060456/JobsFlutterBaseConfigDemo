@@ -10180,7 +10180,225 @@ Comparable.compare(a, b)
   class Car with Walker {} // ❌ 报错，因为 Car 不是 Animal
   ```
 
-### 21、🔧**自动化代码生成工具** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 21、基础的数据类型 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> **abstract**：类本身不能被实例化
+>
+> **final**：类不能被继承
+
+#### 21.1、int <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+abstract final class int extends num 
+sealed class num implements Comparable<num>
+```
+
+#### 21.2、Long <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+final class Long extends AbiSpecificInteger
+base class AbiSpecificInteger implements SizedNativeType
+abstract final class SizedNativeType implements NativeType 
+abstract final class NativeType 
+```
+
+```mermaid
+classDiagram
+direction LR
+
+class Long {
+  <<final>>
+}
+
+class AbiSpecificInteger {
+  <<base>>
+}
+
+class SizedNativeType {
+  <<abstract final>>
+}
+
+class NativeType {
+  <<abstract final>>
+}
+
+Long <|-- AbiSpecificInteger : extends
+AbiSpecificInteger <|.. SizedNativeType : implements
+SizedNativeType <|.. NativeType : implements
+```
+
+#### 21.3、bool <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+final class bool
+```
+
+#### 21.4、double <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+abstract final class double extends num
+sealed class num implements Comparable<num>
+```
+
+#### 21.5、Float <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+final class Float implements _NativeDouble
+abstract final class _NativeDouble implements SizedNativeType 
+abstract final class SizedNativeType implements NativeType
+abstract final class NativeType
+```
+
+```mermaid
+classDiagram
+direction LR
+
+class Float {
+  <<final>>
+}
+
+class _NativeDouble {
+  <<abstract final>>
+}
+
+class SizedNativeType {
+  <<abstract final>>
+}
+
+class NativeType {
+  <<abstract final>>
+}
+
+Float <|.. _NativeDouble : implements
+_NativeDouble <|.. SizedNativeType : implements
+SizedNativeType <|.. NativeType : implements
+```
+
+#### 21.6、String <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+abstract final class String implements Comparable<String>, Pattern
+abstract interface class Comparable<T> 
+abstract interface class Pattern 
+```
+
+```mermaid
+classDiagram
+direction LR
+
+class String {
+  <<abstract final>>
+}
+
+class Comparable~String~ {
+  <<abstract interface>>
+}
+
+class Pattern {
+  <<abstract interface>>
+}
+
+String <|.. Comparable~String~ : implements
+String <|.. Pattern : implements
+```
+
+#### 21.7、List
+
+```dart
+abstract interface class List<E> implements Iterable<E>, _ListIterable<E> 
+abstract mixin class Iterable<E>
+abstract class _ListIterable<E> implements EfficientLengthIterable<E>, HideEfficientLengthIterable<E> 
+abstract class EfficientLengthIterable<T> extends Iterable<T> 
+abstract mixin class Iterable<E>
+abstract interface class HideEfficientLengthIterable<T> implements Iterable<T> 
+```
+
+```mermaid
+classDiagram
+direction LR
+
+class List~E~ {
+  <<abstract interface>>
+}
+
+class Iterable~E~ {
+  <<abstract mixin>>
+}
+
+class _ListIterable~E~ {
+  <<abstract>>
+}
+
+class EfficientLengthIterable~T~ {
+  <<abstract>>
+}
+
+class HideEfficientLengthIterable~T~ {
+  <<abstract interface>>
+}
+
+List~E~ <|.. Iterable~E~ : implements
+List~E~ <|.. _ListIterable~E~ : implements
+
+_ListIterable~E~ <|-- EfficientLengthIterable~E~ : extends
+_ListIterable~E~ <|.. HideEfficientLengthIterable~E~ : implements
+
+EfficientLengthIterable~T~ <|-- Iterable~T~ : extends
+HideEfficientLengthIterable~T~ <|.. Iterable~T~ : implements
+```
+
+#### 21.8、Map <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+abstract interface class Map<K, V>
+```
+
+#### 21.9、Set <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+abstract interface class Set<E> implements Iterable<E>, _SetIterable<E>
+abstract mixin class Iterable<E>
+abstract class _SetIterable<E>
+implements EfficientLengthIterable<E>, HideEfficientLengthIterable<E> 
+abstract class EfficientLengthIterable<T> extends Iterable<T>
+abstract mixin class Iterable<E> 
+```
+
+```mermaid
+classDiagram
+direction LR
+
+class Set~E~ {
+  <<abstract interface>>
+}
+
+class Iterable~E~ {
+  <<abstract mixin>>
+}
+
+class _SetIterable~E~ {
+  <<abstract>>
+}
+
+class EfficientLengthIterable~T~ {
+  <<abstract>>
+}
+
+class HideEfficientLengthIterable~T~ {
+  <<abstract interface>>
+}
+
+Set~E~ <|.. Iterable~E~ : implements
+Set~E~ <|.. _SetIterable~E~ : implements
+
+_SetIterable~E~ <|-- EfficientLengthIterable~E~ : extends
+_SetIterable~E~ <|.. HideEfficientLengthIterable~E~ : implements
+
+EfficientLengthIterable~T~ <|-- Iterable~T~ : extends
+HideEfficientLengthIterable~T~ <|.. Iterable~T~ : implements
+```
+
+### 22、🔧**自动化代码生成工具** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * [<font color=red>**build_runner**</font>](https://pub.dev/packages/build_runner)
 
@@ -10380,111 +10598,109 @@ Comparable.compare(a, b)
   | ✅ 测试 mock       | 自动生成 `@Mock()`、伪接口                         | `mockito` + `build_runner`                        |
   | ✅ Dart FFI        | 自动生成 FFI 对应的 dart wrapper                   | `ffigen`                                          |
 
-### 22、🏗️构造函数 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 23、🏗️构造函数 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 22.1、📚 各种构造函数形式讲解
+#### 23.1、**默认构造函数**（<font color=red>**不能有两个默认构造函数（名字相同，参数不同也不行）**</font>） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-* **默认构造函数**（<font color=red>**不能有两个默认构造函数（名字相同，参数不同也不行）**</font>）
+> 默认构造函数 == 没写名字的命名构造函数。
 
-  > 默认构造函数 == 没写名字的命名构造函数。
+```dart
+class Person {
+  final String name;
+  Person(this.name); // 默认构造函数（只能有一个，函数名即类名。名字相同，参数不同也不行）
+  // Person(int age); // ❌ 报错：重复定义构造函数
+}
+```
 
-  ```dart
-  class Person {
-    final String name;
-    Person(this.name); // 默认构造函数（只能有一个，函数名即类名。名字相同，参数不同也不行）
-    // Person(int age); // ❌ 报错：重复定义构造函数
+#### 23.2、**命名构造函数**（<font color=red>**可以有多个命名构造函数，但是：必须有唯一名字**</font>） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+ class Person {
+  final String name;
+  final int age;
+  Person(this.name, this.age); // 默认构造函数（只能有一个，函数名即类名。名字相同，参数不同也不行）
+  Person.student(String name) : this(name, 18); // 默认学生18岁
+  Person.student(int age) : this("Jobs", age); // ❌ 报错。Dart 不支持构造函数的重载（不像 Java 或 C++ 那样支持同名不同参）
+}
+```
+
+```dart
+/// 命名构造函数 的相关调用
+void main() {
+  var p1 = Person("Tom", 25);           // 调用默认构造函数
+  var p2 = Person.student("Alice");     // 调用命名构造函数
+
+  print("${p1.name}, ${p1.age}");       // 输出: Tom, 25
+  print("${p2.name}, ${p2.age}");       // 输出: Alice, 18
+}
+```
+
+#### 23.3、**初始化列表构造函数** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+class User {
+  final String upperName;
+  // ✅ 对参数做转换处理
+  User(String name) : upperName = name.toUpperCase();// 对外来的参数，进行一次处理以后，再赋值到成员变量（初始化 final 字段）
+}
+```
+
+```dart
+/// 初始化列表构造函数 的相关调用
+void main() {
+  var user = User("jobs");
+  print(user.upperName); // 输出：JOBS
+}
+```
+
+#### 23.4、**`const` 构造函数**（**`Widget`** 常用） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> | 作用                          | 好处                                                         |
+> | ----------------------------- | ------------------------------------------------------------ |
+> | 编译期常量                    | 提高性能，减少内存分配                                       |
+> | 支持 **`Widget`**  树中的优化 | [**Flutter**](https://flutter.dev/) 的 `const` **`Widget`** 可避免重建，提高性能 |
+> | 自动复用相同实例              | 节省资源、提高效率                                           |
+
+```dart
+class Point {
+  final int x, y;
+  const Point(this.x, this.y);
+}
+```
+
+```dart
+/// 普通调用（非 const）
+void main() {
+  var p = Point(3, 4);
+  print('Point: (${p.x}, ${p.y})'); // 输出: Point: (3, 4)
+}
+```
+
+```dart
+/// const 调用（编译期常量）
+void main() {
+  const p1 = Point(3, 4);
+  const p2 = Point(3, 4);
+  // identical(p1, p2) 是 Dart 判断两个对象是否是“同一个内存地址”的方法。
+  // 因为是 const，所以 Dart 会在编译期把 (3, 4) 的 Point 实例缓存并复用。
+  print(identical(p1, p2)); // true ✅ 编译期常量，自动复用同一个对象
+}
+```
+
+#### 23.5、**`factory` 构造函数**（高级构建方式） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+class Person {
+  final String name;
+  Person._internal(this.name); // 私有构造函数
+  // 工厂构造函数（可以缓存/控制创建）
+  factory Person.fromJson(Map<String, dynamic> json) {
+    return Person._internal(json['name']);
   }
-  ```
+}
+```
 
-* **命名构造函数**（<font color=red>**可以有多个命名构造函数，但是：必须有唯一名字**</font>）
-
-  ```dart
-   class Person {
-    final String name;
-    final int age;
-    Person(this.name, this.age); // 默认构造函数（只能有一个，函数名即类名。名字相同，参数不同也不行）
-    Person.student(String name) : this(name, 18); // 默认学生18岁
-    Person.student(int age) : this("Jobs", age); // ❌ 报错。Dart 不支持构造函数的重载（不像 Java 或 C++ 那样支持同名不同参）
-  }
-  ```
-
-  ```dart
-  /// 命名构造函数 的相关调用
-  void main() {
-    var p1 = Person("Tom", 25);           // 调用默认构造函数
-    var p2 = Person.student("Alice");     // 调用命名构造函数
-  
-    print("${p1.name}, ${p1.age}");       // 输出: Tom, 25
-    print("${p2.name}, ${p2.age}");       // 输出: Alice, 18
-  }
-  ```
-
-* **初始化列表构造函数**
-
-  ```dart
-  class User {
-    final String upperName;
-    // ✅ 对参数做转换处理
-    User(String name) : upperName = name.toUpperCase();// 对外来的参数，进行一次处理以后，再赋值到成员变量（初始化 final 字段）
-  }
-  ```
-
-  ```dart
-  /// 初始化列表构造函数 的相关调用
-  void main() {
-    var user = User("jobs");
-    print(user.upperName); // 输出：JOBS
-  }
-  ```
-
-* **`const` 构造函数**（**`Widget`** 常用）
-
-  > | 作用                          | 好处                                                         |
-  > | ----------------------------- | ------------------------------------------------------------ |
-  > | 编译期常量                    | 提高性能，减少内存分配                                       |
-  > | 支持 **`Widget`**  树中的优化 | [**Flutter**](https://flutter.dev/) 的 `const` **`Widget`** 可避免重建，提高性能 |
-  > | 自动复用相同实例              | 节省资源、提高效率                                           |
-
-  ```dart
-  class Point {
-    final int x, y;
-    const Point(this.x, this.y);
-  }
-  ```
-
-  ```dart
-  /// 普通调用（非 const）
-  void main() {
-    var p = Point(3, 4);
-    print('Point: (${p.x}, ${p.y})'); // 输出: Point: (3, 4)
-  }
-  ```
-
-  ```dart
-  /// const 调用（编译期常量）
-  void main() {
-    const p1 = Point(3, 4);
-    const p2 = Point(3, 4);
-    // identical(p1, p2) 是 Dart 判断两个对象是否是“同一个内存地址”的方法。
-    // 因为是 const，所以 Dart 会在编译期把 (3, 4) 的 Point 实例缓存并复用。
-    print(identical(p1, p2)); // true ✅ 编译期常量，自动复用同一个对象
-  }
-  ```
-
-* **`factory` 构造函数**（高级构建方式）
-
-  ```dart
-  class Person {
-    final String name;
-    Person._internal(this.name); // 私有构造函数
-    // 工厂构造函数（可以缓存/控制创建）
-    factory Person.fromJson(Map<String, dynamic> json) {
-      return Person._internal(json['name']);
-    }
-  }
-  ```
-
-### 23、📦构建打包 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 24、📦构建打包 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ 打包慢，尤其[**Android**](https://www.android.com/)平台
 >
@@ -10562,9 +10778,9 @@ Comparable.compare(a, b)
   | **dynamic**                        | [**Flutter**](https://flutter.dev/) 动态集成场景 | **JIT + AOT**      | 依项目配置 | 依项目配置   | Add-to-App 混合开发               | **Android**<br/>**iOS**               | 原生动态加载 Flutter            |
   | **flavor 模式**                    | `flutter build apk --flavor staging`             | 依所选模式         | 依所选模式 | 依所选模式   | 多环境打包（`staging`、`uat` 等） | **Android**<br/>**iOS**               | 非编译模式，属于构建配置        |
 
-#### 23.1、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)（较为复杂和繁琐） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 24.1、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)（较为复杂和繁琐） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-##### 23.1.1、 [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 24.1.1、 [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 >  [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) （<font color=red>**建议保持最新**</font>）是[**Android**](https://www.android.com/).**SDK**命令行工具：[Android **Command Line Tools**](https://developer.android.com/tools?hl=zh-cn)的一部分，用于管理 [**Android**](https://www.android.com/).**SDK** 的组件。它允许你从终端安装、更新、查看和卸载[**Android**](https://www.android.com/).**SDK**中的各种包，比如：
 >
@@ -10606,7 +10822,7 @@ Comparable.compare(a, b)
 
     * 用于自定义 **CI/CD** 环境（如 [**Docker**](https://www.docker.com/)镜像）
 
-##### 23.1.2、[**Gradle**](https://gradle.org/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 24.1.2、[**Gradle**](https://gradle.org/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 一个高度可配置、插件化、现代化的自动化构建工具（平台无关）
 
@@ -10676,7 +10892,7 @@ Comparable.compare(a, b)
   }
   ```
 
-##### 23.1.3、<font id=AGP>[<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) = <font color=red>**A**</font>ndroid <font color=red>**G**</font>radle <font color=red>**P**</font>lugin</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> 
+##### 24.1.3、<font id=AGP>[<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) = <font color=red>**A**</font>ndroid <font color=red>**G**</font>radle <font color=red>**P**</font>lugin</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> 
 
 * 🧱  [<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) 是连接 [**Gradle**](https://gradle.org/) 和 **[Android](https://www.android.com/) 构建逻辑** 的桥梁
 
@@ -10721,7 +10937,7 @@ Comparable.compare(a, b)
   | 版本关系               | 不同 [<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn)  需配套不同 [**Gradle**](https://gradle.org/) | 独立更新                                           |
   | **Flutter** 项目中位置 | `build.gradle` 中的 `classpath`                              | `gradle-wrapper.properties` 中的 `distributionUrl` |
 
-##### 23.1.4、[**Android**](https://www.android.com/)  打包的产物 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 24.1.4、[**Android**](https://www.android.com/)  打包的产物 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 项目                 | <font color=red>**A**</font>ndroid <font color=red>**p**</font>ac<font color=red>**k**</font>age | <font color=red>**A**</font>ndroid <font color=red>**a**</font>pp <font color=red>**b**</font>undle |
 | -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -10736,7 +10952,7 @@ Comparable.compare(a, b)
 | **常见用途**         | 内部测试、第三方分发、安装包备份                             | 上传 [**Google Play**](https://play.google.com/) 商店        |
 | **是否推荐**         | ✅ 第三方或私有渠道使用                                       | ✅ [**Google**](https://www.google.com/) 官方推荐上传 [**Play**](https://play.google.com/) 商店使用 |
 
-##### 23.1.5、[**Flutter**](https://flutter.dev/)打[**Android**](https://www.android.com/) 包的流程图 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 24.1.5、[**Flutter**](https://flutter.dev/)打[**Android**](https://www.android.com/) 包的流程图 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```mermaid
 graph TD
@@ -10748,7 +10964,7 @@ graph TD
     F --> G[Generate final APK]
 ```
 
-##### 23.1.6、如何加快[**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)的打包速度？ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 24.1.6、如何加快[**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)的打包速度？ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 优化方式                                            | 操作说明                                                     |
 | --------------------------------------------------- | ------------------------------------------------------------ |
@@ -10761,7 +10977,7 @@ graph TD
 | ✅ **设置构建线程数**                                | [**Gradle**](https://gradle.org/) 中设置：`org.gradle.parallel=true` |
 | ✅ [**Flutter**](https://flutter.dev/) **版本更新**  | 新版本通常对构建性能有优化                                   |
 
-##### 23.1.7、🪖<font color=red>**构建指令**</font>：`flutter build apk` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 24.1.7、🪖<font color=red>**构建指令**</font>：`flutter build apk` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 模式      | 命令                                                   | 简称说明             |
 | --------- | ------------------------------------------------------ | -------------------- |
@@ -10803,7 +11019,7 @@ graph TD
   | `-Psplit-debug-info`      | 是否分离调试信息                                |
   | `assembleRelease`         | 构建 release 产物，最终生成 `app-release.apk`   |
 
-##### 23.1.8、⚙️ 相关配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 24.1.8、⚙️ 相关配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/) 打包需要涉及到**Java**环境推荐使用[<font color=red>**openJDK**</font>](https://openjdk.org/)
 
@@ -10861,7 +11077,7 @@ graph TD
   | 第三方依赖                                                   | 来自 [**pub.dev**](https://pub.dev/) 的插件中声明的 AAR/JAR，如 [`image_gallery_saver`](https://pub.dev/packages/image_gallery_saver)、[`engagelab`](https://pub.dev/packages?q=engagelab) |
   | [**Google Maven**](https://maven.google.com/web/index.html) / [**JCenter**](https://mvnrepository.com/repos/jcenter) / [**MavenCentral**](https://central.sonatype.com/) | 默认构建源，国内访问会慢                                     |
 
-##### 23.1.9、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)打包脚本（MacOS）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 24.1.9、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)打包脚本（MacOS）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 <details>
 <summary>点击展开代码</summary>
@@ -11358,7 +11574,7 @@ main "$@"
 ```
 </details>
 
-##### 23.1.10、打包成品  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 24.1.10、打包成品  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > [**Flutter**](https://flutter.dev/) 和 [**Gradle**](https://gradle.org/)  的构建系统默认会将最新产物**覆盖上一次的构建产物**
 
@@ -11390,9 +11606,9 @@ graph TD
 | 🚀 提测/发包                                         | `apk/release/app-release.apk`（需签名）                  |
 | 🌐 上架  [**Google Play**](https://play.google.com/) | `bundle/release/app-release.aab`                         |
 
-#### 23.2、📦 [**Flutter**](https://flutter.dev/).**iOS**（相对简单）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 24.2、📦 [**Flutter**](https://flutter.dev/).**iOS**（相对简单）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-##### 23.2.1、🪖<font color=red>**构建指令**</font>：`flutter build ios` 和 `flutter build ipa` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 24.2.1、🪖<font color=red>**构建指令**</font>：`flutter build ios` 和 `flutter build ipa` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > **iOS** 项目主流是使用[**XCode**](https://developer.apple.com/xcode/) + [**XCode**](https://developer.apple.com/xcode/) **build system** 来进行构建
 
@@ -11451,7 +11667,7 @@ graph TD
     F --> F2[📄 ExportOptions.plist<br/>导出配置文件<br/>📝 控制签名/上传方式]
 ```
 
-##### 23.2.3、📦 打包脚本 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 24.2.3、📦 打包脚本 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 #!/bin/zsh
@@ -11670,7 +11886,7 @@ main() {
 main "$@"
 ```
 
-##### 23.2.4、⚠️注意事项  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 24.2.4、⚠️注意事项  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 必须要有苹果的开发者账号（普通账户充值）
 
