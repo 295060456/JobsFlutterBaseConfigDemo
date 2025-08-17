@@ -361,7 +361,6 @@ is_git_repo() {
 
   ```shell
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
-  SCRIPT_DIR="$(cd -P -- "${(%):-%x:h}" && pwd -P)"
   ```
 
 ```shell
