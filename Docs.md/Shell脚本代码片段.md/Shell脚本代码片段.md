@@ -325,9 +325,24 @@ is_in_china() {
 }
 ```
 
+### 🎯 git目录判定 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```shell
+is_git_repo() {
+  local dir="$1"
+  # 工作副本：.git 目录或 .git 文件（worktree 等）
+  [[ -d "$dir/.git" || -f "$dir/.git" ]] && return 0
+  # 裸仓库（可选）
+  [[ -f "$dir/HEAD" && -d "$dir/objects" && -d "$dir/refs" ]] && return 0
+  return 1
+}
+```
+
 ### 🎯 获取系统变量 <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 1、<font color=red>**获取：脚本所在目录的绝对路径**</font> <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 1、路径
+
+##### 1.1、<font color=red>**获取：脚本所在目录的绝对路径**</font> <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
   >- **${BASH_SOURCE[0]:-${(%):-%x}}**：获取当前脚本路径，兼容 **bash** 和 **zsh**。🔔 `:-` 是默认值语法（如果前者不存在就用后者）
   >  * **bash** 用 `BASH_SOURCE[0]`
@@ -346,6 +361,7 @@ is_in_china() {
 
   ```shell
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
+  SCRIPT_DIR="$(cd -P -- "${(%):-%x:h}" && pwd -P)"
   ```
 
 ```shell
@@ -355,7 +371,7 @@ cd "$SCRIPT_DIR" || {
 }
 ```
 
-#### 2、**获取：当前脚本文件名** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 1.2、**获取：当前脚本文件名** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
   > `basename "$0"`：提取脚本文件的**文件名**部分（去除路径）
 
@@ -363,20 +379,105 @@ cd "$SCRIPT_DIR" || {
   script_file="$(basename "$0")"
   ```
 
-#### 3、**获取：脚本路径** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 1.3、**获取：脚本路径** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
 SCRIPT_PATH="${SCRIPT_DIR}/$(basename -- "$0")"
 ```
 
-#### 4、**获取：桌面路径 **<a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 1.4、**获取：桌面路径 **<a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
   ```shell
   DESKTOP_PATH=~/Desktop
   ```
 
-#### 5、**获取：当前用户名** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+##### 1.5、循环问正确（判断依据解耦自定义拓展）的路径，直到正确为止
+
+```shell
+#!/bin/zsh
+
+# ✅ 彩色输出函数
+SCRIPT_BASENAME=$(basename "$0" | sed 's/\.[^.]*$//')   # 当前脚本名（去掉扩展名）
+LOG_FILE="/tmp/${SCRIPT_BASENAME}.log"                  # 设置对应的日志文件路径
+
+log()            { echo -e "$1" | tee -a "$LOG_FILE"; }
+color_echo()     { log "\033[1;32m$1\033[0m"; }        # ✅ 正常绿色输出
+info_echo()      { log "\033[1;34mℹ $1\033[0m"; }      # ℹ 信息
+success_echo()   { log "\033[1;32m✔ $1\033[0m"; }      # ✔ 成功
+warn_echo()      { log "\033[1;33m⚠ $1\033[0m"; }      # ⚠ 警告
+warm_echo()      { log "\033[1;33m$1\033[0m"; }        # 🟡 温馨提示（无图标）
+note_echo()      { log "\033[1;35m➤ $1\033[0m"; }      # ➤ 说明
+error_echo()     { log "\033[1;31m✖ $1\033[0m"; }      # ✖ 错误
+err_echo()       { log "\033[1;31m$1\033[0m"; }        # 🔴 错误纯文本
+debug_echo()     { log "\033[1;35m🐞 $1\033[0m"; }     # 🐞 调试
+highlight_echo() { log "\033[1;36m🔹 $1\033[0m"; }     # 🔹 高亮
+gray_echo()      { log "\033[0;90m$1\033[0m"; }        # ⚫ 次要信息
+bold_echo()      { log "\033[1m$1\033[0m"; }           # 📝 加粗
+underline_echo() { log "\033[4m$1\033[0m"; }           # 🔗 下划线
+
+# ✅ 路径工具函数
+abs_path() {
+  local p="$1"
+  [[ -z "$p" ]] && return 1
+  p="${p//\"/}"
+  [[ "$p" != "/" ]] && p="${p%/}"
+  if [[ -d "$p" ]]; then
+    (cd "$p" 2>/dev/null && pwd -P)
+  elif [[ -f "$p" ]]; then
+    (cd "${p:h}" 2>/dev/null && printf "%s/%s\n" "$(pwd -P)" "${p:t}")
+  else
+    return 1
+  fi
+}
+
+is_ok_root() {
+  local p="$1" # SCRIPT_DIR
+  # 校验逻辑
+#  return 1 # 不正确的路径
+  return 0 # 正确的路径
+}
+
+# ✅ 项目入口识别
+detect_entry() {
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
+
+  while true; do
+    warn_echo "📂 请拖入正确的目录路径："
+    read -r user_input
+    user_input="${user_input//\"/}"
+    user_input="${user_input%/}"
+
+    if [[ -z "$user_input" ]]; then
+      if is_ok_root "$SCRIPT_DIR"; then
+        ok_root=$(abs_path "$SCRIPT_DIR")
+        highlight_echo "🎯 检测到脚本所在目录:$SCRIPT_DIR 即正确的路径，自动使用。"
+        break
+      else
+        error_echo "❌ 当前目录:$SCRIPT_DIR 不是正确的路径，请重新拖入。"
+        continue
+      fi
+    fi
+
+    error_echo "❌ 无效路径:$SCRIPT_DIR，请重新拖入正确的路径："
+  done
+
+  cd "$ok_root" || { error_echo "无法进入项目目录：$ok_root"; exit 1; }
+  success_echo "✅ 项目路径：$ok_root"
+}
+
+# ✅  主流程函数
+main() {
+  clear
+  show_banner                   # 自述信息
+  detect_entry                  # 项目入口识别
+}
+
+# ✅ 脚本执行入口
+main "$@"
+```
+
+#### 2、**获取：当前用户名** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
   > 用双引号 `"` 包裹起来，可以防止用户名中出现空格、特殊字符时发生错误
 
@@ -404,7 +505,7 @@ SCRIPT_PATH="${SCRIPT_DIR}/$(basename -- "$0")"
 | `id -un`  | 命令     | 当前有效用户的用户名（与 `whoami` 通常一样，但更底层）   |
 | `logname` | 命令     | 最初登录系统的用户（在 `sudo` 场景下可能与当前用户不同） |
 
-#### 6、**获取：🍏 Xcode 信息 **<a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 3、**获取：🍏 Xcode 信息 **<a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 print_xcode_info() {
@@ -418,7 +519,7 @@ print_xcode_info() {
 }
 ```
 
-#### 7、**获取：☕ Java 信息 ** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 4、**获取：☕ Java 信息 ** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```
 print_java_info() {
@@ -432,7 +533,7 @@ print_java_info() {
 }
 ```
 
-#### 8、**获取：🤖 Android SDK 信息** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 5、**获取：🤖 Android SDK 信息** <a href="#目的" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```shell
 print_android_sdk_info() {
@@ -674,10 +775,10 @@ print_duration
 >
 >     ```shell
 >     cat <<EOF >> ~/.zshrc
->                      
+>                          
 >     # >>> Flutter 环境变量 >>>
 >     export PATH="\$HOME/.pub-cache/bin:\$PATH"
->                      
+>                          
 >     EOF
 >     ```
 >
@@ -693,10 +794,10 @@ print_duration
 >
 >     ```shell
 >      cat <<EOF > ~/.zshrc
->                                   
+>                                           
 >      # >>> Flutter 环境变量 >>>
 >      export PATH="\$HOME/.pub-cache/bin:\$PATH"
->                                   
+>                                           
 >      EOF
 >     ```
 >  
@@ -1226,15 +1327,15 @@ install_jenv() {
 >   ```shell
 >   jenv_remove_all_java() {
 >     echo "🧹 开始移除所有通过 Homebrew 安装并注册到 jenv 的 Java 版本..."
->           
+>               
 >     if [[ "$(uname -m)" == "arm64" ]]; then
 >       base_path="/opt/homebrew/opt"
 >     else
 >       base_path="/usr/local/opt"
 >     fi
->           
+>               
 >     found=false
->           
+>               
 >     for path in "$base_path"/openjdk*/libexec/openjdk.jdk/Contents/Home; do
 >       if [[ -d "$path" ]]; then
 >         echo "❌ 正在移除：$path"
@@ -1242,7 +1343,7 @@ install_jenv() {
 >         found=true
 >       fi
 >     done
->           
+>               
 >     if [[ "$found" == false ]]; then
 >       echo "⚠️ 未检测到任何已注册 Java 安装路径"
 >     else

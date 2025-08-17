@@ -80,7 +80,6 @@ show_banner() {
 
 # ✅ 项目入口识别
 detect_entry() {
-  SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd -P)"
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
 
   while true; do
