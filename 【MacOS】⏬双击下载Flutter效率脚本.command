@@ -24,11 +24,8 @@ main() {
     success_echo "✔ 克隆完成：$CLONE_DIR"
 
     info_echo "🔑 赋予执行权限..."
-    chmod +x "$CLONE_DIR"/*.sh
+    find "$CLONE_DIR" -type f \( -name "*.sh" -o -name "*.command" \) -exec chmod +x {} \;
 
-    info_echo "🚀 正在执行脚本..."
-    /bin/zsh "$CLONE_DIR/SourceTree.sh"
-    
     open $CLONE_DIR
 }
 
