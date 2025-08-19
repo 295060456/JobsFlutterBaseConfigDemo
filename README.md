@@ -2735,10 +2735,32 @@ print(now.weekday);    // 星期几（1=星期一，7=星期日）
     ```
     </details>
 
-### 14、🔙 导航栏返回按钮的行为：监听+定义   <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 14、🔙 导航栏返回按钮 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 <details>
-<summary>点击展开代码</summary>
+<summary>点击展开代码👉自定义点击事件（返回）</summary>
+
+```dart
+Scaffold(
+  backgroundColor: const Color(colorF5F5F5),
+  appBar: AppBar(
+      backgroundColor: Colors.white,
+      centerTitle: true,
+      leading: BackButton(
+        onPressed: () {
+          Get.back();
+          dismissPop();
+        },
+      ),
+      title: Text("分享赚钱")),
+  body: Center(),
+);
+```
+
+</details>
+
+<details>
+<summary>点击展开代码👉监听+定义</summary>
 
 ```dart
 /// PageC
@@ -2816,81 +2838,96 @@ abstract class RouteAwareState<T extends RouteAwareStatefulPage>
 
 </details>
 
-### 15、🖥️[**Flutter**](https://flutter.dev)屏幕适配方案 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 15、🖥️[**Flutter**](https://flutter.dev)屏幕尺寸方案 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 | 工具/方式            | 作用                              | 用法示例                                                     |
 | -------------------- | --------------------------------- | ------------------------------------------------------------ |
-| `MediaQuery`         | 获取屏幕宽高/边距/键盘高度        | `MediaQuery.of(context).size.height`                         |
+| `MediaQuery`         | 获取屏幕宽高/边距/键盘高度        | **屏幕高**：`MediaQuery.of(context).size.height`<br/>**屏幕宽**：`MediaQuery.of(context).size.width;` |
 | `SafeArea`           | 自动避开状态栏/导航栏             | `SafeArea(child: ...)`                                       |
 | `flutter_screenutil` | 屏幕尺寸适配（**dp**/**sp**统一） | `20.w`, `14.sp`, `EdgeInsets.all(10.r)`                      |
 | `LayoutBuilder`      | 自适应布局大小判断                | `constraints.maxWidth < 600 ? PhoneLayout() : TabletLayout()` |
 | `KeyboardVisibility` | 键盘弹出监听，处理遮挡问题        | `KeyboardVisibilityController().onChange.listen(...)`        |
 
-#### 15.1、[**flutter_screenutil**](https://pub.dev/packages/flutter_screenutil)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 15.1、**`WidgetsBinding`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-* ‼️重要说明
+* 不依托于**`BuildContext`**，从 [**Flutter**](https://flutter.dev/) Engine 直接拿底层数据
+  * **一次性获取**，不会自动触发 `build`
+  * 当用户旋转屏幕、进入分屏时，`physicalSize` 会变
 
-  * [**ScreenUtilInit**](https://pub.dev/packages/flutter_screenutil).**builder** 后面的参数
+```dart
+void JobsScreenListener() {
+  /// 需要监听，以获取最新的值
+  WidgetsBinding.instance.platformDispatcher.onMetricsChanged = () {
+    final window = WidgetsBinding.instance.platformDispatcher.views.first;
+    final newWidth  = window.physicalSize.width / window.devicePixelRatio;
+    final newHeight = window.physicalSize.height / window.devicePixelRatio;
+    debugPrint('屏幕变化了: $newWidth x $newHeight');
+  };
+}
+```
 
-    | App 类型                              | 是否支持                                  | 原因说明                                         |
-    | ------------------------------------- | ----------------------------------------- | ------------------------------------------------ |
-    | `MaterialApp`                         | ✅ 支持                                    | 官方推荐用法，内部已处理 context 初始化逻辑      |
-    | `CupertinoApp`                        | ❌ 不支持                                  | 无 `MediaQuery`，`ScreenUtil` 初始化失败或不完整 |
-    | `GetMaterialApp`                      | ❌ 不直接支持                              | 内部结构不同，`context` 获取时机不同             |
-    | `WidgetsApp`                          | ⚠️ 勉强支持                                | 需自己确保 `MediaQuery` 注入，使用受限           |
-    | `Builder` 包装 + 任意 App（如下所示） | ✅ <font color=red>**推荐替代方案**</font> | 手动传入 `context`，可兼容任何框架（包括 GetX）  |
+```dart
+/// JobsScreenUtil().width;
+/// JobsScreenUtil().height;
+class JobsScreenUtil {
+  // 单例
+  static final JobsScreenUtil _instance = JobsScreenUtil._internal();
+  factory JobsScreenUtil() => _instance;
+  JobsScreenUtil._internal() {
+    // 初始化监听
+    WidgetsBinding.instance.platformDispatcher.onMetricsChanged = _updateSize;
+    _updateSize();
+  }
 
-  * `ScreenUtilInit` 内部依赖：
+  double _width = 0;
+  double _height = 0;
+  double _pixelRatio = 1;
 
-    - `MediaQuery.of(context)` 初始化设备尺寸等；
-    - `WidgetsBinding.instance.window.physicalSize` 是兜底；
-    - 一般通过 `MaterialApp` 创建完整的 widget 树，包括 `MediaQuery`、`Localizations` 等。
+  void _updateSize() {
+    final view = WidgetsBinding.instance.platformDispatcher.views.first;
+    _pixelRatio = view.devicePixelRatio;
+    _width = view.physicalSize.width / _pixelRatio;
+    _height = view.physicalSize.height / _pixelRatio;
+    debugPrint('📐 屏幕变化: $_width × $_height (dp)');
+  }
 
-* 使用
+  double get width => _width;
+  double get height => _height;
+  double get pixelRatio => _pixelRatio;
+}
+```
 
-  <details>
-  <summary>点击展开代码</summary>
+#### 15.2、**`MediaQuery`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-  ```yaml
-  dependencies:
-    flutter_screenutil: any
-  ```
+* 依托于**`BuildContext`**
+
+* <font color=red>**运行时计算的值，不能用const**</font>
+
+* [**Flutter**](https://flutter.dev/) 内部会在屏幕旋转、分屏变化时，**重新 build** 包含 `MediaQuery` 的 **widget**
+
+* 如果确定 `context` 一定在 `MaterialApp` / `Scaffold` 下，那么：
+
   ```dart
-  import 'package:flutter_screenutil/flutter_screenutil.dart';
+  MediaQuery.of(context).size.height;
+  MediaQuery.of(context).size.width;
   ```
-  
-  ```dart
-  Widget build(BuildContext context) => ScreenUtilInit(
-      designSize: const Size(1125, 2436),// 👈 指定设计稿尺寸
-      minTextAdapt: true,
-      builder: (context, child) => GetMaterialApp(/// ← 可以替换成 CupertinoApp、WidgetsApp 等
-          debugShowCheckedModeBanner: false,
-          title: title ?? 'GetX Demo',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-          ),
-          home: Builder(
-            builder: (ctx) => Scaffold(
-              appBar: AppBar(
-                title:
-                    Text(title ?? (child?.runtimeType.toString() ?? 'Builder')),
-              ),
-              body: builder != null ? builder!(ctx) : child!,
-            ),
-          ),
-        )
-    );
-  ```
-  
-  ```dart
-  520.h     // 表示高度适配值
-  300.w     // 表示宽度适配值
-  16.sp     // 表示字体大小适配值
-  ```
-  
-  </details>
 
-#### 15.2、**SafeArea** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+* 调用的 `context` **不在 MaterialApp / WidgetsApp 的 widget 树下**，或者还没挂载 `MediaQuery` 时，它会是 `null`
+
+  ```dart
+  MediaQuery.maybeOf(context);
+  ```
+
+* 拿到**安全区域**尺寸：去掉状态栏 和 底部导航
+
+  ```dart
+  final safeWidth  = MediaQuery.of(context).size.width;
+  final safeHeight = MediaQuery.of(context).size.height
+                   - MediaQuery.of(context).padding.top
+                   - MediaQuery.of(context).padding.bottom;
+  ```
+
+#### 15.3、**`SafeArea`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 参考
   * [**SafeArea & MediaQuery**](https://docs.flutter.dev/ui/adaptive-responsive/safearea-mediaquery)
@@ -2966,11 +3003,75 @@ abstract class RouteAwareState<T extends RouteAwareStatefulPage>
 
   * ⚠️ **与 `AppBar` 共用时应只作用于 body**：否则会让 AppBar 有额外顶部边距，一般只包裹 `Scaffold.body` 即可。
 
-#### 15.3、📐 键盘遮挡通用处理方案  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 15.4、[**flutter_screenutil**](https://pub.dev/packages/flutter_screenutil)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+* ‼️重要说明
+
+  * [**ScreenUtilInit**](https://pub.dev/packages/flutter_screenutil).**builder** 后面的参数
+
+    | App 类型                              | 是否支持                                  | 原因说明                                         |
+    | ------------------------------------- | ----------------------------------------- | ------------------------------------------------ |
+    | `MaterialApp`                         | ✅ 支持                                    | 官方推荐用法，内部已处理 context 初始化逻辑      |
+    | `CupertinoApp`                        | ❌ 不支持                                  | 无 `MediaQuery`，`ScreenUtil` 初始化失败或不完整 |
+    | `GetMaterialApp`                      | ❌ 不直接支持                              | 内部结构不同，`context` 获取时机不同             |
+    | `WidgetsApp`                          | ⚠️ 勉强支持                                | 需自己确保 `MediaQuery` 注入，使用受限           |
+    | `Builder` 包装 + 任意 App（如下所示） | ✅ <font color=red>**推荐替代方案**</font> | 手动传入 `context`，可兼容任何框架（包括 GetX）  |
+
+  * `ScreenUtilInit` 内部依赖：
+
+    - `MediaQuery.of(context)` 初始化设备尺寸等；
+    - `WidgetsBinding.instance.window.physicalSize` 是兜底；
+    - 一般通过 `MaterialApp` 创建完整的 widget 树，包括 `MediaQuery`、`Localizations` 等。
+
+* 使用
+
+  <details>
+  <summary>点击展开代码</summary>
+
+  ```yaml
+  dependencies:
+    flutter_screenutil: any
+  ```
+  ```dart
+  import 'package:flutter_screenutil/flutter_screenutil.dart';
+  ```
+  
+  ```dart
+  Widget build(BuildContext context) => ScreenUtilInit(
+      designSize: const Size(1125, 2436),// 👈 指定设计稿尺寸
+      minTextAdapt: true,
+      builder: (context, child) => GetMaterialApp(/// ← 可以替换成 CupertinoApp、WidgetsApp 等
+          debugShowCheckedModeBanner: false,
+          title: title ?? 'GetX Demo',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          home: Builder(
+            builder: (ctx) => Scaffold(
+              appBar: AppBar(
+                title:
+                    Text(title ?? (child?.runtimeType.toString() ?? 'Builder')),
+              ),
+              body: builder != null ? builder!(ctx) : child!,
+            ),
+          ),
+        )
+    );
+  ```
+  
+  ```dart
+  520.h     // 表示高度适配值
+  300.w     // 表示宽度适配值
+  16.sp     // 表示字体大小适配值
+  ```
+  
+  </details>
+
+#### 15.5、📐 键盘遮挡通用处理方案  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 🌹类似于**iOS**里面的[**IQKeyboardManager**](https://github.com/hackiftekhar/IQKeyboardManager)，👉 **监听键盘的高度变化，动态将视图往上推这么多距离，避免输入控件被遮挡。**
 
-> **MediaQuery**.**of(context)**.**viewInsets**.**bottom**，是 [**Flutter**](https://flutter.dev/) 提供的一个<u> **动态值**</u>，表示：当前屏幕底部被“系统遮挡”的高度
+> **MediaQuery**.**of(context)**.**viewInsets**.**bottom**，是 [**Flutter**](https://flutter.dev/) 提供的一个<u> **动态值**</u>，表示：当前屏幕底部被`系统遮挡`的高度
 >
 > | 系统遮挡 | MediaQuery.of(context).viewInsets.bottom 值 |
 > | -------- | ------------------------------------------- |
@@ -3025,7 +3126,7 @@ SafeArea(
 
   手动加 `ScrollView + Padding`，就等同于**Flutter 版 IQKeyboardManager**
 
-#### 15.4、🔄 响应式布局：根据宽度切换布局  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 15.6、🔄 响应式布局：根据宽度切换布局  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 LayoutBuilder(
@@ -4100,7 +4201,7 @@ class ParentStealFix extends StatelessWidget {
 ```
 </details>
 
-###### 18.4.3.9、IgnorePointer / AbsorbPointer 精确阻断或穿透
+###### 18.4.3.9、`IgnorePointer` / `AbsorbPointer` 精确阻断或穿透
 
 <details>
 <summary>点击查看代码</summary>
@@ -4152,7 +4253,7 @@ class DemoIgnoreAbsorb extends StatelessWidget {
 ```
 </details>
 
-###### 18.4.3.10、自定义 GestureRecognizer（精细控制胜负时机）
+###### 18.4.3.10、自定义 `GestureRecognizer`（精细控制胜负时机）
 
 <details>
 <summary>点击查看代码</summary>
@@ -4544,6 +4645,68 @@ class _GestureDemoPageState extends State<GestureDemoPage> {
 
 ```
 </details>
+
+#### 18.6、<font color=red>**`HitTestBehavior`**</font>  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+enum HitTestBehavior {
+  deferToChild,  // 默认：只能点击内容区域
+  opaque,        //（不透明的）整个区域可点，吃掉事件，不往下传
+  translucent,   //（半透明的）区域可点，但事件还能继续传给下面的组件
+}
+```
+
+* `HitTestBehavior.deferToChild`
+
+  > 1️⃣ **如果 child 是空的 / 没有尺寸，就不会触发点击**
+  >
+  > 2️⃣ 如果 child 是空的 / 没有尺寸，就不会触发点击
+
+  ```dart
+  GestureDetector(
+    behavior: HitTestBehavior.deferToChild,
+    onTap: () => print("tap"),
+    child: Container(), // 没尺寸 → 点不到
+  )
+  ```
+
+* `HitTestBehavior.opaque`
+
+  > 1️⃣ 即使 child **透明 / 没背景**，**整个 widget 区域都能响应点击**
+  >
+  > 2️⃣ 吃掉事件
+  >
+  > 3️⃣ 区域 = 父容器的 `size`
+
+  ```dart
+  GestureDetector(
+    behavior: HitTestBehavior.opaque,
+    onTap: () => print("tap"),
+    child: SizedBox(width: 200, height: 100), // 空白区域也能点
+  )
+  ```
+
+* `HitTestBehavior.translucent`
+
+  >1️⃣ 和 `opaque` 类似：**空白区域也能点**。
+  >
+  >2️⃣ 区别是：事件还能继续往下传递（冒泡）；`opaque` 会**吃掉事件**，`translucent` 则是**自己响应 + 继续透传**
+
+  ```dart
+  Stack(
+    children: [
+      GestureDetector(
+        onTap: () => print("底层点到了"),
+        child: Container(width: 200, height: 200, color: Colors.red),
+      ),
+      GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => print("上层点到了"),
+        child: SizedBox(width: 200, height: 200),
+      ),
+    ],
+  );
+  ```
 
 ### 19、<font id=线性布局>🧱</font> [**Flutter**](https://flutter.dev/)中，涉及到布局的**`Widget`**  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -5368,7 +5531,7 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 
 ### 24、👂监听 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 24.1、👂路由的监听：`NavigatorObserver` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 24.1、👂监听@路由：`NavigatorObserver` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ `class RouteObserver<R extends Route<dynamic>> extends NavigatorObserver `
 >
@@ -5421,7 +5584,7 @@ builder: (context, child) {
 
 </details>
 
-#### 24.2、👂APP 生命周期的监听：`WidgetsBindingObserver` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 24.2、👂监听@APP 生命周期：`WidgetsBindingObserver` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 主要通过实现 `WidgetsBindingObserver` 接口来完成
 
@@ -8433,7 +8596,7 @@ final rows = list
   }
   ```
 
-#### 36.3、🧬`StatefulWidget` 的生命周期 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 36.3、🧬**`StatefulWidget`** 的生命周期 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
  ```mermaid
  %% Flutter StatefulWidget 生命周期（含中文注释）
@@ -9616,6 +9779,126 @@ extension WidgetExtension on Widget {
 >   ),
 > ),
 > ```
+
+### 45、区间数值：`clamp` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> ```dart
+> /// 通用区间工具：限制 value 落在指定区间
+> class IntervalLimit {
+>   static double limit(
+>     double value,
+>     double min,				    	// 最小值
+>     double max, {				    // 最大值
+>     bool includeMin = true, // 是否包含 min（true = ≥min, false = >min）
+>     bool includeMax = true, // 是否包含 max（true = ≤max, false = <max）
+>   }) {
+>     assert(min < max, 'min 必须小于 max');
+> 
+>     double v = value;
+> 
+>     // 处理下限
+>     if (includeMin) {
+>       if (v < min) v = min;
+>     } else {
+>       if (v <= min) v = nextAfter(min, double.infinity); // min 的下一浮点数
+>     }
+> 
+>     // 处理上限
+>     if (includeMax) {
+>       if (v > max) v = max;
+>     } else {
+>       if (v >= max) v = nextAfter(max, double.negativeInfinity); // max 的上一浮点数
+>     }
+> 
+>     return v;
+>   }
+> 
+>   /// 获取相邻浮点数（替代 +ε 写法，更精确）
+>   /// direction > current ⇒ 向上取下一浮点数
+>   /// direction < current ⇒ 向下取上一浮点数
+>   static double nextAfter(double current, double direction) {
+>     return current.nextTowards(direction);
+>   }
+> }
+> ```
+>
+> >```dart
+> >void main() {
+> >  // [0.5, 1.0] 闭区间：结果会被夹在 [0.5, 1.0] 内
+> >  double x1 = IntervalLimit.limit(0.3, 0.5, 1.0); 
+> >  print(x1); // 0.5
+> >
+> >  // (0.5, 1.0] 左开右闭：0.5 不合法，会被提升到稍大于 0.5 的值
+> >  double x2 = IntervalLimit.limit(0.5, 0.5, 1.0, includeMin: false);
+> >  print(x2); // >0.5
+> >
+> >  // [0.5, 1.0) 左闭右开：1.0 不合法，会被降低到稍小于 1.0 的值
+> >  double x3 = IntervalLimit.limit(1.0, 0.5, 1.0, includeMax: false);
+> >  print(x3); // <1.0
+> >
+> >  // (0.5, 1.0] 左开右闭：0.8 在区间内，直接返回
+> >  double x4 = IntervalLimit.limit(0.8, 0.5, 1.0, includeMin: false, includeMax: true);
+> >  print(x4); // 0.8
+> >}
+> >```
+
+#### 45.1、处理<font color=red>**闭区间**</font>数值 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+/// [0.5, 1.0]
+final v = x.clamp(0.5, 1.0);
+```
+
+#### 45.2、处理<font color=red>**开区间**</font>数值 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+/// (0.5, 1.0)
+double v = x;
+if (v <= 0.5) v = 0.5000001;  // 或者干脆 v = min + ε
+if (v >= 1.0) v = 0.9999999;  // 或者 v = max - ε
+```
+
+#### 45.3、处理<font color=red>**半开半闭区间**</font>数值 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+/// (0.5, 1.0]
+double v = x;
+if (v <= 0.5) v = 0.5000001;  // 强制大于 0.5
+if (v > 1.0) v = 1.0;         // 允许等于 1
+```
+
+### 46、圆角 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+#### 46.1、让<font color=red>**容器的背景**</font>有圆角 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> 背景圆角会显示出来。但如果 `child` 超出了边界（比如放一张大图片），它不会被裁剪，还是会溢出。
+
+```dart
+Container(
+  width: 200,
+  height: 100,
+  decoration: BoxDecoration(
+    color: Colors.blue,
+    borderRadius: BorderRadius.circular(20),
+  ),
+)
+```
+
+#### 46.2、真正<font color=red>**裁剪子组件**</font>的圆角 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+> 圆角范围之外的图片会被裁掉，不会溢出。
+
+```dart
+ClipRRect(
+  borderRadius: BorderRadius.circular(20),
+  child: Image.network(
+    'https://picsum.photos/300/200',
+    width: 200,
+    height: 100,
+    fit: BoxFit.cover,
+  ),
+)
+```
 
 ## 四、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
