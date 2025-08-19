@@ -9900,6 +9900,66 @@ ClipRRect(
 )
 ```
 
+### 47、广告轮播图@`JobsBannerCarousel` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+* 图片模式（配合缓存 + 占位）
+
+  ```dart
+  Scaffold(
+    appBar: AppBar(title: const Text('Banner - images')),
+    body: Center(
+      child: JobsBannerCarousel(
+        width: JobsScreenUtil().width,
+        height: 455.h,
+        imageUrls: const [
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNaXM5FNZC7-9FDVh9mMMglZv5cuoPAw-6MA&s',
+          'https://jzmofficial.com/cdn/shop/files/Logo_1200x1200.jpg?v=1624577059',
+          'https://static.vecteezy.com/system/resources/previews/009/125/398/non_2x/jzm-logo-jzm-letter-jzm-letter-logo-design-initials-jzm-logo-linked-with-circle-and-uppercase-monogram-logo-jzm-typography-for-technology-business-and-real-estate-brand-vector.jpg',
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQdsn8QSHQxKyWpG6Qy2ngPM0hQMffP-DYo0FvNbwhx_EYmfl-EeYSZ4g8&s',
+        ],
+        viewportFraction: 1,
+        // vertical: 5.0,
+        // horizontal: 5.0,
+        // 关键：接入缓存版网络图
+        netImageBuilder: cachedNetImageBuilder,
+        // 空数据占位（数据为空时展示）
+        emptyBuilder: (ctx) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.image_not_supported_outlined, size: 48),
+              const SizedBox(height: 8),
+              Text('暂无内容'.tr),
+              const SizedBox(height: 8),
+              OutlinedButton(
+                  onPressed: () {/* 触发加载 */}, child: Text('重试'.tr)),
+            ],
+          ),
+        ),
+        onTap: (i) => debugPrint('tap $i'),
+      )
+    ),
+  );
+  ```
+
+* 自定义模式（完全不用图片 URL）
+
+  ```dart
+  BannerCarousel(
+    itemCount: 3,
+    itemBuilder: (ctx, i) {
+      return ColoredBox(
+        color: Colors.primaries[i % Colors.primaries.length].shade200,
+        child: Center(child: Text('自定义第 $i 页', style: const TextStyle(fontSize: 20))),
+      );
+    },
+    height: 150,
+    viewportFraction: 1,
+    emptyBuilder: (_) => const _EmptyHint(),
+    onTap: (i) => debugPrint('tap page $i'),
+  );
+  ```
+
 ## 四、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ### 1、修复平台目录：定位到[**Flutter**](https://flutter.dev/)项目根目录，执行👉`flutter create .`  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
