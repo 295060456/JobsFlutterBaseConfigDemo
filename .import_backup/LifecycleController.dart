@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/调试/JobsCommonUtil.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/%E8%B0%83%E8%AF%95/JobsCommonUtil.dart';
 
 class LifecycleController extends GetxController with WidgetsBindingObserver {
   @override

@@ -9900,7 +9900,7 @@ ClipRRect(
 )
 ```
 
-### 47、广告轮播图@`JobsBannerCarousel` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 47、广告轮播图@[**`JobsBannerCarousel`**](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/lib/JobsDemoTools/JobsFlutterTools/%E5%B9%BF%E5%91%8A%E8%BD%AE%E6%92%AD%E5%9B%BE/JobsBannerCarousel.dart) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 图片模式（配合缓存 + 占位）
 

@@ -497,6 +497,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+  extended_tabs:
+    dependency: "direct main"
+    description:
+      name: extended_tabs
+      sha256: c54d250f39af65033116672ca471fd0950d637dc9dd119c3d24c093295024430
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.0"
   fake_async:
     dependency: transitive
     description:
@@ -1466,6 +1474,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.1"
+  sync_scroll_library:
+    dependency: transitive
+    description:
+      name: sync_scroll_library
+      sha256: "2e266be24bb7b34686a4b9c592f8a1cd29778060fadd9f5df8535f2410caf196"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   synchronized:
     dependency: transitive
     description:
