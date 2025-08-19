@@ -21,17 +21,33 @@ class _JobsCategoryPageState extends State<JobsCategoryPage>
     with SingleTickerProviderStateMixin {
   late final TabController _controller;
 
-  final List<String> _tabs = const [
-    '彩金免费领',
-    '超值存送礼',
-    '回归包赔',
-    '队长福利',
-  ];
+  final List<ActivityBaseBean> _baseData = [
+    ActivityBaseBean(
+      title: '彩金免费领',
+      child: const CategoryListPage_1(title: '彩金免费领', index: 0).center(),
+      show: true,
+    ),
+    ActivityBaseBean(
+      title: '超值存送礼',
+      child: const CategoryListPage_1(title: '超值存送礼', index: 0).center(),
+      show: true,
+    ),
+    ActivityBaseBean(
+      title: '回归包赔',
+      child: const CategoryListPage_1(title: '回归包赔', index: 0).center(),
+      show: true,
+    ),
+    ActivityBaseBean(
+      title: '队长福利',
+      child: const CategoryListPage_1(title: '队长福利', index: 0).center(),
+      show: true,
+    ),
+  ].where((ele) => ele.show).toList();
 
   @override
   void initState() {
     super.initState();
-    _controller = TabController(length: _tabs.length, vsync: this);
+    _controller = TabController(length: _baseData.length, vsync: this);
   }
 
   @override
@@ -51,11 +67,11 @@ class _JobsCategoryPageState extends State<JobsCategoryPage>
       ),
       child: _AdaptiveTabBar(
         controller: _controller,
-        tabsText: _tabs,
+        tabsText: _baseData.map((e) => e.title).toList(),
         tabChildBuilder: (i) => _ZoomTab(
           controller: _controller,
           index: i,
-          text: _tabs[i],
+          text: _baseData.map((e) => e.title).toList()[i],
           selectedColor: const Color.fromARGB(255, 7, 25, 219),
           unselectedColor: const Color(0xFF666666),
           maxScaleDelta: 0.12,
@@ -68,10 +84,18 @@ class _JobsCategoryPageState extends State<JobsCategoryPage>
     final body = ExtendedTabBarView(
       controller: _controller,
       children: [
-        CategoryListPage_1(title: _tabs[0], index: 0).center(),
-        CategoryListPage_2(title: _tabs[1], index: 1).center(),
-        CategoryListPage_3(title: _tabs[2], index: 2).center(),
-        CategoryListPage_4(title: _tabs[3], index: 3).center(),
+        CategoryListPage_1(
+                title: _baseData.map((e) => e.title).toList()[0], index: 0)
+            .center(),
+        CategoryListPage_2(
+                title: _baseData.map((e) => e.title).toList()[1], index: 1)
+            .center(),
+        CategoryListPage_3(
+                title: _baseData.map((e) => e.title).toList()[2], index: 2)
+            .center(),
+        CategoryListPage_4(
+                title: _baseData.map((e) => e.title).toList()[3], index: 3)
+            .center(),
       ],
     );
 
@@ -283,4 +307,16 @@ class _AdaptiveTabBar extends StatelessWidget {
     }
     return true;
   }
+}
+
+class ActivityBaseBean {
+  ActivityBaseBean({
+    required this.child,
+    required this.title,
+    required this.show,
+  });
+
+  final String title;
+  final Widget child;
+  final bool show;
 }
