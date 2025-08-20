@@ -12,7 +12,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
  * 2. 表头显示
  *    - 表头内容默认始终完整显示，不会被截断。
  *    - 数据列可通过 `columnModes` 设置显示策略：
- *      2.1 省略号显示：CellLayout.ellipsis（默认，多余部分用“...”）
+ *      2.1 省略号显示：CellLayout.ellipsis（默认：多余部分用“...”）
  *      2.2 缩小字体：CellLayout.shrink（字体缩小以适配单元格）
  *      2.3 最长内容定宽：CellLayout.fitToLongest（整列宽度以最长内容撑开）
  *      2.4 自动换行：CellLayout.wrap（内容过长时换行显示）
@@ -162,7 +162,12 @@ class TableSectionStyle {
 }
 
 /// 单元格显示策略
-enum CellLayout { shrink, ellipsis, fitToLongest, wrap }
+enum CellLayout {
+  shrink,// 字体缩小以适配单元格
+  ellipsis,// 默认：多余内容用省略号显示（多余用...）
+  fitToLongest, // 整个列以最长内容为标准定宽撑开
+  wrap // 内容过长时换行显示
+}
 
 /// ================================== 冻结首列（列宽以表头为准 + 四种表体风格） ==================================
 class JobsExcel extends StatefulWidget {

@@ -9889,9 +9889,37 @@ ClipRRect(
 )
 ```
 
-### 47、广告轮播图@[**`JobsBannerCarousel`**](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/lib/JobsDemoTools/JobsFlutterTools/%E5%B9%BF%E5%91%8A%E8%BD%AE%E6%92%AD%E5%9B%BE/JobsBannerCarousel.dart) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 47、广告轮播图@[**`JobsBannerCarousel`**](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/lib/JobsDemoTools/JobsFlutterTools/%E5%B9%BF%E5%91%8A%E8%BD%AE%E6%92%AD%E5%9B%BE/JobsBannerCarousel.dart)使用说明 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-* 图片模式（配合缓存 + 占位）
+> ```dart
+> /// 空态组件
+> class JobsEmptyHint extends StatelessWidget {
+>   final VoidCallback onRetry; // 外部传入的回调
+> 
+>   const JobsEmptyHint({
+>     super.key,
+>     required this.onRetry,
+>   });
+> 
+>   @override
+>   Widget build(BuildContext context) {
+>     return Column(
+>       mainAxisAlignment: MainAxisAlignment.center,
+>       children: [
+>         const Icon(Icons.image_not_supported_outlined, size: 48),
+>         const SizedBox(height: 8),
+>         const Text('暂无内容'),
+>         OutlinedButton(
+>           onPressed: onRetry, // ✅ 调用外部传入的回调
+>           child: Text('点我重试'.tr),
+>         ),
+>       ],
+>     );
+>   }
+> }
+> ```
+
+*  🛜网络图片模式（配合缓存 + 占位）
 
   ```dart
   void main() {
@@ -9918,19 +9946,9 @@ ClipRRect(
                   viewportFraction: 1,
                   netImageBuilder: cachedNetImageBuilder,
                   emptyBuilder: (ctx) => Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.image_not_supported_outlined, size: 48),
-                        const SizedBox(height: 8),
-                        const Text('暂无内容'),
-                        const SizedBox(height: 8),
-                        OutlinedButton(
-                          onPressed: () {},
-                          child: const Text('重试'),
-                        ),
-                      ],
-                    ),
+                    child: JobsEmptyHint(onRetry: () {
+                      debugPrint("外部触发刷新逻辑");
+                    }),
                   ),
                   onTap: (i) => debugPrint('tap $i'),
                 ),
@@ -9942,26 +9960,150 @@ ClipRRect(
     );
   }
   ```
-
-* 自定义模式（完全不用图片 URL）
+  
+* **Assets** 本地图片
 
   ```dart
-  BannerCarousel(
-    itemCount: 3,
-    itemBuilder: (ctx, i) {
-      return ColoredBox(
-        color: Colors.primaries[i % Colors.primaries.length].shade200,
-        child: Center(child: Text('自定义第 $i 页', style: const TextStyle(fontSize: 20))),
-      );
-    },
-    height: 150,
-    viewportFraction: 1,
-    emptyBuilder: (_) => const _EmptyHint(),
-    onTap: (i) => debugPrint('tap page $i'),
-  );
+  void main() {
+    runApp(
+      ScreenUtilInit(
+        designSize: const Size(1125, 2436),
+        builder: (context, child) {
+          return MaterialApp(
+            home: Scaffold(
+              appBar: AppBar(title: const Text('Assets 本地图')),
+              body: JobsBannerCarousel(
+                itemCount: 3,
+                itemBuilder: (ctx, i) {
+                  final images = [
+                    'assets/images/banner1.png',
+                    'assets/images/banner2.png',
+                    'assets/images/banner3.png',
+                  ];
+                  return Image.asset(images[i], fit: BoxFit.cover);
+                },
+                height: 200,
+                viewportFraction: 1,
+                onTap: (i) => debugPrint('点击第 $i 张'),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+  ```
+  
+*  📁 本地 **File** 图片
+
+  ```dart
+  void main() {
+    // 假设这些是设备本地路径
+    final fileList = [
+      '/storage/emulated/0/Download/local1.jpg',
+      '/storage/emulated/0/Download/local2.jpg',
+      '/storage/emulated/0/Download/local3.jpg',
+    ];
+  
+    runApp(
+      ScreenUtilInit(
+        designSize: const Size(1125, 2436),
+        builder: (context, child) {
+          return MaterialApp(
+            home: Scaffold(
+              appBar: AppBar(title: const Text('File 本地图')),
+              body: JobsBannerCarousel(
+                itemCount: fileList.length,
+                itemBuilder: (ctx, i) {
+                  return Image.file(File(fileList[i]), fit: BoxFit.cover);
+                },
+                height: 200,
+                viewportFraction: 1,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+  ```
+  
+* 混合模式（第 1 张用 Asset，其余用网络）
+
+  ```dart
+  void main() {
+    final netImages = [
+      'https://picsum.photos/800/400?image=11',
+      'https://picsum.photos/800/400?image=22',
+      'https://picsum.photos/800/400?image=33',
+    ];
+  
+    runApp(
+      ScreenUtilInit(
+        designSize: const Size(1125, 2436),
+        builder: (context, child) {
+          return MaterialApp(
+            home: Scaffold(
+              appBar: AppBar(title: const Text('混合模式')),
+              body: JobsBannerCarousel(
+                itemCount: 1 + netImages.length,
+                itemBuilder: (ctx, i) {
+                  if (i == 0) {
+                    return Image.asset('assets/images/banner1.png',
+                        fit: BoxFit.cover);
+                  } else {
+                    return Image.network(netImages[i - 1], fit: BoxFit.cover);
+                  }
+                },
+                height: 200,
+                viewportFraction: 1,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+  ```
+  
+* 纯色矩形块
+
+  ```dart
+  void main() {
+    runApp(
+      ScreenUtilInit(
+        designSize: const Size(1125, 2436),
+        builder: (context, child) {
+          return MaterialApp(
+            home: Scaffold(
+              appBar: AppBar(title: const Text('自定义模式')),
+              body: JobsBannerCarousel(
+                itemCount: 3,
+                itemBuilder: (ctx, i) {
+                  return ColoredBox(
+                    color: Colors.primaries[i % Colors.primaries.length].shade200,
+                    child: Center(
+                      child: Text(
+                        '自定义第 $i 页',
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  );
+                },
+                height: 150,
+                viewportFraction: 1,
+                emptyBuilder: (_) => const _EmptyHint(),
+                onTap: (i) => debugPrint('tap page $i'),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
   ```
 
-### 48、[**JobsExcel**](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/lib/JobsDemoTools/JobsFlutterTools/Excel/JobsExcel.dart) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+### 48、[**`JobsExcel`**](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/lib/JobsDemoTools/JobsFlutterTools/Excel/JobsExcel.dart) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 /**
@@ -9975,7 +10117,7 @@ ClipRRect(
  * 2. 表头显示
  *    - 表头内容默认始终完整显示，不会被截断。
  *    - 数据列可通过 `columnModes` 设置显示策略：
- *      2.1 省略号显示：CellLayout.ellipsis（默认，多余部分用“...”）
+ *      2.1 省略号显示：CellLayout.ellipsis（默认：多余部分用“...”）
  *      2.2 缩小字体：CellLayout.shrink（字体缩小以适配单元格）
  *      2.3 最长内容定宽：CellLayout.fitToLongest（整列宽度以最长内容撑开）
  *      2.4 自动换行：CellLayout.wrap（内容过长时换行显示）
@@ -9988,6 +10130,7 @@ ClipRRect(
  *    - 横向滚动：冻结首列，剩余部分左右滑动。
  *    - 纵向滚动：冻结首行，剩余部分上下滑动。
  */
+
 void main() {
   final horizontal = ['回归首存金额', '回归首存返利', '流水倍数', '备注1', '备注2'];
   final vertical = [
@@ -10090,6 +10233,97 @@ void main() {
   );
 }
 ```
+
+### 49、空态组件：`JobsEmptyHint`  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+/// 空态组件
+class JobsEmptyHint extends StatelessWidget {
+  final VoidCallback onRetry; // 外部传入的回调
+
+  const JobsEmptyHint({
+    super.key,
+    required this.onRetry,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Icon(Icons.image_not_supported_outlined, size: 48),
+        const SizedBox(height: 8),
+        const Text('暂无内容，点我刷新'),
+        OutlinedButton(
+          onPressed: onRetry, // ✅ 调用外部传入的回调
+          child: Text('重试'.tr),
+        ),
+      ],
+    );
+  }
+}
+```
+
+### 50、字体 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+#### 50.1、🎨基础属性
+
+> 日常开发中最常调用的
+
+| 属性           | 说明                     | 示例                          |
+| -------------- | ------------------------ | ----------------------------- |
+| **fontSize**   | 字体大小（逻辑像素单位） | `fontSize: 18`                |
+| **fontWeight** | 字重（粗细）             | `fontWeight: FontWeight.w600` |
+| **color**      | 字体颜色                 | `color: Colors.red`           |
+| **fontFamily** | 指定字体族               | `fontFamily: 'Roboto'`        |
+| **fontStyle**  | 正常 / 斜体              | `fontStyle: FontStyle.italic` |
+
+* **FontWeight**
+
+  | 常量              | 含义                |
+  | ----------------- | ------------------- |
+  | `FontWeight.w100` | Thin（极细）        |
+  | `FontWeight.w200` | ExtraLight（特细）  |
+  | `FontWeight.w300` | Light（细）         |
+  | `FontWeight.w400` | Normal（常规/默认） |
+  | `FontWeight.w500` | Medium（中等）      |
+  | `FontWeight.w600` | SemiBold（半粗）    |
+  | `FontWeight.w700` | Bold（粗体）        |
+  | `FontWeight.w800` | ExtraBold（特粗）   |
+  | `FontWeight.w900` | Black（极粗）       |
+
+#### 50.2、🖋️装饰属性
+
+> 给文字加修饰效果
+
+| 属性                    | 说明                           | 示例                                          |
+| ----------------------- | ------------------------------ | --------------------------------------------- |
+| **decoration**          | 装饰线：下划线、删除线等       | `decoration: TextDecoration.underline`        |
+| **decorationColor**     | 装饰线的颜色                   | `decorationColor: Colors.blue`                |
+| **decorationStyle**     | 装饰线样式（实线、虚线、波浪） | `decorationStyle: TextDecorationStyle.dotted` |
+| **decorationThickness** | 装饰线粗细                     | `decorationThickness: 2`                      |
+
+#### 50.3、📏布局相关
+
+> 影响排版和对齐
+
+| 属性              | 说明                                 | 示例                                    |
+| ----------------- | ------------------------------------ | --------------------------------------- |
+| **letterSpacing** | 字母/字符间距                        | `letterSpacing: 2.0`                    |
+| **wordSpacing**   | 单词之间的间距                       | `wordSpacing: 4.0`                      |
+| **height**        | 行高（倍数，基于 fontSize）          | `height: 1.5`                           |
+| **textBaseline**  | 对齐基线（alphabetic / ideographic） | `textBaseline: TextBaseline.alphabetic` |
+
+#### 50.4、🌈高级属性
+
+> 少见但非常强大
+
+| 属性           | 说明                                                         | 示例                                                         |
+| -------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| **foreground** | 用 Paint 自定义文字绘制（比 color 更灵活，可以画渐变、阴影等） | `foreground: Paint()..shader = LinearGradient(colors: [Colors.red, Colors.blue]).createShader(Rect.fromLTWH(0, 0, 200, 70))` |
+| **background** | 给文字加背景 Paint（可以做色块效果）                         | `background: Paint()..color = Colors.yellow`                 |
+| **shadows**    | 阴影效果（可叠加）                                           | `shadows: [Shadow(color: Colors.black, offset: Offset(2,2), blurRadius: 4)]` |
+| **overflow**   | 超出处理方式（clip、ellipsis、fade）                         | `overflow: TextOverflow.ellipsis`                            |
 
 ## 四、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -10462,7 +10696,7 @@ class Person {
 
 ### 9、📂[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/)项目文件（夹） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 9.1、  📁`./.fvm/flutter_sdk/` 文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.1、📁`./.fvm/flutter_sdk/` 文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > [**FVM（<font color=red>F</font>lutter <font color=red>V</font>ersion <font color=red>M</font>anagement）** ](https://fvm.app/) 相关：
 >
@@ -10470,7 +10704,7 @@ class Person {
 >
 > * 可以不加入 **Git** 管理
 
-#### 9.2、  📁 `./linux/` 文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.2、📁 `./linux/` 文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 >如果只是专注于 **[Flutter](https://flutter.dev/) 移动端开发（Android / iOS）**，那么`inux/` 文件夹可以不加入 **Git** 管理
 
@@ -10530,7 +10764,7 @@ class Person {
     # https://dart.dev/guides/language/analysis-options
     ```
 
-#### 9.3、  📁`./.idea/` 文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.3、📁`./.idea/` 文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 1️⃣ 通常是 [**JetBrains**](https://www.jetbrains.com/) 的集成开发环境（IDE）如 [**IntelliJ IDEA**](https://www.jetbrains.com/idea/) 或 [**Android Studio**](https://developer.android.com/studio?hl=zh-cn) 在项目中生成的隐藏文件夹
 >
@@ -10547,7 +10781,7 @@ class Person {
 
 总的来说，`.idea` 文件夹是  [**JetBrains**](https://www.jetbrains.com/)  IDE 用于存储项目配置和元数据的文件夹，**它通常不应该被版本控制系统跟踪**，因为这些配置文件通常是特定于开发者的，并且可能会因为 IDE 版本的不同而有所变化。 
 
-#### 9.4、  📁`./plugins/` 文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.4、📁`./plugins/` 文件夹 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 >1️⃣ `flutter` 项目根目录下的 `plugins/` 文件夹**并不是[Flutter](https://flutter.dev/)官方结构的一部分**
 >
@@ -10555,7 +10789,7 @@ class Person {
 >
 >3️⃣ **不推荐将 `plugins/` 文件夹加入 Git 管理**
 
-#### 9.5、  📃`./.flutter-plugins` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.5、📃`./.flutter-plugins` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 是[**Flutter**](https://flutter.dev/)项目中的一个隐藏文件，它用于跟踪 [**Flutter**](https://flutter.dev/)插件的信息；
 >
@@ -10574,7 +10808,7 @@ camera=plugins/camera/
 location=plugins/location/
 ```
 
-#### 9.6、  📃`./.flutter-plugins-dependencies` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.6、📃`./.flutter-plugins-dependencies` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 是一个用来存储[**Flutter**](https://flutter.dev/)插件依赖信息的隐藏文件；
 >
@@ -10600,7 +10834,7 @@ dependencies:
 # 在这个示例中，`camera` 和 `image_picker` 是两个插件，它们分别有自己的依赖关系记录，包括依赖类型（`dependency`）、名称（`name`）、URL 和版本号。
 ```
 
-#### 9.7、  📃`./.java-version` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.7、📃`./.java-version` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 此文件由[<font color=red>jenv</font>](https://github.com/jenv/jenv)生成。对单个[**Flutter**](https://flutter.dev/)项目锚定的[**Java**](https://www.java.com/zh-CN/)环境配置文件。如果没有，则向上查找，读取**MacOS**系统大环境的[**Java**](https://www.java.com/zh-CN/)环境
 
@@ -10618,7 +10852,7 @@ dependencies:
     jenv local > 系统环境变量文件 > jenv global
     ```
 
-#### 9.8、  📃`./pubspec.yaml` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 9.8、📃`./pubspec.yaml` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 是[**Dart**](https://dart.dev/)语言中用于管理项目依赖和元数据的文件。这个文件通常位于 [**Dart**](https://dart.dev/) 项目的根目录中，其中包含了项目的名称、版本、作者信息等基本元数据，以及项目所依赖的第三方库（通过 [**Dart**](https://dart.dev/) 包管理器 pub 安装）；
 >
@@ -10632,6 +10866,8 @@ dependencies:
 > 2️⃣ 指定版本为`any`或者什么也不写（ 并不一定会使用最新版）：**[Flutter](https://flutter.dev/) 会自动根据你项目的环境（SDK 版本、依赖冲突等）锁定一个兼容版本**，并写入 `pubspec.lock`
 >
 > 3️⃣ <font color=red>`assets` **路径名不能有中文，否则可能无法正常读取**</font>
+>
+> 4️⃣ [**Flutter**](https://flutter.dev/)  的规范：**列出目录 = 包含该目录下的文件，**<font color=red>**但不递归包含子目录**</font>
 
 ```yaml
 name: my_project

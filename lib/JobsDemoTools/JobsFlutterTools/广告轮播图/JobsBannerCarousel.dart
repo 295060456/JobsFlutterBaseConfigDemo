@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
+/// 🛜网络图片
 void main() {
   runApp(
     ScreenUtilInit(
@@ -28,19 +31,9 @@ void main() {
                 viewportFraction: 1,
                 netImageBuilder: cachedNetImageBuilder,
                 emptyBuilder: (ctx) => Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.image_not_supported_outlined, size: 48),
-                      const SizedBox(height: 8),
-                      const Text('暂无内容'),
-                      const SizedBox(height: 8),
-                      OutlinedButton(
-                        onPressed: () {},
-                        child: const Text('重试'),
-                      ),
-                    ],
-                  ),
+                  child: JobsEmptyHint(onRetry: () {
+                    debugPrint("外部触发刷新逻辑");
+                  }),
                 ),
                 onTap: (i) => debugPrint('tap $i'),
               ),
@@ -50,6 +43,162 @@ void main() {
       },
     ),
   );
+}
+
+/// 💾 Assets 本地图片
+// void main() {
+//   runApp(
+//     ScreenUtilInit(
+//       designSize: const Size(1125, 2436),
+//       builder: (context, child) {
+//         return MaterialApp(
+//           home: Scaffold(
+//             appBar: AppBar(title: const Text('Assets 本地图')),
+//             body: JobsBannerCarousel(
+//               itemCount: 3,
+//               itemBuilder: (ctx, i) {
+//                 final images = [
+//                   'assets/images/banner1.png',
+//                   'assets/images/banner2.png',
+//                   'assets/images/banner3.png',
+//                 ];
+//                 return Image.asset(images[i], fit: BoxFit.cover);
+//               },
+//               height: 200,
+//               viewportFraction: 1,
+//               onTap: (i) => debugPrint('点击第 $i 张'),
+//             ),
+//           ),
+//         );
+//       },
+//     ),
+//   );
+// }
+
+/// 📁 本地 File 图片
+// void main() {
+//   // 假设这些是设备本地路径
+//   final fileList = [
+//     '/storage/emulated/0/Download/local1.jpg',
+//     '/storage/emulated/0/Download/local2.jpg',
+//     '/storage/emulated/0/Download/local3.jpg',
+//   ];
+
+//   runApp(
+//     ScreenUtilInit(
+//       designSize: const Size(1125, 2436),
+//       builder: (context, child) {
+//         return MaterialApp(
+//           home: Scaffold(
+//             appBar: AppBar(title: const Text('File 本地图')),
+//             body: JobsBannerCarousel(
+//               itemCount: fileList.length,
+//               itemBuilder: (ctx, i) {
+//                 return Image.file(File(fileList[i]), fit: BoxFit.cover);
+//               },
+//               height: 200,
+//               viewportFraction: 1,
+//             ),
+//           ),
+//         );
+//       },
+//     ),
+//   );
+// }
+
+/// 混合模式（第 1 张用 Asset，其余用网络）
+// void main() {
+//   final netImages = [
+//     'https://picsum.photos/800/400?image=11',
+//     'https://picsum.photos/800/400?image=22',
+//     'https://picsum.photos/800/400?image=33',
+//   ];
+
+//   runApp(
+//     ScreenUtilInit(
+//       designSize: const Size(1125, 2436),
+//       builder: (context, child) {
+//         return MaterialApp(
+//           home: Scaffold(
+//             appBar: AppBar(title: const Text('混合模式')),
+//             body: JobsBannerCarousel(
+//               itemCount: 1 + netImages.length,
+//               itemBuilder: (ctx, i) {
+//                 if (i == 0) {
+//                   return Image.asset('assets/images/banner1.png',
+//                       fit: BoxFit.cover);
+//                 } else {
+//                   return Image.network(netImages[i - 1], fit: BoxFit.cover);
+//                 }
+//               },
+//               height: 200,
+//               viewportFraction: 1,
+//             ),
+//           ),
+//         );
+//       },
+//     ),
+//   );
+// }
+
+/// 纯色矩形块轮播图
+// void main() {
+//   runApp(
+//     ScreenUtilInit(
+//       designSize: const Size(1125, 2436),
+//       builder: (context, child) {
+//         return MaterialApp(
+//           home: Scaffold(
+//             appBar: AppBar(title: const Text('自定义模式')),
+//             body: JobsBannerCarousel(
+//               itemCount: 3,
+//               itemBuilder: (ctx, i) {
+//                 return ColoredBox(
+//                   color: Colors.primaries[i % Colors.primaries.length].shade200,
+//                   child: Center(
+//                     child: Text(
+//                       '自定义第 $i 页',
+//                       style: const TextStyle(fontSize: 20),
+//                     ),
+//                   ),
+//                 );
+//               },
+//               height: 150,
+//               viewportFraction: 1,
+//               emptyBuilder: (_) => const JobsEmptyHint(),
+//               onTap: (i) => debugPrint('tap page $i'),
+//             ),
+//           ),
+//         );
+//       },
+//     ),
+//   );
+// }
+
+/// 空态组件
+class JobsEmptyHint extends StatelessWidget {
+  final VoidCallback onRetry; // 外部传入的回调
+
+  const JobsEmptyHint({
+    super.key,
+    required this.onRetry,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Icon(Icons.image_not_supported_outlined, size: 48),
+        const SizedBox(height: 8),
+        const Text('暂无内容'),
+        OutlinedButton(
+          onPressed: onRetry, // ✅ 调用外部传入的回调
+          child: Text('点我重试'.tr),
+        ),
+      ],
+    );
+  }
 }
 
 class JobsBannerCarousel extends StatefulWidget {
@@ -560,22 +709,6 @@ Widget cachedNetImageBuilder(
 //   },
 //   height: 150,
 //   viewportFraction: 1,
-//   emptyBuilder: (_) => const _EmptyHint(),
+//   emptyBuilder: (_) => const JobsEmptyHint(),
 //   onTap: (i) => debugPrint('tap page $i'),
 // );
-
-// // 空态
-// class _EmptyHint extends StatelessWidget {
-//   const _EmptyHint();
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       mainAxisAlignment: MainAxisAlignment.center,
-//       children: const [
-//         Icon(Icons.image_not_supported_outlined, size: 48),
-//         SizedBox(height: 8),
-//         Text('暂无内容，点我刷新'),
-//       ],
-//     );
-//   }
-// }
