@@ -5757,7 +5757,7 @@ builder: (context, child) {
   >
   > 所以，[**Flutter**](https://flutter.dev/) 没办法像 iOS 那样，一行代码全搞定。
 
-#### 25.2、[**JobsRichText**]() <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 25.2、[**JobsRichText**](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/lib/JobsDemoTools/JobsFlutterTools/JobsRichText.dart) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 import 'package:flutter/material.dart';
