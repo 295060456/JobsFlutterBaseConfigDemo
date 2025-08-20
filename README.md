@@ -9961,6 +9961,136 @@ ClipRRect(
   );
   ```
 
+### 48、[**JobsExcel**]() <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+/**
+ * 使用说明：
+ *
+ * 1. 数据输入
+ *    - 中间表体部分仅需写入有效数据。
+ *    - 无效数据可用占位符（默认 "🈚️"，可自定义）替代。
+ *    - 如果数据列数超过表头列数，会以表头为基准进行截断显示。
+ *
+ * 2. 表头显示
+ *    - 表头内容默认始终完整显示，不会被截断。
+ *    - 数据列可通过 `columnModes` 设置显示策略：
+ *      2.1 省略号显示：CellLayout.ellipsis（默认，多余部分用“...”）
+ *      2.2 缩小字体：CellLayout.shrink（字体缩小以适配单元格）
+ *      2.3 最长内容定宽：CellLayout.fitToLongest（整列宽度以最长内容撑开）
+ *      2.4 自动换行：CellLayout.wrap（内容过长时换行显示）
+ *
+ * 3. 冻结规则
+ *    - 表格超出屏幕高度时，默认冻结第一行（表头），可上下滑动。
+ *    - 表格超出屏幕宽度时，默认冻结第一列，可左右滑动。
+ *
+ * 4. 滚动行为
+ *    - 横向滚动：冻结首列，剩余部分左右滑动。
+ *    - 纵向滚动：冻结首行，剩余部分上下滑动。
+ */
+void main() {
+  final horizontal = ['回归首存金额', '回归首存返利', '流水倍数', '备注1', '备注2'];
+  final vertical = [
+    '≥1元',
+    '≥2元',
+    '≥3元',
+    '≥4元',
+    '≥5元',
+    '≥6元',
+    '≥7元',
+    '≥8元',
+    '≥9元',
+    '≥10元',
+    '≥11元',
+    '≥12元',
+    '≥13元',
+    '≥14元',
+    '≥15元',
+    '≥16元',
+    '≥17元',
+    '≥18元',
+    '≥19元',
+    '≥20元',
+    '≥21元',
+    '≥22元'
+  ];
+  final data = [
+    ['28元', '1', '很长很长的说明文字会在这里进行自动换行展示（示例）', '—'],
+    ['88元', '1', '短', '—'],
+    ['188元', '1', '这行也可能比较长，需要两行展示', '—'],
+    ['388元', '1', '—', '—'],
+  ];
+
+  runApp(
+    ScreenUtilInit(
+      designSize: const Size(1125, 2436),
+      minTextAdapt: true,
+      builder: (context, _) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Excel',
+        builder: (context, child) {
+          // 全局取消回弹与发光（也可只在局部 ScrollView 上设置 physics）
+          return ScrollConfiguration(
+            behavior: const _NoBounceNoGlow(),
+            child: child!,
+          );
+        },
+        home: Scaffold(
+          appBar: AppBar(title: const Text('JobsExcel')),
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: JobsExcel(
+                horizontalTitles: horizontal,
+                verticalTitles: vertical,
+                rowsData: data,
+                placeholder: "🈚️",
+                // 对应 horizontal: [回归首存金额, 回归首存返利, 流水倍数, 备注1, 备注2] -> 配置 4 项
+                columnModes: const [
+                  CellLayout.fitToLongest, // 回归首存返利：整个列以最长内容为标准定宽撑开
+                  CellLayout.ellipsis, // 流水倍数：正常显示（多余用...）
+                  CellLayout.wrap, // 备注1：换行显示（受 wrapMaxLines 和 rowHeight 影响）
+                  CellLayout.shrink, // 备注2：缩小字体显示
+                ],
+                wrapMaxLines: 2, // wrap 模式最多显示的行数（默认 2）
+                // 尺寸
+                rowHeaderWidth: 140,
+                headerHeight: 44,
+                rowHeight: 48, // 如果要更多换行可适当增大
+                borderWidth: 1,
+                borderColor: const Color(0xFFE5E6EB),
+                // 样式
+                headerXStyle: const TableSectionStyle(
+                  bgColor: Color(0xFF00C2C7),
+                  textColor: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                ),
+                headerYStyle: const TableSectionStyle(
+                  bgColor: Color(0xFFF6F7F9),
+                  textColor: Colors.black87,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                ),
+                cellStyle: const TableSectionStyle(
+                  bgColor: Colors.white,
+                  textColor: Colors.black87,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+```
+
 ## 四、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ### 1、修复平台目录：定位到[**Flutter**](https://flutter.dev/)项目根目录，执行👉`flutter create .`  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
