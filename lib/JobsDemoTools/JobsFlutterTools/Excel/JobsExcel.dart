@@ -67,7 +67,6 @@ void main() {
         debugShowCheckedModeBanner: false,
         title: 'Excel',
         builder: (context, child) {
-          // 全局取消回弹与发光（也可只在局部 ScrollView 上设置 physics）
           return ScrollConfiguration(
             behavior: const _NoBounceNoGlow(),
             child: child!,
@@ -83,20 +82,24 @@ void main() {
                 verticalTitles: vertical,
                 rowsData: data,
                 placeholder: "🈚️",
-                // 对应 horizontal: [回归首存金额, 回归首存返利, 流水倍数, 备注1, 备注2] -> 配置 4 项
                 columnModes: const [
-                  CellLayout.fitToLongest, // 回归首存返利：整个列以最长内容为标准定宽撑开
-                  CellLayout.ellipsis, // 流水倍数：正常显示（多余用...）
-                  CellLayout.wrap, // 备注1：换行显示（受 wrapMaxLines 和 rowHeight 影响）
-                  CellLayout.shrink, // 备注2：缩小字体显示
+                  CellLayout.fitToLongest,
+                  CellLayout.ellipsis,
+                  CellLayout.wrap,
+                  CellLayout.shrink,
                 ],
-                wrapMaxLines: 2, // wrap 模式最多显示的行数（默认 2）
+                // 自适应：父更宽时把多余宽度塞到最后一列从而右侧顶齐
+                expandToMaxWidth: true,
+                // fillColumn: 1, // 想把多余宽度给第2列就打开
+
+                wrapMaxLines: 2,
                 // 尺寸
                 rowHeaderWidth: 140,
                 headerHeight: 44,
-                rowHeight: 48, // 如果要更多换行可适当增大
+                rowHeight: 48,
                 borderWidth: 1,
                 borderColor: const Color(0xFFE5E6EB),
+                borderRadius: 10,
                 // 样式
                 headerXStyle: const TableSectionStyle(
                   bgColor: Color(0xFF00C2C7),
@@ -159,19 +162,7 @@ class TableSectionStyle {
 }
 
 /// 单元格显示策略
-enum CellLayout {
-  /// 表体文本自动缩小以适配列宽
-  shrink,
-
-  /// 表体文本正常字号，溢出省略号
-  ellipsis,
-
-  /// 列宽 = max(表头宽, 各行该列文本宽)；会拉宽整列（含表头）
-  fitToLongest,
-
-  /// 在固定行高内换行显示到 wrapMaxLines，超出以省略号结尾
-  wrap,
-}
+enum CellLayout { shrink, ellipsis, fitToLongest, wrap }
 
 /// ================================== 冻结首列（列宽以表头为准 + 四种表体风格） ==================================
 class JobsExcel extends StatefulWidget {
@@ -179,8 +170,8 @@ class JobsExcel extends StatefulWidget {
   final List<String> verticalTitles; // 左列行头
   final List<List<String>> rowsData; // 每行长度 = horizontal.length - 1
 
-  final List<CellLayout>? columnModes; // 长度 = dataCols；不传则全列 ellipsis
-  final int wrapMaxLines; // wrap 模式最多行数
+  final List<CellLayout>? columnModes;
+  final int wrapMaxLines;
 
   final TableSectionStyle headerXStyle;
   final TableSectionStyle headerYStyle;
@@ -188,15 +179,19 @@ class JobsExcel extends StatefulWidget {
 
   final Color borderColor;
   final double borderWidth;
+  final double borderRadius;
 
-  final String placeholder; // 无数据时的占位符号
-  final double rowHeaderWidth; // 左列固定宽
-  final double headerHeight; // 顶部行高(不含边框)
-  final double rowHeight; // 数据行高(不含行内分隔线)
+  final String placeholder;
+  final double rowHeaderWidth;
+  final double headerHeight;
+  final double rowHeight;
 
-  // 可选：列宽上下限（应对极端长文本）
   final double minColWidth;
   final double? maxColWidth;
+
+  // 自适应铺满相关
+  final bool expandToMaxWidth; // 父给更宽时是否铺满
+  final int? fillColumn; // 多余宽度分配到哪一列（null=最后一列）
 
   const JobsExcel({
     super.key,
@@ -210,21 +205,22 @@ class JobsExcel extends StatefulWidget {
     this.cellStyle = const TableSectionStyle(),
     this.borderColor = const Color(0xFFE5E6EB),
     this.borderWidth = 1,
+    this.borderRadius = 0,
     this.placeholder = '-',
     this.rowHeaderWidth = 120,
     this.headerHeight = 44,
     this.rowHeight = 44,
     this.minColWidth = 56,
     this.maxColWidth,
+    this.expandToMaxWidth = true,
+    this.fillColumn,
   }) : assert(horizontalTitles.length >= 1);
 
   @override
-  State<JobsExcel> createState() =>
-      _JobsExcelState();
+  State<JobsExcel> createState() => _JobsExcelState();
 }
 
-class _JobsExcelState
-    extends State<JobsExcel> {
+class _JobsExcelState extends State<JobsExcel> {
   final _vLeft = ScrollController();
   final _vRight = ScrollController();
   final _hRight = ScrollController();
@@ -303,21 +299,19 @@ class _JobsExcelState
     final map = <int, TableColumnWidth>{};
     for (int c = 0; c < dataCols; c++) {
       final mode = modes[c];
-      // 先保证“表头必须完整显示”
+
       double wHeader = _textWidth(widget.horizontalTitles[c + 1], headerStyle) +
           headerPad.left +
           headerPad.right;
 
-      double w = wHeader; // 默认以表头为准
+      double w = wHeader;
       if (mode == CellLayout.fitToLongest) {
-        // 按最长内容决定列宽（含表头）
         for (final row in normalizedRows) {
           final t = (c < row.length) ? row[c] : widget.placeholder;
           final wCell = _textWidth(t, cellStyle) + cellPad.left + cellPad.right;
           if (wCell > w) w = wCell;
         }
       }
-      // 限制范围 + 像素对齐
       w = _px(w);
       if (w < widget.minColWidth) w = widget.minColWidth;
       if (widget.maxColWidth != null && w > widget.maxColWidth!) {
@@ -328,7 +322,6 @@ class _JobsExcelState
     return map;
   }
 
-  // 表头 cell：强制完整显示（不省略不缩小，列宽已经保证够大）
   Widget _headerCell(String text, TableSectionStyle style,
       {double? width, required double height}) {
     final t = Text(
@@ -354,7 +347,6 @@ class _JobsExcelState
     return width != null ? SizedBox(width: width, child: fixedH) : fixedH;
   }
 
-  // 表体 cell：按列的 CellLayout 渲染
   Widget _bodyCell(String text, TableSectionStyle style, CellLayout mode,
       {double? width, required double height}) {
     Widget child = Text(
@@ -376,7 +368,6 @@ class _JobsExcelState
     );
 
     if (mode == CellLayout.shrink) {
-      // 自动缩小到容器内（单行）
       child = FittedBox(
         fit: BoxFit.scaleDown,
         alignment: Alignment.center,
@@ -423,20 +414,21 @@ class _JobsExcelState
           : CellLayout.ellipsis,
     );
 
-    // 注意：表头真实占位高度 = headerHeight（边框画在内部）
     final headerSlotHeight = _px(widget.headerHeight);
-    // 所有数据的“理论总高”（用于计算最大可滚动高度）
-    final fullBodyContentHeight = _px(rows * (widget.rowHeight + bw));
 
-    // 右侧列宽（表头优先，必要时按最长内容）
+    // ✅ 修正：表体总高度
+    final fullBodyContentHeight = _px(rows * widget.rowHeight);
+
+    // 先按内容计算右侧列宽
     final rightColWidths = _computeRightColumnWidths(normalized, modes);
 
-    // ── TL
+    // ── TL：内部缝合线：右+下
     Widget buildTL() => Container(
           decoration: BoxDecoration(
             border: Border(
-              top: BorderSide(color: widget.borderColor, width: bw),
-              left: BorderSide(color: widget.borderColor, width: bw),
+              top: const BorderSide(color: Colors.transparent, width: 0),
+              left: const BorderSide(color: Colors.transparent, width: 0),
+              right: BorderSide(color: widget.borderColor, width: bw),
               bottom: BorderSide(color: widget.borderColor, width: bw),
             ),
           ),
@@ -448,11 +440,12 @@ class _JobsExcelState
           ),
         );
 
-    // ── TR
+    // ── TR：仅下边框 + 纵向内部线
     Table buildTR() => Table(
           border: TableBorder(
-            top: BorderSide(color: widget.borderColor, width: bw),
-            right: BorderSide(color: widget.borderColor, width: bw),
+            top: const BorderSide(color: Colors.transparent, width: 0),
+            right: const BorderSide(color: Colors.transparent, width: 0),
+            left: const BorderSide(color: Colors.transparent, width: 0),
             bottom: BorderSide(color: widget.borderColor, width: bw),
             horizontalInside:
                 const BorderSide(color: Colors.transparent, width: 0),
@@ -471,11 +464,13 @@ class _JobsExcelState
           ],
         );
 
-    // ── BR（右侧表体）
+    // ── BR：只画内部网格线
     Table buildBR() => Table(
           border: TableBorder(
-            right: BorderSide(color: widget.borderColor, width: bw),
-            bottom: BorderSide(color: widget.borderColor, width: bw),
+            top: const BorderSide(color: Colors.transparent, width: 0),
+            right: const BorderSide(color: Colors.transparent, width: 0),
+            left: const BorderSide(color: Colors.transparent, width: 0),
+            bottom: const BorderSide(color: Colors.transparent, width: 0),
             horizontalInside: BorderSide(color: widget.borderColor, width: bw),
             verticalInside: BorderSide(color: widget.borderColor, width: bw),
           ),
@@ -493,12 +488,13 @@ class _JobsExcelState
           ],
         );
 
-    // ── BL（左侧表体）
+    // ── BL：仅右边框 + 水平内部线
     Table buildBLTable() => Table(
           border: TableBorder(
-            left: BorderSide(color: widget.borderColor, width: bw),
+            top: const BorderSide(color: Colors.transparent, width: 0),
+            left: const BorderSide(color: Colors.transparent, width: 0),
             right: BorderSide(color: widget.borderColor, width: bw),
-            bottom: BorderSide(color: widget.borderColor, width: bw),
+            bottom: const BorderSide(color: Colors.transparent, width: 0),
             horizontalInside: BorderSide(color: widget.borderColor, width: bw),
             verticalInside:
                 const BorderSide(color: Colors.transparent, width: 0),
@@ -509,32 +505,54 @@ class _JobsExcelState
             for (int r = 0; r < rows; r++)
               TableRow(
                 children: [
-                  _bodyCell(
-                    widget.verticalTitles[r],
-                    widget.headerYStyle,
-                    CellLayout.ellipsis,
-                    width: widget.rowHeaderWidth,
-                    height: widget.rowHeight,
-                  ),
+                  _bodyCell(widget.verticalTitles[r], widget.headerYStyle,
+                      CellLayout.ellipsis,
+                      width: widget.rowHeaderWidth, height: widget.rowHeight),
                 ],
               ),
           ],
         );
 
-    // ====== 关键：用 LayoutBuilder 取可用高度，计算“表体视口高度”并让左右一起滚 ======
     return LayoutBuilder(
       builder: (context, constraints) {
+        // ====== 自适应铺满：把多余宽度分配给某一列（默认最后一列） ======
+        double _sumRight(Map<int, TableColumnWidth> m) {
+          double sum = 0;
+          m.forEach((_, v) {
+            if (v is FixedColumnWidth) sum += v.value;
+          });
+          return sum;
+        }
+
+        // 父级可给右侧数据区的最大宽度 = 总宽 - 左列宽 - 中缝线宽
+        final double availableForRight =
+            constraints.maxWidth - (widget.rowHeaderWidth + widget.borderWidth);
+
+        final double currentRight = _sumRight(rightColWidths);
+
+        if (widget.expandToMaxWidth &&
+            availableForRight.isFinite &&
+            availableForRight > currentRight) {
+          final extra = availableForRight - currentRight;
+          if (extra > 0 && (cols - 1) > 0) {
+            final dataCols = cols - 1;
+            final targetCol =
+                (widget.fillColumn ?? (dataCols - 1)).clamp(0, dataCols - 1);
+            final cur = (rightColWidths[targetCol] as FixedColumnWidth).value;
+            rightColWidths[targetCol] = FixedColumnWidth(cur + extra);
+          }
+        }
+        // ============================================
+
         final availableHeight = constraints.maxHeight.isFinite
             ? constraints.maxHeight
-            : fullBodyContentHeight + headerSlotHeight; // 兜底
-        // 可用给“表体”滚动的视口高度
+            : fullBodyContentHeight + headerSlotHeight;
         final viewportBodyHeight = _px(
           (availableHeight - headerSlotHeight).clamp(0, fullBodyContentHeight),
         );
-        // 整个组件的最终高度（表头 + 表体视口）
         final totalHeight = _px(headerSlotHeight + viewportBodyHeight);
 
-        return SizedBox(
+        final core = SizedBox(
           height: totalHeight,
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -548,10 +566,10 @@ class _JobsExcelState
                   SizedBox(height: headerSlotHeight, child: buildTL()),
                   SizedBox(
                     height: viewportBodyHeight,
-                    width: widget.rowHeaderWidth + bw,
+                    width: widget.rowHeaderWidth + widget.borderWidth,
                     child: SingleChildScrollView(
                       controller: _vLeft,
-                      physics: const ClampingScrollPhysics(), // 无回弹
+                      physics: const ClampingScrollPhysics(),
                       scrollDirection: Axis.vertical,
                       child: buildBLTable(),
                     ),
@@ -563,7 +581,7 @@ class _JobsExcelState
               Flexible(
                 child: SingleChildScrollView(
                   controller: _hRight,
-                  physics: const ClampingScrollPhysics(), // 无回弹
+                  physics: const ClampingScrollPhysics(),
                   scrollDirection: Axis.horizontal,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -573,7 +591,7 @@ class _JobsExcelState
                         height: viewportBodyHeight,
                         child: SingleChildScrollView(
                           controller: _vRight,
-                          physics: const ClampingScrollPhysics(), // 无回弹
+                          physics: const ClampingScrollPhysics(),
                           scrollDirection: Axis.vertical,
                           child: buildBR(),
                         ),
@@ -585,7 +603,58 @@ class _JobsExcelState
             ],
           ),
         );
+
+        // ✅ 外圈圆角边框放到最上层绘制（保证右侧边线可见）
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(widget.borderRadius),
+          child: Stack(
+            children: [
+              core,
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: CustomPaint(
+                    foregroundPainter: _OuterBorderPainter(
+                      radius: widget.borderRadius,
+                      width: widget.borderWidth,
+                      color: widget.borderColor,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
       },
     );
   }
+}
+
+/// 顶层外边框（在子组件之上绘制，避免被覆盖）
+class _OuterBorderPainter extends CustomPainter {
+  _OuterBorderPainter({
+    required this.radius,
+    required this.width,
+    required this.color,
+  });
+
+  final double radius;
+  final double width;
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rrect = RRect.fromRectAndRadius(
+      Offset.zero & size,
+      Radius.circular(radius),
+    );
+    final p = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = width
+      ..color = color;
+    canvas.drawRRect(rrect.deflate(width / 2), p);
+  }
+
+  @override
+  bool shouldRepaint(_OuterBorderPainter old) =>
+      old.radius != radius || old.width != width || old.color != color;
 }
