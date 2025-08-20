@@ -5732,28 +5732,59 @@ builder: (context, child) {
 
 ### 25、富文本 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 25.1、🍎 **iOS** 🆚 🐦 [**Flutter**](https://flutter.dev/)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 25.1、风评 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-* 🍎 **iOS** 的富文本能力（`NSAttributedString`），**几乎无所不能**
+* 🍎 **iOS** 🆚 🐦 [**Flutter**](https://flutter.dev/) 
 
-* 🐦 [**Flutter**](https://flutter.dev/) 的痛点
+  * 🍎 **iOS** 的富文本能力（`NSAttributedString`），**几乎无所不能**
 
-  | 问题点                       | 原因                                                         |
-  | ---------------------------- | ------------------------------------------------------------ |
-  | ❌ 没有统一的富文本对象       | 没有类似 `NSAttributedString` 的官方结构，[**Flutter**](https://flutter.dev/) 用 `TextSpan` 来手动构建 |
-  | ❌ `Text` 只能显示简单样式    | 复杂样式需 `RichText` + `TextSpan`                           |
-  | ❌ 没有原生点击行为           | 点击行为必须手动实现 `GestureRecognizer`                     |
-  | ❌ 图片/**WidgetSpan** 兼容差 | 不能很好地与文字混排，溢出等问题                             |
-  | ❌ 没有富文本输入控件         | iOS **UITextView** 自带，[**Flutter**](https://flutter.dev/) 需要用第三方 |
+  * 🐦 [**Flutter**](https://flutter.dev/) 的痛点
 
-#### 25.2、🧠 为什么会这样？<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+    | 问题点                       | 原因                                                         |
+    | ---------------------------- | ------------------------------------------------------------ |
+    | ❌ 没有统一的富文本对象       | 没有类似 `NSAttributedString` 的官方结构，[**Flutter**](https://flutter.dev/) 用 `TextSpan` 来手动构建 |
+    | ❌ `Text` 只能显示简单样式    | 复杂样式需 `RichText` + `TextSpan`                           |
+    | ❌ 没有原生点击行为           | 点击行为必须手动实现 `GestureRecognizer`                     |
+    | ❌ 图片/**WidgetSpan** 兼容差 | 不能很好地与文字混排，溢出等问题                             |
+    | ❌ 没有富文本输入控件         | iOS **UITextView** 自带，[**Flutter**](https://flutter.dev/) 需要用第三方 |
 
-[**Flutter**](https://flutter.dev/) 是跨平台框架，它的核心设计理念是“自己画 UI（**Skia**）”，所有文本渲染都是**自绘**：
+* 🧠 为什么会这样？
 
-- **iOS（原生）**：富文本由操作系统提供支持（**UIKit** + **CoreText** + **WebKit**）
-- [**Flutter**](https://flutter.dev/)：必须用 **Dart** 描述 => **Skia** 绘制 => 手动管理逻辑
+  > [**Flutter**](https://flutter.dev/) 是跨平台框架，它的核心设计理念是“自己画 UI（**Skia**）”，所有文本渲染都是**自绘**：
+  >
+  > - **iOS（原生）**：富文本由操作系统提供支持（**UIKit** + **CoreText** + **WebKit**）
+  > - [**Flutter**](https://flutter.dev/)：必须用 **Dart** 描述 => **Skia** 绘制 => 手动管理逻辑
+  >
+  > 所以，[**Flutter**](https://flutter.dev/) 没办法像 iOS 那样，一行代码全搞定。
 
-所以，[**Flutter**](https://flutter.dev/) 没办法像 iOS 那样“一行代码全搞定”。
+#### 25.2、[**JobsRichText**]() <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_tiyu_app/app/widget/JobsRunners/JobsMaterialRunner.dart';
+
+void main() => runApp(JobsMaterialRunner(buildAmountShort(),title:'JobsRichTextDemo'));
+
+Widget buildAmountShort() {
+  final base = TextStyle(
+    fontSize: 36.sp,
+    color: const Color(0xFF63656E),
+    fontWeight: FontWeight.w300,
+  );
+
+  return JobsRichText(
+    baseStyle: base,
+    segments: [
+      seg('回归流水已经完成：'),
+      seg('0', c: const Color(0xFF00C2C7)),
+      seg(
+        '元',
+      ),
+    ],
+  );
+}
+```
 
 ### 26、Tab切换：**`IndexedStack`**  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
@@ -10266,7 +10297,7 @@ class JobsEmptyHint extends StatelessWidget {
 
 ### 50、字体 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-#### 50.1、🎨基础属性
+#### 50.1、🎨基础属性 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 日常开发中最常调用的
 
@@ -10292,7 +10323,7 @@ class JobsEmptyHint extends StatelessWidget {
   | `FontWeight.w800` | ExtraBold（特粗）   |
   | `FontWeight.w900` | Black（极粗）       |
 
-#### 50.2、🖋️装饰属性
+#### 50.2、🖋️装饰属性 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 给文字加修饰效果
 
@@ -10303,7 +10334,7 @@ class JobsEmptyHint extends StatelessWidget {
 | **decorationStyle**     | 装饰线样式（实线、虚线、波浪） | `decorationStyle: TextDecorationStyle.dotted` |
 | **decorationThickness** | 装饰线粗细                     | `decorationThickness: 2`                      |
 
-#### 50.3、📏布局相关
+#### 50.3、📏布局相关 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 影响排版和对齐
 
@@ -10314,7 +10345,7 @@ class JobsEmptyHint extends StatelessWidget {
 | **height**        | 行高（倍数，基于 fontSize）          | `height: 1.5`                           |
 | **textBaseline**  | 对齐基线（alphabetic / ideographic） | `textBaseline: TextBaseline.alphabetic` |
 
-#### 50.4、🌈高级属性
+#### 50.4、🌈高级属性 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 > 少见但非常强大
 
