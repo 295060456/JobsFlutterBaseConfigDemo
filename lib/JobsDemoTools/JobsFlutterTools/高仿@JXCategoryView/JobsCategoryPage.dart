@@ -7,11 +7,66 @@ import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/高仿@J
 import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart';
 import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/Extensions/WidgetExtension/JobsWidgetExtension.dart';
 
-void main() => runApp(const JobsMaterialRunner(JobsCategoryPage(),
-    title: 'JXCategoryView 风格 Demo'));
+void main() {
+  final items = <ActivityBaseBean>[
+    ActivityBaseBean(
+      title: '彩金免费领',
+      child: const CategoryListPage_1(title: '彩金免费领', index: 0).center(),
+      show: true,
+    ),
+    ActivityBaseBean(
+      title: '超值存送礼',
+      child: const CategoryListPage_2(title: '超值存送礼', index: 1).center(),
+      show: true,
+    ),
+    ActivityBaseBean(
+      title: '回归包赔',
+      child: const CategoryListPage_3(title: '回归包赔', index: 2).center(),
+      show: true,
+    ),
+    ActivityBaseBean(
+      title: '队长福利',
+      child: const CategoryListPage_4(title: '队长福利', index: 3).center(),
+      show: true,
+    ),
+  ].where((e) => e.show).toList(); 
 
+  runApp(
+    JobsMaterialRunner(
+      // 传入外部数据
+      JobsCategoryPage(
+        items: items,
+      ),
+      title: 'JXCategoryView 风格 Demo',
+    ),
+  );
+}
+
+class ActivityBaseBean {
+  ActivityBaseBean({
+    required this.child,
+    required this.title,
+    required this.show,
+  });
+
+    final String title;
+    final Widget child;
+    final bool show;
+}
+
+/// ========================= 页面组件（数据由外部注入） =========================
 class JobsCategoryPage extends StatefulWidget {
-  const JobsCategoryPage({super.key});
+  const JobsCategoryPage({
+    super.key,
+    required this.items,
+    this.initialIndex = 0,
+  }) : assert(items.length > 0, 'items 不能为空');
+
+  /// 外部注入的页签数据（只传要展示的）
+  final List<ActivityBaseBean> items;
+
+  /// 默认选中的 index
+  final int initialIndex;
 
   @override
   State<JobsCategoryPage> createState() => _JobsCategoryPageState();
@@ -21,33 +76,35 @@ class _JobsCategoryPageState extends State<JobsCategoryPage>
     with SingleTickerProviderStateMixin {
   late final TabController _controller;
 
-  final List<ActivityBaseBean> _baseData = [
-    ActivityBaseBean(
-      title: '彩金免费领',
-      child: const CategoryListPage_1(title: '彩金免费领', index: 0).center(),
-      show: true,
-    ),
-    ActivityBaseBean(
-      title: '超值存送礼',
-      child: const CategoryListPage_1(title: '超值存送礼', index: 0).center(),
-      show: true,
-    ),
-    ActivityBaseBean(
-      title: '回归包赔',
-      child: const CategoryListPage_1(title: '回归包赔', index: 0).center(),
-      show: true,
-    ),
-    ActivityBaseBean(
-      title: '队长福利',
-      child: const CategoryListPage_1(title: '队长福利', index: 0).center(),
-      show: true,
-    ),
-  ].where((ele) => ele.show).toList();
-
   @override
   void initState() {
     super.initState();
-    _controller = TabController(length: _baseData.length, vsync: this);
+    _controller = TabController(
+      length: widget.items.length,
+      vsync: this,
+      initialIndex:
+          (widget.initialIndex >= 0 && widget.initialIndex < widget.items.length)
+              ? widget.initialIndex
+              : 0,
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant JobsCategoryPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // 当外部 items 数量变化时，重建 TabController
+    if (oldWidget.items.length != widget.items.length) {
+      final newIndex = _controller.index.clamp(0, widget.items.length - 1);
+      _controller.dispose();
+      // 重新创建 controller，尽量保持原来的 index
+      // ignore: invalid_use_of_protected_member
+      _controller = TabController(
+        length: widget.items.length,
+        vsync: this,
+        initialIndex: newIndex,
+      );
+      setState(() {});
+    }
   }
 
   @override
@@ -58,6 +115,8 @@ class _JobsCategoryPageState extends State<JobsCategoryPage>
 
   @override
   Widget build(BuildContext context) {
+    final titles = widget.items.map((e) => e.title).toList();
+
     final topBar = Container(
       height: 48,
       alignment: Alignment.centerLeft,
@@ -67,11 +126,11 @@ class _JobsCategoryPageState extends State<JobsCategoryPage>
       ),
       child: _AdaptiveTabBar(
         controller: _controller,
-        tabsText: _baseData.map((e) => e.title).toList(),
+        tabsText: titles,
         tabChildBuilder: (i) => _ZoomTab(
           controller: _controller,
           index: i,
-          text: _baseData.map((e) => e.title).toList()[i],
+          text: titles[i],
           selectedColor: const Color.fromARGB(255, 7, 25, 219),
           unselectedColor: const Color(0xFF666666),
           maxScaleDelta: 0.12,
@@ -81,21 +140,11 @@ class _JobsCategoryPageState extends State<JobsCategoryPage>
         ),
       ),
     );
+
     final body = ExtendedTabBarView(
       controller: _controller,
       children: [
-        CategoryListPage_1(
-                title: _baseData.map((e) => e.title).toList()[0], index: 0)
-            .center(),
-        CategoryListPage_2(
-                title: _baseData.map((e) => e.title).toList()[1], index: 1)
-            .center(),
-        CategoryListPage_3(
-                title: _baseData.map((e) => e.title).toList()[2], index: 2)
-            .center(),
-        CategoryListPage_4(
-                title: _baseData.map((e) => e.title).toList()[3], index: 3)
-            .center(),
+        for (final it in widget.items) it.child,
       ],
     );
 
@@ -219,13 +268,12 @@ class _ZoomTab extends StatelessWidget {
   }
 }
 
-// ========================= 核心：自适应 TabBar =========================
+// ========================= 自适应 TabBar（不变） =========================
 class _AdaptiveTabBar extends StatelessWidget {
   final TabController controller;
   final List<String> tabsText;
-  final Widget Function(int i) tabChildBuilder; // 你的 _ZoomTab
+  final Widget Function(int i) tabChildBuilder;
 
-  // 文字测量用的基础样式（用未选中态的样式即可）
   final double baseFontSize;
   final FontWeight baseFontWeight;
 
@@ -242,41 +290,34 @@ class _AdaptiveTabBar extends StatelessWidget {
     return LayoutBuilder(builder: (ctx, cons) {
       final maxW = cons.maxWidth;
       final n = tabsText.length;
-      // 每个 tab 在“均分”模式下能分到的宽度
       final perW = maxW / n;
 
-      // 测试：是否所有文本都能在 perW 内（大概测一下，避免均分时被过度截断）
       final fits =
           _allFitWithin(tabsText, perW, baseFontSize, baseFontWeight, ctx);
 
-      // 能打满：非滚动 + 均分（首尾贴边）
       if (fits) {
         return TabBar(
           controller: controller,
           isScrollable: false,
-          // 均分时 indicator 跟整个 tab 宽度
           indicatorSize: TabBarIndicatorSize.tab,
           indicator: const UnderlineTabIndicator(
             borderSide: BorderSide(width: 3, color: Color(0xFF00BBD4)),
             insets: EdgeInsets.zero,
           ),
-          labelPadding: EdgeInsets.zero, // 去掉额外 padding，让均分生效
+          labelPadding: EdgeInsets.zero,
           tabs: List.generate(n, (i) => Tab(child: tabChildBuilder(i))),
           onTap: (_) {},
         );
       }
 
-      // 打不满：允许滚动（自然宽度）
       return TabBar(
         controller: controller,
         isScrollable: true,
-        // 滚动模式下，用 label 宽度作为 indicator 宽度
         indicatorSize: TabBarIndicatorSize.label,
         indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(width: 3, color: Color(0xFF00BBD4)),
           insets: EdgeInsets.zero,
         ),
-        // 给一点左右内边距，避免文字贴边
         labelPadding: const EdgeInsets.symmetric(horizontal: 14),
         tabs: List.generate(n, (i) => Tab(child: tabChildBuilder(i))),
         onTap: (_) {},
@@ -296,9 +337,9 @@ class _AdaptiveTabBar extends StatelessWidget {
     for (final s in labels) {
       final tp = TextPainter(
         text: TextSpan(
-            text: s,
-            style:
-                TextStyle(fontSize: fontSize * textScale, fontWeight: weight)),
+          text: s,
+          style: TextStyle(fontSize: fontSize * textScale, fontWeight: weight),
+        ),
         textDirection: TextDirection.ltr,
         maxLines: 1,
         ellipsis: '…',
@@ -307,16 +348,4 @@ class _AdaptiveTabBar extends StatelessWidget {
     }
     return true;
   }
-}
-
-class ActivityBaseBean {
-  ActivityBaseBean({
-    required this.child,
-    required this.title,
-    required this.show,
-  });
-
-  final String title;
-  final Widget child;
-  final bool show;
 }

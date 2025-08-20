@@ -2,6 +2,55 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+void main() {
+  runApp(
+    ScreenUtilInit(
+      designSize: const Size(1125, 2436), // ← 设计稿尺寸
+      minTextAdapt: true,
+      builder: (context, child) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: '广告轮播图',
+          home: Scaffold(
+            appBar: AppBar(title: const Text('广告轮播图')),
+            body: Center(
+              child: JobsBannerCarousel(
+                width: ScreenUtil().screenWidth,
+                height: 455.h,
+                imageUrls: const [
+                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNaXM5FNZC7-9FDVh9mMMglZv5cuoPAw-6MA&s',
+                  'https://jzmofficial.com/cdn/shop/files/Logo_1200x1200.jpg?v=1624577059',
+                  'https://static.vecteezy.com/system/resources/previews/009/125/398/non_2x/jzm-logo-jzm-letter-jzm-letter-logo-design-initials-jzm-logo-linked-with-circle-and-uppercase-monogram-logo-jzm-typography-for-technology-business-and-real-estate-brand-vector.jpg',
+                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQdsn8QSHQxKyWpG6Qy2ngPM0hQMffP-DYo0FvNbwhx_EYmfl-EeYSZ4g8&s',
+                ],
+                viewportFraction: 1,
+                netImageBuilder: cachedNetImageBuilder,
+                emptyBuilder: (ctx) => Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.image_not_supported_outlined, size: 48),
+                      const SizedBox(height: 8),
+                      const Text('暂无内容'),
+                      const SizedBox(height: 8),
+                      OutlinedButton(
+                        onPressed: () {},
+                        child: const Text('重试'),
+                      ),
+                    ],
+                  ),
+                ),
+                onTap: (i) => debugPrint('tap $i'),
+              ),
+            ),
+          ),
+        );
+      },
+    ),
+  );
+}
 
 class JobsBannerCarousel extends StatefulWidget {
   const JobsBannerCarousel({
@@ -22,7 +71,7 @@ class JobsBannerCarousel extends StatefulWidget {
     this.autoPlay = true,
     this.autoPlayInterval = const Duration(seconds: 3), // 定时器的频率（默认：每3秒触发一次翻页）
     this.autoPlayAnimationDuration =
-        const Duration(milliseconds: 380),              // 控制翻页过程要花多长时间（默认：翻页动画持续 0.38 秒）
+        const Duration(milliseconds: 380), // 控制翻页过程要花多长时间（默认：翻页动画持续 0.38 秒）
     this.autoPlayCurve = Curves.easeOutCubic,
     this.enableUserScroll = true,
     this.onTap,
@@ -47,9 +96,9 @@ class JobsBannerCarousel extends StatefulWidget {
 
   final double? width;
   final double? height;
-  final double? vertical;          // Padding.EdgeInsets.vertical
-  final double? horizontal;        // Padding.EdgeInsets.horizontal
-  final double viewportFraction;   // PageController.viewportFraction
+  final double? vertical; // Padding.EdgeInsets.vertical
+  final double? horizontal; // Padding.EdgeInsets.horizontal
+  final double viewportFraction; // PageController.viewportFraction
   final BorderRadius borderRadius; // 圆角
 
   final bool autoPlay;
@@ -468,7 +517,7 @@ Widget cachedNetImageBuilder(
 //   appBar: AppBar(title: const Text('Banner - images')),
 //   body: Center(
 //     child: JobsBannerCarousel(
-//       width: JobsScreenUtil().width,
+//       width: ScreenUtil().screenWidth,
 //       height: 455.h,
 //       imageUrls: const [
 //         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNaXM5FNZC7-9FDVh9mMMglZv5cuoPAw-6MA&s',
@@ -496,7 +545,7 @@ Widget cachedNetImageBuilder(
 //         ),
 //       ),
 //       onTap: (i) => debugPrint('tap $i'),
-//     )
+//     ),
 //   ),
 // );
 

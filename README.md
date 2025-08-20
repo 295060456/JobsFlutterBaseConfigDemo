@@ -2848,7 +2848,27 @@ abstract class RouteAwareState<T extends RouteAwareStatefulPage>
 | `LayoutBuilder`      | 自适应布局大小判断                | `constraints.maxWidth < 600 ? PhoneLayout() : TabletLayout()` |
 | `KeyboardVisibility` | 键盘弹出监听，处理遮挡问题        | `KeyboardVisibilityController().onChange.listen(...)`        |
 
-#### 15.1、**`WidgetsBinding`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 15.1、[**`ScreenUtil`**](https://pub.dev/packages/flutter_screenutil)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+
+```yaml
+dependencies:
+  flutter_screenutil: any # 用于屏幕适配
+```
+
+> ```dart
+> ScreenUtil().orientation       ///获取屏幕方向
+> ScreenUtil().textScaleFactor   /// 每个逻辑像素的字体像素数，字体的缩放比例
+> ScreenUtil().pixelRatio        /// 设备的像素密度
+> ScreenUtil().screenWidth       /// 当前设备宽度 dp
+> ScreenUtil().screenHeight      ///当前设备高度 dp
+> ScreenUtil().statusBarHeight   /// 状态栏高度 dp 刘海屏会更高
+> ScreenUtil().bottomBarHeight   /// 底部安全区距离 dp
+> ScreenUtil().scaleWidth        /// 实际尺寸（宽）与UI设计的比例
+> ScreenUtil().scaleHeight       /// 实际尺寸（高）与UI设计的比例
+> ScreenUtil().scaleText         /// 计算字体缩放比例：
+> ```
+
+#### 15.2、**`WidgetsBinding`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 不依托于**`BuildContext`**，从 [**Flutter**](https://flutter.dev/) Engine 直接拿底层数据
   * **一次性获取**，不会自动触发 `build`
@@ -2866,38 +2886,7 @@ void JobsScreenListener() {
 }
 ```
 
-```dart
-/// JobsScreenUtil().width;
-/// JobsScreenUtil().height;
-class JobsScreenUtil {
-  // 单例
-  static final JobsScreenUtil _instance = JobsScreenUtil._internal();
-  factory JobsScreenUtil() => _instance;
-  JobsScreenUtil._internal() {
-    // 初始化监听
-    WidgetsBinding.instance.platformDispatcher.onMetricsChanged = _updateSize;
-    _updateSize();
-  }
-
-  double _width = 0;
-  double _height = 0;
-  double _pixelRatio = 1;
-
-  void _updateSize() {
-    final view = WidgetsBinding.instance.platformDispatcher.views.first;
-    _pixelRatio = view.devicePixelRatio;
-    _width = view.physicalSize.width / _pixelRatio;
-    _height = view.physicalSize.height / _pixelRatio;
-    debugPrint('📐 屏幕变化: $_width × $_height (dp)');
-  }
-
-  double get width => _width;
-  double get height => _height;
-  double get pixelRatio => _pixelRatio;
-}
-```
-
-#### 15.2、**`MediaQuery`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 15.3、**`MediaQuery`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 依托于**`BuildContext`**
 
@@ -2927,7 +2916,7 @@ class JobsScreenUtil {
                    - MediaQuery.of(context).padding.bottom;
   ```
 
-#### 15.3、**`SafeArea`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 15.4、**`SafeArea`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * 参考
   * [**SafeArea & MediaQuery**](https://docs.flutter.dev/ui/adaptive-responsive/safearea-mediaquery)
@@ -3003,7 +2992,7 @@ class JobsScreenUtil {
 
   * ⚠️ **与 `AppBar` 共用时应只作用于 body**：否则会让 AppBar 有额外顶部边距，一般只包裹 `Scaffold.body` 即可。
 
-#### 15.4、[**flutter_screenutil**](https://pub.dev/packages/flutter_screenutil)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 15.5、[**flutter_screenutil**](https://pub.dev/packages/flutter_screenutil)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 * ‼️重要说明
 
@@ -3067,7 +3056,7 @@ class JobsScreenUtil {
   
   </details>
 
-#### 15.5、📐 键盘遮挡通用处理方案  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 15.6、📐 键盘遮挡通用处理方案  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 🌹类似于**iOS**里面的[**IQKeyboardManager**](https://github.com/hackiftekhar/IQKeyboardManager)，👉 **监听键盘的高度变化，动态将视图往上推这么多距离，避免输入控件被遮挡。**
 
@@ -3126,7 +3115,7 @@ SafeArea(
 
   手动加 `ScrollView + Padding`，就等同于**Flutter 版 IQKeyboardManager**
 
-#### 15.6、🔄 响应式布局：根据宽度切换布局  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 15.7、🔄 响应式布局：根据宽度切换布局  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 LayoutBuilder(
@@ -9905,41 +9894,53 @@ ClipRRect(
 * 图片模式（配合缓存 + 占位）
 
   ```dart
-  Scaffold(
-    appBar: AppBar(title: const Text('Banner - images')),
-    body: Center(
-      child: JobsBannerCarousel(
-        width: JobsScreenUtil().width,
-        height: 455.h,
-        imageUrls: const [
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNaXM5FNZC7-9FDVh9mMMglZv5cuoPAw-6MA&s',
-          'https://jzmofficial.com/cdn/shop/files/Logo_1200x1200.jpg?v=1624577059',
-          'https://static.vecteezy.com/system/resources/previews/009/125/398/non_2x/jzm-logo-jzm-letter-jzm-letter-logo-design-initials-jzm-logo-linked-with-circle-and-uppercase-monogram-logo-jzm-typography-for-technology-business-and-real-estate-brand-vector.jpg',
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQdsn8QSHQxKyWpG6Qy2ngPM0hQMffP-DYo0FvNbwhx_EYmfl-EeYSZ4g8&s',
-        ],
-        viewportFraction: 1,
-        // vertical: 5.0,
-        // horizontal: 5.0,
-        // 关键：接入缓存版网络图
-        netImageBuilder: cachedNetImageBuilder,
-        // 空数据占位（数据为空时展示）
-        emptyBuilder: (ctx) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.image_not_supported_outlined, size: 48),
-              const SizedBox(height: 8),
-              Text('暂无内容'.tr),
-              const SizedBox(height: 8),
-              OutlinedButton(
-                  onPressed: () {/* 触发加载 */}, child: Text('重试'.tr)),
-            ],
-          ),
-        ),
-        onTap: (i) => debugPrint('tap $i'),
-      )
-    ),
-  );
+  void main() {
+    runApp(
+      ScreenUtilInit(
+        designSize: const Size(1125, 2436), // ← 设计稿尺寸
+        minTextAdapt: true,
+        builder: (context, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: '广告轮播图',
+            home: Scaffold(
+              appBar: AppBar(title: const Text('广告轮播图')),
+              body: Center(
+                child: JobsBannerCarousel(
+                  width: ScreenUtil().screenWidth,
+                  height: 455.h,
+                  imageUrls: const [
+                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNaXM5FNZC7-9FDVh9mMMglZv5cuoPAw-6MA&s',
+                    'https://jzmofficial.com/cdn/shop/files/Logo_1200x1200.jpg?v=1624577059',
+                    'https://static.vecteezy.com/system/resources/previews/009/125/398/non_2x/jzm-logo-jzm-letter-jzm-letter-logo-design-initials-jzm-logo-linked-with-circle-and-uppercase-monogram-logo-jzm-typography-for-technology-business-and-real-estate-brand-vector.jpg',
+                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQdsn8QSHQxKyWpG6Qy2ngPM0hQMffP-DYo0FvNbwhx_EYmfl-EeYSZ4g8&s',
+                  ],
+                  viewportFraction: 1,
+                  netImageBuilder: cachedNetImageBuilder,
+                  emptyBuilder: (ctx) => Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.image_not_supported_outlined, size: 48),
+                        const SizedBox(height: 8),
+                        const Text('暂无内容'),
+                        const SizedBox(height: 8),
+                        OutlinedButton(
+                          onPressed: () {},
+                          child: const Text('重试'),
+                        ),
+                      ],
+                    ),
+                  ),
+                  onTap: (i) => debugPrint('tap $i'),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
   ```
 
 * 自定义模式（完全不用图片 URL）
@@ -11116,14 +11117,14 @@ Comparable.compare(a, b)
 >
 > **final**：类不能被继承
 
-#### 21.1、int <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 21.1、**`int`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 abstract final class int extends num 
 sealed class num implements Comparable<num>
 ```
 
-#### 21.2、Long <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 21.2、**`Long`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 final class Long extends AbiSpecificInteger
@@ -11157,20 +11158,20 @@ AbiSpecificInteger <|.. SizedNativeType : implements
 SizedNativeType <|.. NativeType : implements
 ```
 
-#### 21.3、bool <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 21.3、**`bool`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 final class bool
 ```
 
-#### 21.4、double <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 21.4、**`double`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 abstract final class double extends num
 sealed class num implements Comparable<num>
 ```
 
-#### 21.5、Float <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 21.5、**`Float`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 final class Float implements _NativeDouble
@@ -11204,7 +11205,7 @@ _NativeDouble <|.. SizedNativeType : implements
 SizedNativeType <|.. NativeType : implements
 ```
 
-#### 21.6、String <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 21.6、**`String`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 abstract final class String implements Comparable<String>, Pattern
@@ -11232,7 +11233,7 @@ String <|.. Comparable~String~ : implements
 String <|.. Pattern : implements
 ```
 
-#### 21.7、List <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 21.7、**`List`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 abstract interface class List<E> implements Iterable<E>, _ListIterable<E> 
@@ -11277,13 +11278,13 @@ EfficientLengthIterable~T~ <|-- Iterable~T~ : extends
 HideEfficientLengthIterable~T~ <|.. Iterable~T~ : implements
 ```
 
-#### 21.8、Map <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 21.8、**`Map`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 abstract interface class Map<K, V>
 ```
 
-#### 21.9、Set <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
+#### 21.9、**`Set`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
 ```dart
 abstract interface class Set<E> implements Iterable<E>, _SetIterable<E>
