@@ -10136,63 +10136,57 @@ ClipRRect(
 
 ### 48、[**`JobsExcel`**](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/lib/JobsDemoTools/JobsFlutterTools/Excel/JobsExcel.dart) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a>
 
-```dart
-/**
- * 使用说明：
- *
- * 1. 数据输入
- *    - 中间表体部分仅需写入有效数据。
- *    - 无效数据可用占位符（默认 "🈚️"，可自定义）替代。
- *    - 如果数据列数超过表头列数，会以表头为基准进行截断显示。
- *
- * 2. 表头显示
- *    - 表头内容默认始终完整显示，不会被截断。
- *    - 数据列可通过 `columnModes` 设置显示策略：
- *      2.1 省略号显示：CellLayout.ellipsis（默认：多余部分用“...”）
- *      2.2 缩小字体：CellLayout.shrink（字体缩小以适配单元格）
- *      2.3 最长内容定宽：CellLayout.fitToLongest（整列宽度以最长内容撑开）
- *      2.4 自动换行：CellLayout.wrap（内容过长时换行显示）
- *
- * 3. 冻结规则
- *    - 表格超出屏幕高度时，默认冻结第一行（表头），可上下滑动。
- *    - 表格超出屏幕宽度时，默认冻结第一列，可左右滑动。
- *
- * 4. 滚动行为
- *    - 横向滚动：冻结首列，剩余部分左右滑动。
- *    - 纵向滚动：冻结首行，剩余部分上下滑动。
- */
+> ```dart
+> /// 使用说明：
+> ///
+> /// 1. 数据输入
+> ///    - 中间表体部分仅需写入有效数据。
+> ///    - 无效数据可用占位符（默认 "🈚️"，可自定义）替代。
+> ///    - 如果数据列数超过表头列数，会以表头为基准进行截断显示。
+> ///
+> /// 2. 表头显示
+> ///    - 表头内容默认始终完整显示，不会被截断。
+> ///    - 数据列可通过 `columnModes` 设置显示策略：
+> ///      2.1 省略号显示：CellLayout.ellipsis（默认：多余部分用“...”）
+> ///      2.2 缩小字体：CellLayout.shrink（字体缩小以适配单元格）
+> ///      2.3 最长内容定宽：CellLayout.fitToLongest（整列宽度以最长内容撑开）
+> ///      2.4 自动换行：CellLayout.wrap（内容过长时换行显示）
+> ///
+> /// 3. 尺寸管理
+> ///    - 列宽：通过 `columnWidths` 数组控制（含首列 + 所有数据列）。
+> ///      · >0：固定宽度
+> ///      · <=0 或 null：按 columnModes 或默认逻辑计算
+> ///      · 未传 columnWidths：右侧数据列均分父容器剩余宽度
+> ///
+> ///    - 行高：通过 `rowHeights` 数组控制（含表头行 + 所有数据行）。
+> ///      · >0：固定高度
+> ///      · <=0 或 null：使用默认逻辑
+> ///      · 未传 rowHeights：所有行（含表头）均分父容器剩余高度
+> ///
+> ///    - 首列模式（rowHeaderMode）：
+> ///      · mode1：首列参与均分，宽度由均分逻辑决定
+> ///      · mode2：首列单独固定（外部传入固定值或默认值），其余列再均分
+> ///
+> /// 4. 冻结规则
+> ///    - 表格超出屏幕高度时，默认冻结第一行（表头），可上下滑动。
+> ///    - 表格超出屏幕宽度时，默认冻结第一列，可左右滑动。
+> ///
+> /// 5. 滚动行为
+> ///    - 横向滚动：冻结首列，剩余部分左右滑动。
+> ///    - 纵向滚动：冻结首行，剩余部分上下滑动。
+> ```
 
-void main() {
-  final horizontal = ['回归首存金额', '回归首存返利', '流水倍数', '备注1', '备注2'];
-  final vertical = [
-    '≥1元',
-    '≥2元',
-    '≥3元',
-    '≥4元',
-    '≥5元',
-    '≥6元',
-    '≥7元',
-    '≥8元',
-    '≥9元',
-    '≥10元',
-    '≥11元',
-    '≥12元',
-    '≥13元',
-    '≥14元',
-    '≥15元',
-    '≥16元',
-    '≥17元',
-    '≥18元',
-    '≥19元',
-    '≥20元',
-    '≥21元',
-    '≥22元'
-  ];
+#### 48.1、模式 1：首列与其它列一起等宽分配；不需要 fixedWidth
+
+```dart
+void main1() {
+  final horizontal = ['回归后流水', 'VIP1', 'VIP2', 'VIP3', 'VIP4'];
+  final vertical = ['≥1元', '≥2元', '≥3元', '≥4元'];
   final data = [
-    ['28元', '1', '很长很长的说明文字会在这里进行自动换行展示（示例）', '—'],
-    ['88元', '1', '短', '—'],
-    ['188元', '1', '这行也可能比较长，需要两行展示', '—'],
-    ['388元', '1', '—', '—'],
+    ['1000元', '3000元', '6000元', '10000元'],
+    ['2000元', '4000元', '8000元', '20000元'],
+    ['—', '—', '—', '—'],
+    ['—', '—', '—', '—'],
   ];
 
   runApp(
@@ -10201,39 +10195,50 @@ void main() {
       minTextAdapt: true,
       builder: (context, _) => MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Excel',
-        builder: (context, child) {
-          // 全局取消回弹与发光（也可只在局部 ScrollView 上设置 physics）
-          return ScrollConfiguration(
-            behavior: const _NoBounceNoGlow(),
-            child: child!,
-          );
-        },
+        title: 'JobsExcel',
+        builder: (context, child) => ScrollConfiguration(
+          behavior: const _NoBounceNoGlow(),
+          child: child!,
+        ),
         home: Scaffold(
-          appBar: AppBar(title: const Text('JobsExcel')),
+          appBar: AppBar(title: const Text('JobsExcel@Model1')),
           body: Center(
             child: Padding(
               padding: const EdgeInsets.all(12),
-              child: JobsExcel(
+              child: JobsExcelBuildByMode1(
                 horizontalTitles: horizontal,
                 verticalTitles: vertical,
                 rowsData: data,
-                placeholder: "🈚️",
-                // 对应 horizontal: [回归首存金额, 回归首存返利, 流水倍数, 备注1, 备注2] -> 配置 4 项
-                columnModes: const [
-                  CellLayout.fitToLongest, // 回归首存返利：整个列以最长内容为标准定宽撑开
-                  CellLayout.ellipsis, // 流水倍数：正常显示（多余用...）
-                  CellLayout.wrap, // 备注1：换行显示（受 wrapMaxLines 和 rowHeight 影响）
-                  CellLayout.shrink, // 备注2：缩小字体显示
+
+                // 行高（含表头）
+                rowHeights: const [
+                  44, // 表头
+                  48, // 第1行
+                  48, // 第2行
+                  48, // 第3行
+                  48, // 第4行
                 ],
-                wrapMaxLines: 2, // wrap 模式最多显示的行数（默认 2）
-                // 尺寸
-                rowHeaderWidth: 140,
-                headerHeight: 44,
-                rowHeight: 48, // 如果要更多换行可适当增大
+
+                // 其他行为
+                placeholder: "🈚️",
+                columnModes: const [
+                  CellLayout.fitToLongest, // 均分下只影响展示，不影响列宽
+                  CellLayout.ellipsis,
+                  CellLayout.wrap,
+                  CellLayout.shrink,
+                ],
+                wrapMaxLines: 2,
+
+                // 均分模式下这俩不会生效（留着也无碍）
+                // minColWidth / maxColWidth 只在“非均分且未固定列”生效
+                // 不需要 fillColumn（等分本就吃满）
+                expandToMaxWidth: true,
+
+                // 视觉
                 borderWidth: 1,
                 borderColor: const Color(0xFFE5E6EB),
-                // 样式
+                borderRadius: 10,
+
                 headerXStyle: const TableSectionStyle(
                   bgColor: Color(0xFF00C2C7),
                   textColor: Colors.white,
@@ -10246,12 +10251,202 @@ void main() {
                   textColor: Colors.black87,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                 ),
                 cellStyle: const TableSectionStyle(
                   bgColor: Colors.white,
                   textColor: Colors.black87,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+```
+
+#### 48.2、模式 2：首列固定宽度，其余列按内容/约束自适应（支持 min/maxColWidth）
+
+```dart
+void main2() {
+  final horizontal = ['回归后流水', 'VIP1', 'VIP2', 'VIP3', 'VIP4'];
+  final vertical = ['≥1元', '≥2元', '≥3元', '≥4元'];
+  final data = [
+    ['1000元', '3000元', '6000元', '10000元'],
+    ['2000元', '4000元', '8000元', '20000元'],
+    ['—', '—', '—', '—'],
+    ['—', '—', '—', '—'],
+  ];
+
+  runApp(
+    ScreenUtilInit(
+      designSize: const Size(1125, 2436),
+      minTextAdapt: true,
+      builder: (context, _) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'JobsExcel',
+        builder: (context, child) => ScrollConfiguration(
+          behavior: const _NoBounceNoGlow(),
+          child: child!,
+        ),
+        home: Scaffold(
+          appBar: AppBar(title: const Text('JobsExcel@Model2')),
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: JobsExcelBuildByMode2(
+                horizontalTitles: horizontal,
+                verticalTitles: vertical,
+                rowsData: data,
+
+                // 行高（含表头）
+                rowHeights: const [
+                  44, // 表头
+                  48, // 第1行
+                  48, // 第2行
+                  48, // 第3行
+                  48, // 第4行
+                ],
+
+                // —— 模式2：首列固定，其他列按内容/约束自适应 ——
+                firstColumnFixedWidth: 100,
+
+                // 其他行为
+                placeholder: "🈚️",
+                columnModes: const [
+                  CellLayout.fitToLongest, // 非均分时有效
+                  CellLayout.ellipsis,
+                  CellLayout.wrap,
+                  CellLayout.shrink,
+                ],
+                wrapMaxLines: 2,
+
+                // 非均分 → min/max 生效
+                minColWidth: 56,
+                maxColWidth: 200,
+
+                expandToMaxWidth: true, // 不够宽时扩展未固定列
+                respectFixedOnExpand: true, // 固定列不被拉伸
+
+                // 视觉
+                borderWidth: 1,
+                borderColor: const Color(0xFFE5E6EB),
+                borderRadius: 10,
+
+                headerXStyle: const TableSectionStyle(
+                  bgColor: Color(0xFF00C2C7),
+                  textColor: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                ),
+                headerYStyle: const TableSectionStyle(
+                  bgColor: Color(0xFFF6F7F9),
+                  textColor: Colors.black87,
                   fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                ),
+                cellStyle: const TableSectionStyle(
+                  bgColor: Colors.white,
+                  textColor: Colors.black87,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+```
+
+#### 48.3、模式 3：首列固定宽度，其余列等宽均分
+
+```dart
+void main3() {
+  final horizontal = ['回归后流水', 'VIP1', 'VIP2', 'VIP3', 'VIP4'];
+  final vertical = ['≥1元', '≥2元', '≥3元', '≥4元'];
+  final data = [
+    ['1000元', '3000元', '6000元', '10000元'],
+    ['2000元', '4000元', '8000元', '20000元'],
+    ['—', '—', '—', '—'],
+    ['—', '—', '—', '—'],
+  ];
+
+  runApp(
+    ScreenUtilInit(
+      designSize: const Size(1125, 2436),
+      minTextAdapt: true,
+      builder: (context, _) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'JobsExcel',
+        builder: (context, child) => ScrollConfiguration(
+          behavior: const _NoBounceNoGlow(),
+          child: child!,
+        ),
+        home: Scaffold(
+          appBar: AppBar(title: const Text('JobsExcel@Model3')),
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: JobsExcelBuildByMode3(
+                horizontalTitles: horizontal,
+                verticalTitles: vertical,
+                rowsData: data,
+
+                // 行高（含表头）
+                rowHeights: const [44, 48, 48, 48, 48],
+
+                // —— 模式3：首列固定 + 其余列等宽均分 ——
+                firstColumnFixedWidth: 100,
+                // 若你的 JobsExcel 未内置“等分剩余列”，打开兜底：
+                // forceEqualSplitWithLayoutBuilder: true,
+
+                // 其他展示/约束
+                placeholder: "🈚️",
+                columnModes: const [
+                  CellLayout.fitToLongest,
+                  CellLayout.ellipsis,
+                  CellLayout.wrap,
+                  CellLayout.shrink,
+                ],
+                wrapMaxLines: 2,
+                minColWidth: 56,
+                maxColWidth: 200,
+
+                expandToMaxWidth: true,
+
+                // 视觉
+                borderWidth: 1,
+                borderColor: const Color(0xFFE5E6EB),
+                borderRadius: 10,
+                headerXStyle: const TableSectionStyle(
+                  bgColor: Color(0xFF00C2C7),
+                  textColor: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                ),
+                headerYStyle: const TableSectionStyle(
+                  bgColor: Color(0xFFF6F7F9),
+                  textColor: Colors.black87,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                ),
+                cellStyle: const TableSectionStyle(
+                  bgColor: Colors.white,
+                  textColor: Colors.black87,
+                  fontSize: 12,
                   fontWeight: FontWeight.w400,
                   padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                 ),
