@@ -10219,7 +10219,7 @@ ClipRRect(
 > ///    - fillColumn：可指定把富余宽度补给哪一列（数据列索引 0..N-1，null=最后一列）。
 > ```
 
-#### 48.1、模式 1：首列与其它列一起等宽分配；不需要 fixedWidth
+#### 48.1、模式 1：首列与其它列一起等宽分配；不需要 `fixedWidth` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 void main1() {
@@ -10238,73 +10238,29 @@ void main1() {
       minTextAdapt: true,
       builder: (context, _) => MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'JobsExcel',
         builder: (context, child) => ScrollConfiguration(
           behavior: const _NoBounceNoGlow(),
           child: child!,
         ),
         home: Scaffold(
-          appBar: AppBar(title: const Text('JobsExcel@Model1')),
-          body: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: JobsExcelBuildByMode1(
+          appBar:
+              AppBar(title: const Text('JobsExcel@Model1 首列参与等分（纵向直透父级演示）')),
+          body: ListView(
+            padding: const EdgeInsets.all(12),
+            children: [
+              JobsExcelBuildByMode1(
                 horizontalTitles: horizontal,
                 verticalTitles: vertical,
                 rowsData: data,
-
-                // 行高（含表头）
-                rowHeights: const [
-                  44, // 表头
-                  48, // 第1行
-                  48, // 第2行
-                  48, // 第3行
-                  48, // 第4行
-                ],
-
-                // 其他行为
-                placeholder: "🈚️",
-                columnModes: const [
-                  CellLayout.fitToLongest, // 均分下只影响展示，不影响列宽
-                  CellLayout.ellipsis,
-                  CellLayout.wrap,
-                  CellLayout.shrink,
-                ],
-                wrapMaxLines: 2,
-
-                // 均分模式下这俩不会生效（留着也无碍）
-                // minColWidth / maxColWidth 只在“非均分且未固定列”生效
-                // 不需要 fillColumn（等分本就吃满）
-                expandToMaxWidth: true,
-
-                // 视觉
-                borderWidth: 1,
-                borderColor: const Color(0xFFE5E6EB),
-                borderRadius: 10,
-
-                headerXStyle: const TableSectionStyle(
-                  bgColor: Color(0xFF00C2C7),
-                  textColor: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-                ),
-                headerYStyle: const TableSectionStyle(
-                  bgColor: Color(0xFFF6F7F9),
-                  textColor: Colors.black87,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                ),
-                cellStyle: const TableSectionStyle(
-                  bgColor: Colors.white,
-                  textColor: Colors.black87,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                ),
+                rowHeights: const [44, 48, 48, 48, 48],
+                // 纵向完全交给父级（直透）
+                disableInternalVerticalScroll: true,
+                // 横向仍由内部处理
+                disableInternalHorizontalScroll: false,
+                relayGestureToParentWhenAtEdge: false,
               ),
-            ),
+              const SizedBox(height: 800),
+            ],
           ),
         ),
       ),
@@ -10313,7 +10269,7 @@ void main1() {
 }
 ```
 
-#### 48.2、模式 2：首列固定宽度，其余列按内容/约束自适应（支持 min/maxColWidth）
+#### 48.2、模式 2：首列固定宽度，其余列按内容/约束自适应（支持 min/maxColWidth）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 void main2() {
@@ -10332,78 +10288,27 @@ void main2() {
       minTextAdapt: true,
       builder: (context, _) => MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'JobsExcel',
         builder: (context, child) => ScrollConfiguration(
           behavior: const _NoBounceNoGlow(),
           child: child!,
         ),
         home: Scaffold(
-          appBar: AppBar(title: const Text('JobsExcel@Model2')),
-          body: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: JobsExcelBuildByMode2(
+          appBar: AppBar(
+              title: const Text('JobsExcel@Model2 首列固定+内容自适配（到边缘→接力父级）')),
+          body: ListView(
+            padding: const EdgeInsets.all(12),
+            children: [
+              JobsExcelBuildByMode2(
                 horizontalTitles: horizontal,
                 verticalTitles: vertical,
                 rowsData: data,
-
-                // 行高（含表头）
-                rowHeights: const [
-                  44, // 表头
-                  48, // 第1行
-                  48, // 第2行
-                  48, // 第3行
-                  48, // 第4行
-                ],
-
-                // —— 模式2：首列固定，其他列按内容/约束自适应 ——
+                rowHeights: const [44, 48, 48, 48, 48],
                 firstColumnFixedWidth: 100,
-
-                // 其他行为
-                placeholder: "🈚️",
-                columnModes: const [
-                  CellLayout.fitToLongest, // 非均分时有效
-                  CellLayout.ellipsis,
-                  CellLayout.wrap,
-                  CellLayout.shrink,
-                ],
-                wrapMaxLines: 2,
-
-                // 非均分 → min/max 生效
-                minColWidth: 56,
-                maxColWidth: 200,
-
-                expandToMaxWidth: true, // 不够宽时扩展未固定列
-                respectFixedOnExpand: true, // 固定列不被拉伸
-
-                // 视觉
-                borderWidth: 1,
-                borderColor: const Color(0xFFE5E6EB),
-                borderRadius: 10,
-
-                headerXStyle: const TableSectionStyle(
-                  bgColor: Color(0xFF00C2C7),
-                  textColor: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-                ),
-                headerYStyle: const TableSectionStyle(
-                  bgColor: Color(0xFFF6F7F9),
-                  textColor: Colors.black87,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                ),
-                cellStyle: const TableSectionStyle(
-                  bgColor: Colors.white,
-                  textColor: Colors.black87,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                ),
+                // 到边缘接力父级（推荐）
+                relayGestureToParentWhenAtEdge: true,
               ),
-            ),
+              const SizedBox(height: 800),
+            ],
           ),
         ),
       ),
@@ -10412,7 +10317,7 @@ void main2() {
 }
 ```
 
-#### 48.3、模式 3：首列固定宽度，其余列等宽均分
+#### 48.3、模式 3：首列固定宽度，其余列等宽均分<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 void main3() {
@@ -10431,13 +10336,13 @@ void main3() {
       minTextAdapt: true,
       builder: (context, _) => MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'JobsExcel',
         builder: (context, child) => ScrollConfiguration(
           behavior: const _NoBounceNoGlow(),
           child: child!,
         ),
         home: Scaffold(
-          appBar: AppBar(title: const Text('JobsExcel@Model3')),
+          appBar:
+              AppBar(title: const Text('JobsExcel@Model3 首列固定+其余等分（到边缘→接力）')),
           body: Center(
             child: Padding(
               padding: const EdgeInsets.all(12),
@@ -10445,54 +10350,9 @@ void main3() {
                 horizontalTitles: horizontal,
                 verticalTitles: vertical,
                 rowsData: data,
-
-                // 行高（含表头）
                 rowHeights: const [44, 48, 48, 48, 48],
-
-                // —— 模式3：首列固定 + 其余列等宽均分 ——
                 firstColumnFixedWidth: 100,
-                // 若你的 JobsExcel 未内置“等分剩余列”，打开兜底：
-                // forceEqualSplitWithLayoutBuilder: true,
-
-                // 其他展示/约束
-                placeholder: "🈚️",
-                columnModes: const [
-                  CellLayout.fitToLongest,
-                  CellLayout.ellipsis,
-                  CellLayout.wrap,
-                  CellLayout.shrink,
-                ],
-                wrapMaxLines: 2,
-                minColWidth: 56,
-                maxColWidth: 200,
-
-                expandToMaxWidth: true,
-
-                // 视觉
-                borderWidth: 1,
-                borderColor: const Color(0xFFE5E6EB),
-                borderRadius: 10,
-                headerXStyle: const TableSectionStyle(
-                  bgColor: Color(0xFF00C2C7),
-                  textColor: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-                ),
-                headerYStyle: const TableSectionStyle(
-                  bgColor: Color(0xFFF6F7F9),
-                  textColor: Colors.black87,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                ),
-                cellStyle: const TableSectionStyle(
-                  bgColor: Colors.white,
-                  textColor: Colors.black87,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                ),
+                relayGestureToParentWhenAtEdge: true,
               ),
             ),
           ),
@@ -10660,6 +10520,99 @@ showSimpleNotification(
   background: Colors.green,
 );
 ```
+
+### 52、⏲️定时器 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+[**Flutter**](https://flutter.dev/)定时机制对比表
+
+<img src="./assets/image-20250821214200162.png" alt="image-20250821214200162" style="zoom:50%;" />
+
+#### 52.1、普通定时器：`Timer` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+##### 52.1.1、**单次定时** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```dart
+Timer(Duration(seconds: 2), () {
+  print("2 秒后执行一次");
+});
+```
+
+##### 52.1.2、**周期定时** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```dart
+Timer.periodic(Duration(seconds: 1), (timer) {
+  print("每秒执行一次");
+});
+```
+
+#### 52.2、[**Flutter**](https://flutter.dev/) 特有的：`Ticker` / `AnimationController`
+
+> 1️⃣ `Ticker` 是 Flutter 内部的心跳计时器，跟屏幕刷新频率（一般 60fps）同步。
+>  它常用在动画相关场景，比如 `AnimationController`。
+>
+> 2️⃣ 这种定时器不是靠时间间隔，而是帧驱动的：
+
+```dart
+final ticker = Ticker((elapsed) {
+  print("每一帧都会回调，elapsed = $elapsed");
+});
+
+ticker.start();
+```
+
+#### 52.3、UI 刷新相关：`Future.delayed`
+
+> 不是严格意义的定时器，但常常被用来做**延时执行**
+
+```dart
+Future.delayed(Duration(seconds: 1), () {
+  print("1 秒后执行");
+});
+```
+
+#### 52.4、引擎层调度：`SchedulerBinding`
+
+* [**Flutter**](https://flutter.dev/) 提供 `SchedulerBinding.instance.scheduleFrameCallback`，可以在下一帧绘制前回调，相当于浏览器里的 `requestAnimationFrame`
+
+  ```dart
+  import 'package:flutter/scheduler.dart';
+  
+  void main() {
+    runApp(const MyApp());
+  }
+  
+  class MyApp extends StatelessWidget {
+    const MyApp({super.key});
+  
+    @override
+    Widget build(BuildContext context) {
+      // 在 Widget 构建时注册下一帧回调
+      SchedulerBinding.instance.scheduleFrameCallback((timeStamp) {
+        print("下一帧绘制前执行，时间戳: $timeStamp");
+      });
+  
+      return const MaterialApp(
+        home: Scaffold(body: Center(child: Text("Hello SchedulerBinding"))),
+      );
+    }
+  }
+  ```
+
+  ```dart
+  SchedulerBinding.instance.scheduleFrameCallback((timeStamp) {
+    // 下一帧前执行
+  });
+  
+  /// ⚠️ 常用于 拿 BuildContext 大小、位置，因为必须等布局结束。
+  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    // 当前帧渲染完成后执行
+  });
+  ```
+
+  > | 方法                      | 触发时机         | 用途                                      |
+  > | ------------------------- | ---------------- | ----------------------------------------- |
+  > | **scheduleFrameCallback** | 下一帧开始绘制前 | 和 UI 同步，做动画逻辑、依赖帧的计算      |
+  > | **addPostFrameCallback**  | 当前帧绘制结束后 | 获取布局信息、调用 `setState` 安全更新 UI |
 
 ## 四、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
