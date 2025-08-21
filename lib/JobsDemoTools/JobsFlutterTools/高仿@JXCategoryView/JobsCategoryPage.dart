@@ -6,7 +6,7 @@ import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/高仿@J
 import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/高仿@JXCategoryView/ActivityShareSubView@队长福利.dart';
 import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart';
 import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/Extensions/WidgetExtension/JobsWidgetExtension.dart';
-
+/// 高仿@JXCategoryView
 void main() {
   final items = <ActivityBaseBean>[
     ActivityBaseBean(
@@ -29,7 +29,7 @@ void main() {
       child: const CategoryListPage_4(title: '队长福利', index: 3).center(),
       show: true,
     ),
-  ].where((e) => e.show).toList(); 
+  ].where((e) => e.show).toList();
 
   runApp(
     JobsMaterialRunner(
@@ -54,7 +54,7 @@ class ActivityBaseBean {
     final bool show;
 }
 
-/// ========================= 页面组件（数据由外部注入） =========================
+/// 页面组件（数据由外部注入）
 class JobsCategoryPage extends StatefulWidget {
   const JobsCategoryPage({
     super.key,
@@ -268,7 +268,7 @@ class _ZoomTab extends StatelessWidget {
   }
 }
 
-// ========================= 自适应 TabBar（不变） =========================
+/// 自适应 TabBar（不变）
 class _AdaptiveTabBar extends StatelessWidget {
   final TabController controller;
   final List<String> tabsText;

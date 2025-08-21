@@ -13777,6 +13777,47 @@ Column(
 );
 ```
 
+### 28、扩展运算符 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+> 会把一个 **List** 的元素逐个展开，放进父 **List**
+
+```dart
+children: [
+  Text("A"),
+  if (true) ...[Text("B"), Text("C")],
+  Text("D"),
+]
+
+/// 等价于：
+children: [
+  Text("A"),
+  Text("B"),
+  Text("C"),
+  Text("D"),
+]
+```
+
+### 29、级联运算符 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+> 级联运算符适合的场景主要是：
+>
+> - 控制器类（`AnimationController`、`TextEditingController` 等）
+> - 集合（List / Map / Set）做连续操作
+> - 任何有 **方法** 或 **可修改属性** 的对象
+
+```dart
+final list = []
+  ..add('A')
+  ..add('B')
+  ..add('C');
+
+/// 等价于：
+final list = [];
+list.add('A');
+list.add('B');
+list.add('C');
+```
+
 ## 五、FAQ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * **`call()`**
