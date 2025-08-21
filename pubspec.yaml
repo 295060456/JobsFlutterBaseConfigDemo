@@ -20,6 +20,7 @@ dependencies:
   flutter:
     sdk: flutter
   # UI组件库
+  oktoast: any # 轻量级toast
   extended_tabs: any # 扩展TabBar
   cupertino_icons: any
   device_preview: any # 多设备模拟器（外部包裹）

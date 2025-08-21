@@ -42,11 +42,11 @@
 * 作为某些代码**实践靶场**，在实际开发过程中，是非常有必要的
   * 为我们快速且稳定的复现一些业务场景，作为代码实验室🧪，而搭建的一个平台
 * 作为代码笔记，记录一些常用的代码，方便查阅
-  * 主要形式是可以运行的代码 + 文字性叙述 + 图文混编讲解
+  * 主要形式是：<font color=red>**可以直接运行的代码**</font> ➕ <font color=red>**文字性叙述**</font> ➕ <font color=red>**图文混编讲解**</font>
   * 作为学习的资料，可以快速了解到一些常用的知识，大幅**降低学习成本**
   * 作为其他项目的参考，可以快速的了解到项目的架构，代码规范，以及一些设计模式
   * 这么一些优秀的成果，其来源不仅仅是来自于作者本身的持续付出与积累。更是这个领域大家庭中各路优秀作者的智慧结晶
-* 独立的测试单元
+* **保姆级教程**：附带独立的测试单元
   * 对于单个的[**Flutter**](https://flutter.dev/)工程文件（小**Demo**）可以利用[**运行脚本**](./【MacOS】☀️双击运行Flutter项目（iOS 模拟器）.command)，在**MacOS**的**终端**直接拖入进行运行和展示（终端运行不支持断点，只能输出日志）
   * 为了保证各个**Demo**在形式上的独立性，所以尽可能的在单个`.dart`文件里面进行叙述。**每一个[Flutter](https://flutter.dev/)的Demo文件里，都会存在其程序的入口函数** 
 
@@ -3658,7 +3658,7 @@ class XXX extends Object{}
   | `pull_to_refresh`                    | 下拉刷新/上拉加载的封装库                                    |
   | `flutter_easyrefresh`（已停更）      | 曾经流行的刷新库（不推荐新项目用）                           |
 
-### 18、👋<font color=red>**手势**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 18、👋[**Flutter**](https://flutter.dev/)<font color=red>**手势**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 虽然本质是响应用户输入（如点击、滑动、拖动、缩放等），但它们的使用方式**确实也是通过 `Widget` 实现的**
 >
@@ -3675,15 +3675,28 @@ flowchart LR
     C --> D
 ```
 
-#### 18.1、[**Flutter**](https://flutter.dev/) 中的手势系统本质（由三层机制组成）🔼</b></a>
+#### 18.1、👋[**Flutter**](https://flutter.dev/)中的手势系统本质（由三层机制组成）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-| 层级   | 名称                     | 说明                                                         |
-| ------ | ------------------------ | ------------------------------------------------------------ |
-| 1️⃣ 底层 | `Listener`               | 原始事件监听（如 **pointerDown**、**pointerMove**）          |
-| 2️⃣ 中层 | `GestureDetector`        | 对原始事件进行识别封装（如 **tap**、**double tap**、**drag**） |
-| 3️⃣ 高层 | `InkWell`, `InkResponse` | 组件化的手势 + 视觉反馈（如水波纹）                          |
+| 层级   | 名称                                                         | 说明                                                         |
+| ------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 1️⃣ 底层 | **Pointer 事件**：`Listener`<br/>👉 `Listener` 捕获的是 **Pointer 级别**，它能看到事件，但并不代表能改变 **GestureArena** 的裁决。<br>👉`Listener` 只能监听，但 **不能打破（干预） Arena 的胜负结果** | 原始事件监听<br/>如：**pointerDown**、**pointerMove**，等    |
+| 2️⃣ 中层 | **Gesture 识别**：`GestureDetector`<br/>👉负责仲裁，一旦胜出就独占事件。 | 对原始事件进行识别封装<br/>如：**TapGestureRecognizer**、**DragGestureRecognizer**、**ScrollView**，等 |
+| 3️⃣ 高层 | `InkWell`, `InkResponse`                                     | 组件化的手势 + 视觉反馈（如水波纹）                          |
 
-#### 18.2、[**Flutter**](https://flutter.dev/) 中所有手势相关 **`Widget`** 一览（全量分类）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 18.2、👋滚动控件的特殊性 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+- 滚动相关的组件（`ListView`、`SingleChildScrollView`、`PageView`）内部有自己的手势识别器
+
+  它们会“吃掉”拖拽事件，除非：
+
+  - 到边界后放弃（Android 常见）
+  - 或者物理模型允许回弹（iOS 常见，仍会持有手势）
+
+- <font color=red>想要协调父子滚动，必须通过 **Physics** 或 **通知机制**，而不是单纯依赖 Pointer 监听</font>
+
+👉 所以 **Pointer 监听无法改变滚动控件的既定行为**
+
+#### 18.3、👋[**Flutter**](https://flutter.dev/) 中所有手势相关 **`Widget`** 一览（全量分类）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * 🔹原始指针事件层（Pointer 级）：处理最底层的触摸事件（**pointer down** / **move** / **up** 等）
 
@@ -3740,7 +3753,7 @@ flowchart LR
   | `Slider` / `RangeSlider` | 拖动滑块（拖拽 + tap）                        |
   | `Switch` / `Checkbox`    | 也支持手势（tap）但通常不直接作为手势组件使用 |
 
-#### 18.3、通用点击组件 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 18.4、👋通用点击组件 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 /// - ripple=true 走 Material+InkWell（有水波纹）
@@ -3843,16 +3856,16 @@ class CommonRipple extends StatelessWidget {
 >);
 >```
 
-#### 18.4、<font color=red>**手势竞争**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 18.5、👋[**Flutter**](https://flutter.dev/)<font color=red>**手势竞争**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-##### 18.4.1、手势竞争的原理 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 18.5.1、👋手势竞争的原理 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * 事件发生后，所有对此事件感兴趣的手势识别器（recognizers）都会进入这个 **Gesture Arena**；
 * 这些识别器先处于 **待定（pending）** 状态，等待更多事件来判断是否要**放弃**或**胜出**；
 * 一旦某个识别器确认可以处理这个手势，就会尝试 **宣告胜利**；
 * 其他竞争者可以选择放弃，也可能还在等待，但一旦胜者确定，其余的都被强制取消；
 
-##### 18.4.2、胜负决策规则 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 18.5.2、👋胜负决策规则 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 优先级不是全局固定的，不同 recognizer 之间的实现有差异
 
@@ -3871,7 +3884,7 @@ flowchart TD
 * 如果一个手势识别器 **先确定识别成功**（`acceptGesture`），就会成为赢家，其他全部失败；
 * 如果大家都没明确放弃，[**Flutter**](https://flutter.dev/) 会根据**优先级规则**决定赢家（比如拖拽比点击优先）；
 
-##### 18.4.3、常用的手势冲突场景以及解决技巧（范式） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 18.5.3、👋常用的手势冲突场景以及解决技巧（范式） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > **尽早决策**：基于位移阈值（6~10px）尽快确定方向，另一方向立刻**沉默**
 >
@@ -3883,7 +3896,7 @@ flowchart TD
 >
 > **原始监听**：统计/埋点走 `Listener`，不要和手势识别器抢
 
-###### 18.4.3.1、`ListView` 滑动 🆚 `GestureDetector` onTap
+###### 18.5.3.1、👋`ListView` 滑动 🆚 `GestureDetector` onTap
 
 > **现象**：轻扫/轻移后点击不触发，或只能点到文字不点空白
 >
@@ -3915,7 +3928,7 @@ class ListViewTapFix extends StatelessWidget {
 ```
 </details>
 
-###### 18.4.3.2、`HorizontalDrag` 🆚  `VerticalDrag` 冲突
+###### 18.5.3.2、👋`HorizontalDrag` 🆚  `VerticalDrag` 冲突
 
 > **现象**：横竖两个拖拽识别器互相抢手势
 >
@@ -3969,7 +3982,7 @@ class _S extends State<DragAxisArbiter> {
 ```
 </details>
 
-###### 18.4.3.3、嵌套 `InkWell` / `GestureDetector`（内层不触发或波纹丢失）
+###### 18.5.3.3、👋嵌套 `InkWell` / `GestureDetector`（内层不触发或波纹丢失）
 
 > **现象**：外层先赢导致内层不响应；波纹不显示
 >
@@ -4002,7 +4015,7 @@ class NestedInkWellFix extends StatelessWidget {
 ```
 </details>
 
-###### 18.4.3.4、`PageView`（横向滚动）嵌在可垂直滚动的父容器
+###### 18.5.3.4、👋`PageView`（横向滚动）嵌在可垂直滚动的父容器
 
 > **现象**：横向翻页与父容器纵向滚动抢手势，翻页吃力。
 >
@@ -4036,7 +4049,7 @@ class PageInScrollFix extends StatelessWidget {
 ```
 </details>
 
-###### 18.4.3.5、`GestureDetector` + `ListView` 同时存在，希望：点击 + 长按拖动排序
+###### 18.5.3.5、👋`GestureDetector` + `ListView` 同时存在，希望：点击 + 长按拖动排序
 
 > **现象**：拖动排序和点击互斥，偶发点击不触发
 >
@@ -4078,7 +4091,7 @@ class _S extends State<TapAndDragThreshold> {
 ```
 </details>
 
-###### 18.4.3.6、`InteractiveViewer`（可缩放/拖拽）内的点击热区失效
+###### 18.5.3.6、👋`InteractiveViewer`（可缩放/拖拽）内的点击热区失效
 
 > **现象**：里层按钮/点击不触发
 >
@@ -4118,7 +4131,7 @@ class InteractiveViewerTapFix extends StatelessWidget {
 ```
 </details>
 
-###### 18.4.3.7、横向可滚容器中的纵向手势（或反之）
+###### 18.5.3.7、👋横向可滚容器中的纵向手势（或反之）
 
 > **现象**：内层短轴方向手势不灵
 >
@@ -4155,7 +4168,7 @@ class AxisClearanceFix extends StatelessWidget {
 ```
 </details>
 
-###### 18.4.3.8、父层 `GestureDetector` 抢走子层点击
+###### 18.5.3.8、👋父层 `GestureDetector` 抢走子层点击
 
 > **现象**：父层 `onTap` 吃掉事件，子层不触发
 >
@@ -4190,7 +4203,7 @@ class ParentStealFix extends StatelessWidget {
 ```
 </details>
 
-###### 18.4.3.9、`IgnorePointer` / `AbsorbPointer` 精确阻断或穿透
+###### 18.5.3.9、👋`IgnorePointer` / `AbsorbPointer` 精确阻断或穿透
 
 <details>
 <summary>点击查看代码</summary>
@@ -4242,7 +4255,7 @@ class DemoIgnoreAbsorb extends StatelessWidget {
 ```
 </details>
 
-###### 18.4.3.10、自定义 `GestureRecognizer`（精细控制胜负时机）
+###### 18.5.3.10、👋自定义 `GestureRecognizer`（精细控制胜负时机）
 
 <details>
 <summary>点击查看代码</summary>
@@ -4313,7 +4326,38 @@ class DemoCustomRecognizer extends StatelessWidget {
 ```
 </details>
 
-#### 18.5、🍬手势语法糖 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 18.6、[**Flutter**](https://flutter.dev/)手势冲突⚔️（iOS/Android的核心差异） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+##### 18.6.1、👋手势竞技场机制差异 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* **Android**
+  * 底层基于 `View.onInterceptTouchEvent`
+  * 子 `ScrollView` 到边缘后，事件容易被“拦截”并交回父级
+
+* **iOS**
+  * [**Flutter**](https://flutter.dev/) 的 `GestureArena` 模拟了 `UIScrollView`
+  * iOS 认为「垂直滚动」是一个整体区域，不轻易释放手势
+  * 子 `ScrollView` 到边缘后，仍然尝试继续消费，不把事件交给父级
+
+##### 18.6.2、👋滚动物理差异 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* **Android 默认 → `ClampingScrollPhysics`**
+
+  - 滚动到边界后立即**硬停**
+  - 子视图停止消费，父级容易接管
+* **iOS 默认 → `BouncingScrollPhysics`**
+  * 滚动到边界还能**拉出一截回弹**
+  * 子视图觉得自己还能继续滚动 → 不释放给父级
+
+##### 18.6.3、👋`Pointer`监听的限制 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+##### 18.6.4、👋通用解释 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* **Android** 的手势分发更**宽松**，子控件到边界会放手给父级
+
+* **iOS** 的手势分发更“顽固”，子控件即使到边界也会继续尝试消费，导致父级无法接管
+
+#### 18.7、👋[**Flutter**](https://flutter.dev/)手势语法糖🍬 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 <details>
 <summary>Widget关于手势的拓展</summary>
@@ -4631,11 +4675,10 @@ class _GestureDemoPageState extends State<GestureDemoPage> {
     );
   }
 }
-
 ```
 </details>
 
-#### 18.6、<font color=red>**`HitTestBehavior`**</font>  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 18.8、👋<font color=red>**`HitTestBehavior`**</font>  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 enum HitTestBehavior {
@@ -10137,43 +10180,43 @@ ClipRRect(
 ### 48、[**`JobsExcel`**](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/lib/JobsDemoTools/JobsFlutterTools/Excel/JobsExcel.dart) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > ```dart
-> /// 使用说明：
+> /// 使用说明
 > ///
-> /// 1. 数据输入
-> ///    - 中间表体部分仅需写入有效数据。
-> ///    - 无效数据可用占位符（默认 "🈚️"，可自定义）替代。
-> ///    - 如果数据列数超过表头列数，会以表头为基准进行截断显示。
+> /// 1) 数据与表头
+> ///    - rowsData 只需传有效数据；缺口用占位符（默认 "🈚️"）自动补齐。
+> ///    - 数据列数 > 表头列数时会以表头为准截断。
+> ///    - 表头（首行/首列标题）默认完整显示。
 > ///
-> /// 2. 表头显示
-> ///    - 表头内容默认始终完整显示，不会被截断。
-> ///    - 数据列可通过 `columnModes` 设置显示策略：
-> ///      2.1 省略号显示：CellLayout.ellipsis（默认：多余部分用“...”）
-> ///      2.2 缩小字体：CellLayout.shrink（字体缩小以适配单元格）
-> ///      2.3 最长内容定宽：CellLayout.fitToLongest（整列宽度以最长内容撑开）
-> ///      2.4 自动换行：CellLayout.wrap（内容过长时换行显示）
+> /// 2) 显示策略（仅对“未固定列宽的列”生效）
+> ///    - CellLayout.ellipsis 省略号
+> ///    - CellLayout.shrink  缩小字体单行适配
+> ///    - CellLayout.fitToLongest 按“最长内容 or 表头”撑开整列宽度
+> ///    - CellLayout.wrap    自动换行（最多 wrapMaxLines）
 > ///
-> /// 3. 尺寸管理
-> ///    - 列宽：通过 `columnWidths` 数组控制（含首列 + 所有数据列）。
-> ///      · >0：固定宽度
-> ///      · <=0 或 null：按 columnModes 或默认逻辑计算
-> ///      · 未传 columnWidths：右侧数据列均分父容器剩余宽度
+> /// 3) 行高 / 列宽
+> ///    - rowHeights: >0=固定；未传：
+> ///        · 若父容器有明确高度：数据区等分；
+> ///        · 否则按内在高度（字体+padding）。
+> ///    - columnWidths（含首列）：>0=固定；未传=按等分/策略计算。
+> ///    - 首列模式：
+> ///        · includeInEqualSplit：首列参与等分；
+> ///        · fixedAndExclude    ：首列固定，其余再等分/自适配。
 > ///
-> ///    - 行高：通过 `rowHeights` 数组控制（含表头行 + 所有数据行）。
-> ///      · >0：固定高度
-> ///      · <=0 或 null：使用默认逻辑
-> ///      · 未传 rowHeights：所有行（含表头）均分父容器剩余高度
+> /// 4) 冻结规则
+> ///    - 超高：冻结第一行（表头），数据区上下滚动；
+> ///    - 超宽：冻结第一列（行头），右侧左右滚动。
 > ///
-> ///    - 首列模式（rowHeaderMode）：
-> ///      · mode1：首列参与均分，宽度由均分逻辑决定
-> ///      · mode2：首列单独固定（外部传入固定值或默认值），其余列再均分
+> /// 5) 滚动与手势
+> ///    - disableInternalVerticalScroll / disableInternalHorizontalScroll：
+> ///      最高优先级直透开关（默认 false）；为 true 时该方向内部**不滚**，拖拽交给父级。
+> ///    - relayGestureToParentWhenAtEdge（默认 true）：
+> ///      内部滚到边缘时，自动把该方向 physics 切换为 NeverScrollableScrollPhysics，
+> ///      父级自然接力；一旦离开边缘或新一轮滚动开始，则恢复内部 physics。
 > ///
-> /// 4. 冻结规则
-> ///    - 表格超出屏幕高度时，默认冻结第一行（表头），可上下滑动。
-> ///    - 表格超出屏幕宽度时，默认冻结第一列，可左右滑动。
-> ///
-> /// 5. 滚动行为
-> ///    - 横向滚动：冻结首列，剩余部分左右滑动。
-> ///    - 纵向滚动：冻结首行，剩余部分上下滑动。
+> /// 6) 铺满策略
+> ///    - expandToMaxWidth：铺满父容器；
+> ///    - respectFixedOnExpand：不拉伸已固定列；
+> ///    - fillColumn：可指定把富余宽度补给哪一列（数据列索引 0..N-1，null=最后一列）。
 > ```
 
 #### 48.1、模式 1：首列与其它列一起等宽分配；不需要 fixedWidth
@@ -10553,7 +10596,7 @@ class JobsEmptyHint extends StatelessWidget {
 
 ### 51、Tips <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-#### 51.1、系统自带的`showSnackBar` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 51.1、[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/)自带的`showSnackBar` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 需要传入<a href="#BuildContext" style="font-size:17px; color:green;"><b>上下文**`BuildContext`**</b></a>，比较繁琐
 
@@ -10568,7 +10611,7 @@ ScaffoldMessenger.of(context).showSnackBar(
 );
 ```
 
-#### 51.2、[**oktoast**](https://pub.dev/packages/oktoast) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 51.2、[**第三方库**](https://pub.dev)@[**oktoast**](https://pub.dev/packages/oktoast) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```yaml
 dependencies:
@@ -10593,7 +10636,7 @@ void main() {
 showToast("邀请码已复制到剪切板");
 ```
 
-#### 51.3、[**overlay_support**](https://pub.dev/packages/overlay_support/versions) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 51.3、[**第三方库**](https://pub.dev)@[**overlay_support**](https://pub.dev/packages/overlay_support/versions) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```yaml
 dependencies:
@@ -11565,7 +11608,22 @@ Comparable.compare(a, b)
 ![image-20250821163652904](./assets/image-20250821163652904.png)
 
 ```dart
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // ⚡ 必须导入,用于 Clipboard
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/通用点击组件/CommonRipple.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart';
+import 'package:oktoast/oktoast.dart';
+
+void main() => runApp(
+  OKToast(
+    child: JobsMaterialRunner.builder(
+      title: '点击按钮@复制到剪切板',
+      builder: (ctx) => buildInviteCode('123456'), // ← 延后到 ScreenUtilInit 之后再构建
+    ),
+  ),
+);
+
 /// 点击此按钮以后，将外界传入的验证码，复制到系统剪切板，并弹出提示
 Widget buildInviteCode(String inviteCode) {
   return SizedBox(
@@ -11574,7 +11632,9 @@ Widget buildInviteCode(String inviteCode) {
     child: Material(
       // 给 InkWell 提供水波纹载体（不想水波纹可去掉或设为透明）
       color: Colors.transparent,
-      child: InkWell(
+      child: CommonRipple(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
         borderRadius: BorderRadius.circular(6),
         onTap: () async {
           await Clipboard.setData(ClipboardData(text: inviteCode));

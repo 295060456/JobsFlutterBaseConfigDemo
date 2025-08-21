@@ -2,44 +2,45 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-/// 使用说明：
+/// 使用说明
 ///
-/// 1. 数据输入
-///    - 中间表体部分仅需写入有效数据。
-///    - 无效数据可用占位符（默认 "🈚️"，可自定义）替代。
-///    - 如果数据列数超过表头列数，会以表头为基准进行截断显示。
+/// 1) 数据与表头
+///    - rowsData 只需传有效数据；缺口用占位符（默认 "🈚️"）自动补齐。
+///    - 数据列数 > 表头列数时会以表头为准截断。
+///    - 表头（首行/首列标题）默认完整显示。
 ///
-/// 2. 表头显示
-///    - 表头内容默认始终完整显示，不会被截断。
-///    - 数据列可通过 `columnModes` 设置显示策略：
-///      2.1 省略号显示：CellLayout.ellipsis（默认：多余部分用“...”）
-///      2.2 缩小字体：CellLayout.shrink（字体缩小以适配单元格）
-///      2.3 最长内容定宽：CellLayout.fitToLongest（整列宽度以最长内容撑开）
-///      2.4 自动换行：CellLayout.wrap（内容过长时换行显示）
+/// 2) 显示策略（仅对“未固定列宽的列”生效）
+///    - CellLayout.ellipsis 省略号
+///    - CellLayout.shrink  缩小字体单行适配
+///    - CellLayout.fitToLongest 按“最长内容 or 表头”撑开整列宽度
+///    - CellLayout.wrap    自动换行（最多 wrapMaxLines）
 ///
-/// 3. 尺寸管理
-///    - 列宽：通过 `columnWidths` 数组控制（含首列 + 所有数据列）。
-///      · >0：固定宽度
-///      · <=0 或 null：按 columnModes 或默认逻辑计算
-///      · 未传 columnWidths：右侧数据列均分父容器剩余宽度
+/// 3) 行高 / 列宽
+///    - rowHeights: >0=固定；未传：
+///        · 若父容器有明确高度：数据区等分；
+///        · 否则按内在高度（字体+padding）。
+///    - columnWidths（含首列）：>0=固定；未传=按等分/策略计算。
+///    - 首列模式：
+///        · includeInEqualSplit：首列参与等分；
+///        · fixedAndExclude    ：首列固定，其余再等分/自适配。
 ///
-///    - 行高：通过 `rowHeights` 数组控制（含表头行 + 所有数据行）。
-///      · >0：固定高度
-///      · <=0 或 null：使用默认逻辑
-///      · 未传 rowHeights：所有行（含表头）均分父容器剩余高度
+/// 4) 冻结规则
+///    - 超高：冻结第一行（表头），数据区上下滚动；
+///    - 超宽：冻结第一列（行头），右侧左右滚动。
 ///
-///    - 首列模式（rowHeaderMode）：
-///      · mode1：首列参与均分，宽度由均分逻辑决定
-///      · mode2：首列单独固定（外部传入固定值或默认值），其余列再均分
+/// 5) 滚动与手势
+///    - disableInternalVerticalScroll / disableInternalHorizontalScroll：
+///      最高优先级直透开关（默认 false）；为 true 时该方向内部**不滚**，拖拽交给父级。
+///    - relayGestureToParentWhenAtEdge（默认 true）：
+///      内部滚到边缘时，自动把该方向 physics 切换为 NeverScrollableScrollPhysics，
+///      父级自然接力；一旦离开边缘或新一轮滚动开始，则恢复内部 physics。
 ///
-/// 4. 冻结规则
-///    - 表格超出屏幕高度时，默认冻结第一行（表头），可上下滑动。
-///    - 表格超出屏幕宽度时，默认冻结第一列，可左右滑动。
-///
-/// 5. 滚动行为
-///    - 横向滚动：冻结首列，剩余部分左右滑动。
-///    - 纵向滚动：冻结首行，剩余部分上下滑动。
+/// 6) 铺满策略
+///    - expandToMaxWidth：铺满父容器；
+///    - respectFixedOnExpand：不拉伸已固定列；
+///    - fillColumn：可指定把富余宽度补给哪一列（数据列索引 0..N-1，null=最后一列）。
 
+// =============================== Demo 入口 ===============================
 void main1() {
   final horizontal = ['回归后流水', 'VIP1', 'VIP2', 'VIP3', 'VIP4'];
   final vertical = ['≥1元', '≥2元', '≥3元', '≥4元'];
@@ -56,73 +57,29 @@ void main1() {
       minTextAdapt: true,
       builder: (context, _) => MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'JobsExcel',
         builder: (context, child) => ScrollConfiguration(
           behavior: const _NoBounceNoGlow(),
           child: child!,
         ),
         home: Scaffold(
-          appBar: AppBar(title: const Text('JobsExcel@Model1')),
-          body: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: JobsExcelBuildByMode1(
+          appBar:
+              AppBar(title: const Text('JobsExcel@Model1 首列参与等分（纵向直透父级演示）')),
+          body: ListView(
+            padding: const EdgeInsets.all(12),
+            children: [
+              JobsExcelBuildByMode1(
                 horizontalTitles: horizontal,
                 verticalTitles: vertical,
                 rowsData: data,
-
-                // 行高（含表头）
-                rowHeights: const [
-                  44, // 表头
-                  48, // 第1行
-                  48, // 第2行
-                  48, // 第3行
-                  48, // 第4行
-                ],
-
-                // 其他行为
-                placeholder: "🈚️",
-                columnModes: const [
-                  CellLayout.fitToLongest, // 均分下只影响展示，不影响列宽
-                  CellLayout.ellipsis,
-                  CellLayout.wrap,
-                  CellLayout.shrink,
-                ],
-                wrapMaxLines: 2,
-
-                // 均分模式下这俩不会生效（留着也无碍）
-                // minColWidth / maxColWidth 只在“非均分且未固定列”生效
-                // 不需要 fillColumn（等分本就吃满）
-                expandToMaxWidth: true,
-
-                // 视觉
-                borderWidth: 1,
-                borderColor: const Color(0xFFE5E6EB),
-                borderRadius: 10,
-
-                headerXStyle: const TableSectionStyle(
-                  bgColor: Color(0xFF00C2C7),
-                  textColor: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-                ),
-                headerYStyle: const TableSectionStyle(
-                  bgColor: Color(0xFFF6F7F9),
-                  textColor: Colors.black87,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                ),
-                cellStyle: const TableSectionStyle(
-                  bgColor: Colors.white,
-                  textColor: Colors.black87,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                ),
+                rowHeights: const [44, 48, 48, 48, 48],
+                // 纵向完全交给父级（直透）
+                disableInternalVerticalScroll: true,
+                // 横向仍由内部处理
+                disableInternalHorizontalScroll: false,
+                relayGestureToParentWhenAtEdge: false,
               ),
-            ),
+              const SizedBox(height: 800),
+            ],
           ),
         ),
       ),
@@ -146,78 +103,27 @@ void main2() {
       minTextAdapt: true,
       builder: (context, _) => MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'JobsExcel',
         builder: (context, child) => ScrollConfiguration(
           behavior: const _NoBounceNoGlow(),
           child: child!,
         ),
         home: Scaffold(
-          appBar: AppBar(title: const Text('JobsExcel@Model2')),
-          body: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: JobsExcelBuildByMode2(
+          appBar: AppBar(
+              title: const Text('JobsExcel@Model2 首列固定+内容自适配（到边缘→接力父级）')),
+          body: ListView(
+            padding: const EdgeInsets.all(12),
+            children: [
+              JobsExcelBuildByMode2(
                 horizontalTitles: horizontal,
                 verticalTitles: vertical,
                 rowsData: data,
-
-                // 行高（含表头）
-                rowHeights: const [
-                  44, // 表头
-                  48, // 第1行
-                  48, // 第2行
-                  48, // 第3行
-                  48, // 第4行
-                ],
-
-                // —— 模式2：首列固定，其他列按内容/约束自适应 ——
+                rowHeights: const [44, 48, 48, 48, 48],
                 firstColumnFixedWidth: 100,
-
-                // 其他行为
-                placeholder: "🈚️",
-                columnModes: const [
-                  CellLayout.fitToLongest, // 非均分时有效
-                  CellLayout.ellipsis,
-                  CellLayout.wrap,
-                  CellLayout.shrink,
-                ],
-                wrapMaxLines: 2,
-
-                // 非均分 → min/max 生效
-                minColWidth: 56,
-                maxColWidth: 200,
-
-                expandToMaxWidth: true, // 不够宽时扩展未固定列
-                respectFixedOnExpand: true, // 固定列不被拉伸
-
-                // 视觉
-                borderWidth: 1,
-                borderColor: const Color(0xFFE5E6EB),
-                borderRadius: 10,
-
-                headerXStyle: const TableSectionStyle(
-                  bgColor: Color(0xFF00C2C7),
-                  textColor: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-                ),
-                headerYStyle: const TableSectionStyle(
-                  bgColor: Color(0xFFF6F7F9),
-                  textColor: Colors.black87,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                ),
-                cellStyle: const TableSectionStyle(
-                  bgColor: Colors.white,
-                  textColor: Colors.black87,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                ),
+                // 到边缘接力父级（推荐）
+                relayGestureToParentWhenAtEdge: true,
               ),
-            ),
+              const SizedBox(height: 800),
+            ],
           ),
         ),
       ),
@@ -241,13 +147,13 @@ void main3() {
       minTextAdapt: true,
       builder: (context, _) => MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'JobsExcel',
         builder: (context, child) => ScrollConfiguration(
           behavior: const _NoBounceNoGlow(),
           child: child!,
         ),
         home: Scaffold(
-          appBar: AppBar(title: const Text('JobsExcel@Model3')),
+          appBar:
+              AppBar(title: const Text('JobsExcel@Model3 首列固定+其余等分（到边缘→接力）')),
           body: Center(
             child: Padding(
               padding: const EdgeInsets.all(12),
@@ -255,54 +161,9 @@ void main3() {
                 horizontalTitles: horizontal,
                 verticalTitles: vertical,
                 rowsData: data,
-
-                // 行高（含表头）
                 rowHeights: const [44, 48, 48, 48, 48],
-
-                // —— 模式3：首列固定 + 其余列等宽均分 ——
                 firstColumnFixedWidth: 100,
-                // 若你的 JobsExcel 未内置“等分剩余列”，打开兜底：
-                // forceEqualSplitWithLayoutBuilder: true,
-
-                // 其他展示/约束
-                placeholder: "🈚️",
-                columnModes: const [
-                  CellLayout.fitToLongest,
-                  CellLayout.ellipsis,
-                  CellLayout.wrap,
-                  CellLayout.shrink,
-                ],
-                wrapMaxLines: 2,
-                minColWidth: 56,
-                maxColWidth: 200,
-
-                expandToMaxWidth: true,
-
-                // 视觉
-                borderWidth: 1,
-                borderColor: const Color(0xFFE5E6EB),
-                borderRadius: 10,
-                headerXStyle: const TableSectionStyle(
-                  bgColor: Color(0xFF00C2C7),
-                  textColor: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-                ),
-                headerYStyle: const TableSectionStyle(
-                  bgColor: Color(0xFFF6F7F9),
-                  textColor: Colors.black87,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                ),
-                cellStyle: const TableSectionStyle(
-                  bgColor: Colors.white,
-                  textColor: Colors.black87,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                ),
+                relayGestureToParentWhenAtEdge: true,
               ),
             ),
           ),
@@ -312,7 +173,7 @@ void main3() {
   );
 }
 
-/// 去掉回弹/发光
+// =============================== Scroll 行为：去掉回弹/发光（可按需保留） ===============================
 class _NoBounceNoGlow extends ScrollBehavior {
   const _NoBounceNoGlow();
   @override
@@ -324,7 +185,7 @@ class _NoBounceNoGlow extends ScrollBehavior {
       child;
 }
 
-/// 样式模型
+// =============================== 样式 & 枚举 ===============================
 class TableSectionStyle {
   final Color bgColor;
   final Color textColor;
@@ -340,7 +201,7 @@ class TableSectionStyle {
   });
 }
 
-/// 单元格显示策略（当该列没有指定固定宽时生效）
+/// 单元格显示策略（当该列没有固定宽时生效）
 enum CellLayout { shrink, ellipsis, fitToLongest, wrap }
 
 /// 首列宽度策略
@@ -349,19 +210,16 @@ enum FirstColumnMode {
   fixedAndExclude, // 模式2：首列固定并排除等分
 }
 
-/// 冻结首列 + 行高/列宽数组化 + 首列两种模式
+// =============================== JobsExcel 核心实现 ===============================
 class JobsExcel extends StatefulWidget {
   final List<String> horizontalTitles; // [0] = 左上角标题
   final List<String> verticalTitles; // 行头（不含表头）
   final List<List<String>> rowsData; // 每行长度 = horizontal.length - 1
 
   /// 列宽数组（含首列）。>0=固定；≤0/null=自动/等分
-  /// 建议长度 == horizontalTitles.length；不足视为未指定
   final List<double?>? columnWidths;
 
-  /// 行高数组（含表头）。>0=固定；≤0/null：
-  ///   - 父容器有高度约束：等分（总高-表头）
-  ///   - 无约束：用内在行高（字体+padding）
+  /// 行高数组（含表头）。>0=固定；≤0/null：见说明
   final List<double?>? rowHeights;
 
   /// 首列策略 & 固定宽
@@ -395,6 +253,16 @@ class JobsExcel extends StatefulWidget {
   /// 铺满时是否尊重固定列（固定列不被拉伸）
   final bool respectFixedOnExpand;
 
+  // ===== 新增（滚动/接力）=====
+  /// 最高优先级：关闭内部纵向滚动（手势直透父级）
+  final bool disableInternalVerticalScroll;
+
+  /// 最高优先级：关闭内部横向滚动（手势直透父级）
+  final bool disableInternalHorizontalScroll;
+
+  /// 内部到边缘后是否把同向拖拽接力给父级（默认开）
+  final bool relayGestureToParentWhenAtEdge;
+
   const JobsExcel({
     super.key,
     required this.horizontalTitles,
@@ -418,6 +286,11 @@ class JobsExcel extends StatefulWidget {
     this.expandToMaxWidth = true,
     this.fillColumn,
     this.respectFixedOnExpand = true,
+
+    // 新增
+    this.disableInternalVerticalScroll = false,
+    this.disableInternalHorizontalScroll = false,
+    this.relayGestureToParentWhenAtEdge = true,
   }) : assert(horizontalTitles.length >= 1);
 
   @override
@@ -425,23 +298,49 @@ class JobsExcel extends StatefulWidget {
 }
 
 class _JobsExcelState extends State<JobsExcel> {
+  // 垂直：左（行头列）与右（数据区）需要同步
   final _vLeft = ScrollController();
   final _vRight = ScrollController();
+  // 右侧：横向
   final _hRight = ScrollController();
   bool _syncing = false;
+
+  // 动态 physics（NotificationListener 控制）
+  late ScrollPhysics _vPhysics;
+  late ScrollPhysics _hPhysics;
 
   // 常量：默认表头高 / 默认首列宽 / 最小内在行高
   static const double _kDefaultHeaderHeight = 44;
   static const double _kDefaultRowHeaderWidth = 95;
   static const double _kMinIntrinsicRowHeight = 28;
+  static const double _kEdgeEps = 0.5;
 
   @override
   void initState() {
     super.initState();
     _vLeft.addListener(_syncFromLeft);
     _vRight.addListener(_syncFromRight);
+
+    // 初始 physics（考虑直透开关）
+    _vPhysics = widget.disableInternalVerticalScroll
+        ? const NeverScrollableScrollPhysics()
+        : const ClampingScrollPhysics();
+    _hPhysics = widget.disableInternalHorizontalScroll
+        ? const NeverScrollableScrollPhysics()
+        : const ClampingScrollPhysics();
   }
 
+  @override
+  void dispose() {
+    _vLeft.removeListener(_syncFromLeft);
+    _vRight.removeListener(_syncFromRight);
+    _vLeft.dispose();
+    _vRight.dispose();
+    _hRight.dispose();
+    super.dispose();
+  }
+
+  // ─── 左右垂直滚动同步 ───
   void _syncFromLeft() {
     if (_syncing) return;
     _syncing = true;
@@ -456,16 +355,56 @@ class _JobsExcelState extends State<JobsExcel> {
     _syncing = false;
   }
 
-  @override
-  void dispose() {
-    _vLeft.removeListener(_syncFromLeft);
-    _vRight.removeListener(_syncFromRight);
-    _vLeft.dispose();
-    _vRight.dispose();
-    _hRight.dispose();
-    super.dispose();
+  // ─── Notification 统一处理：到边缘切 Never，离开边缘恢复 ───
+  bool _onScrollNotification(ScrollNotification n) {
+    // 直透开关优先：开了就不参与任何切换
+    if (widget.disableInternalVerticalScroll && n.metrics.axis == Axis.vertical)
+      return false;
+    if (widget.disableInternalHorizontalScroll &&
+        n.metrics.axis == Axis.horizontal) return false;
+
+    if (!widget.relayGestureToParentWhenAtEdge) return false;
+
+    if (n is ScrollStartNotification) {
+      // 新一轮滚动开始 → 先恢复内部可滚（方便反向立刻接回）
+      if (n.metrics.axis == Axis.vertical &&
+          _vPhysics is NeverScrollableScrollPhysics) {
+        setState(() => _vPhysics = const ClampingScrollPhysics());
+      }
+      if (n.metrics.axis == Axis.horizontal &&
+          _hPhysics is NeverScrollableScrollPhysics) {
+        setState(() => _hPhysics = const ClampingScrollPhysics());
+      }
+    } else if (n is ScrollUpdateNotification) {
+      final atEdge = n.metrics.atEdge ||
+          (n.metrics.pixels <= n.metrics.minScrollExtent + _kEdgeEps) ||
+          (n.metrics.pixels >= n.metrics.maxScrollExtent - _kEdgeEps);
+      if (n.metrics.axis == Axis.vertical) {
+        if (atEdge) {
+          if (_vPhysics is! NeverScrollableScrollPhysics) {
+            setState(() => _vPhysics = const NeverScrollableScrollPhysics());
+          }
+        } else {
+          if (_vPhysics is NeverScrollableScrollPhysics) {
+            setState(() => _vPhysics = const ClampingScrollPhysics());
+          }
+        }
+      } else if (n.metrics.axis == Axis.horizontal) {
+        if (atEdge) {
+          if (_hPhysics is! NeverScrollableScrollPhysics) {
+            setState(() => _hPhysics = const NeverScrollableScrollPhysics());
+          }
+        } else {
+          if (_hPhysics is NeverScrollableScrollPhysics) {
+            setState(() => _hPhysics = const ClampingScrollPhysics());
+          }
+        }
+      }
+    }
+    return false; // 不拦截，继续冒泡
   }
 
+  // ─── 工具：像素对齐、文本宽度、内在行高 ───
   double _px(double v) {
     final dpr = MediaQuery.of(context).devicePixelRatio;
     return (v * dpr).round() / dpr;
@@ -546,7 +485,7 @@ class _JobsExcelState extends State<JobsExcel> {
       return {for (int c = 0; c < dataCols; c++) c: FixedColumnWidth(avg)};
     }
 
-    // 情况B：传了 columnWidths → 固定优先，其余走策略
+    // 情况B：列宽数组 + 策略
     final EdgeInsets headerPad =
         (widget.headerXStyle.padding as EdgeInsets?) ?? EdgeInsets.zero;
     final EdgeInsets cellPad =
@@ -567,14 +506,14 @@ class _JobsExcelState extends State<JobsExcel> {
 
     final map = <int, TableColumnWidth>{};
     for (int c = 0; c < dataCols; c++) {
-      final fixed = _tryGetColumnWidth(c + 1); // 注意：数据列索引+1
+      final fixed = _tryGetColumnWidth(c + 1); // 数据列对应 columnWidths[c+1]
       if (fixed != null) {
         map[c] = FixedColumnWidth(fixed);
         continue;
       }
 
       // 自动：按 columnModes
-      final mode = modes[c];
+      final mode = c < modes.length ? modes[c] : CellLayout.ellipsis;
 
       double wHeader = _textWidth(widget.horizontalTitles[c + 1], headerStyle) +
           headerPad.left +
@@ -598,6 +537,7 @@ class _JobsExcelState extends State<JobsExcel> {
     return map;
   }
 
+  // 单元格构建
   Widget _headerCell(String text, TableSectionStyle style,
       {double? width, required double height}) {
     final t = Text(
@@ -691,276 +631,271 @@ class _JobsExcelState extends State<JobsExcel> {
           r < widget.rowsData.length ? widget.rowsData[r] : const [], dataCols),
     );
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final headerHeight = _resolveHeaderHeight();
+    return NotificationListener<ScrollNotification>(
+      onNotification: _onScrollNotification,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final headerHeight = _resolveHeaderHeight();
 
-        // 高度约束（用于“等分行高”）
-        final bool bounded = constraints.maxHeight.isFinite;
-        // 注意：等分的是“数据区”高度
-        final double? bodyAllocH = bounded
-            ? _px((constraints.maxHeight - headerHeight)
-                .clamp(0, double.infinity))
-            : null;
+          // 高度约束（用于“等分行高”）
+          final bool bounded = constraints.maxHeight.isFinite;
+          final double? bodyAllocH = bounded
+              ? _px((constraints.maxHeight - headerHeight)
+                  .clamp(0, double.infinity))
+              : null;
 
-        // 数据行高：固定/等分/内在
-        final rowHeights =
-            _resolveBodyRowHeights(rows: rows, boundedBodyHeight: bodyAllocH);
+          // 数据行高：固定/等分/内在
+          final rowHeights =
+              _resolveBodyRowHeights(rows: rows, boundedBodyHeight: bodyAllocH);
 
-        // 每列展示策略（仅对未固定宽的列有效）
-        final modes = List<CellLayout>.generate(
-          dataCols,
-          (i) => widget.columnModes != null && i < widget.columnModes!.length
-              ? widget.columnModes![i]
-              : CellLayout.ellipsis,
-        );
+          // 每列展示策略（仅对未固定宽的列有效）
+          final modes = List<CellLayout>.generate(
+            dataCols,
+            (i) => widget.columnModes != null && i < widget.columnModes!.length
+                ? widget.columnModes![i]
+                : CellLayout.ellipsis,
+          );
 
-        // 先确定首列宽
-        double leftWidth;
-        // 1) 有 columnWidths 并且 [0] > 0：优先生效
-        final fixedLeft = _tryGetColumnWidth(0);
-        if (fixedLeft != null) {
-          leftWidth = fixedLeft;
-        } else {
-          // 2) 没有指定 columnWidths[0]：看首列策略
-          if (widget.columnWidths == null) {
-            // 未提供 columnWidths → 等分模式下，首列是否参与等分
-            if (widget.firstColumnMode == FirstColumnMode.includeInEqualSplit) {
-              // 首列参与等分：先用总宽估一个 per；真实 per 稍后按右侧等分也会一致
-              final seam = bw; // 左右中缝
-              final per =
-                  _px((constraints.maxWidth - seam) / math.max(1, cols));
-              leftWidth = per;
+          // 先确定首列宽
+          double leftWidth;
+          final fixedLeft = _tryGetColumnWidth(0);
+          if (fixedLeft != null) {
+            leftWidth = fixedLeft;
+          } else {
+            if (widget.columnWidths == null) {
+              if (widget.firstColumnMode ==
+                  FirstColumnMode.includeInEqualSplit) {
+                final seam = bw; // 左右中缝
+                final per =
+                    _px((constraints.maxWidth - seam) / math.max(1, cols));
+                leftWidth = per;
+              } else {
+                leftWidth = _px(
+                    widget.firstColumnFixedWidth ?? _kDefaultRowHeaderWidth);
+              }
             } else {
-              // 首列固定并排除等分
               leftWidth =
                   _px(widget.firstColumnFixedWidth ?? _kDefaultRowHeaderWidth);
             }
-          } else {
-            // 提供了 columnWidths，但首列没有值 → 用默认固定 95
-            leftWidth =
-                _px(widget.firstColumnFixedWidth ?? _kDefaultRowHeaderWidth);
           }
-        }
 
-        // 右侧可用宽 = 总宽 - 左列宽 - 中缝
-        final double availableForRight =
-            constraints.maxWidth - (leftWidth + bw);
+          // 右侧可用宽 = 总宽 - 左列宽 - 中缝
+          final double availableForRight =
+              constraints.maxWidth - (leftWidth + bw);
 
-        // 计算右侧列宽
-        final rightColWidths = _computeRightColumnWidths(
-          normalized,
-          modes,
-          // 等分场景下：如果首列参与等分，此 availableForRight 会变成
-          // per * (cols-1)，而 per 和左侧的保持一致；如果是排除等分，则等分仅发生在数据列
-          availableForRight,
-        );
+          // 计算右侧列宽
+          final rightColWidths = _computeRightColumnWidths(
+            normalized,
+            modes,
+            availableForRight,
+          );
 
-        // 计算高度（非约束情况下）
-        final fullBodyContentHeight =
-            rowHeights.fold<double>(0, (sum, h) => sum + h);
-        final headerSlotHeight = headerHeight;
+          // 计算高度（非约束情况下）
+          final fullBodyContentHeight =
+              rowHeights.fold<double>(0, (sum, h) => sum + h);
+          final headerSlotHeight = headerHeight;
 
-        // ── TL（左上）
-        Widget buildTL() => Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  right: BorderSide(color: widget.borderColor, width: bw),
+          // ── TL（左上）
+          Widget buildTL() => Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(color: widget.borderColor, width: bw),
+                    bottom: BorderSide(color: widget.borderColor, width: bw),
+                  ),
+                ),
+                child: _headerCell(
+                  widget.horizontalTitles[0],
+                  widget.headerXStyle,
+                  width: leftWidth,
+                  height: headerHeight,
+                ),
+              );
+
+          // ── TR（右上表头行）
+          Table buildTR() => Table(
+                border: TableBorder(
                   bottom: BorderSide(color: widget.borderColor, width: bw),
+                  verticalInside:
+                      BorderSide(color: widget.borderColor, width: bw),
                 ),
-              ),
-              child: _headerCell(
-                widget.horizontalTitles[0],
-                widget.headerXStyle,
-                width: leftWidth,
-                height: headerHeight,
-              ),
-            );
-
-        // ── TR（右上表头行）
-        Table buildTR() => Table(
-              border: TableBorder(
-                bottom: BorderSide(color: widget.borderColor, width: bw),
-                verticalInside:
-                    BorderSide(color: widget.borderColor, width: bw),
-              ),
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-              columnWidths: rightColWidths,
-              children: [
-                TableRow(
-                  children: [
-                    for (int c = 1; c < cols; c++)
-                      _headerCell(
-                          widget.horizontalTitles[c], widget.headerXStyle,
-                          height: headerHeight),
-                  ],
-                ),
-              ],
-            );
-
-        // ── BR（右下表体）
-        Table buildBR() => Table(
-              border: TableBorder(
-                horizontalInside:
-                    BorderSide(color: widget.borderColor, width: bw),
-                verticalInside:
-                    BorderSide(color: widget.borderColor, width: bw),
-              ),
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-              columnWidths: rightColWidths,
-              children: [
-                for (int r = 0; r < rows; r++)
-                  TableRow(
-                    children: [
-                      for (int c = 0; c < dataCols; c++)
-                        _bodyCell(
-                          normalized[r][c],
-                          widget.cellStyle,
-                          modes[c],
-                          height: rowHeights[r],
-                        ),
-                    ],
-                  ),
-              ],
-            );
-
-        // ── BL（左下行头列）
-        Table buildBLTable() => Table(
-              border: TableBorder(
-                right: BorderSide(color: widget.borderColor, width: bw),
-                horizontalInside:
-                    BorderSide(color: widget.borderColor, width: bw),
-              ),
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-              columnWidths: {0: FixedColumnWidth(leftWidth)},
-              children: [
-                for (int r = 0; r < rows; r++)
-                  TableRow(
-                    children: [
-                      _bodyCell(
-                        widget.verticalTitles[r],
-                        widget.headerYStyle,
-                        CellLayout.ellipsis,
-                        width: leftWidth,
-                        height: rowHeights[r],
-                        align: TextAlign.start,
-                      ),
-                    ],
-                  ),
-              ],
-            );
-
-        // ===== 铺满：把富余宽度分配给某一数据列（一般不会触发：等分本身已占满） =====
-        double _sumRight(Map<int, TableColumnWidth> m) {
-          double sum = 0;
-          m.forEach((_, v) {
-            if (v is FixedColumnWidth) sum += v.value;
-          });
-          return sum;
-        }
-
-        if (widget.expandToMaxWidth &&
-            availableForRight.isFinite &&
-            availableForRight > 0) {
-          final currentRight = _sumRight(rightColWidths);
-          final extra = availableForRight - currentRight;
-          if (extra > 0 && dataCols > 0) {
-            final preferred =
-                (widget.fillColumn ?? (dataCols - 1)).clamp(0, dataCols - 1);
-            final target = _chooseTargetDataColForExpand(dataCols, preferred);
-            if (target != null) {
-              final cur = (rightColWidths[target] as FixedColumnWidth).value;
-              rightColWidths[target] = FixedColumnWidth(cur + extra);
-            }
-          }
-        }
-
-        // ===== 计算最终可视高度 =====
-        final availableHeight = constraints.maxHeight.isFinite
-            ? constraints.maxHeight
-            : fullBodyContentHeight + headerSlotHeight;
-        final viewportBodyHeight =
-            _px((availableHeight - headerSlotHeight).clamp(0, double.infinity));
-        final totalHeight = _px(headerSlotHeight + viewportBodyHeight);
-
-        // ===== 核心布局 =====
-        final core = SizedBox(
-          height: totalHeight,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 左列：TL + 可滚动 BL
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                columnWidths: rightColWidths,
                 children: [
-                  SizedBox(height: headerSlotHeight, child: buildTL()),
-                  SizedBox(
-                    height: viewportBodyHeight,
-                    width: leftWidth + bw,
-                    child: SingleChildScrollView(
-                      controller: _vLeft,
-                      physics: const ClampingScrollPhysics(),
-                      scrollDirection: Axis.vertical,
-                      child: buildBLTable(),
-                    ),
+                  TableRow(
+                    children: [
+                      for (int c = 1; c < cols; c++)
+                        _headerCell(
+                            widget.horizontalTitles[c], widget.headerXStyle,
+                            height: headerHeight),
+                    ],
                   ),
                 ],
-              ),
-              // 右列：横向容器里含 TR + BR
-              Flexible(
-                child: SingleChildScrollView(
-                  controller: _hRight,
-                  physics: const ClampingScrollPhysics(),
-                  scrollDirection: Axis.horizontal,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(height: headerSlotHeight, child: buildTR()),
-                      SizedBox(
-                        height: viewportBodyHeight,
-                        child: SingleChildScrollView(
-                          controller: _vRight,
-                          physics: const ClampingScrollPhysics(),
-                          scrollDirection: Axis.vertical,
-                          child: buildBR(),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
+              );
 
-        // 外圈圆角边框
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(widget.borderRadius),
-          child: Stack(
-            children: [
-              core,
-              Positioned.fill(
-                child: IgnorePointer(
-                  child: CustomPaint(
-                    foregroundPainter: _OuterBorderPainter(
-                      radius: widget.borderRadius,
-                      width: widget.borderWidth,
-                      color: widget.borderColor,
+          // ── BR（右下表体）
+          Table buildBR() => Table(
+                border: TableBorder(
+                  horizontalInside:
+                      BorderSide(color: widget.borderColor, width: bw),
+                  verticalInside:
+                      BorderSide(color: widget.borderColor, width: bw),
+                ),
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                columnWidths: rightColWidths,
+                children: [
+                  for (int r = 0; r < rows; r++)
+                    TableRow(
+                      children: [
+                        for (int c = 0; c < dataCols; c++)
+                          _bodyCell(
+                            normalized[r][c],
+                            widget.cellStyle,
+                            modes[c],
+                            height: rowHeights[r],
+                          ),
+                      ],
+                    ),
+                ],
+              );
+
+          // ── BL（左下行头列）
+          Table buildBLTable() => Table(
+                border: TableBorder(
+                  right: BorderSide(color: widget.borderColor, width: bw),
+                  horizontalInside:
+                      BorderSide(color: widget.borderColor, width: bw),
+                ),
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                columnWidths: {0: FixedColumnWidth(leftWidth)},
+                children: [
+                  for (int r = 0; r < rows; r++)
+                    TableRow(
+                      children: [
+                        _bodyCell(
+                          widget.verticalTitles[r],
+                          widget.headerYStyle,
+                          CellLayout.ellipsis,
+                          width: leftWidth,
+                          height: rowHeights[r],
+                          align: TextAlign.start,
+                        ),
+                      ],
+                    ),
+                ],
+              );
+
+          // ===== 铺满（补列宽） =====
+          double _sumRight(Map<int, TableColumnWidth> m) {
+            double sum = 0;
+            m.forEach((_, v) {
+              if (v is FixedColumnWidth) sum += v.value;
+            });
+            return sum;
+          }
+
+          if (widget.expandToMaxWidth &&
+              availableForRight.isFinite &&
+              availableForRight > 0) {
+            final currentRight = _sumRight(rightColWidths);
+            final extra = availableForRight - currentRight;
+            if (extra > 0 && dataCols > 0) {
+              final preferred =
+                  (widget.fillColumn ?? (dataCols - 1)).clamp(0, dataCols - 1);
+              final target = _chooseTargetDataColForExpand(dataCols, preferred);
+              if (target != null) {
+                final cur = (rightColWidths[target] as FixedColumnWidth).value;
+                rightColWidths[target] = FixedColumnWidth(cur + extra);
+              }
+            }
+          }
+
+          // ===== 计算最终可视高度 =====
+          final availableHeight = constraints.maxHeight.isFinite
+              ? constraints.maxHeight
+              : fullBodyContentHeight + headerSlotHeight;
+          final viewportBodyHeight = _px(
+              (availableHeight - headerSlotHeight).clamp(0, double.infinity));
+          final totalHeight = _px(headerSlotHeight + viewportBodyHeight);
+
+          // ===== 核心布局 =====
+          final core = SizedBox(
+            height: totalHeight,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 左列：TL + 可滚动 BL
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: headerSlotHeight, child: buildTL()),
+                    SizedBox(
+                      height: viewportBodyHeight,
+                      width: leftWidth + bw,
+                      child: SingleChildScrollView(
+                        controller: _vLeft,
+                        physics: _vPhysics,
+                        scrollDirection: Axis.vertical,
+                        child: buildBLTable(),
+                      ),
+                    ),
+                  ],
+                ),
+                // 右列：横向容器里含 TR + BR
+                Flexible(
+                  child: SingleChildScrollView(
+                    controller: _hRight,
+                    physics: _hPhysics,
+                    scrollDirection: Axis.horizontal,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(height: headerSlotHeight, child: buildTR()),
+                        SizedBox(
+                          height: viewportBodyHeight,
+                          child: SingleChildScrollView(
+                            controller: _vRight,
+                            physics: _vPhysics,
+                            scrollDirection: Axis.vertical,
+                            child: buildBR(),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        );
-      },
+              ],
+            ),
+          );
+
+          // 外圈圆角边框
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            child: Stack(
+              children: [
+                core,
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: CustomPaint(
+                      foregroundPainter: _OuterBorderPainter(
+                        radius: widget.borderRadius,
+                        width: widget.borderWidth,
+                        color: widget.borderColor,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }
 
-/// 顶层外边框（在子组件之上绘制，避免被覆盖）
+// =============================== 外边框 Painter ===============================
 class _OuterBorderPainter extends CustomPainter {
   _OuterBorderPainter({
     required this.radius,
@@ -987,9 +922,7 @@ class _OuterBorderPainter extends CustomPainter {
       old.radius != radius || old.width != width || old.color != color;
 }
 
-/// 公共默认样式
-const _kBorderColor = Color(0xFFE5E6EB);
-
+// =============================== 默认样式常量 ===============================
 const TableSectionStyle _kHeaderX = TableSectionStyle(
   bgColor: Color(0xFF00C2C7),
   textColor: Colors.white,
@@ -1014,227 +947,198 @@ const TableSectionStyle _kCell = TableSectionStyle(
   padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
 );
 
-/// 模式 1：首列与其它列一起等宽分配；不需要 fixedWidth
+// =============================== 三种 Builder（完整透传） ===============================
+
+/// 模式 1：首列与其它列一起等宽分配
 Widget JobsExcelBuildByMode1({
+  // 必传
   required List<String> horizontalTitles,
   required List<String> verticalTitles,
   required List<List<String>> rowsData,
 
-  // 行高数组（含表头行）
-  List<double>? rowHeights,
-
-  // 列布局策略（对照 horizontalTitles 数量）
-  List<CellLayout>? columnModes,
-
-  // 包装/自适应
+  // 尺寸
+  List<double>? rowHeights, // 含表头
+  List<double?>? columnWidths, // 含首列；>0=固定；等分一般不传
+  double minColWidth = 56,
+  double? maxColWidth, // 等分场景下一般不用
   bool expandToMaxWidth = true,
-  int wrapMaxLines = 2,
-
-  // 视觉
-  double borderWidth = 1,
-  Color borderColor = _kBorderColor,
-  double borderRadius = 10,
-
-  // 样式（可覆盖默认）
-  TableSectionStyle headerXStyle = _kHeaderX,
-  TableSectionStyle headerYStyle = _kHeaderY,
-  TableSectionStyle cellStyle = _kCell,
-
-  // 占位
-  String placeholder = "🈚️",
-}) {
-  return JobsExcel(
-    horizontalTitles: horizontalTitles,
-    verticalTitles: verticalTitles,
-    rowsData: rowsData,
-    placeholder: placeholder,
-
-    rowHeights: rowHeights,
-    // ✅ 关键：首列参与均分
-    firstColumnMode: FirstColumnMode.includeInEqualSplit,
-
-    // 均分场景下，min/maxColWidth 仅对“非均分列”有意义——这里不会生效
-    minColWidth: 56,
-    maxColWidth: null,
-
-    // 展开到最大宽度（均分通常就填满了）
-    expandToMaxWidth: expandToMaxWidth,
-    fillColumn: null,
-    respectFixedOnExpand: true,
-
-    // 列布局策略（长度 <= 列数，不传则全部默认）
-    columnModes: columnModes ??
-        const [
-          CellLayout.fitToLongest,
-          CellLayout.ellipsis,
-          CellLayout.wrap,
-          CellLayout.shrink,
-        ],
-    wrapMaxLines: wrapMaxLines,
-
-    // 视觉
-    borderWidth: borderWidth,
-    borderColor: borderColor,
-    borderRadius: borderRadius,
-
-    headerXStyle: headerXStyle,
-    headerYStyle: headerYStyle,
-    cellStyle: cellStyle,
-  );
-}
-
-/// 模式 2：首列固定宽度，其余列按内容/约束自适应（支持 min/maxColWidth）
-/// - 更适合“行标题很长 / 需要稳定对齐”的表
-Widget JobsExcelBuildByMode2({
-  required List<String> horizontalTitles,
-  required List<String> verticalTitles,
-  required List<List<String>> rowsData,
-
-  // 行高数组（含表头行）
-  List<double>? rowHeights,
-
-  // 首列宽
-  double firstColumnFixedWidth = 140,
-
-  // 列布局策略
-  List<CellLayout>? columnModes,
-
-  // 包装/自适应
-  bool expandToMaxWidth = true,
+  int? fillColumn,
   bool respectFixedOnExpand = true,
+
+  // 列展示策略（仅未固定列生效；数量=数据列数）
+  List<CellLayout>? columnModes,
   int wrapMaxLines = 2,
-  double minColWidth = 56,
-  double? maxColWidth = 200,
+
+  // 文本/占位
+  String placeholder = "🈚️",
 
   // 视觉
-  double borderWidth = 1,
-  Color borderColor = _kBorderColor,
-  double borderRadius = 10,
-
-  // 样式（可覆盖默认）
-  TableSectionStyle headerXStyle = _kHeaderX,
-  TableSectionStyle headerYStyle = _kHeaderY,
-  TableSectionStyle cellStyle = _kCell,
-
-  // 占位
-  String placeholder = "🈚️",
-}) {
-  return JobsExcel(
-    horizontalTitles: horizontalTitles,
-    verticalTitles: verticalTitles,
-    rowsData: rowsData,
-    placeholder: placeholder,
-
-    rowHeights: rowHeights,
-
-    // ✅ 关键：首列固定
-    firstColumnMode: FirstColumnMode.fixedAndExclude,
-    firstColumnFixedWidth: firstColumnFixedWidth,
-
-    // 非均分时这些会生效
-    minColWidth: minColWidth,
-    maxColWidth: maxColWidth,
-
-    expandToMaxWidth: expandToMaxWidth,
-    fillColumn: null,
-    respectFixedOnExpand: respectFixedOnExpand,
-
-    columnModes: columnModes ??
-        const [
-          CellLayout.fitToLongest,
-          CellLayout.ellipsis,
-          CellLayout.wrap,
-          CellLayout.shrink,
-        ],
-    wrapMaxLines: wrapMaxLines,
-
-    // 视觉
-    borderWidth: borderWidth,
-    borderColor: borderColor,
-    borderRadius: borderRadius,
-
-    headerXStyle: headerXStyle,
-    headerYStyle: headerYStyle,
-    cellStyle: cellStyle,
-  );
-}
-
-/// 模式 3：首列固定宽度，其余列等宽均分
-Widget JobsExcelBuildByMode3({
-  required List<String> horizontalTitles,
-  required List<String> verticalTitles,
-  required List<List<String>> rowsData,
-  List<double>? rowHeights,
-  double firstColumnFixedWidth = 140,
-
-  // 若你的 JobsExcel 需要显式开关，则传 true；若已内置该策略可忽略。
-  bool equalSplitRest = true,
-
-  // 其余通用项
-  List<CellLayout>? columnModes,
-  bool expandToMaxWidth = true,
-  int wrapMaxLines = 2,
-  double minColWidth = 56,
-  double? maxColWidth = 220,
   double borderWidth = 1,
   Color borderColor = const Color(0xFFE5E6EB),
   double borderRadius = 10,
-  TableSectionStyle headerXStyle = const TableSectionStyle(
-    bgColor: Color(0xFF00C2C7),
-    textColor: Colors.white,
-    fontSize: 15,
-    fontWeight: FontWeight.w700,
-    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-  ),
-  TableSectionStyle headerYStyle = const TableSectionStyle(
-    bgColor: Color(0xFFF6F7F9),
-    textColor: Colors.black87,
-    fontSize: 14,
-    fontWeight: FontWeight.w600,
-    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-  ),
-  TableSectionStyle cellStyle = const TableSectionStyle(
-    bgColor: Colors.white,
-    textColor: Colors.black87,
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-  ),
-  String placeholder = "🈚️",
+  TableSectionStyle headerXStyle = _kHeaderX,
+  TableSectionStyle headerYStyle = _kHeaderY,
+  TableSectionStyle cellStyle = _kCell,
+
+  // 新增（手势）
+  bool disableInternalVerticalScroll = false,
+  bool disableInternalHorizontalScroll = false,
+  bool relayGestureToParentWhenAtEdge = true,
 }) {
   return JobsExcel(
     horizontalTitles: horizontalTitles,
     verticalTitles: verticalTitles,
     rowsData: rowsData,
-    placeholder: placeholder,
-    rowHeights: rowHeights,
-
-    // 关键：首列固定
-    firstColumnMode: FirstColumnMode.fixedAndExclude,
-    firstColumnFixedWidth: firstColumnFixedWidth,
-
-    // 非均分参数仍保留（库内按需使用）
+    rowHeights: rowHeights?.map((e) => e).toList(),
+    columnWidths: columnWidths,
+    firstColumnMode: FirstColumnMode.includeInEqualSplit,
+    firstColumnFixedWidth: null,
     minColWidth: minColWidth,
     maxColWidth: maxColWidth,
-
-    // 展开铺满；其余列在库内“走等宽均分”策略
     expandToMaxWidth: expandToMaxWidth,
-    respectFixedOnExpand: true,
-
-    columnModes: columnModes ??
-        const [
-          CellLayout.fitToLongest,
-          CellLayout.ellipsis,
-          CellLayout.wrap,
-          CellLayout.shrink,
-        ],
+    fillColumn: fillColumn,
+    respectFixedOnExpand: respectFixedOnExpand,
+    columnModes: columnModes,
     wrapMaxLines: wrapMaxLines,
-
+    placeholder: placeholder,
     borderWidth: borderWidth,
     borderColor: borderColor,
     borderRadius: borderRadius,
     headerXStyle: headerXStyle,
     headerYStyle: headerYStyle,
     cellStyle: cellStyle,
+    disableInternalVerticalScroll: disableInternalVerticalScroll,
+    disableInternalHorizontalScroll: disableInternalHorizontalScroll,
+    relayGestureToParentWhenAtEdge: relayGestureToParentWhenAtEdge,
+  );
+}
+
+/// 模式 2：首列固定，其余按内容/约束自适应
+Widget JobsExcelBuildByMode2({
+  // 必传
+  required List<String> horizontalTitles,
+  required List<String> verticalTitles,
+  required List<List<String>> rowsData,
+
+  // 尺寸
+  List<double>? rowHeights,
+  List<double?>? columnWidths, // 允许和固定宽混用
+  double firstColumnFixedWidth = 140,
+  double minColWidth = 56,
+  double? maxColWidth = 200,
+  bool expandToMaxWidth = true,
+  int? fillColumn,
+  bool respectFixedOnExpand = true,
+
+  // 列展示策略
+  List<CellLayout>? columnModes,
+  int wrapMaxLines = 2,
+
+  // 文本/占位
+  String placeholder = "🈚️",
+
+  // 视觉
+  double borderWidth = 1,
+  Color borderColor = const Color(0xFFE5E6EB),
+  double borderRadius = 10,
+  TableSectionStyle headerXStyle = _kHeaderX,
+  TableSectionStyle headerYStyle = _kHeaderY,
+  TableSectionStyle cellStyle = _kCell,
+
+  // 新增（手势）
+  bool disableInternalVerticalScroll = false,
+  bool disableInternalHorizontalScroll = false,
+  bool relayGestureToParentWhenAtEdge = true,
+}) {
+  return JobsExcel(
+    horizontalTitles: horizontalTitles,
+    verticalTitles: verticalTitles,
+    rowsData: rowsData,
+    rowHeights: rowHeights?.map((e) => e).toList(),
+    columnWidths: columnWidths,
+    firstColumnMode: FirstColumnMode.fixedAndExclude,
+    firstColumnFixedWidth: firstColumnFixedWidth,
+    minColWidth: minColWidth,
+    maxColWidth: maxColWidth,
+    expandToMaxWidth: expandToMaxWidth,
+    fillColumn: fillColumn,
+    respectFixedOnExpand: respectFixedOnExpand,
+    columnModes: columnModes,
+    wrapMaxLines: wrapMaxLines,
+    placeholder: placeholder,
+    borderWidth: borderWidth,
+    borderColor: borderColor,
+    borderRadius: borderRadius,
+    headerXStyle: headerXStyle,
+    headerYStyle: headerYStyle,
+    cellStyle: cellStyle,
+    disableInternalVerticalScroll: disableInternalVerticalScroll,
+    disableInternalHorizontalScroll: disableInternalHorizontalScroll,
+    relayGestureToParentWhenAtEdge: relayGestureToParentWhenAtEdge,
+  );
+}
+
+/// 模式 3：首列固定，其余等宽均分
+Widget JobsExcelBuildByMode3({
+  // 必传
+  required List<String> horizontalTitles,
+  required List<String> verticalTitles,
+  required List<List<String>> rowsData,
+
+  // 尺寸
+  List<double>? rowHeights,
+  List<double?>? columnWidths, // 可传但通常不必；其余列等分
+  double firstColumnFixedWidth = 140,
+  double minColWidth = 56,
+  double? maxColWidth, // 等分场景通常 null
+  bool expandToMaxWidth = true,
+  int? fillColumn,
+  bool respectFixedOnExpand = true,
+
+  // 列展示策略
+  List<CellLayout>? columnModes,
+  int wrapMaxLines = 2,
+
+  // 文本/占位
+  String placeholder = "🈚️",
+
+  // 视觉
+  double borderWidth = 1,
+  Color borderColor = const Color(0xFFE5E6EB),
+  double borderRadius = 10,
+  TableSectionStyle headerXStyle = _kHeaderX,
+  TableSectionStyle headerYStyle = _kHeaderY,
+  TableSectionStyle cellStyle = _kCell,
+
+  // 新增（手势）
+  bool disableInternalVerticalScroll = false,
+  bool disableInternalHorizontalScroll = false,
+  bool relayGestureToParentWhenAtEdge = true,
+}) {
+  return JobsExcel(
+    horizontalTitles: horizontalTitles,
+    verticalTitles: verticalTitles,
+    rowsData: rowsData,
+    rowHeights: rowHeights?.map((e) => e).toList(),
+    columnWidths: columnWidths,
+    firstColumnMode: FirstColumnMode.fixedAndExclude,
+    firstColumnFixedWidth: firstColumnFixedWidth,
+    minColWidth: minColWidth,
+    maxColWidth: maxColWidth,
+    expandToMaxWidth: expandToMaxWidth,
+    fillColumn: fillColumn,
+    respectFixedOnExpand: respectFixedOnExpand,
+    columnModes: columnModes,
+    wrapMaxLines: wrapMaxLines,
+    placeholder: placeholder,
+    borderWidth: borderWidth,
+    borderColor: borderColor,
+    borderRadius: borderRadius,
+    headerXStyle: headerXStyle,
+    headerYStyle: headerYStyle,
+    cellStyle: cellStyle,
+    disableInternalVerticalScroll: disableInternalVerticalScroll,
+    disableInternalHorizontalScroll: disableInternalHorizontalScroll,
+    relayGestureToParentWhenAtEdge: relayGestureToParentWhenAtEdge,
   );
 }
