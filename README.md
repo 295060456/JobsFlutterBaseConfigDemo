@@ -10269,7 +10269,7 @@ void main1() {
 }
 ```
 
-#### 48.2、模式 2：首列固定宽度，其余列按内容/约束自适应（支持 min/maxColWidth）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 48.2、模式 2：首列固定宽度，其余列按内容/约束自适应（支持`min/maxColWidth`）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 void main2() {
@@ -10521,15 +10521,477 @@ showSimpleNotification(
 );
 ```
 
-### 52、⏲️定时器 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 52、🪟[**`GetX`**](https://pub.dev/packages/get)@弹出框 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+#### 52.1、`Get.dialog(widget)` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```dart
+Future<T?> dialog<T>(
+  /// 要显示的对话框内容（必传），可以是 AlertDialog、Dialog 或自定义组件
+  Widget widget, {  
+
+  /// 是否允许点击对话框外部关闭
+  /// true = 点外部可关闭；false = 必须手动调用 Get.back() 关闭
+  bool barrierDismissible = true,  
+
+  /// 背景遮罩层颜色（默认半透明黑色）
+  /// 例如：Colors.black54
+  Color? barrierColor,  
+
+  /// 是否使用 SafeArea，避免刘海屏 / 状态栏 / 底部虚拟按键遮挡
+  bool useSafeArea = true,  
+
+  /// 指定使用哪个 Navigator 管理对话框
+  /// 一般不需要传，默认使用全局 navigator
+  GlobalKey<NavigatorState>? navigatorKey,  
+
+  /// 传递给对话框路由的参数，可通过 Get.arguments 获取
+  Object? arguments,  
+
+  /// 对话框过渡动画的时长（默认约 300ms）
+  Duration? transitionDuration,  
+
+  /// 对话框过渡动画的曲线（默认 Curves.easeOut）
+  Curve? transitionCurve,  
+
+  /// 给路由命名，方便调试或追踪
+  String? name,  
+
+  /// 原生 RouteSettings，包含 name 和 arguments
+  /// 如果上面 name/arguments 不能满足需求，可通过此参数传递
+  RouteSettings? routeSettings,
+})
+```
+
+#### 52.2、`Get.defaultDialog(widget)`<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```dart
+Future<T?> defaultDialog<T>({
+  /// 对话框标题文字（默认 "Alert"）
+  String title = "Alert",
+
+  /// 标题的内边距（padding）
+  EdgeInsetsGeometry? titlePadding,
+
+  /// 标题的文字样式
+  TextStyle? titleStyle,
+
+  /// 对话框中间的自定义内容（替代 middleText）
+  Widget? content,
+
+  /// 内容的内边距
+  EdgeInsetsGeometry? contentPadding,
+
+  /// 点击确认按钮的回调
+  VoidCallback? onConfirm,
+
+  /// 点击取消按钮的回调
+  VoidCallback? onCancel,
+
+  /// 点击自定义按钮的回调（如果有 custom 按钮）
+  VoidCallback? onCustom,
+
+  /// 取消按钮文字颜色
+  Color? cancelTextColor,
+
+  /// 确认按钮文字颜色
+  Color? confirmTextColor,
+
+  /// 确认按钮文字
+  String? textConfirm,
+
+  /// 取消按钮文字
+  String? textCancel,
+
+  /// 自定义按钮文字
+  String? textCustom,
+
+  /// 自定义确认按钮（完全自定义 Widget）
+  Widget? confirm,
+
+  /// 自定义取消按钮（完全自定义 Widget）
+  Widget? cancel,
+
+  /// 自定义按钮（第三个按钮，完全自定义 Widget）
+  Widget? custom,
+
+  /// 对话框背景色
+  Color? backgroundColor,
+
+  /// 是否允许点击对话框外部关闭（默认 true）
+  bool barrierDismissible = true,
+
+  /// 按钮背景色（仅对默认按钮有效，自定义 confirm/cancel/custom 时无效）
+  Color? buttonColor,
+
+  /// 中间的提示文字（如果没传 content，会显示这个，默认 "Dialog made in 3 lines of code"）
+  String middleText = "Dialog made in 3 lines of code",
+
+  /// 中间提示文字的样式
+  TextStyle? middleTextStyle,
+
+  /// 对话框圆角半径（默认 20.0）
+  double radius = 20.0,
+
+  // /// 自定义主题（暂时注释掉了，源码里有）
+  // ThemeData themeData,
+
+  /// 自定义 actions（比如你想自己传一组按钮，替代 textConfirm/textCancel）
+  List<Widget>? actions,
+
+  /// 处理返回键（Android 的物理返回键）时的回调
+  /// 返回 true = 允许关闭；false = 禁止关闭
+  WillPopCallback? onWillPop,
+
+  /// 指定 navigatorKey（默认使用全局 navigator）
+  GlobalKey<NavigatorState>? navigatorKey,
+})
+```
+
+#### 52.3、`Get.snackbar("标题", "副标题");` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```dart
+SnackbarController snackbar(
+  /// 标题（一般用于简短提示，比如“成功”、“失败”）
+  String title,
+
+  /// 内容信息（主要说明性文字）
+  String message, {
+
+  /// 文本颜色（标题和内容文字颜色）
+  Color? colorText,
+
+  /// 显示时长（默认 3 秒），传 null = 永不消失（需要手动关闭）
+  Duration? duration = const Duration(seconds: 3),
+
+  /// 是否立即初始化（默认 true）
+  /// - true: 调用后立刻显示
+  /// - false: 可在 initState 中调用（延迟到下一帧显示）
+  bool instantInit = true,
+
+  /// 弹出位置（顶部/底部），默认 SnackPosition.TOP
+  SnackPosition? snackPosition,
+
+  /// 自定义标题 Widget（优先级高于 title）
+  Widget? titleText,
+
+  /// 自定义内容 Widget（优先级高于 message）
+  Widget? messageText,
+
+  /// 左侧图标
+  Widget? icon,
+
+  /// 图标是否有“呼吸脉冲”动画
+  bool? shouldIconPulse,
+
+  /// 最大宽度（限制 snackbar 宽度）
+  double? maxWidth,
+
+  /// 外边距（相对屏幕的 margin）
+  EdgeInsets? margin,
+
+  /// 内边距（内容 padding）
+  EdgeInsets? padding,
+
+  /// 圆角半径
+  double? borderRadius,
+
+  /// 边框颜色
+  Color? borderColor,
+
+  /// 边框宽度
+  double? borderWidth,
+
+  /// 背景颜色
+  Color? backgroundColor,
+
+  /// 左侧竖条指示器颜色（常用于强调状态）
+  Color? leftBarIndicatorColor,
+
+  /// 阴影效果
+  List<BoxShadow>? boxShadows,
+
+  /// 背景渐变
+  Gradient? backgroundGradient,
+
+  /// 右侧主按钮（例如“撤销”、“重试”）
+  TextButton? mainButton,
+
+  /// 点击 snackbar 的回调
+  OnTap? onTap,
+
+  /// 是否允许手动滑动关闭（默认 true）
+  bool? isDismissible,
+
+  /// 是否显示进度条（加载指示器）
+  bool? showProgressIndicator,
+
+  /// 滑动关闭方向（默认 DismissDirection.down）
+  DismissDirection? dismissDirection,
+
+  /// 进度条的控制器（可手动控制动画）
+  AnimationController? progressIndicatorController,
+
+  /// 进度条背景色
+  Color? progressIndicatorBackgroundColor,
+
+  /// 进度条前景色（动画颜色）
+  Animation<Color>? progressIndicatorValueColor,
+
+  /// 样式（floating = 悬浮，grounded = 紧贴边缘）
+  SnackStyle? snackStyle,
+
+  /// 入场动画曲线
+  Curve? forwardAnimationCurve,
+
+  /// 出场动画曲线
+  Curve? reverseAnimationCurve,
+
+  /// 动画持续时间（默认 250ms）
+  Duration? animationDuration,
+
+  /// 毛玻璃模糊程度（仅 snackbar 本身）
+  double? barBlur,
+
+  /// 遮罩模糊程度（全屏背景）
+  double? overlayBlur,
+
+  /// snackbar 状态变化回调（OPENING, OPEN, CLOSING, CLOSED）
+  SnackbarStatusCallback? snackbarStatus,
+
+  /// 遮罩颜色（配合 overlayBlur 使用）
+  Color? overlayColor,
+
+  /// 自定义输入表单（snackbar 内嵌一个表单，比如登录输入框）
+  Form? userInputForm,
+})
+```
+
+#### 52.4、`Get.bottomSheet(Widget)` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```dart
+extension ExtensionBottomSheet on GetInterface {
+  Future<T?> bottomSheet<T>(
+    /// 底部弹出的内容（必传），可以是任意 Widget
+    Widget bottomsheet, {
+
+    /// 背景颜色
+    Color? backgroundColor,
+
+    /// 阴影高度（默认 Material 底部弹出会有）
+    double? elevation,
+
+    /// 是否是持久化 bottomSheet
+    /// true = 不会随 route 切换而关闭（一般保持默认 true）
+    bool persistent = true,
+
+    /// 自定义形状（比如圆角：RoundedRectangleBorder）
+    ShapeBorder? shape,
+
+    /// 裁剪行为（默认 null = 不裁剪）
+    Clip? clipBehavior,
+
+    /// 背景遮罩层颜色（弹窗外部的半透明层）
+    Color? barrierColor,
+
+    /// 是否忽略 SafeArea
+    /// true = 可以延伸到状态栏/底部区域
+    bool? ignoreSafeArea,
+
+    /// 是否允许全屏滚动控制
+    /// true = 支持高度超过屏幕时滚动
+    bool isScrollControlled = false,
+
+    /// 是否使用根导航器（一般用默认 false）
+    bool useRootNavigator = false,
+
+    /// 是否允许点击遮罩层关闭（默认 true）
+    bool isDismissible = true,
+
+    /// 是否允许拖动下滑关闭（默认 true）
+    bool enableDrag = true,
+
+    /// 路由配置信息（可传 name/arguments 等）
+    RouteSettings? settings,
+
+    /// 进入动画持续时间（默认 200ms 左右）
+    Duration? enterBottomSheetDuration,
+
+    /// 退出动画持续时间（默认 200ms 左右）
+    Duration? exitBottomSheetDuration,
+  }) {
+    // 实现内容在 GetX 源码中
+  }
+}
+```
+
+#### 52.5、`Get.rawSnackbar()` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+> 比 `Get.snackbar` 更底层的版本，完全自定义内容
+
+```dart
+extension ExtensionSnackbar on GetInterface {
+  SnackbarController rawSnackbar({
+    /// 标题文本（简单字符串）
+    String? title,
+
+    /// 内容文本（简单字符串）
+    String? message,
+
+    /// 自定义标题 Widget（优先级高于 title）
+    Widget? titleText,
+
+    /// 自定义内容 Widget（优先级高于 message）
+    Widget? messageText,
+
+    /// 左侧图标
+    Widget? icon,
+
+    /// 是否立即初始化（默认 true，调用时立刻显示）
+    bool instantInit = true,
+
+    /// 图标是否有呼吸脉冲动画
+    bool shouldIconPulse = true,
+
+    /// 最大宽度（限制 Snackbar 宽度）
+    double? maxWidth,
+
+    /// 外边距（相对于屏幕的边距，默认 0）
+    EdgeInsets margin = const EdgeInsets.all(0.0),
+
+    /// 内边距（内容 padding，默认 16）
+    EdgeInsets padding = const EdgeInsets.all(16),
+
+    /// 圆角半径（默认 0）
+    double borderRadius = 0.0,
+
+    /// 边框颜色
+    Color? borderColor,
+
+    /// 边框宽度（默认 1.0）
+    double borderWidth = 1.0,
+
+    /// 背景颜色（默认深灰色 #303030）
+    Color backgroundColor = const Color(0xFF303030),
+
+    /// 左侧竖条指示器颜色（常用于强调状态）
+    Color? leftBarIndicatorColor,
+
+    /// 阴影效果
+    List<BoxShadow>? boxShadows,
+
+    /// 背景渐变
+    Gradient? backgroundGradient,
+
+    /// 右侧主按钮（例如“撤销”、“重试”）
+    Widget? mainButton,
+
+    /// 点击 snackbar 的回调
+    OnTap? onTap,
+
+    /// 显示时长（默认 3 秒）
+    /// 传 null = 永不消失（需手动关闭）
+    Duration? duration = const Duration(seconds: 3),
+
+    /// 是否允许手动滑动关闭（默认 true）
+    bool isDismissible = true,
+
+    /// 滑动关闭方向（默认 null = 自动）
+    DismissDirection? dismissDirection,
+
+    /// 是否显示进度条（加载指示器）
+    bool showProgressIndicator = false,
+
+    /// 进度条控制器（可手动控制动画）
+    AnimationController? progressIndicatorController,
+
+    /// 进度条背景色
+    Color? progressIndicatorBackgroundColor,
+
+    /// 进度条前景色（动画颜色）
+    Animation<Color>? progressIndicatorValueColor,
+
+    /// 显示位置（TOP/ BOTTOM，默认 BOTTOM）
+    SnackPosition snackPosition = SnackPosition.BOTTOM,
+
+    /// 样式（FLOATING = 悬浮，GROUNDED = 紧贴边缘）
+    SnackStyle snackStyle = SnackStyle.FLOATING,
+
+    /// 入场动画曲线（默认 Curves.easeOutCirc）
+    Curve forwardAnimationCurve = Curves.easeOutCirc,
+
+    /// 出场动画曲线（默认 Curves.easeOutCirc）
+    Curve reverseAnimationCurve = Curves.easeOutCirc,
+
+    /// 动画持续时间（默认 1 秒）
+    Duration animationDuration = const Duration(seconds: 1),
+
+    /// snackbar 状态变化回调（OPENING, OPEN, CLOSING, CLOSED）
+    SnackbarStatusCallback? snackbarStatus,
+
+    /// 毛玻璃模糊程度（仅 snackbar 本身）
+    double barBlur = 0.0,
+
+    /// 遮罩模糊程度（全屏背景）
+    double overlayBlur = 0.0,
+
+    /// 遮罩颜色（配合 overlayBlur 使用）
+    Color? overlayColor,
+
+    /// 自定义输入表单（可在 snackbar 里放表单，例如登录框）
+    Form? userInputForm,
+  }) {
+    // 实现内容在 GetX 源码中
+  }
+}
+```
+
+#### 52.6、`Get.generalDialog(pageBuilder:X)` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```dart
+Future<T?> generalDialog<T>({
+  /// 页面构建器（必传）
+  /// 这里返回你要显示的 Widget（对话框内容），
+  /// 参数：context, animation, secondaryAnimation
+  required RoutePageBuilder pageBuilder,
+
+  /// 是否允许点击遮罩层（对话框外部区域）关闭
+  /// 默认 false = 必须手动关闭
+  bool barrierDismissible = false,
+
+  /// 无障碍辅助功能用的“屏障描述”（VoiceOver/屏幕阅读器会读）
+  /// barrierDismissible = true 时必须传
+  String? barrierLabel,
+
+  /// 背景遮罩层颜色
+  /// 默认半透明黑色（0x80000000）
+  Color barrierColor = const Color(0x80000000),
+
+  /// 过渡动画的持续时间（默认 200ms）
+  Duration transitionDuration = const Duration(milliseconds: 200),
+
+  /// 自定义过渡动画构建器
+  /// 参数：context, animation, secondaryAnimation, child
+  /// 如果不传，使用默认的渐隐渐现
+  RouteTransitionsBuilder? transitionBuilder,
+
+  /// 指定使用哪个 Navigator 管理路由（一般不需要）
+  GlobalKey<NavigatorState>? navigatorKey,
+
+  /// 额外的路由配置（可以传 name / arguments 等）
+  RouteSettings? routeSettings,
+})
+```
+
+### 53、⏲️定时器 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 [**Flutter**](https://flutter.dev/)定时机制对比表
 
 <img src="./assets/image-20250821214200162.png" alt="image-20250821214200162" style="zoom:50%;" />
 
-#### 52.1、普通定时器：`Timer` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 53.1、普通定时器：`Timer` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-##### 52.1.1、**单次定时** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 53.1.1、**单次定时** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 Timer(Duration(seconds: 2), () {
@@ -10537,7 +10999,7 @@ Timer(Duration(seconds: 2), () {
 });
 ```
 
-##### 52.1.2、**周期定时** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 53.1.2、**周期定时** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 Timer.periodic(Duration(seconds: 1), (timer) {
@@ -10545,7 +11007,7 @@ Timer.periodic(Duration(seconds: 1), (timer) {
 });
 ```
 
-#### 52.2、[**Flutter**](https://flutter.dev/) 特有的：`Ticker` / `AnimationController`
+#### 53.2、[**Flutter**](https://flutter.dev/) 特有的：`Ticker` / `AnimationController`
 
 > 1️⃣ `Ticker` 是 Flutter 内部的心跳计时器，跟屏幕刷新频率（一般 60fps）同步。
 >  它常用在动画相关场景，比如 `AnimationController`。
@@ -10560,7 +11022,7 @@ final ticker = Ticker((elapsed) {
 ticker.start();
 ```
 
-#### 52.3、UI 刷新相关：`Future.delayed`
+#### 53.3、UI 刷新相关：`Future.delayed`
 
 > 不是严格意义的定时器，但常常被用来做**延时执行**
 
@@ -10570,7 +11032,7 @@ Future.delayed(Duration(seconds: 1), () {
 });
 ```
 
-#### 52.4、引擎层调度：`SchedulerBinding`
+#### 53.4、引擎层调度：`SchedulerBinding`
 
 * [**Flutter**](https://flutter.dev/) 提供 `SchedulerBinding.instance.scheduleFrameCallback`，可以在下一帧绘制前回调，相当于浏览器里的 `requestAnimationFrame`
 
