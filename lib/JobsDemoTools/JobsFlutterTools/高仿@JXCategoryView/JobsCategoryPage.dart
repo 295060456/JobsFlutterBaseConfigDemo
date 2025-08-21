@@ -42,24 +42,13 @@ void main() {
   );
 }
 
-class ActivityBaseBean {
-  ActivityBaseBean({
-    required this.child,
-    required this.title,
-    required this.show,
-  });
-
-    final String title;
-    final Widget child;
-    final bool show;
-}
-
-/// 页面组件（数据由外部注入）
 class JobsCategoryPage extends StatefulWidget {
   const JobsCategoryPage({
     super.key,
     required this.items,
     this.initialIndex = 0,
+    this.selectedColor = const Color.fromARGB(255, 32, 33, 46),
+    this.unselectedColor = const Color(0xFF666666),
   }) : assert(items.length > 0, 'items 不能为空');
 
   /// 外部注入的页签数据（只传要展示的）
@@ -67,6 +56,9 @@ class JobsCategoryPage extends StatefulWidget {
 
   /// 默认选中的 index
   final int initialIndex;
+
+  final Color selectedColor;
+  final Color unselectedColor;
 
   @override
   State<JobsCategoryPage> createState() => _JobsCategoryPageState();
@@ -82,10 +74,10 @@ class _JobsCategoryPageState extends State<JobsCategoryPage>
     _controller = TabController(
       length: widget.items.length,
       vsync: this,
-      initialIndex:
-          (widget.initialIndex >= 0 && widget.initialIndex < widget.items.length)
-              ? widget.initialIndex
-              : 0,
+      initialIndex: (widget.initialIndex >= 0 &&
+              widget.initialIndex < widget.items.length)
+          ? widget.initialIndex
+          : 0,
     );
   }
 
@@ -131,8 +123,8 @@ class _JobsCategoryPageState extends State<JobsCategoryPage>
           controller: _controller,
           index: i,
           text: titles[i],
-          selectedColor: const Color.fromARGB(255, 7, 25, 219),
-          unselectedColor: const Color(0xFF666666),
+          selectedColor: widget.selectedColor,
+          unselectedColor: widget.unselectedColor,
           maxScaleDelta: 0.12,
           minFontWeight: FontWeight.w500,
           maxFontWeight: FontWeight.w800,
@@ -332,8 +324,9 @@ class _AdaptiveTabBar extends StatelessWidget {
     FontWeight weight,
     BuildContext ctx,
   ) {
-    final textScale =
-        MediaQuery.maybeOf(ctx)?.textScaler.textScaleFactor ?? 1.0;
+    final scaler =
+        MediaQuery.maybeOf(ctx)?.textScaler ?? const TextScaler.linear(1.0);
+    final textScale = scaler.scale(14) / 14; // ✅ 等效倍数
     for (final s in labels) {
       final tp = TextPainter(
         text: TextSpan(
@@ -348,4 +341,16 @@ class _AdaptiveTabBar extends StatelessWidget {
     }
     return true;
   }
+}
+
+class ActivityBaseBean {
+  ActivityBaseBean({
+    required this.child,
+    required this.title,
+    required this.show,
+  });
+
+    final String title;
+    final Widget child;
+    final bool show;
 }
