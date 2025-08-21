@@ -1083,7 +1083,7 @@ debugPrint("XXX");
 >  >   JobsPrint(mockListData);
 >  >   ```
 
-##### 1.3.1、控制台打印
+##### 1.3.1、控制台打印 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 import 'dart:convert';
@@ -1289,7 +1289,7 @@ extension InspectX on Object? {
 }
 ```
 
-##### 1.3.2、程序内打印
+##### 1.3.2、程序内打印 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 import 'dart:convert';
@@ -2946,10 +2946,10 @@ void JobsScreenListener() {
 
   * `SafeArea` 通常应该放在最外层（或接近最外层），且**全局只需要用一次**
 
-  * 不应该在 **`main()`** 中使用 `SafeArea`：**`SafeArea` 依赖于 `MediaQuery`，而 `main()` 没有构建上下文**
+  * 不应该在 **`main()`** 中使用 `SafeArea`：**`SafeArea` 依赖于 `MediaQuery`，而 `main()` 没有构建**<a href="#BuildContext" style="font-size:17px; color:green;"><b>上下文**`BuildContext`**</b></a>
 
     * `SafeArea` 的工作机制：它从 `MediaQuery.of(context)` 中获取系统的安全区域（状态栏、刘海、导航栏等）进行 padding。
-    * 而 `main()` 中，还没有构建 `MaterialApp`，没有上下文树，自然没有 `MediaQuery`，所以 `SafeArea` 无法生效。
+    * 而 `main()` 中，还没有构建 `MaterialApp`，没有<a href="#BuildContext" style="font-size:17px; color:green;"><b>上下文**`BuildContext`**</b></a>树，自然没有 `MediaQuery`，所以 `SafeArea` 无法生效。
 
   * 💥 **不要嵌套多个 `SafeArea`**：会导致 `MediaQuery` `padding` 被多次应用，造成布局偏移。<font color=red>若有嵌套需求，使用 **`MediaQuery.removePadding`**</font>
 
@@ -2986,7 +2986,7 @@ void JobsScreenListener() {
 
     * 如果有键盘弹出需求，需结合 `MediaQuery` 或 `KeyboardAvoider` 等手动处理。
 
-  * ⚠️ **对 Dialog/Overlay 等不是在根节点渲染的内容无效**：`SafeArea` 必须在拥有 `MediaQuery` 的上下文中才起作用（通常是 `MaterialApp` 或 `WidgetsApp` 之下），否则无效。
+  * ⚠️ **对 Dialog/Overlay 等不是在根节点渲染的内容无效**：`SafeArea` 必须在拥有 `MediaQuery` 的<a href="#BuildContext" style="font-size:17px; color:green;"><b>上下文**`BuildContext`**</b></a>中才起作用（通常是 `MaterialApp` 或 `WidgetsApp` 之下），否则无效。
 
   * **`CupertinoPageScaffold` 自带 SafeArea 行为**，但自定义页面仍需要手动处理。
 
@@ -6630,7 +6630,7 @@ Get.offAllNamed('/splash');
 
 * **`Get.dialog()`**
 
-  > **`Get.dialog()`** 默认用当前上下文找 <a href="#Navigator" style="font-size:17px; color:green;"><b>Navigator</b></a>
+  > **`Get.dialog()`** 默认用当前<a href="#BuildContext" style="font-size:17px; color:green;"><b>上下文**`BuildContext`**</b></a>找 <a href="#Navigator" style="font-size:17px; color:green;"><b>Navigator</b></a>
 
   [**`GetX`**](https://pub.dev/packages/get) 框架提供的弹窗方法
 
@@ -6813,7 +6813,7 @@ ElevatedButton(
 
 > 🧠 **`navigatorKey: Get.key` 是保险机制：**
 > 当你在 UI 按钮中弹窗，不写也可以；
-> 但如果你在“非 UI 上下文”或“嵌套导航结构”中调用弹窗，**就必须显式指定 `navigatorKey` 来避免找不到 Navigator 的错误。**
+> 但如果你在 非 UI <a href="#BuildContext" style="font-size:17px; color:green;"><b>上下文**`BuildContext`**</b></a> 或 <u>**嵌套导航结构**</u> 中调用弹窗，**就必须显式指定 `navigatorKey` 来避免找不到 Navigator 的错误。**
 >
 > **完全可以养成习惯：**
 > 👉 **任何时候用 `Get.dialog()`，都写上 `navigatorKey: Get.key`**，
@@ -10551,6 +10551,73 @@ class JobsEmptyHint extends StatelessWidget {
 | **shadows**    | 阴影效果（可叠加）                                           | `shadows: [Shadow(color: Colors.black, offset: Offset(2,2), blurRadius: 4)]` |
 | **overflow**   | 超出处理方式（clip、ellipsis、fade）                         | `overflow: TextOverflow.ellipsis`                            |
 
+### 51、Tips <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+#### 51.1、系统自带的`showSnackBar` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+> 需要传入<a href="#BuildContext" style="font-size:17px; color:green;"><b>上下文**`BuildContext`**</b></a>，比较繁琐
+
+```dart
+// 弹出提示
+ScaffoldMessenger.of(context).showSnackBar(
+  const SnackBar(
+    content: Text("邀请码已复制到剪切板"),
+    duration: Duration(seconds: 2),
+    behavior: SnackBarBehavior.floating,
+  ),
+);
+```
+
+#### 51.2、[**oktoast**](https://pub.dev/packages/oktoast) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  oktoast: any
+```
+
+```dart
+import 'package:oktoast/oktoast.dart';
+
+// main 包裹一层 OKToast
+void main() {
+  runApp(OKToast(
+    child: MyApp(),
+  ));
+}
+
+// 调用时
+showToast("邀请码已复制到剪切板");
+```
+
+#### 51.3、[**overlay_support**](https://pub.dev/packages/overlay_support/versions) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  overlay_support: any
+```
+
+```dart
+import 'package:overlay_support/overlay_support.dart';
+
+void main() {
+  runApp(OverlaySupport.global(child: MyApp()));
+}
+
+// 调用
+showSimpleNotification(
+  Text("邀请码已复制到剪切板"),
+  background: Colors.green,
+);
+```
+
 ## 四、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ### 1、修复平台目录：定位到[**Flutter**](https://flutter.dev/)项目根目录，执行👉`flutter create .`  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
@@ -11488,12 +11555,73 @@ Comparable.compare(a, b)
   }
   ```
 
-### 16、✂️剪切板行为  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 16、✂️剪切板行为 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 | 操作                                     | 可同步剪贴板？ | 方向   |
 | ---------------------------------------- | -------------- | ------ |
 | 在 **macOS 上复制**，到 iOS 模拟器中粘贴 | ✅ 可以         | 💻 ➜ 📱  |
 | 在 **iOS 模拟器中复制**，到 macOS 上粘贴 | ❌ 不行         | 📱 🚫➜ 💻 |
+
+![image-20250821163652904](./assets/image-20250821163652904.png)
+
+```dart
+import 'package:flutter/services.dart'; // ⚡ 必须导入,用于 Clipboard
+/// 点击此按钮以后，将外界传入的验证码，复制到系统剪切板，并弹出提示
+Widget buildInviteCode(String inviteCode) {
+  return SizedBox(
+    width: 350.w, // 固定宽度
+    height: 90.h, // 固定高度
+    child: Material(
+      // 给 InkWell 提供水波纹载体（不想水波纹可去掉或设为透明）
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(6),
+        onTap: () async {
+          await Clipboard.setData(ClipboardData(text: inviteCode));
+          showToast("邀请码:$inviteCode已成功复制到剪切板");
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+          decoration: BoxDecoration(
+            border: Border.all(color: const Color(colorFF00C2C7), width: 1),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.max, // ✅ 撑满宽度
+            mainAxisAlignment: MainAxisAlignment.center, // ✅ 水平居中
+            crossAxisAlignment: CrossAxisAlignment.center, // ✅ 垂直居中
+            children: [
+              Text(
+                "邀请码 ",
+                style: TextStyle(
+                  fontSize: 28.sp,
+                  color: const Color(colorFF333333),
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              Text(
+                inviteCode,
+                style: TextStyle(
+                  fontSize: 28.sp,
+                  color: const Color(colorFF00C2C7),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              SizedBox(width: 8.w),
+              Icon(
+                // 👈 不要用 IconButton，避免与外层 InkWell 冲突
+                Icons.copy,
+                size: 28.sp,
+                color: const Color(colorFF00C2C7),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+```
 
 ### 17、**Dart**.<font color=red>**`Symbol`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -11548,7 +11676,7 @@ Comparable.compare(a, b)
   | 用来告诉 Dart：我要操作这个名字                    | 用来展示、存储内容  |
   | [**Dart**](https://dart.dev/)  编译时会优化 Symbol | String 是运行时的值 |
 
-### 18、上下文**`BuildContext`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 18、<font id=BuildContext color=red>上下文 **`BuildContext`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 🧠 举个比喻：
 >
@@ -11559,7 +11687,7 @@ Comparable.compare(a, b)
 > - 屏幕宽度多少（MediaQuery）？
 > - 我要跳转路由，怎么找 Navigator？
 >
-> 都要靠这个 `context`。
+> 都要靠这个 `context`
 
 * **不是变量传递**，是[**Flutter**](https://flutter.dev/)框架在构建 **`Widget`** 树时自动提供的
 
@@ -11577,7 +11705,7 @@ Comparable.compare(a, b)
   /// 并不等于其父组件的 context
   ```
   
-* 也可以对上下文**`BuildContext`**进行拓展
+* 也可以对<a href="#BuildContext" style="font-size:17px; color:green;"><b>上下文**`BuildContext`**</b></a>进行拓展
 
   ```dart
   import 'package:flutter/widgets.dart';
@@ -11922,6 +12050,8 @@ HideEfficientLengthIterable~T~ <|.. Iterable~T~ : implements
 ```
 
 ### 22、入参  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+> ⚠️<font color=red>**必须是编译期常量**</font>`const`。也就是意味着👉 类似于：`X.w`、`X.h`之类的[**flutter_screenutil**](https://pub.dev/packages/flutter_screenutil)的扩展 `getter`（需要在 **运行时有 BuildContext**）。<u>故此时使用，即会报错</u>
 
 #### 22.1、必传入参  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
