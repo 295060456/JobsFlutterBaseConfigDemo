@@ -11137,6 +11137,12 @@ Future.delayed(Duration(seconds: 1), () {
 
 ### 54、下拉列表 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
+### 55、加解密 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```dart
+import 'package:pointycastle/stream/chacha20poly1305.dart';
+```
+
 ## 四、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ### 1、修复平台目录：定位到[**Flutter**](https://flutter.dev/)项目根目录，执行👉`flutter create .`  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
