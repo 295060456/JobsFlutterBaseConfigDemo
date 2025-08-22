@@ -8807,7 +8807,7 @@ final rows = list
 
 ### 37、🧬 <font id=Flutt.App的生命周期>[**Flutter**](https://flutter.dev/).**App**的生命周期</font>监听 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-#### 37.1、混入（mixin）观察者： <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 37.1、<a href="#混入" style="font-size:20px; color:green;"><b>混入</b></a> （mixin）观察者： <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 class MyController extends GetxController with WidgetsBindingObserver
@@ -8933,13 +8933,13 @@ void onClose() {
 
 > 控制动画时钟（Ticker）
 
-| 类/混入                          | 用途说明                          |
-| -------------------------------- | --------------------------------- |
-| `Ticker`                         | 动画帧控制器（用于计时/驱动动画） |
-| `TickerFuture`                   | 动画完成时返回的 Future 对象      |
-| `TickerProvider`                 | 提供 Ticker（接口）               |
-| `SingleTickerProviderStateMixin` | 一个控制器使用                    |
-| `TickerProviderStateMixin`       | 多个控制器使用                    |
+| 类/<a href="#混入" style="font-size:17px; color:green;"><b>混入</b></a> | 用途说明                          |
+| ------------------------------------------------------------ | --------------------------------- |
+| `Ticker`                                                     | 动画帧控制器（用于计时/驱动动画） |
+| `TickerFuture`                                               | 动画完成时返回的 Future 对象      |
+| `TickerProvider`                                             | 提供 Ticker（接口）               |
+| `SingleTickerProviderStateMixin`                             | 一个控制器使用                    |
+| `TickerProviderStateMixin`                                   | 多个控制器使用                    |
 
 #### 38.5、🌀曲线函数（Curves 类） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -10454,7 +10454,9 @@ class JobsEmptyHint extends StatelessWidget {
 
 ### 50、字体 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-#### 50.1、🎨基础属性 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 50.1、字体介绍 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+##### 50.1.1、🎨基础属性 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 日常开发中最常调用的
 
@@ -10480,7 +10482,7 @@ class JobsEmptyHint extends StatelessWidget {
   | `FontWeight.w800` | ExtraBold（特粗）   |
   | `FontWeight.w900` | Black（极粗）       |
 
-#### 50.2、🖋️装饰属性 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 50.1.2、🖋️装饰属性 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 给文字加修饰效果
 
@@ -10491,7 +10493,7 @@ class JobsEmptyHint extends StatelessWidget {
 | **decorationStyle**     | 装饰线样式（实线、虚线、波浪） | `decorationStyle: TextDecorationStyle.dotted` |
 | **decorationThickness** | 装饰线粗细                     | `decorationThickness: 2`                      |
 
-#### 50.3、📏布局相关 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 50.1.3、📏布局相关 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 影响排版和对齐
 
@@ -10502,7 +10504,7 @@ class JobsEmptyHint extends StatelessWidget {
 | **height**        | 行高（倍数，基于 fontSize）          | `height: 1.5`                           |
 | **textBaseline**  | 对齐基线（alphabetic / ideographic） | `textBaseline: TextBaseline.alphabetic` |
 
-#### 50.4、🌈高级属性 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 50.1.4、🌈高级属性 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 少见但非常强大
 
@@ -10512,6 +10514,90 @@ class JobsEmptyHint extends StatelessWidget {
 | **background** | 给文字加背景 Paint（可以做色块效果）                         | `background: Paint()..color = Colors.yellow`                 |
 | **shadows**    | 阴影效果（可叠加）                                           | `shadows: [Shadow(color: Colors.black, offset: Offset(2,2), blurRadius: 4)]` |
 | **overflow**   | 超出处理方式（clip、ellipsis、fade）                         | `overflow: TextOverflow.ellipsis`                            |
+
+#### 50.2、引入外来字体 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+> <font color=red>**Release 构建会自动做字体子集（减包体积：只用到的字体会被打包进应用）；Debug 不会**</font>
+>
+> **iOS/Android 对 500/600 的渲染略不同，保证提供的权重文件真实存在，别宣称700却只有 Regular**
+>
+> 中文（CJK）字体体积大
+
+##### 50.2.1、[**Google Fonts**](https://pub.dev/packages/google_fonts) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+> ```dart
+> /// 上线建议禁掉运行时下载，避免首启拉取字体
+> GoogleFonts.config.allowRuntimeFetching = false;
+> ```
+
+```yaml
+dependencies:
+  google_fonts: any
+```
+
+```dart
+import 'package:google_fonts/google_fonts.dart';
+
+Text('Hello',
+  style: GoogleFonts.inter(
+    fontSize: 18,
+    fontWeight: FontWeight.w700,
+    // 也可 fallback：.copyWith(fontFamilyFallback: ['NotoSansSC'])
+  ),
+);
+```
+
+##### 50.2.2、其他商业字体 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* 放置字体到项目里，并配置`pubspec.yaml` <font color=red>**别用中文名**</font>。后执行`flutter pub get`
+
+  ```yaml
+  flutter:
+    uses-material-design: true
+    fonts:
+      - family: Inter
+        fonts:
+          - asset: assets/fonts/Inter/Inter-Regular.ttf
+            weight: 400
+          - asset: assets/fonts/Inter/Inter-Medium.ttf
+            weight: 500
+          - asset: assets/fonts/Inter/Inter-Bold.ttf
+            weight: 700
+  
+      # 中文（或其他脚本）做兜底，避免西文字体缺字
+      - family: NotoSansSC
+        fonts:
+          - asset: assets/fonts/NotoSansSC-Regular.ttf
+            weight: 400
+  ```
+
+* 在全局主题里设置默认字体（推荐）
+
+  > <font color=red>**缺字**：很多西文字体没有 CJK，务必配 `fontFamilyFallback`</font>
+
+  ```dart
+  MaterialApp(
+    theme: ThemeData(
+      fontFamily: 'Inter',
+      // Fallback：遇到缺字用 NotoSansSC 顶上（中文很常用）
+      fontFamilyFallback: const ['NotoSansSC', 'PingFang SC', 'Hiragino Sans GB'],
+    ),
+    home: const MyHome(),
+  );
+  ```
+
+* 局部使用
+
+  ```
+  Text(
+    '总佣金 56,748.00',
+    style: const TextStyle(
+      fontFamily: 'Inter',
+      fontWeight: FontWeight.w700,
+      fontSize: 18,
+    ),
+  );
+  ```
 
 ### 51、Tips <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -11144,6 +11230,44 @@ Future.delayed(Duration(seconds: 1), () {
 
 ```dart
 import 'package:pointycastle/stream/chacha20poly1305.dart';
+```
+
+### 56、小部件写法的替换 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+#### 56.1、`Class`返回`Widget` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```dart
+class KLabel extends StatelessWidget {
+  final String text;
+  const KLabel(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: const TextStyle(
+        color: Color(0xFF9AA3B2),
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+      ),
+    );
+  }
+}
+```
+
+#### 56.2、函数式返回`Widget` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```dart
+Widget KLabel(String text) {
+  return Text(
+    text,
+    style: const TextStyle(
+      color: Color(0xFF9AA3B2),
+      fontSize: 12,
+      fontWeight: FontWeight.w400,
+    ),
+  );
+}
 ```
 
 ## 四、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
@@ -12314,15 +12438,17 @@ Widget buildInviteCode(String inviteCode) {
   );
   ```
 
-### 20、混入<font color=red>**`with`**👈**`mixin`**👉**`on`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 20、混入<font id=混入 color=red>**`with`**👈**`mixin`**👉**`on`**</font>  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > **类似多继承，但更轻量**
 >
 > **mixin**：造模块（功能集）
 >
-> **with**：用模块（混入类）
+> **with**：用模块（<a href="#混入" style="font-size:17px; color:green;"><b>混入</b></a> 类）
 >
 > **on**：限定模块（必须基于谁才能用）
+>
+> <font color=red>`mixin` 里写的函数 / `getter`/ `setter`/ 字段，都是 **运行时成员**，不会变成编译期常量</font>
 
 * <font color=red size=5>**`with`**👈**`mixin`**</font>
 
