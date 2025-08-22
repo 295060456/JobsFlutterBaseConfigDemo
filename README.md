@@ -5170,6 +5170,28 @@ class MyFlowDelegate extends FlowDelegate {
 > 低层 API，**ListView**/**GridView** 的底层
 
 ###### 19.6.4.1、🧱`SliverList` —— 列表（线性）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a> <a href="#滚动&Sliver布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+* **`ListView`** 本质就是 **`SliverList` + `Scrollable` 的高级封装**，用户不用自己写 **Sliver** 也能用。
+
+* [**Flutter**](https://flutter.dev/) 把 **Sliver** 体系当成`底层协议`，大部分我们常用的滚动控件，都是在 **Sliver** 上的 **语法糖**
+
+* `Column` 里放一个 `ListView`，必须给它**有界高度**，否则就不布局
+
+  ```dart
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        RecordSearchBar(onSearch: (q) => setState(() => _lastQuery = q)),
+        const SizedBox(height: 8),
+        Expanded(               // ← 必须要这个
+          child: _buildList(), // _buildList 返回的是 ListView.builder
+        ),
+      ],
+    );
+  }
+  ```
+
 ###### 19.6.4.2、🧱`SliverFixedExtentList` —— 固定高度列表 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a> <a href="#滚动&Sliver布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
 ###### 19.6.4.3、🧱`SliverGrid` —— 网格 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a> <a href="#滚动&Sliver布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
 ###### 19.6.4.4、🧱`SliverAppBar` —— 可折叠头部 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a> <a href="#滚动&Sliver布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
