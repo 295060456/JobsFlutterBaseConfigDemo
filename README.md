@@ -11135,7 +11135,10 @@ Future.delayed(Duration(seconds: 1), () {
   > | **scheduleFrameCallback** | 下一帧开始绘制前 | 和 UI 同步，做动画逻辑、依赖帧的计算      |
   > | **addPostFrameCallback**  | 当前帧绘制结束后 | 获取布局信息、调用 `setState` 安全更新 UI |
 
-### 54、下拉列表 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 54、[**下拉刷新&上拉加载**](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/lib/JobsDemoTools/JobsFlutterTools/%E4%B8%8A%E6%8B%89%E5%8A%A0%E8%BD%BD%26%E4%B8%8B%E6%8B%89%E5%88%B7%E6%96%B0/Refresh.dart) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* **`RefreshIndicator` 只支持下拉刷新**，[**Flutter**](https://flutter.dev/) 没有内建**上拉释放加载更多**
+* <font color=red>要做**上拉加载**，需要自己监听滚动/越界，或者用第三方库</font>
 
 ### 55、加解密 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
