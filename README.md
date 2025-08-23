@@ -27,9 +27,12 @@
 * **面向信仰编程**
 
 
-## 💾 参考资料
+## ❤️友情外链🔗
 
 * [**Flutter 实战@第二版**](https://book.flutterchina.club/)
+* [**Jobs相关文档支持**](https://github.com/295060456/JobsDocs)
+* [**效率工具：SourceTree的脚本配置**](https://github.com/295060456/SourceTree.sh)
+* [**常见环境变量配置文件（按使用场景分类）**](https://github.com/295060456/JobsMacEnvVarConfig)
 
 ## 一、🎯项目白皮书 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
