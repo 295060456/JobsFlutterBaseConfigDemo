@@ -12443,18 +12443,17 @@ Widget buildInviteCode(String inviteCode) {
   );
   ```
 
-### 20、混入<font id=混入 color=red>**`with`**👈**`mixin`**👉**`on`**</font>  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 20、混入<font id=混入 color=red>**`with`**👈**`mixin`**👉**`on`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-> **类似多继承，但更轻量**
+> * 可以理解成**代码片段**🎬
 >
-> **mixin**：造模块（功能集）
->
-> **with**：用模块（<a href="#混入" style="font-size:17px; color:green;"><b>混入</b></a> 类）
->
-> **on**：限定模块（必须基于谁才能用）
->
-> <font color=red>`mixin` 里写的函数 / `getter`/ `setter`/ 字段，都是 **运行时成员**，不会变成编译期常量</font>
+> * <font color=red>`mixin` 里写的函数 / `getter`/ `setter`/ 字段，都是 **运行时成员**，不会变成编译期常量</font>
+>* **类似多继承，但更轻量**
+>   * **mixin**：造模块（功能集）
+>  * **with**：用模块（<a href="#混入" style="font-size:17px; color:green;"><b>混入</b></a> 类）
+>   * **on**：限定模块（必须基于谁才能用）
 
+#### 20.1、混入的基本语法 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 * <font color=red size=5>**`with`**👈**`mixin`**</font>
 
   * <font color=red>**最常见**</font>：`with` + `mixin`：在 [**Flutter**](https://flutter.dev/) 源码中，`with` 后面 99% 的情况是 `mixin`
@@ -12468,6 +12467,8 @@ Widget buildInviteCode(String inviteCode) {
     ```
 
   * `with` + `mixin class`（<font color=red>**Dart 3 推荐**</font>）
+
+    > `mixin class`本质是一个 **既能作为类用，也能作为 mixin 用** 的东西
 
     ```dart
     mixin class Logger {
@@ -12487,8 +12488,10 @@ Widget buildInviteCode(String inviteCode) {
     class B with A {} // Dart 2.x 允许，但有局限
     ```
 
-* <font color=red size=5>**`mixin`**👉**`on`**</font>
+* <font color=red size=5>**`mixin`**👉**`on`**</font> 
 
+  > <font color=red size=5>**`on`**</font> == 只能用于
+  
   ```dart
   class Animal {
     void eat() => print("Eating...");
@@ -12501,10 +12504,37 @@ Widget buildInviteCode(String inviteCode) {
     }
   }
   ```
-
+  
   ```dart
   class Dog extends Animal with Walker {} // ✅ 可以，因为 Dog 是 Animal 的子类
   class Car with Walker {} // ❌ 报错，因为 Car 不是 Animal
+  ```
+
+#### 20.2、混入的`继承`写法 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* 使用关键字<font color=red>**`implements`**</font>
+
+  > 那么此时，如果谁使用了**`A_Mixin`**，那么就必须<font color=red>**@override**</font> **`B_Mixin`**里面的方法
+
+  ```dart
+  mixin A_Mixin implements B_Mixin {
+    /// TODO
+  }
+  ```
+
+#### 20.3、混入的复杂用法 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* Dart 规则：带 `on SomeType` 约束的 mixin，必须出现在 `with` 列表里 **SomeType 之后**。否则类型约束不成立会报错
+
+  ```dart
+  /// 这意味着：任何想用 Widget_Mixin 的类，必须同时是 Tools_Mixin 的子类型。
+  mixin Widget_Mixin on Tools_Mixin { ... }
+  
+  /// ⚠️ 注意此时with后面必须同时写，且先后次序不能乱
+  class A_State extends State<GameRecordsPage>
+      with Tools_Mixin, Widget_Mixin {  // ✅
+    // ...
+  }
   ```
 
 ### 21、基础的数据类型 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
