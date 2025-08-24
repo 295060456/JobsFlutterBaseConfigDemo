@@ -5,7 +5,8 @@ import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/高仿@J
 import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/高仿@JXCategoryView/ActivityShareSubView@超值存送礼.dart';
 import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/高仿@JXCategoryView/ActivityShareSubView@队长福利.dart';
 import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart';
-import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/Extensions/WidgetExtension/JobsWidgetExtension.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/Extensions/WidgetExtensions/onWidgets.dart';
+
 /// 高仿@JXCategoryView
 void main() {
   final items = <ActivityBaseBean>[
