@@ -9420,7 +9420,7 @@ void main() {
 
 ### 44、🍬**`Widget`**拓展语法糖 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-#### 44.1、[**`onGestures.dart`**]() <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 44.1、[**`onGestures.dart`**](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/lib/JobsDemoTools/Utils/Extensions/WidgetExtensions/onGestures.dart) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ##### 44.1.1、点击/双击/长按 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -9552,7 +9552,7 @@ Positioned(
 ),
 ```
 
-#### 44.2、[**`onList.dart`**]() <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 44.2、[**`onList.dart`**](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/lib/JobsDemoTools/Utils/Extensions/WidgetExtensions/onList.dart) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 [
@@ -9575,7 +9575,7 @@ Positioned(
 ),
 ```
 
-#### 44.3、[**`onText.dart`**]() <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 44.3、[**`onText.dart`**](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/lib/JobsDemoTools/Utils/Extensions/WidgetExtensions/onText.dart) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 return Text("点我试试,试试就试试")
@@ -9598,7 +9598,7 @@ return Text("点我试试,试试就试试")
     .scrollable();
 ```
 
-#### 44.4、[**`onWidgets.dart`**]() <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 44.4、[**`onWidgets.dart`**](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/lib/JobsDemoTools/Utils/Extensions/WidgetExtensions/onWidgets.dart) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 @override
