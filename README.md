@@ -55,7 +55,7 @@
   * 对于单个的[**Flutter**](https://flutter.dev/)工程文件（小**Demo**）可以利用[**运行脚本**](./【MacOS】☀️双击运行Flutter项目（iOS 模拟器）.command)，在**MacOS**的**终端**直接拖入进行运行和展示（终端运行不支持断点，只能输出日志）
   * 为了保证各个**Demo**在形式上的独立性，所以尽可能的在单个`.dart`文件里面进行叙述。**每一个[Flutter](https://flutter.dev/)的Demo文件里，都会存在其程序的入口函数**
 
-## 二、🌱环境配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+## 二、🌱[**Flutter**](https://flutter.dev/)环境配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ### 1、📃`MacOS` 系统环境变量文件 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -578,53 +578,53 @@
       {
       // ✅ 指定 CMake 项目的源代码目录（用于 CMake 插件）
       "cmake.sourceDirectory": "/Users/jobs/Documents/GitHub/JobsFlutterBaseConfig/jobs_flutter_base_config/linux",
-  
+    
       // ✅ Java 编译时的空值分析模式（自动启用 null 安全检查）
       "java.compile.nullAnalysis.mode": "automatic",
-  
+    
       // ✅ Dart 编辑器：整理 import 时总是使用 package 引用风格
       "dart.editImports": "always_use_package_imports",
-  
+    
       // ✅ Flutter SDK 路径（使用 FVM 管理的版本路径）
       "dart.flutterSdkPath": ".fvm/versions/3.32.8",
-  
+    
       // ✅ 每次保存文件时自动格式化代码
       "editor.formatOnSave": true,
-  
+    
       // ✅ 当窗口失焦时自动保存
       "files.autoSave": "afterDelay",
-  
+    
       // ✅ 自动保存延迟，100ms
       "files.autoSaveDelay": 100,
-  
+    
       // ✅ 关闭窗口时自动保存未保存文件（热退出）
       "files.hotExit": "onExitAndWindowClose",
-  
+    
       // ✅ 每次保存时自动移除每行末尾多余的空格
       "files.trimTrailingWhitespace": true,
-  
+    
       // ✅ 文件末尾自动插入一个换行符，符合编码规范
       "files.insertFinalNewline": true,
-  
+    
       // ✅ 保存文件时如有冲突，自动覆盖磁盘上的版本（避免弹出冲突提示）
       "files.saveConflictResolution": "overwriteFileOnDisk",
-  
+    
       // ✅ 启动时恢复上次打开的文件
       "window.restoreWindows": "all",
-  
+    
       // ✅ 显示括号对的引导线（active 表示仅在光标位于括号上时显示）
       "editor.guides.bracketPairs": "active",
-  
+    
       // ✅ 启用括号颜色匹配功能
       "editor.bracketPairColorization.enabled": true,
-  
+    
       // ✅ 始终高亮当前括号对
       "editor.matchBrackets": "always",
-  
+    
       // ✅ Flutter SDK 路径（优先 .fvm）
       "dart.flutterSdkPath": ".fvm/flutter_sdk",
       "dart.sdkPath": ".fvm/flutter_sdk/bin/cache/dart-sdk",
-  
+    
       // ✅ 让 VSCode 终端继承 Shell 环境（通常默认 true）
       "terminal.integrated.inheritEnv": true,
       }
@@ -955,7 +955,27 @@ plugins/
 /android/
 ```
 
-## 三、💥代码讲解 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+## 三、⚖️[**Flutter**](https://flutter.dev/)代码规范 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* 无状态的**`Widget`**用函数式表达，没有必要用**Class**表达
+
+* 有状态的**`Widget`**还是用系统的写法表达（即，将状态进行分离）
+
+* 对于公共页面，将<font color=red>公有**`Widget`**</font>和<font color=red>相关计算工具（方法）</font>进行抽离，到[**Mixin**](#混入)层：
+
+  * 关于公有**`Widget`**的[**Mixin**](#混入)层 => `CommonWidgetMixin`
+
+  * 关于相关计算工具（方法）的[**Mixin**](#混入)层 => `CommonToolsMixin`
+
+  * 相关继承约束关系
+
+    ```dart
+    mixin CommonWidgetMixin on CommonToolsMixin
+    ```
+
+* 因为[**Flutter**](https://flutter.dev/)里面<font color=red>万物皆**`Widget`**</font>，所以从代码功能解耦的角度，有必要对**`Widget`**进行<a href="#Widget拓展语法糖" style="font-size:17px; color:green;"><b>相关扩充</b></a>
+
+## 四、💥[**Flutter**](https://flutter.dev/)代码讲解 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ### 1、🖨️调试打印 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -2478,21 +2498,21 @@ print(now.weekday);    // 星期几（1=星期一，7=星期日）
     ```dart
     import 'package:flutter/material.dart';
     import 'package:flutter_bloc/flutter_bloc.dart';
-  
+    
     void main() {
       runApp(BlocProvider(create: (_) => UserCubit(), child: MyApp()));
     }
-  
+    
     class UserCubit extends Cubit<String> {
       UserCubit() : super('默认名');
       void updateName(String newName) => emit(newName);
     }
-  
+    
     class MyApp extends StatelessWidget {
       @override
       Widget build(BuildContext context) => MaterialApp(home: HomePage());
     }
-  
+    
     class HomePage extends StatelessWidget {
       @override
       Widget build(BuildContext context) {
@@ -2511,7 +2531,7 @@ print(now.weekday);    // 星期几（1=星期一，7=星期日）
         );
       }
     }
-  
+    
     class SecondPage extends StatelessWidget {
       @override
       Widget build(BuildContext context) {
@@ -8360,14 +8380,14 @@ final rows = list
     ```dart
     void main() async {
       print('--- async* 示例 ---');
-  
+    
       await for (final value in countAsync()) {
         print('async* 输出: $value');
       }
-  
+    
       print('--- async* 执行完毕 ---');
     }
-  
+    
     Stream<int> countAsync() async* {
       for (int i = 1; i <= 3; i++) {
         print('async* yield 前: $i');
@@ -9348,7 +9368,7 @@ void main() {
         I5[ErrorMappingInterceptor<br/>错误码标准化/文案]
         I6[ResponseAdapter<br/>解包 data/统一模型]
       end
-  
+    
       A[请求] --> I2 --> I1 --> I3 --> I4 --> B[发出HTTP]
       B --> C[收到响应]
       C --> I6 --> I3 --> D[返回成功]
@@ -9408,7 +9428,7 @@ void main() {
       "file": await MultipartFile.fromFile("./example.png", filename: "example.png"),
     });
     await dio.post("/upload", data: formData);
-  
+    
     // 下载
     await dio.download(
       "https://example.com/file.zip",
@@ -9423,7 +9443,7 @@ void main() {
 
 ### 43、💻（网络请求以后的）数据建模处理 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-### 44、🍬**`Widget`**拓展语法糖 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 44、 <font id=Widget拓展语法糖>🍬**`Widget`**拓展语法糖</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 #### 44.1、[**`onGestures.dart`**](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/lib/JobsDemoTools/Utils/Extensions/WidgetExtensions/onGestures.dart) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -11006,7 +11026,7 @@ Widget KLabel(String text) {
 }
 ```
 
-## 四、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+## 五、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ### 1、修复平台目录：定位到[**Flutter**](https://flutter.dev/)项目根目录，执行👉`flutter create .`  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -12215,7 +12235,7 @@ Widget buildInviteCode(String inviteCode) {
     class A {
       void hello() => print('hi');
     }
-  
+    
     class B with A {} // Dart 2.x 允许，但有局限
     ```
 
@@ -14385,7 +14405,7 @@ list.add('B');
 list.add('C');
 ```
 
-## 五、FAQ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+## 六、FAQ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * 类型判断： **this is**
 
@@ -14459,26 +14479,26 @@ list.add('C');
       @override
       _ScrollControllerDemoState createState() => _ScrollControllerDemoState();
     }
-  
+    
     class _ScrollControllerDemoState extends State<ScrollControllerDemo> {
       final ScrollController _controller = ScrollController();
-  
+    
       @override
       void initState() {
         super.initState();
-  
+    
         // ✅ 添加滚动监听
         _controller.addListener(() {
           print('当前滚动位置: ${_controller.offset}');
         });
       }
-  
+    
       @override
       void dispose() {
         _controller.dispose(); // ✅ 别忘了释放
         super.dispose();
       }
-  
+    
       void _scrollToTop() {
         _controller.animateTo(
           0.0, // 目标 offset
@@ -14486,7 +14506,7 @@ list.add('C');
           curve: Curves.easeOut,
         );
       }
-  
+    
       void _scrollToBottom() {
         _controller.animateTo(
           _controller.position.maxScrollExtent, // 最大可滚动距离
@@ -14494,7 +14514,7 @@ list.add('C');
           curve: Curves.easeInOut,
         );
       }
-  
+    
       @override
       Widget build(BuildContext context) {
         return Scaffold(
@@ -14523,7 +14543,7 @@ list.add('C');
     ```dart
     /// 多个组件同步滚动
     final controller = ScrollController();
-  
+    
     Row(
       children: [
         Expanded(
