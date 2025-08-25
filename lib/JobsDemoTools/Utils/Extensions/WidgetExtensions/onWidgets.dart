@@ -23,6 +23,17 @@ import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/Extensions/AnyExten
 //     .scrollable();
 
 extension JobsWidgetExtension on Widget {
+  Widget builder(
+    Widget Function(BuildContext ctx, Widget child) build, {
+    Key? key,
+  }) {
+    final child = this; // 避免闭包里多次 capture this
+    return Builder(
+      key: key,
+      builder: (ctx) => build(ctx, child),
+    );
+  }
+
   Widget container({
     Key? key,
     AlignmentGeometry? alignment,
@@ -55,6 +66,7 @@ extension JobsWidgetExtension on Widget {
         child: this,
       );
 
+  /// ⚠️ Expanded 只能在 Flex 容器（Row/Column/Flex）里面使用
   Widget expanded({Key? key, int flex = 1}) =>
       Expanded(key: key, flex: flex, child: this);
 
@@ -862,11 +874,11 @@ extension DecoratedBoxExtensions on Widget {
     Key? key,
     List<BoxShadow>? shadows,
     BorderRadiusGeometry? radius,
-    BoxShape ?shape,
+    BoxShape? shape,
     Color? background,
     Gradient? gradient,
     DecorationImage? image,
-    Clip ?clip,
+    Clip? clip,
   }) =>
       decoratedOnContainer(
         key: key,

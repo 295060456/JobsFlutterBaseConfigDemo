@@ -9660,6 +9660,15 @@ const Text("你好 Jobs")
   1.str
   ```
 
+#### 44.7、[**`onDateTime.dart`**]() <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```dart
+Now.ymd;
+Now.ymdHms;
+Now.ymdCn;
+Now.ymdHmsCn;
+```
+
 ### 45、区间数值：`clamp` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > ```dart
@@ -14406,6 +14415,35 @@ list.add('A');
 list.add('B');
 list.add('C');
 ```
+
+### 30、`switch` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* `switch` 表达式要求**穷尽匹配**。如果搭配万用类型**`dynamic`**则需要同时实现**兜底分支**
+
+  ```dart
+  TextStyle textStyleBy(dynamic ok) => switch (ok) {
+        true => const TextStyle(
+            color: Color(0xFFFF5A5A),
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+          ),
+        false => const TextStyle(
+            color: Color(0xFF23D17F),
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+          ),
+        null => const TextStyle(
+            color: Color(0xFFE6EBF2),
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+          ),
+        _ => const TextStyle(
+            // 兜底：任何其他类型
+            color: Color(0xFF9AA3B2),
+            fontSize: 12,
+            fontWeight: FontWeight.w400),
+      };
+  ```
 
 ## 六、FAQ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
