@@ -957,7 +957,7 @@ plugins/
 
 ## 三、⚖️[**Flutter**](https://flutter.dev/)代码规范 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-* 无状态的**`Widget`**用函数式表达，没有必要用**Class**表达
+* 无状态的**`Widget`**用函数式表达，没有必要用**Class**表达。**`Widget`** 的名字小写字母开头。
 
 * 有状态的**`Widget`**还是用系统的写法表达（即，将状态进行分离）
 
@@ -9645,18 +9645,20 @@ const Text("你好 Jobs")
     .translate3D(0, 20, 0); // 🔄 三维平移：向下 20
 ```
 
-#### 44.6、[**`onDouble.dart`**]() <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 44.6、[**`onNum.dart`**]() <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-```dart
-/// 圆角矩形
-Widget radiusOnDecoratedBoxByDouble(double radius, {Key? key}) =>
-    decoratedBox(
-      BoxDecoration(
-        borderRadius: radius.br,/// 进行转换
-      ),
-      key: key,
-    );
-```
+* 转换为`BorderRadiusGeometry`
+
+  ```dart
+  double radius = 1.0;
+  radius.br;
+  ```
+
+* 转换为`String`
+
+  ```dart
+  1.str
+  ```
 
 ### 45、区间数值：`clamp` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 

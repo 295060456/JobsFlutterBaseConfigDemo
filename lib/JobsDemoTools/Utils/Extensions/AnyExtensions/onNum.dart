@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
-extension RadiusExtension on num {
+extension JobsNumExtension on num {
   /// 转换为 BorderRadiusGeometry
   BorderRadiusGeometry get br => BorderRadius.circular(toDouble());
+
+  /// 转换为字符串
+  String get str => toString();
 }
+
