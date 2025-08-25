@@ -359,13 +359,13 @@ extension ContainerExtension on Widget {
     Key? key,
     Color color = Colors.black,
     double width = 1.0,
-    BorderRadiusGeometry? radius,
+    double radius = 0,
   }) =>
       container(
         key: key,
         decoration: BoxDecoration(
           border: Border.all(color: color, width: width),
-          borderRadius: radius,
+          borderRadius: radius.br,
         ),
       );
 
@@ -375,7 +375,7 @@ extension ContainerExtension on Widget {
     Color? color,
     DecorationImage? image,
     BoxBorder? border,
-    BorderRadiusGeometry? borderRadius,
+    double? borderRadius,
     List<BoxShadow>? boxShadow,
     Gradient? gradient,
     BlendMode? backgroundBlendMode,
@@ -409,7 +409,7 @@ extension ContainerExtension on Widget {
         color: color,
         image: image,
         border: border,
-        borderRadius: shape == BoxShape.rectangle ? borderRadius : null,
+        borderRadius: shape == BoxShape.rectangle ? (borderRadius ?? 0).br : 0.br,
         boxShadow: boxShadow,
         gradient: gradient,
         backgroundBlendMode: backgroundBlendMode,
@@ -424,10 +424,10 @@ extension ContainerExtension on Widget {
 
   /// 圆角
   Widget radiusByDouble(double radius, {Key? key}) => containerByBoxDecoration(
-      key: key, borderRadius: BorderRadius.circular(radius));
+      key: key, borderRadius: radius);
 
   /// 自定义圆角
-  Widget radiusByGeometry(BorderRadiusGeometry r, {Key? key}) =>
+  Widget radiusByGeometry(double r, {Key? key}) =>
       containerByBoxDecoration(key: key, borderRadius: r);
 
   /// 边框（全边）
@@ -750,48 +750,28 @@ extension DecoratedBoxExtensions on Widget {
         child: this,
       );
 
-  /// 背景色（可带圆角/形状/混合模式/前景装饰）
+  /// 背景色
   Widget backgroundColor(
     Color color, {
     Key? key,
-    BorderRadiusGeometry? radius,
-    BoxShape? shape,
-    BlendMode? backgroundBlendMode,
-    Decoration? foreground, // 若想加前景蒙层/边框
-    Clip clip = Clip.none,
   }) =>
       decoratedOnContainer(
         key: key,
         decoration: BoxDecoration(
           color: color,
-          shape: shape ?? BoxShape.rectangle,
-          backgroundBlendMode: backgroundBlendMode,
-          borderRadius: shape == BoxShape.rectangle ? radius : null,
         ),
-        foregroundDecoration: foreground,
-        clipBehavior: clip,
       );
 
   /// 渐变背景（可带圆角/形状/阴影/背景图）
   Widget gradient(
     Gradient gradient, {
     Key? key,
-    BorderRadiusGeometry? radius,
-    BoxShape? shape,
-    List<BoxShadow>? shadows,
-    DecorationImage? image,
-    Clip clip = Clip.none,
   }) =>
       decoratedOnContainer(
         key: key,
         decoration: BoxDecoration(
           gradient: gradient,
-          image: image,
-          shape: shape ?? BoxShape.rectangle,
-          borderRadius: shape == BoxShape.rectangle ? radius : null,
-          boxShadow: shadows,
         ),
-        clipBehavior: clip,
       );
 
   /// 全边框（可组合：圆角/阴影/背景色/渐变/背景图/形状）
@@ -800,7 +780,7 @@ extension DecoratedBoxExtensions on Widget {
     Color? color,
     double? width,
     BorderStyle? style,
-    BorderRadiusGeometry? radius,
+    double? radius,
     BoxShape? shape,
     List<BoxShadow>? boxShadow,
     Gradient? gradient,
@@ -815,7 +795,7 @@ extension DecoratedBoxExtensions on Widget {
           gradient: gradient,
           image: image,
           shape: shape ?? BoxShape.rectangle,
-          borderRadius: shape == BoxShape.rectangle ? radius : null,
+          borderRadius: shape == BoxShape.rectangle ? (radius ?? 0).br : 0.br,
           border: Border.all(
               color: color ?? Colors.black,
               width: width ?? 1.0,
@@ -831,32 +811,31 @@ extension DecoratedBoxExtensions on Widget {
     Color? color,
     double? width,
     BorderStyle? style,
-    bool? top,
-    bool? right,
-    bool? bottom,
-    bool? left,
-    BorderRadiusGeometry? radius,
+    Set<AxisDirection>? sides, // ✅ 用系统 AxisDirection
+    double? radius,
     BoxShape? shape,
     Color? background,
     Clip clip = Clip.none,
   }) {
-    BorderSide s(bool on) => on
+    BorderSide s(AxisDirection dir) => (sides?.contains(dir) ?? false)
         ? BorderSide(
             color: color ?? Colors.black,
             width: width ?? 1.0,
-            style: style ?? BorderStyle.solid)
+            style: style ?? BorderStyle.solid,
+          )
         : BorderSide.none;
+
     return decoratedOnContainer(
       key: key,
       decoration: BoxDecoration(
         color: background,
         shape: shape ?? BoxShape.rectangle,
-        borderRadius: shape == BoxShape.rectangle ? radius : null,
+        borderRadius: shape == BoxShape.rectangle ? (radius ?? 0).br : 0.br,
         border: Border(
-          top: s(top ?? false),
-          right: s(right ?? false),
-          bottom: s(bottom ?? false),
-          left: s(left ?? false),
+          top: s(AxisDirection.up),
+          right: s(AxisDirection.right),
+          bottom: s(AxisDirection.down),
+          left: s(AxisDirection.left),
         ),
       ),
       clipBehavior: clip,
@@ -864,16 +843,16 @@ extension DecoratedBoxExtensions on Widget {
   }
 
   /// 圆角裁剪（更可靠的裁剪边角）
-  Widget decoratedBoxRadius(Key? key, BorderRadiusGeometry radius,
+  Widget decoratedBoxRadius(Key? key, double radius,
           {Clip clip = Clip.antiAlias}) =>
       ClipRRect(
-          key: key, borderRadius: radius, clipBehavior: clip, child: this);
+          key: key, borderRadius: radius.br, clipBehavior: clip, child: this);
 
   /// 阴影（可叠加背景/渐变/背景图/圆角/形状）
   Widget boxShadow({
     Key? key,
     List<BoxShadow>? shadows,
-    BorderRadiusGeometry? radius,
+    double? radius,
     BoxShape? shape,
     Color? background,
     Gradient? gradient,
@@ -887,7 +866,7 @@ extension DecoratedBoxExtensions on Widget {
           gradient: gradient,
           image: image,
           shape: shape ?? BoxShape.rectangle,
-          borderRadius: shape == BoxShape.rectangle ? radius : null,
+          borderRadius: shape == BoxShape.rectangle ? (radius ?? 0).br : 0.br,
           boxShadow: shadows ??
               const [
                 BoxShadow(

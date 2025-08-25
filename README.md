@@ -14460,6 +14460,10 @@ list.add('C');
 
 * <font color=red>不出**UI**的总结</font>
 
+  * `Expanded` 不能直接作为 `Container`.`child`
+
+  * **`Expanded` 只能作为 `Column / Row / Flex` 的直接子节点**，用来占满剩余空间
+
   * 👉 只有当在 `Flex`（`Row`/`Column`）里放置<u>会在主轴方向无限扩展的子 `widget`</u>（典型：可滚动 **`ListView`**/**`GridView`**），才需要用 `Expanded`/`Flexible` 来给它有限的剩余空间
 
     * **Expanded / Flexible** 自己不会“无限伸展”，它们是 **吃掉父 Flex 剩余空间**。即：🔹如果父容器剩余空间有限 → **`Expanded`** 正常工作🔹如果父容器剩余空间无限（比如在 `ScrollView` 里）→ **`Expanded`** 无法计算，直接报错。
