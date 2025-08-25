@@ -2204,6 +2204,8 @@ Future wakeupHandler(Map<String, Object> data) async {
 
 ### 12、⏰获取当前时间 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
+<a href="#onDateTime.dart" style="font-size:17px; color:green;"><b>👉onDateTime.dart</b></a>
+
 ```dart
 /// 调用输出（格式）：2025/07/13T14:38:45.123 PM
 String getNowTime() {
@@ -9660,13 +9662,13 @@ const Text("你好 Jobs")
   1.str
   ```
 
-#### 44.7、[**`onDateTime.dart`**]() <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 44.7、[<font id=onDateTime.dart>**`onDateTime.dart`**</font>](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/lib/JobsDemoTools/Utils/Extensions/AnyExtensions/onDateTime.dart) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
-Now.ymd;
-Now.ymdHms;
-Now.ymdCn;
-Now.ymdHmsCn;
+Now.ymd;       // 2025-08-25
+Now.ymdHms;    // 2025-08-25 16:12:41
+Now.ymdCn;     // 2025年08月25日
+Now.ymdHmsCn;  // 2025年08月25日 16时12分41秒
 ```
 
 ### 45、区间数值：`clamp` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
@@ -12210,7 +12212,8 @@ Widget buildInviteCode(String inviteCode) {
 > * 可以理解成**代码片段**🎬
 >
 > * <font color=red>`mixin` 里写的函数 / `getter`/ `setter`/ 字段，都是 **运行时成员**，不会变成编译期常量</font>
->* **类似多继承，但更轻量**
+> * **`StatelessWidget`** 不允许直接 `with Mixin`。因为真正负责渲染逻辑的是 **`State` 类**，所以需要**`with`**进**`State` 类**里面
+> * **类似多继承，但更轻量**
 >   * **mixin**：造模块（功能集）
 >  * **with**：用模块（<a href="#混入" style="font-size:17px; color:green;"><b>混入</b></a> 类）
 >   * **on**：限定模块（必须基于谁才能用）
