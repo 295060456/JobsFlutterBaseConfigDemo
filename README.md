@@ -578,53 +578,53 @@
       {
       // ✅ 指定 CMake 项目的源代码目录（用于 CMake 插件）
       "cmake.sourceDirectory": "/Users/jobs/Documents/GitHub/JobsFlutterBaseConfig/jobs_flutter_base_config/linux",
-    
+      
       // ✅ Java 编译时的空值分析模式（自动启用 null 安全检查）
       "java.compile.nullAnalysis.mode": "automatic",
-    
+      
       // ✅ Dart 编辑器：整理 import 时总是使用 package 引用风格
       "dart.editImports": "always_use_package_imports",
-    
+      
       // ✅ Flutter SDK 路径（使用 FVM 管理的版本路径）
       "dart.flutterSdkPath": ".fvm/versions/3.32.8",
-    
+      
       // ✅ 每次保存文件时自动格式化代码
       "editor.formatOnSave": true,
-    
+      
       // ✅ 当窗口失焦时自动保存
       "files.autoSave": "afterDelay",
-    
+      
       // ✅ 自动保存延迟，100ms
       "files.autoSaveDelay": 100,
-    
+      
       // ✅ 关闭窗口时自动保存未保存文件（热退出）
       "files.hotExit": "onExitAndWindowClose",
-    
+      
       // ✅ 每次保存时自动移除每行末尾多余的空格
       "files.trimTrailingWhitespace": true,
-    
+      
       // ✅ 文件末尾自动插入一个换行符，符合编码规范
       "files.insertFinalNewline": true,
-    
+      
       // ✅ 保存文件时如有冲突，自动覆盖磁盘上的版本（避免弹出冲突提示）
       "files.saveConflictResolution": "overwriteFileOnDisk",
-    
+      
       // ✅ 启动时恢复上次打开的文件
       "window.restoreWindows": "all",
-    
+      
       // ✅ 显示括号对的引导线（active 表示仅在光标位于括号上时显示）
       "editor.guides.bracketPairs": "active",
-    
+      
       // ✅ 启用括号颜色匹配功能
       "editor.bracketPairColorization.enabled": true,
-    
+      
       // ✅ 始终高亮当前括号对
       "editor.matchBrackets": "always",
-    
+      
       // ✅ Flutter SDK 路径（优先 .fvm）
       "dart.flutterSdkPath": ".fvm/flutter_sdk",
       "dart.sdkPath": ".fvm/flutter_sdk/bin/cache/dart-sdk",
-    
+      
       // ✅ 让 VSCode 终端继承 Shell 环境（通常默认 true）
       "terminal.integrated.inheritEnv": true,
       }
@@ -4772,7 +4772,7 @@ enum HitTestBehavior {
   );
   ```
 
-### 19、<font id=线性布局>🧱</font> [**Flutter**](https://flutter.dev/)中，涉及到布局的**`Widget`**  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 19、<font id=线性布局>🧱</font> [**Flutter**](https://flutter.dev/)中，涉及到布局的**`Widget`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 🔹 布局类：**看不见的结构控制**（渲染、显示逻辑、动态构建...）。类似 iOS 中的 [**Masonry**](https://github.com/SnapKit/Masonry) 或 **AutoLayout**
 
@@ -5186,6 +5186,14 @@ class MyFlowDelegate extends FlowDelegate {
 ##### 19.6.2、🧱高级滚动视图 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a> <a href="#滚动&Sliver布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
 
 ###### 19.6.2.1、`ListView` —— 基于 `SliverList` 的线性滚动列表 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a> <a href="#滚动&Sliver布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
+
+* `Column`.`children`.`Expanded`.`child`.`ListView.separated`（`row`同理）
+
+  > `Column` → 给子 widget 的高度约束是 **无限高**。
+  >
+  > `ListView` → 必须要一个有限的高度，否则就会报错 / 什么都不显示。
+  >
+  > `Expanded` → 把 `ListView` 包起来，强制它“占据剩余空间”，这样就有了明确的高度约束。
 
 ###### 19.6.2.2、`GridView` —— 基于 `SliverGrid` 的网格滚动列表 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a> <a href="#滚动&Sliver布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
 
@@ -13284,7 +13292,7 @@ graph TD
   | 第三方依赖                                                   | 来自 [**pub.dev**](https://pub.dev/) 的插件中声明的 AAR/JAR，如 [`image_gallery_saver`](https://pub.dev/packages/image_gallery_saver)、[`engagelab`](https://pub.dev/packages?q=engagelab) |
   | [**Google Maven**](https://maven.google.com/web/index.html) / [**JCenter**](https://mvnrepository.com/repos/jcenter) / [**MavenCentral**](https://central.sonatype.com/) | 默认构建源，国内访问会慢                                     |
 
-##### 25.1.9、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)打包脚本（MacOS）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 25.1.9、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)打包脚本（MacOS） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 <details>
 <summary>点击展开代码</summary>
@@ -14450,19 +14458,96 @@ list.add('C');
 
 ## 六、FAQ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
+* <font color=red>不出**UI**的总结</font>
+
+  * 👉 只有当在 `Flex`（`Row`/`Column`）里放置<u>会在主轴方向无限扩展的子 `widget`</u>（典型：可滚动 **`ListView`**/**`GridView`**），才需要用 `Expanded`/`Flexible` 来给它有限的剩余空间
+
+    * **Expanded / Flexible** 自己不会“无限伸展”，它们是 **吃掉父 Flex 剩余空间**。即：🔹如果父容器剩余空间有限 → **`Expanded`** 正常工作🔹如果父容器剩余空间无限（比如在 `ScrollView` 里）→ **`Expanded`** 无法计算，直接报错。
+
+  * 规则（硬性）
+
+    > 1️⃣ **可滚动组件（`ListView`/`GridView`/`CustomScrollView`）在 `Row/Column` 里 → 必须给有限空间。**
+    >
+    > - 常规解：`Expanded(child: ListView(...))`
+    > - 或外面包 `SizedBox(height: X)` / `ConstrainedBox`
+    >
+    > 2️⃣ **`Expanded/Flexible` 只能用于 `Flex` 家族容器中（`Row/Column/Flex`）。**
+    >
+    > - 如果放在 `Stack` / `Container` / `SingleChildScrollView` 里 → 报错。
+    >
+    > 3️⃣ **`SingleChildScrollView` 里不要用 `Expanded`。**
+    >
+    > - 因为`SingleChildScrollView`提供的是**不受约束（无限）**的主轴尺寸。
+    >
+    > 4️⃣ **只想“内容多高就多高”的内嵌列表**
+    >
+    > - `ListView(shrinkWrap: true, physics: NeverScrollableScrollPhysics())`
+    > - 但**性能差**，仅用于列表很短、嵌套复杂且不可滚动的场景。
+
+  * 什么时候需要 `Expanded/Flexible`
+
+    * **`Column`/`Row` + 可滚动子 widget** → ✅ 必须包 `Expanded`/`Flexible`
+
+      ```dart
+      Column/Row(
+        children: [
+          Text("header"),
+          Expanded(child: ListView/GridView/CustomScrollView/Column/Row(...)), // 必须 Expanded
+        ],
+      )
+      ```
+
+    * **`Column`/`Row` + 普通子 `widget`** → ❌ 不需要
+
+      ```dart
+      Column(
+        children: [
+          Text("A"),
+          Text("B"), // 普通控件没问题
+        ],
+      )
+      ```
+
+    * **`Column`/`Row` ⊂ `ScrollView`** → ❌ 不能用 `Expanded`
+
+      ```dart
+      SingleChildScrollView(
+        child: Column(
+          children: [
+            Expanded(...), // ❌ 报错，因为 ScrollView 给的高度是无限。改 Sliver 体系或给固定/约束尺寸。
+          ],
+        ),
+      )
+      ```
+
+  * 场景速查表
+
+    | 场景                                                         | 能否直接放 | 是否需要 `Expanded/Flexible` | 备注/替代方案                                                |
+    | ------------------------------------------------------------ | ---------- | ---------------------------- | ------------------------------------------------------------ |
+    | `Column` 内放 **普通控件**（`Text/Container/...`）           | ✅ 可以     | ❌ 不需要                     | 正常布局即可                                                 |
+    | `Column` 内放 **ListView/GridView/CustomScrollView**         | ❌ 不可以   | ✅ 需要                       | 用 `Expanded(child: ListView(...))`；给出有限高度            |
+    | `Row` 内放 **横向 ListView**（`scrollDirection: Axis.horizontal`） | ❌ 不可以   | ✅ 需要                       | 用 `Expanded`/`Flexible` 给有限宽度                          |
+    | `Column` ⊂ `Scaffold.body`（屏幕提供有限高度）               | ✅ 可以     | 视情况                       | 当子项想“占满剩余空间”（如列表）→ 需要 `Expanded`            |
+    | `Column` ⊂ `SingleChildScrollView`                           | ⚠️ 小心     | ❌ 不能用 `Expanded`          | ScrollView 给的是 **无限高度**，`Expanded` 会报错            |
+    | `ListView` ⊂ `Column` 想只占内容高度                         | ⚠️ 慎用     | ❌ 不用 `Expanded`            | 可 `shrinkWrap: true` + `physics: NeverScrollableScrollPhysics()`；性能差，慎用 |
+    | `ListView` ⊂ `SizedBox(height: X)`                           | ✅ 可以     | ❌ 不需要                     | `SizedBox` 已给出明确高度                                    |
+    | `ListView` ⊂ `Expanded` ⊂ `Column`                           | ✅ 标准     | ✅ 已满足                     | 推荐写法                                                     |
+    | `Row` 内多个子项按比例分配空间                               | ✅ 可以     | ✅ 用 `Expanded(flex: n)`     | 或 `Flexible`；`Spacer` 等价 `Expanded(child: SizedBox.shrink())` |
+    | `GridView` / `ListView.builder` 顶层直接作为 `Scaffold.body` | ✅ 可以     | ❌ 不需要                     | 顶层约束由屏幕提供                                           |
+
 * 类型判断： **this is**
 
   ```dart
   bool flag = this is Text; // 判断是否是 Text
   ```
-  
+
 * **`call()`**
 
   ```dart
   void sayHello() {
     print("Hello!");
   }
-
+  
   void main() {
     var fn = sayHello;
     fn();        // ✅ 传统写法：调用函数
@@ -14477,10 +14562,10 @@ list.add('C');
       print("Hi, I'm callable!");
     }
   }
-
+  
   void main() {
     var g = Greeter();
-
+  
     g();        // ✅ 像函数一样调用
     g.call();   // ✅ 等价写法
   }
