@@ -1,5 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/Extensions/AnyExtensions/onDouble.dart';
 
 // 使用示例
 // return Text("点我试试,试试就试试")
@@ -8,11 +10,10 @@ import 'package:flutter/material.dart';
 //     .padding(const EdgeInsets.all(12)) // 内边距
 //     .margin(const EdgeInsets.only(bottom: 20)) // 外边距
 //     .backgroundColor(Colors.blueAccent) // 背景色
-//     .border(color: Colors.white, width: 2) // 边框
-//     .radius(16) // 圆角
+//     .setBorderBy(color: const Color(0xFF2B3140), width: 1, radius: 8.br)
 //     .size(width: 200, height: 60) // 固定宽高
 //     .tooltip("这是一个按钮") // Tooltip 提示
-//     .opacity(0.9) // 透明度
+//     .opacity(0.5) // 透明度
 //     .rotate(0.1) // 旋转（单位是弧度）
 //     .scale(1.1) // 缩放
 //     .transform(Matrix4.translationValues(5, 0, 0)) // 位移变换
@@ -64,9 +65,9 @@ extension JobsWidgetExtension on Widget {
           heightFactor: heightFactor,
           child: this);
 
-  Widget align({
+  Widget align(
+    AlignmentGeometry alignment, {
     Key? key,
-    AlignmentGeometry alignment = Alignment.center,
     double? widthFactor,
     double? heightFactor,
   }) =>
@@ -82,27 +83,28 @@ extension JobsWidgetExtension on Widget {
       Padding(key: key, padding: padding, child: this);
 
   /// Flutter.DecoratedBox
-  Widget decoratedBox({
+  /// DecoratedBox 不会控制大小，它只是负责绘制 decoration 和 child，
+  Widget decoratedBox(
+    Decoration? decoration, {
     Key? key,
-    required Decoration decoration,
-    DecorationPosition position = DecorationPosition.background,
+    DecorationPosition? position,
   }) =>
       DecoratedBox(
         key: key,
-        decoration: decoration,
-        position: position,
+        decoration: decoration ?? const BoxDecoration(),
+        position: position ?? DecorationPosition.background,
         child: this,
       );
 
-  Widget clipRRect({
+  Widget clipRRect(
+    double? borderRadius, {
     Key? key,
-    BorderRadiusGeometry borderRadius = BorderRadius.zero,
     CustomClipper<RRect>? clipper,
     Clip clipBehavior = Clip.antiAlias,
   }) =>
       ClipRRect(
         key: key,
-        borderRadius: borderRadius,
+        borderRadius: (borderRadius ?? 0).br,
         clipper: clipper,
         clipBehavior: clipBehavior,
         child: this,
@@ -114,9 +116,9 @@ extension JobsWidgetExtension on Widget {
   Widget infinity() =>
       SizedBox(width: double.infinity, height: double.infinity, child: this);
 
-  Widget tooltip({
+  Widget tooltip(
+    String? message, {
     Key? key,
-    String? message,
     InlineSpan? richMessage,
     double? height,
     EdgeInsetsGeometry? padding,
@@ -136,74 +138,67 @@ extension JobsWidgetExtension on Widget {
     TooltipTriggeredCallback? onTriggered,
   }) =>
       Tooltip(
-        key: key,
-        message: message,
-        richMessage: richMessage,
-        height: height,
-        padding: padding,
-        margin: margin,
-        verticalOffset: verticalOffset,
-        preferBelow: preferBelow,
-        excludeFromSemantics: excludeFromSemantics,
-        decoration: decoration,
-        textStyle: textStyle,
-        textAlign: textAlign,
-        waitDuration: waitDuration,
-        showDuration: showDuration,
-        exitDuration: exitDuration,
-        enableTapToDismiss: enableTapToDismiss,
-        triggerMode: triggerMode,
-        enableFeedback: enableFeedback,
-        onTriggered: onTriggered,
-        child: this,
+        key: key, // Widget 唯一标识
+        message: message ?? '暂无数据'.tr, // 简单文字提示（优先级高于 richMessage）
+        richMessage: richMessage, // 富文本提示（可包含多样式 TextSpan）
+        height: height, // Tooltip 高度
+        padding: padding, // 内边距（文字和边框之间的间距）
+        margin: margin, // 外边距（Tooltip 与目标 Widget 的间距）
+        verticalOffset: verticalOffset, // Tooltip 与目标 Widget 的垂直偏移量
+        preferBelow: preferBelow, // 是否优先显示在目标 Widget 下方
+        excludeFromSemantics: excludeFromSemantics, // 是否从无障碍语义中排除
+        decoration: decoration, // Tooltip 外观样式（背景色、圆角、阴影等）
+        textStyle: textStyle, // Tooltip 文字样式
+        textAlign: textAlign, // 文字对齐方式
+        waitDuration: waitDuration, // 鼠标悬停/长按后显示 Tooltip 的延迟时间
+        showDuration: showDuration, // Tooltip 显示时长
+        exitDuration: exitDuration, // Tooltip 消失的过渡时长
+        enableTapToDismiss: enableTapToDismiss, // 点击后是否允许关闭 Tooltip
+        triggerMode: triggerMode, // 触发模式（悬停/长按/点击）
+        enableFeedback: enableFeedback, // 是否启用触觉/声音反馈
+        onTriggered: onTriggered, // 当 Tooltip 被触发时的回调
+        child: this, // 需要被包裹的目标 Widget
       );
 
-  Widget opacity({
+  Widget opacity(
+    double opacity, {
     Key? key,
-    required double opacity,
     bool alwaysIncludeSemantics = false,
   }) =>
       Opacity(
-        key: key,
-        opacity: opacity,
+        key: key, // Widget 唯一标识
+        opacity: opacity, // 透明度 (0.0 = 完全透明, 1.0 = 不透明)
+        /// 是否始终将子 widget 包含在语义树中：
+        //   true  → 即使透明度为 0，依然能被无障碍/辅助功能读取
+        //   false → 透明度为 0 时，不会被无障碍读取（默认）
         alwaysIncludeSemantics: alwaysIncludeSemantics,
-        child: this,
+        child: this, // 需要被设置透明度的目标 Widget
       );
 
-  Widget transform({
+  Widget hero(
+    Object tag, {
     Key? key,
-    required Matrix4 transform,
-    Offset? origin,
-    AlignmentGeometry? alignment,
-    bool transformHitTests = true,
-    FilterQuality? filterQuality,
-  }) =>
-      Transform(
-        key: key,
-        transform: transform,
-        origin: origin,
-        alignment: alignment,
-        transformHitTests: transformHitTests,
-        filterQuality: filterQuality,
-        child: this,
-      );
-
-  Widget hero({
-    Key? key,
-    required Object tag,
     CreateRectTween? createRectTween,
     HeroFlightShuttleBuilder? flightShuttleBuilder,
     HeroPlaceholderBuilder? placeholderBuilder,
-    bool transitionOnUserGestures = false,
+    bool? transitionOnUserGestures,
   }) =>
       Hero(
-        key: key,
-        tag: tag,
-        createRectTween: createRectTween,
+        key: key, // Widget 唯一标识
+        tag: tag, // Hero 动画的唯一标识符（必须全局唯一，通常是字符串或对象）
+        createRectTween: createRectTween, // 自定义 Rect 过渡动画（控制位移/缩放路径）
+        /// 自定义 Hero 在“飞行”过程中的 widget 外观
+        /// 比如：从缩略图切换到大图，可以自定义过渡效果
         flightShuttleBuilder: flightShuttleBuilder,
+
+        /// 在源页面/目标页面构建占位 Widget
+        /// 避免 Hero 被移走后留下空白
         placeholderBuilder: placeholderBuilder,
-        transitionOnUserGestures: transitionOnUserGestures,
-        child: this,
+
+        /// 是否允许在手势导航（比如 iOS 右滑返回）时触发 Hero 动画
+        transitionOnUserGestures: (transitionOnUserGestures ?? false),
+
+        child: this, // 被包裹的目标 Widget（实际做 Hero 动画的内容）
       );
 
   Widget clipOval({
@@ -212,10 +207,15 @@ extension JobsWidgetExtension on Widget {
     Clip clipBehavior = Clip.antiAlias,
   }) =>
       ClipOval(
-        key: key,
-        clipper: clipper,
+        key: key, // Widget 唯一标识
+        clipper: clipper, // 自定义裁剪规则（可选，若为空则按椭圆/圆裁剪）
+        /// 裁剪行为：
+        ///   Clip.none      → 不裁剪
+        ///   Clip.hardEdge  → 硬边裁剪，性能最好
+        ///   Clip.antiAlias → 抗锯齿裁剪（默认），平滑边缘但稍耗性能
+        ///   Clip.antiAliasWithSaveLayer → 抗锯齿+保存图层，效果最好但性能最差
         clipBehavior: clipBehavior,
-        child: this,
+        child: this, // 需要被裁剪成圆形/椭圆的目标 Widget
       );
 
   Widget safeArea({
@@ -234,7 +234,8 @@ extension JobsWidgetExtension on Widget {
         right: right,
         bottom: bottom,
         minimum: minimum,
-        maintainBottomViewPadding: maintainBottomViewPadding,
+        maintainBottomViewPadding:
+            maintainBottomViewPadding, // 是否在键盘弹出时 保留底部系统内边距（padding）。
         child: this,
       );
 
@@ -254,26 +255,72 @@ extension JobsWidgetExtension on Widget {
         ScrollViewKeyboardDismissBehavior.manual,
   }) =>
       SingleChildScrollView(
-        key: key,
+        key: key, // Widget 唯一标识
+
+        /// 滚动方向：
+        /// Axis.vertical   → 垂直滚动（默认）
+        /// Axis.horizontal → 水平滚动
         scrollDirection: scrollDirection,
+
+        /// 是否反向滚动：
+        ///   true  → 内容从尾部开始显示，滚动方向相反
+        ///   false → 正常方向（默认）
         reverse: reverse,
+
+        /// 内边距，作用在 child 外围（比如上下左右加留白）
         padding: padding,
+
+        /// 是否使用 PrimaryScrollController：
+        ///   true  → 自动和 Scaffold 里的默认滚动控制器绑定
+        ///   false → 自己控制
+        ///   null  → Flutter 自动决定（通常竖直滚动时默认 true）
         primary: primary,
+
+        /// 滚动物理特性：
+        ///   BouncingScrollPhysics() → iOS 弹性回弹
+        ///   ClampingScrollPhysics() → Android 越界阻尼
+        ///   AlwaysScrollableScrollPhysics() → 始终可滚动
+        ///   NeverScrollableScrollPhysics() → 禁止滚动
         physics: physics,
+
+        /// 自定义 ScrollController，用于手动控制/监听滚动位置
         controller: controller,
+
+        /// 拖拽手势识别起点：
+        ///   DragStartBehavior.start → 手指按下时立刻触发拖动（默认）
+        ///   DragStartBehavior.down  → 要移动一定距离才触发
         dragStartBehavior: dragStartBehavior,
+
+        /// 裁剪模式（默认 Clip.hardEdge）：
+        ///   none      → 不裁剪
+        ///   hardEdge  → 硬裁剪
+        ///   antiAlias → 抗锯齿裁剪
+        ///   antiAliasWithSaveLayer → 抗锯齿+保存图层（性能最低）
         clipBehavior: clipBehavior,
+
+        /// 命中测试行为，决定手势如何穿透：
+        ///   opaque    → 总是响应命中（即使透明区域）
+        ///   translucent → 透明区域也能命中
+        ///   deferToChild → 交给子组件决定（默认）
         hitTestBehavior: hitTestBehavior,
+
+        /// 状态恢复 ID，用于 Flutter 状态恢复框架
+        /// 让滚动位置在应用重启后也能恢复
         restorationId: restorationId,
+
+        /// 键盘消失方式：
+        ///   manual           → 手动关闭（默认）
+        ///   onDrag           → 下拉/滑动时自动收起键盘
         keyboardDismissBehavior: keyboardDismissBehavior,
+
+        /// 被包裹的子组件（通常是 Column / Row / 大组件树）
         child: this,
       );
 }
 
 /// 裁剪
 extension ClipRRectExtension on Widget {
-  Widget radius([double r = 8.0]) =>
-      clipRRect(borderRadius: BorderRadius.circular(r));
+  Widget clipRRectRadius([double r = 8.0]) => clipRRect(r);
 }
 
 /// 排列对齐
@@ -291,87 +338,12 @@ extension AlignExtension on Widget {
       Align(key: key, alignment: Alignment.bottomCenter, child: this);
 }
 
-/// 位置
-extension TransformExtension on Widget {
-  Widget rotate({
-    Key? key,
-    required double angle,
-    Offset? origin,
-    AlignmentGeometry alignment = Alignment.center,
-    bool transformHitTests = true,
-    FilterQuality? filterQuality,
-  }) =>
-      Transform.rotate(
-        key: key,
-        angle: angle,
-        origin: origin,
-        alignment: alignment,
-        transformHitTests: transformHitTests,
-        filterQuality: filterQuality,
-        child: this,
-      );
-
-  Widget translate({
-    Key? key,
-    required Offset offset,
-    bool transformHitTests = true,
-    FilterQuality? filterQuality,
-  }) =>
-      Transform.translate(
-        key: key,
-        offset: offset,
-        transformHitTests: transformHitTests,
-        filterQuality: filterQuality,
-        child: this,
-      );
-
-  Widget scale({
-    Key? key,
-    double? scale,
-    double? scaleX,
-    double? scaleY,
-    Offset? origin,
-    AlignmentGeometry alignment = Alignment.center,
-    bool transformHitTests = true,
-    FilterQuality? filterQuality,
-  }) =>
-      Transform.scale(
-        key: key,
-        scale: scale,
-        scaleX: scaleX,
-        scaleY: scaleY,
-        origin: origin,
-        alignment: alignment,
-        transformHitTests: transformHitTests,
-        filterQuality: filterQuality,
-        child: this,
-      );
-
-  Widget flip({
-    Key? key,
-    bool flipX = false,
-    bool flipY = false,
-    Offset? origin,
-    bool transformHitTests = true,
-    FilterQuality? filterQuality,
-  }) =>
-      Transform.flip(
-        key: key,
-        flipX: flipX,
-        flipY: flipY,
-        origin: origin,
-        transformHitTests: transformHitTests,
-        filterQuality: filterQuality,
-        child: this,
-      );
-}
-
 /// Flutter.Container.BoxDecoration
 extension ContainerExtension on Widget {
   Widget margin(EdgeInsetsGeometry margin, {Key? key}) =>
       container(margin: margin, key: key);
   Widget bgColor(Color color, {Key? key}) => container(color: color, key: key);
-  Widget border({
+  Widget setBorderBy({
     Key? key,
     Color color = Colors.black,
     double width = 1.0,
@@ -439,70 +411,77 @@ extension ContainerExtension on Widget {
       containerByBoxDecoration(key: key, color: color);
 
   /// 圆角
-  Widget rounded(double radius, {Key? key}) => containerByBoxDecoration(
+  Widget radiusByDouble(double radius, {Key? key}) => containerByBoxDecoration(
       key: key, borderRadius: BorderRadius.circular(radius));
 
   /// 自定义圆角
-  Widget radius(BorderRadiusGeometry r, {Key? key}) =>
+  Widget radiusByGeometry(BorderRadiusGeometry r, {Key? key}) =>
       containerByBoxDecoration(key: key, borderRadius: r);
 
   /// 边框（全边）
   Widget borderAll({
     Key? key,
-    Color color = const Color(0xFF000000),
-    double width = 1.0,
-    BorderStyle style = BorderStyle.solid,
+    Color? color,
+    double? width,
+    BorderStyle? style,
   }) =>
       containerByBoxDecoration(
         key: key,
-        border: Border.all(color: color, width: width, style: style),
+        border: Border.all(
+            color: color ?? const Color(0xFF000000),
+            width: width ?? 1.0,
+            style: style ?? BorderStyle.solid),
       );
 
   /// 边框（单边）
   Widget borderOnly({
     Key? key,
-    Color left = Colors.transparent,
-    Color top = Colors.transparent,
-    Color right = Colors.transparent,
-    Color bottom = Colors.transparent,
-    double leftWidth = 1,
-    double topWidth = 1,
-    double rightWidth = 1,
-    double bottomWidth = 1,
+    Color? left,
+    Color? top,
+    Color? right,
+    Color? bottom,
+    double? leftWidth,
+    double? topWidth,
+    double? rightWidth,
+    double? bottomWidth,
   }) =>
       containerByBoxDecoration(
         key: key,
         border: Border(
-          left: BorderSide(color: left, width: leftWidth),
-          top: BorderSide(color: top, width: topWidth),
-          right: BorderSide(color: right, width: rightWidth),
-          bottom: BorderSide(color: bottom, width: bottomWidth),
+          left: BorderSide(
+              color: left ?? Colors.transparent, width: leftWidth ?? 1),
+          top: BorderSide(
+              color: top ?? Colors.transparent, width: topWidth ?? 1),
+          right: BorderSide(
+              color: right ?? Colors.transparent, width: rightWidth ?? 1),
+          bottom: BorderSide(
+              color: bottom ?? Colors.transparent, width: bottomWidth ?? 1),
         ),
       );
 
   /// 阴影（预设强度）
-  Widget shadowXs({Key? key, Color color = Colors.black26}) =>
+  Widget shadowXs({Key? key, Color? color}) =>
       containerByBoxDecoration(key: key, boxShadow: [
         BoxShadow(
-            color: color,
+            color: color ?? Colors.black26,
             blurRadius: 2,
             spreadRadius: 0,
             offset: const Offset(0, 1)),
       ]);
 
-  Widget shadowSm({Key? key, Color color = Colors.black26}) =>
+  Widget shadowSm({Key? key, Color? color}) =>
       containerByBoxDecoration(key: key, boxShadow: [
         BoxShadow(
-            color: color,
+            color: color ?? Colors.black26,
             blurRadius: 6,
             spreadRadius: 0,
             offset: const Offset(0, 2)),
       ]);
 
-  Widget shadowMd({Key? key, Color color = Colors.black26}) =>
+  Widget shadowMd({Key? key, Color? color}) =>
       containerByBoxDecoration(key: key, boxShadow: [
         BoxShadow(
-            color: color,
+            color: color ?? Colors.black26,
             blurRadius: 12,
             spreadRadius: 0,
             offset: const Offset(0, 4)),
@@ -513,13 +492,16 @@ extension ContainerExtension on Widget {
     List<Color> colors, {
     Key? key,
     List<double>? stops,
-    AlignmentGeometry begin = Alignment.centerLeft,
-    AlignmentGeometry end = Alignment.centerRight,
+    AlignmentGeometry? begin,
+    AlignmentGeometry? end,
   }) =>
       containerByBoxDecoration(
         key: key,
         gradient: LinearGradient(
-            colors: colors, stops: stops, begin: begin, end: end),
+            colors: colors,
+            stops: stops,
+            begin: begin ?? Alignment.centerLeft,
+            end: end ?? Alignment.centerRight),
       );
 
   /// 径向渐变
@@ -527,22 +509,25 @@ extension ContainerExtension on Widget {
     List<Color> colors, {
     Key? key,
     List<double>? stops,
-    AlignmentGeometry center = Alignment.center,
+    AlignmentGeometry? center,
     double radius = 0.5,
   }) =>
       containerByBoxDecoration(
         key: key,
         gradient: RadialGradient(
-            colors: colors, stops: stops, center: center, radius: radius),
+            colors: colors,
+            stops: stops,
+            center: center ?? Alignment.center,
+            radius: radius),
       );
 
   /// 背景图
   Widget bgImage(
     ImageProvider provider, {
     Key? key,
-    BoxFit fit = BoxFit.cover,
-    AlignmentGeometry alignment = Alignment.center,
-    ImageRepeat repeat = ImageRepeat.noRepeat,
+    BoxFit? fit,
+    AlignmentGeometry? alignment,
+    ImageRepeat? repeat,
     Rect? centerSlice,
     ColorFilter? colorFilter,
     BlendMode? blendMode,
@@ -551,9 +536,9 @@ extension ContainerExtension on Widget {
         key: key,
         image: DecorationImage(
           image: provider,
-          fit: fit,
-          alignment: alignment,
-          repeat: repeat,
+          fit: fit ?? BoxFit.cover,
+          alignment: alignment ?? Alignment.center,
+          repeat: repeat ?? ImageRepeat.noRepeat,
           centerSlice: centerSlice,
           colorFilter: colorFilter,
           // Flutter 最新实现里背景混合通过 backgroundBlendMode；这里保留给高级用法
@@ -573,7 +558,7 @@ extension ContainerExtension on Widget {
     EdgeInsetsGeometry? padding,
     EdgeInsetsGeometry? margin,
     AlignmentGeometry? alignment,
-    Clip clipBehavior = Clip.antiAlias, // 圆形建议抗锯齿裁剪
+    Clip? clipBehavior,
   }) =>
       containerByBoxDecoration(
         key: key,
@@ -588,7 +573,7 @@ extension ContainerExtension on Widget {
         padding: padding,
         margin: margin,
         alignment: alignment,
-        clipBehavior: clipBehavior,
+        clipBehavior: clipBehavior ?? Clip.antiAlias, // 圆形建议抗锯齿裁剪,
       );
 }
 
@@ -596,60 +581,68 @@ extension ContainerExtension on Widget {
 extension DecoratedBoxExtension on Widget {
   /// 纯背景色
   Widget backgroundCor(Color color, {Key? key}) => decoratedBox(
+        BoxDecoration(color: color),
         key: key,
-        decoration: BoxDecoration(color: color),
       );
 
   /// 圆角矩形
-  Widget rounded(double radius, {Key? key}) => decoratedBox(
-        key: key,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(radius),
+  Widget radiusOnDecoratedBoxByDouble(double radius, {Key? key}) =>
+      decoratedBox(
+        BoxDecoration(
+          borderRadius: radius.br,
         ),
+        key: key,
       );
 
   /// 自定义圆角
-  Widget radius(BorderRadiusGeometry r, {Key? key}) => decoratedBox(
+  Widget radiusOnBoxDecorationByGeometry(double r, {Key? key}) => decoratedBox(
+        BoxDecoration(borderRadius: r.br),
         key: key,
-        decoration: BoxDecoration(borderRadius: r),
       );
 
   /// 边框（全边）
   Widget borderAll({
     Key? key,
-    Color color = const Color(0xFF000000),
-    double width = 1.0,
-    BorderStyle style = BorderStyle.solid,
+    Color? color,
+    double? width,
+    BorderStyle? style,
   }) =>
       decoratedBox(
-        key: key,
-        decoration: BoxDecoration(
-          border: Border.all(color: color, width: width, style: style),
+        BoxDecoration(
+          border: Border.all(
+              color: color ?? const Color(0xFF000000),
+              width: width ?? 1.0,
+              style: style ?? BorderStyle.solid),
         ),
+        key: key,
       );
 
   /// 边框（单边）
   Widget borderOnly({
     Key? key,
-    Color left = Colors.transparent,
-    Color top = Colors.transparent,
-    Color right = Colors.transparent,
-    Color bottom = Colors.transparent,
-    double leftWidth = 1,
-    double topWidth = 1,
-    double rightWidth = 1,
-    double bottomWidth = 1,
+    Color? left,
+    Color? top,
+    Color? right,
+    Color? bottom,
+    double? leftWidth,
+    double? topWidth,
+    double? rightWidth,
+    double? bottomWidth,
   }) =>
       decoratedBox(
-        key: key,
-        decoration: BoxDecoration(
+        BoxDecoration(
           border: Border(
-            left: BorderSide(color: left, width: leftWidth),
-            top: BorderSide(color: top, width: topWidth),
-            right: BorderSide(color: right, width: rightWidth),
-            bottom: BorderSide(color: bottom, width: bottomWidth),
+            left: BorderSide(
+                color: left ?? Colors.transparent, width: leftWidth ?? 1.0),
+            top: BorderSide(
+                color: top ?? Colors.transparent, width: topWidth ?? 1.0),
+            right: BorderSide(
+                color: right ?? Colors.transparent, width: rightWidth ?? 1.0),
+            bottom: BorderSide(
+                color: bottom ?? Colors.transparent, width: bottomWidth ?? 1.0),
           ),
         ),
+        key: key,
       );
 
   /// 阴影
@@ -658,8 +651,8 @@ extension DecoratedBoxExtension on Widget {
     List<BoxShadow>? shadows,
   }) =>
       decoratedBox(
+        BoxDecoration(boxShadow: shadows),
         key: key,
-        decoration: BoxDecoration(boxShadow: shadows),
       );
 
   /// 线性渐变
@@ -667,39 +660,39 @@ extension DecoratedBoxExtension on Widget {
     List<Color> colors, {
     Key? key,
     List<double>? stops,
-    AlignmentGeometry begin = Alignment.centerLeft,
-    AlignmentGeometry end = Alignment.centerRight,
+    AlignmentGeometry? begin,
+    AlignmentGeometry? end,
   }) =>
       decoratedBox(
-        key: key,
-        decoration: BoxDecoration(
+        BoxDecoration(
           gradient: LinearGradient(
             colors: colors,
             stops: stops,
-            begin: begin,
-            end: end,
+            begin: begin ?? Alignment.centerLeft,
+            end: end ?? Alignment.centerRight,
           ),
         ),
+        key: key,
       );
 
   /// 背景图
   Widget bgImage(
     ImageProvider provider, {
     Key? key,
-    BoxFit fit = BoxFit.cover,
-    AlignmentGeometry alignment = Alignment.center,
-    ImageRepeat repeat = ImageRepeat.noRepeat,
+    BoxFit? fit,
+    AlignmentGeometry? alignment,
+    ImageRepeat? repeat,
   }) =>
       decoratedBox(
-        key: key,
-        decoration: BoxDecoration(
+        BoxDecoration(
           image: DecorationImage(
             image: provider,
-            fit: fit,
-            alignment: alignment,
-            repeat: repeat,
+            fit: fit ?? BoxFit.cover,
+            alignment: alignment ?? Alignment.center,
+            repeat: repeat ?? ImageRepeat.noRepeat,
           ),
         ),
+        key: key,
       );
 
   /// 圆形
@@ -713,27 +706,15 @@ extension DecoratedBoxExtension on Widget {
     DecorationImage? image,
   }) =>
       decoratedBox(
-        key: key,
-        decoration: BoxDecoration(
-          color: color,
-          border: border,
-          boxShadow: boxShadow,
-          gradient: gradient,
-          image: image,
-          shape: BoxShape.circle,
-        ),
-      );
-
-  // 核心实现：用 DecoratedBox 包裹
-  Widget decoratedBox({
-    Key? key,
-    Decoration? decoration,
-  }) =>
-      DecoratedBox(
-        key: key,
-        decoration: decoration ?? const BoxDecoration(),
-        child: this,
-      );
+          BoxDecoration(
+            color: color,
+            border: border,
+            boxShadow: boxShadow,
+            gradient: gradient,
+            image: image,
+            shape: BoxShape.circle,
+          ),
+          key: key);
 }
 
 /// Flutter.Container.decoration
@@ -743,7 +724,7 @@ extension DecoratedBoxExtensions on Widget {
     Key? key,
     Decoration? decoration,
     Decoration? foregroundDecoration,
-    Clip clipBehavior = Clip.none,
+    Clip? clipBehavior,
     AlignmentGeometry? alignment,
     EdgeInsetsGeometry? padding,
   }) =>
@@ -751,7 +732,7 @@ extension DecoratedBoxExtensions on Widget {
         key: key,
         decoration: decoration,
         foregroundDecoration: foregroundDecoration,
-        clipBehavior: clipBehavior,
+        clipBehavior: clipBehavior ?? Clip.none,
         alignment: alignment,
         padding: padding,
         child: this,
@@ -762,17 +743,16 @@ extension DecoratedBoxExtensions on Widget {
     Color color, {
     Key? key,
     BorderRadiusGeometry? radius,
-    BoxShape shape = BoxShape.rectangle,
+    BoxShape? shape,
     BlendMode? backgroundBlendMode,
     Decoration? foreground, // 若想加前景蒙层/边框
     Clip clip = Clip.none,
-    DecorationPosition position = DecorationPosition.background,
   }) =>
       decoratedOnContainer(
         key: key,
         decoration: BoxDecoration(
           color: color,
-          shape: shape,
+          shape: shape ?? BoxShape.rectangle,
           backgroundBlendMode: backgroundBlendMode,
           borderRadius: shape == BoxShape.rectangle ? radius : null,
         ),
@@ -785,7 +765,7 @@ extension DecoratedBoxExtensions on Widget {
     Gradient gradient, {
     Key? key,
     BorderRadiusGeometry? radius,
-    BoxShape shape = BoxShape.rectangle,
+    BoxShape? shape,
     List<BoxShadow>? shadows,
     DecorationImage? image,
     Clip clip = Clip.none,
@@ -795,7 +775,7 @@ extension DecoratedBoxExtensions on Widget {
         decoration: BoxDecoration(
           gradient: gradient,
           image: image,
-          shape: shape,
+          shape: shape ?? BoxShape.rectangle,
           borderRadius: shape == BoxShape.rectangle ? radius : null,
           boxShadow: shadows,
         ),
@@ -803,13 +783,13 @@ extension DecoratedBoxExtensions on Widget {
       );
 
   /// 全边框（可组合：圆角/阴影/背景色/渐变/背景图/形状）
-  Widget border({
+  Widget borderOnDecoratedBox({
     Key? key,
-    Color color = Colors.black,
-    double width = 1.0,
-    BorderStyle style = BorderStyle.solid,
+    Color? color,
+    double? width,
+    BorderStyle? style,
     BorderRadiusGeometry? radius,
-    BoxShape shape = BoxShape.rectangle,
+    BoxShape? shape,
     List<BoxShadow>? boxShadow,
     Gradient? gradient,
     Color? background,
@@ -822,9 +802,12 @@ extension DecoratedBoxExtensions on Widget {
           color: background,
           gradient: gradient,
           image: image,
-          shape: shape,
+          shape: shape ?? BoxShape.rectangle,
           borderRadius: shape == BoxShape.rectangle ? radius : null,
-          border: Border.all(color: color, width: width, style: style),
+          border: Border.all(
+              color: color ?? Colors.black,
+              width: width ?? 1.0,
+              style: style ?? BorderStyle.solid),
           boxShadow: boxShadow,
         ),
         clipBehavior: clip,
@@ -833,32 +816,35 @@ extension DecoratedBoxExtensions on Widget {
   /// 指定边的边框（top/right/bottom/left）
   Widget borderOnly({
     Key? key,
-    Color color = Colors.black,
-    double width = 1.0,
-    BorderStyle style = BorderStyle.solid,
-    bool top = false,
-    bool right = false,
-    bool bottom = false,
-    bool left = false,
+    Color? color,
+    double? width,
+    BorderStyle? style,
+    bool? top,
+    bool? right,
+    bool? bottom,
+    bool? left,
     BorderRadiusGeometry? radius,
-    BoxShape shape = BoxShape.rectangle,
+    BoxShape? shape,
     Color? background,
     Clip clip = Clip.none,
   }) {
     BorderSide s(bool on) => on
-        ? BorderSide(color: color, width: width, style: style)
+        ? BorderSide(
+            color: color ?? Colors.black,
+            width: width ?? 1.0,
+            style: style ?? BorderStyle.solid)
         : BorderSide.none;
     return decoratedOnContainer(
       key: key,
       decoration: BoxDecoration(
         color: background,
-        shape: shape,
+        shape: shape ?? BoxShape.rectangle,
         borderRadius: shape == BoxShape.rectangle ? radius : null,
         border: Border(
-          top: s(top),
-          right: s(right),
-          bottom: s(bottom),
-          left: s(left),
+          top: s(top ?? false),
+          right: s(right ?? false),
+          bottom: s(bottom ?? false),
+          left: s(left ?? false),
         ),
       ),
       clipBehavior: clip,
@@ -866,7 +852,7 @@ extension DecoratedBoxExtensions on Widget {
   }
 
   /// 圆角裁剪（更可靠的裁剪边角）
-  Widget radius(Key? key, BorderRadiusGeometry radius,
+  Widget decoratedBoxRadius(Key? key, BorderRadiusGeometry radius,
           {Clip clip = Clip.antiAlias}) =>
       ClipRRect(
           key: key, borderRadius: radius, clipBehavior: clip, child: this);
@@ -876,11 +862,11 @@ extension DecoratedBoxExtensions on Widget {
     Key? key,
     List<BoxShadow>? shadows,
     BorderRadiusGeometry? radius,
-    BoxShape shape = BoxShape.rectangle,
+    BoxShape ?shape,
     Color? background,
     Gradient? gradient,
     DecorationImage? image,
-    Clip clip = Clip.none,
+    Clip ?clip,
   }) =>
       decoratedOnContainer(
         key: key,
@@ -888,7 +874,7 @@ extension DecoratedBoxExtensions on Widget {
           color: background,
           gradient: gradient,
           image: image,
-          shape: shape,
+          shape: shape ?? BoxShape.rectangle,
           borderRadius: shape == BoxShape.rectangle ? radius : null,
           boxShadow: shadows ??
               const [
@@ -899,7 +885,7 @@ extension DecoratedBoxExtensions on Widget {
                 ),
               ],
         ),
-        clipBehavior: clip,
+        clipBehavior: clip ?? Clip.none,
       );
 
   /// 前景装饰（例如前景边框/蒙层/水印）

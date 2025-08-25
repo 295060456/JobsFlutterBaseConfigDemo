@@ -2921,9 +2921,9 @@ void JobsScreenListener() {
                    - MediaQuery.of(context).padding.bottom;
   ```
 
-#### 15.4、**`SafeArea`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 15.4、<font color=red>**`SafeArea`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-* 参考
+* 参考资料
   * [**SafeArea & MediaQuery**](https://docs.flutter.dev/ui/adaptive-responsive/safearea-mediaquery)
   * [**Layouts in Flutter**](https://docs.flutter.dev/ui/layout)
 
@@ -2936,7 +2936,7 @@ void JobsScreenListener() {
   | 📱 **iPhone** 刘海/下巴 | **iPhone** **X**/**11**/**12**/**13**/**14**/**15** 系列的`凹口`和`下巴`区域 |
   | 🆘 横屏下的左右边缘     | 一些设备横屏时会有侧边手势栏                                 |
 
-* 温馨提示
+* 🔔**温馨提示**
 
   *  **适合用于顶层布局容器，自动（可选避让方向）避开系统遮挡区域的`Widget`**
 
@@ -2951,18 +2951,23 @@ void JobsScreenListener() {
 
   * `SafeArea` 通常应该放在最外层（或接近最外层），且**全局只需要用一次**
 
+  * `SafeArea`.`maintainBottomViewPadding`：是否在键盘弹出时 **保留底部系统内边距（padding）**
+
+    * `SafeArea` 会根据 **系统 UI（状态栏、刘海、底部导航条、键盘）** 自动加上内边距，避免内容被遮挡
+    * 当 **键盘弹出** 时，[**Flutter**](https://flutter.dev/) 通常会自动 **移除/减少底部内边距**，以便内容能贴近键盘
+
   * 不应该在 **`main()`** 中使用 `SafeArea`：**`SafeArea` 依赖于 `MediaQuery`，而 `main()` 没有构建**<a href="#BuildContext" style="font-size:17px; color:green;"><b>上下文**`BuildContext`**</b></a>
 
     * `SafeArea` 的工作机制：它从 `MediaQuery.of(context)` 中获取系统的安全区域（状态栏、刘海、导航栏等）进行 padding。
     * 而 `main()` 中，还没有构建 `MaterialApp`，没有<a href="#BuildContext" style="font-size:17px; color:green;"><b>上下文**`BuildContext`**</b></a>树，自然没有 `MediaQuery`，所以 `SafeArea` 无法生效。
-
+  
   * 💥 **不要嵌套多个 `SafeArea`**：会导致 `MediaQuery` `padding` 被多次应用，造成布局偏移。<font color=red>若有嵌套需求，使用 **`MediaQuery.removePadding`**</font>
 
     * 使用 `MediaQuery.removePadding`（兼容旧版 Flutter）
-
+  
       🔹 优点：兼容旧版本
       🔹 缺点：要手动指定 `removeTop`、`removeBottom`，逻辑略复杂
-
+  
       ```dart
       SafeArea(
         child: MediaQuery.removePadding(
@@ -2973,11 +2978,11 @@ void JobsScreenListener() {
         ),
       )
       ```
-
+  
   * 💥 **不要与 `Scaffold.resizeToAvoidBottomInset` 冲突使用**：会出现布局跳动、挤压、底部空间错误等问题
-
+  
     * 推荐只用 `SafeArea` 或使用 `resizeToAvoidBottomInset: false`
-
+  
       ```dart
       Scaffold(
         resizeToAvoidBottomInset: false, // 避免 SafeArea 冲突
@@ -2986,18 +2991,18 @@ void JobsScreenListener() {
         ),
       )
       ```
-
+  
   * 🟡 **不能代替键盘避让机制**：`SafeArea` 只考虑系统 UI（如状态栏、刘海、底部 Home 指示器等），不负责键盘避让
-
+  
     * 如果有键盘弹出需求，需结合 `MediaQuery` 或 `KeyboardAvoider` 等手动处理。
-
+  
   * ⚠️ **对 Dialog/Overlay 等不是在根节点渲染的内容无效**：`SafeArea` 必须在拥有 `MediaQuery` 的<a href="#BuildContext" style="font-size:17px; color:green;"><b>上下文**`BuildContext`**</b></a>中才起作用（通常是 `MaterialApp` 或 `WidgetsApp` 之下），否则无效。
-
+  
   * **`CupertinoPageScaffold` 自带 SafeArea 行为**，但自定义页面仍需要手动处理。
-
+  
   * ⚠️ **与 `AppBar` 共用时应只作用于 body**：否则会让 AppBar 有额外顶部边距，一般只包裹 `Scaffold.body` 即可。
 
-#### 15.5、[**flutter_screenutil**](https://pub.dev/packages/flutter_screenutil)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 15.5、[**`flutter_screenutil`**](https://pub.dev/packages/flutter_screenutil)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * ‼️重要说明
 
@@ -9610,6 +9615,27 @@ Widget build(BuildContext context) {
     ],
   ).withBasePage(context, appBar: AppBar(title: Text('首页')));
 }
+```
+
+#### 44.5、[**`onTransform.dart`**]() <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```dart
+const Text("你好 Jobs")
+    .translate2D(10, 0) // 🔄 二维平移：向右 10
+    .translate3D(0, 20, 0); // 🔄 三维平移：向下 20
+```
+
+#### 44.6、[**`onDouble.dart`**]() <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```dart
+/// 圆角矩形
+Widget radiusOnDecoratedBoxByDouble(double radius, {Key? key}) =>
+    decoratedBox(
+      BoxDecoration(
+        borderRadius: radius.br,/// 进行转换
+      ),
+      key: key,
+    );
 ```
 
 ### 45、区间数值：`clamp` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
