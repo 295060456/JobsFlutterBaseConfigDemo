@@ -9785,6 +9785,36 @@ Now.ymdCn;     // 2025年08月25日
 Now.ymdHmsCn;  // 2025年08月25日 16时12分41秒
 ```
 
+#### 44.8、[**`onImage.dart`**]() <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* 背景图是 Asset
+
+  ```dart
+  Container(
+    width: 200,
+    height: 100,
+  ).imageByAssetaOnCover("assets/bg.png");// 🔑 设置 Asset 背景图，fit = cover
+  ```
+
+* 网络图片背景
+
+  ```dart
+  Text("Hello World")
+      .imageByNetworkOnFill(
+        "https://picsum.photos/200/300",
+        headers: {"Authorization": "Bearer token"},
+      );// 🔑 背景用网络图，fit = fill
+  ```
+
+* 内存字节图片背景
+
+  ```dart
+  Uint8List bytes = await File("local.png").readAsBytes();
+  Text("Memory BG")
+      
+      .imageByMemoryOnContain(bytes);// 🔑 背景用内存字节
+  ```
+
 ### 45、区间数值：`clamp` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > ```dart
@@ -14655,6 +14685,8 @@ list.add('C');
     | `ListView` ⊂ `Expanded` ⊂ `Column`                           | ✅ 标准     | ✅ 已满足                     | 推荐写法                                                     |
     | `Row` 内多个子项按比例分配空间                               | ✅ 可以     | ✅ 用 `Expanded(flex: n)`     | 或 `Flexible`；`Spacer` 等价 `Expanded(child: SizedBox.shrink())` |
     | `GridView` / `ListView.builder` 顶层直接作为 `Scaffold.body` | ✅ 可以     | ❌ 不需要                     | 顶层约束由屏幕提供                                           |
+
+* [**Dart**](https://dart.dev/)（[**Flutter**](https://flutter.dev/)）不支持真正的内部类
 
 * 类型判断： **this is**
 
