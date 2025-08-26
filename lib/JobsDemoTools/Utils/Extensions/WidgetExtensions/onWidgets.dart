@@ -409,7 +409,8 @@ extension ContainerExtension on Widget {
         color: color,
         image: image,
         border: border,
-        borderRadius: shape == BoxShape.rectangle ? (borderRadius ?? 0).br : 0.br,
+        borderRadius:
+            shape == BoxShape.rectangle ? (borderRadius ?? 0).br : 0.br,
         boxShadow: boxShadow,
         gradient: gradient,
         backgroundBlendMode: backgroundBlendMode,
@@ -423,12 +424,8 @@ extension ContainerExtension on Widget {
       containerByBoxDecoration(key: key, color: color);
 
   /// 圆角
-  Widget radiusByDouble(double radius, {Key? key}) => containerByBoxDecoration(
-      key: key, borderRadius: radius);
-
-  /// 自定义圆角
-  Widget radiusByGeometry(double r, {Key? key}) =>
-      containerByBoxDecoration(key: key, borderRadius: r);
+  Widget radius(double radius, {Key? key}) =>
+      containerByBoxDecoration(key: key, borderRadius: radius);
 
   /// 边框（全边）
   Widget borderAll({
