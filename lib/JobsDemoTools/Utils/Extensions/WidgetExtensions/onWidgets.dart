@@ -227,7 +227,8 @@ extension AlignExtensions on Widget {
 
 /// 样式累积入口（链式 API）
 extension JobsStyleX on Widget {
-  JobsStyled get style => JobsStyled(child: this);
+  JobsStyled get style =>
+      this is JobsStyled ? (this as JobsStyled) : JobsStyled(child: this);
 
   JobsStyled padding(EdgeInsetsGeometry v) => style.padding(v);
   JobsStyled margin(EdgeInsetsGeometry v) => style.margin(v);
@@ -532,22 +533,33 @@ class JobsStyled extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget w = child;
 
-    if (_padding != null) w = Padding(padding: _padding!, child: w);
+    if (_padding != null) {
+      w = Padding(padding: _padding!, child: w);
+    }
 
     final dec = _decoration;
+
+    // 先把背景/边框等画出来（放在“里层”）
     if (dec != null) {
-      if (_clipContent) {
-        if (dec.shape == BoxShape.circle) {
-          w = ClipOval(child: w);
-        } else {
-          final br = dec.borderRadius?.resolve(Directionality.of(context));
-          if (br != null) w = ClipRRect(borderRadius: br, child: w);
-        }
-      }
       w = DecoratedBox(decoration: dec, child: w);
     }
 
-    if (_margin != null) w = Padding(padding: _margin!, child: w);
+    // 再决定是否裁剪（放在“外层”），这样背景也会被裁剪
+    final br = dec?.borderRadius?.resolve(Directionality.of(context));
+    final needClip =
+        _clipContent || (dec?.shape == BoxShape.circle) || (br != null);
+
+    if (needClip) {
+      if (dec?.shape == BoxShape.circle) {
+        w = ClipOval(child: w);
+      } else if (br != null) {
+        w = ClipRRect(borderRadius: br, child: w);
+      }
+    }
+
+    if (_margin != null) {
+      w = Padding(padding: _margin!, child: w);
+    }
 
     if (_width != null || _height != null) {
       w = SizedBox(width: _width, height: _height, child: w);

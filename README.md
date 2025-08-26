@@ -11185,13 +11185,19 @@ Widget KLabel(String text) {
 
 ### 57、🔘按钮的封装 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-* 快速设定按钮的**文本**、**背景色**、**点击事件**
+* 快速设定按钮的**文本**、**背景色**、**点击事件**、**尺寸**
 
   > 涉及到的文件👉`onWidgets.dart`、`onGestures.dart`
 
   ```dart
   /// 极简设定
-  Text('点我').bgByInt(0xFFFED49C).onTap(() {})
+  Text(searchButtonText)
+      .sizeBy(w: 57, h: 26)
+      .radius(4)
+      .bgByInt(0xFFFED49C)
+      .onTap(() {
+    print("ss");
+  })
   ```
 
 ## 五、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>

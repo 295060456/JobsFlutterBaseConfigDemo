@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/Extensions/WidgetExtensions/onWidgets.dart';
 
 /*
 Text.rich(
@@ -15,7 +15,7 @@ Text.rich(
 ).color(Colors.blue).size(16); // 依然保留 span 结构
 */
 
-extension JobsTextExtension on Text {
+extension JobsTextX on Text {
   // ---------- 核心：安全重建（兼容 data / textSpan） ----------
   Text _rebuild({
     TextStyle? style,
@@ -129,4 +129,19 @@ extension JobsTextExtension on Text {
   // 组合便捷法
   Text headline() => size(18).semiBold().letterSpacing(0.2);
   Text subTitle() => size(14).color(const Color(0xFF9AA3B2));
+
+  // ---------- 包裹 SizedBox，指定 Text 的外部宽高 ----------
+  Widget sizeBy({double? w, double? h}) =>
+      SizedBox(width: w, height: h, child: center());
+
+  Widget width(double w) => SizedBox(width: w, child: center()); // 固定宽度
+  Widget height(double h) => SizedBox(height: h, child: center()); // 固定高度
+  Widget expandByWidth() =>
+      SizedBox(width: double.infinity, child: center()); // 占满父容器宽度
+  Widget expandByHeight() =>
+      SizedBox(height: double.infinity, child: center()); // 占满父容器高度
+  Widget expand() => SizedBox(
+      width: double.infinity,
+      height: double.infinity,
+      child: center()); // 宽高都占满
 }
