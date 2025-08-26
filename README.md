@@ -4772,7 +4772,7 @@ enum HitTestBehavior {
   );
   ```
 
-### 19、<font id=线性布局>🧱</font> [**Flutter**](https://flutter.dev/)中，涉及到布局的**`Widget`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 19、<font id=线性布局>🧱</font> [**Flutter**](https://flutter.dev/)布局类@**`Widget`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 🔹 布局类：**看不见的结构控制**（渲染、显示逻辑、动态构建...）。类似 iOS 中的 [**Masonry**](https://github.com/SnapKit/Masonry) 或 **AutoLayout**
 
@@ -5532,7 +5532,7 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 ```
 </details>
 
-### 21、🎍[**Flutter**](https://flutter.dev/)中，涉及到装饰相关的**`Widget`**  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 21、🎍[**Flutter**](https://flutter.dev/)装饰相关@**`Widget`**  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 🔹 装饰类：**看得见的美化**（颜色、边框、阴影、裁剪...）
 
@@ -5602,6 +5602,24 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 | 输入类      | `TextField`, `Form`, `DropdownButton`          |
 | 滑动/拖动类 | `Slider`, `Switch`, `Draggable`, `Dismissible` |
 | 手势类      | `GestureDetector`, `InkWell`                   |
+
+##### 22.1.1、`DropdownButton`
+
+```dart
+DropdownButtonHideUnderline(
+  child: DropdownButton<String>(
+    isExpanded: true, // 让子控件 DropdownButton 和父级的 Container 一样宽
+    value: selected,
+    hint: const Text('选择游戏类别',
+        style: TextStyle(color: K.subText, fontSize: 14)),
+    dropdownColor: K.card,
+    iconEnabledColor: K.subText,
+    style: const TextStyle(color: K.text, fontSize: 14),
+    items: items,
+    onChanged: onChanged,
+  ),
+)
+```
 
 #### 22.2、🧭 导航 & 路由类 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -9643,7 +9661,8 @@ return Text("点我试试,试试就试试")
     .bg(const Color(0xFF1F2430))
     .radius(8)
     .border(color: const Color(0xFF2B3140), width: 1)
-    .shadow();
+    .shadow()
+    .size(width: 38,height: 38);
   ```
 
 * 渐变 + 只上圆角 + 底部分割线
