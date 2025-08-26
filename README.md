@@ -6749,7 +6749,7 @@ Get.offAllNamed('/splash');
   Get.toNamed('/home');
   ```
 
-##### 27.4.9、[**`GetX`**](https://pub.dev/packages/get)  具 UI 效果的函数方法（非 **`Widget`**） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 27.4.9、[**`GetX`**](https://pub.dev/packages/get)  具有 UI 效果的函数方法（非 **`Widget`**） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 | 方法名                    | 用途/效果            | 说明                                                     |
 | ------------------------- | -------------------- | -------------------------------------------------------- |
@@ -9635,17 +9635,104 @@ return Text("点我试试,试试就试试")
 
 #### 44.4、[**`onWidgets.dart`**](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/lib/JobsDemoTools/Utils/Extensions/WidgetExtensions/onWidgets.dart) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-```dart
-@override
-Widget build(BuildContext context) {
-  return Column(
-    children: [
-      Text('标题'),
-      TextField(),
-    ],
-  ).withBasePage(context, appBar: AppBar(title: Text('首页')));
-}
-```
+* 最基础卡片
+
+  ```dart
+  Text('佣金汇总')
+    .padding(const EdgeInsets.all(12))
+    .bg(const Color(0xFF1F2430))
+    .radius(8)
+    .border(color: const Color(0xFF2B3140), width: 1)
+    .shadow();
+  ```
+
+* 渐变 + 只上圆角 + 底部分割线
+
+  ```dart
+  Column(children: [/* ... */])
+    .gradient(const LinearGradient(
+      colors: [Color(0xFF3B7EFF), Color(0xFF7AE0FF)],
+      begin: Alignment.topLeft, end: Alignment.bottomRight,
+    ))
+    .radiusOnly(topLeft: 12, topRight: 12)
+    .borderOnly(bottomColor: const Color(0x332B3140), bottomWidth: 1)
+    .padding(const EdgeInsets.all(16))
+    .margin(const EdgeInsets.symmetric(horizontal: 14, vertical: 10));
+  ```
+
+* 圆角但不裁剪内容
+
+  > 默认 `radius()` 会裁剪子内容，想只画圆角背景/边框
+
+  ```dart
+  child
+    .bg(const Color(0xFF3B3F53))
+    .radius(10)
+    .clip(false); // 关掉裁剪
+  ```
+
+* 嵌在原来的布局里
+
+  ```dart
+  Expanded(
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+      child: Column(
+        children: [
+          filterBar(...),
+          const SizedBox(height: 16),
+          Expanded(
+            child: ListView.separated(
+              padding: EdgeInsets.zero,
+              itemCount: groups.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 16),
+              itemBuilder: (context, index) { /* ... */ },
+            ),
+          ),
+        ],
+      ),
+    ),
+  )
+  .bg(const Color(0xFF3B3F53))
+  .radius(10)
+  .border(color: const Color(0xFF2B3140), width: 1);
+  ```
+
+* 单边框（例如只要左边粗线）
+
+  ```dart
+  child
+    .bg(const Color(0xFF202532))
+    .borderOnly(leftColor: const Color(0xFF4A90E2), leftWidth: 3)
+    .padding(const EdgeInsets.symmetric(vertical: 12, horizontal: 16));
+  ```
+
+* 添加背景图
+
+  * 背景图@**Asset**
+
+    ```dart
+    Text("Hello")
+        .bgImage(const DecorationImage(
+          image: AssetImage("assets/images/bg.png"),
+          fit: BoxFit.cover, // 拉伸模式
+        ))
+        .radius(12)
+        .padding(const EdgeInsets.all(16));
+    ```
+
+  * 背景图@**Network**
+
+    ```dart
+    Container()
+        .bgImage(const DecorationImage(
+          image: NetworkImage("https://picsum.photos/400/200"),
+          fit: BoxFit.cover,
+          alignment: Alignment.topCenter,
+        ))
+        .radius(20)
+        .shadow();
+    ```
 
 #### 44.5、[**`onTransform.dart`**](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/lib/JobsDemoTools/Utils/Extensions/WidgetExtensions/onTransform.dart) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -10055,7 +10142,7 @@ ClipRRect(
 > ///    - fillColumn：可指定把富余宽度补给哪一列（数据列索引 0..N-1，null=最后一列）。
 > ```
 
-#### 48.1、模式 1：首列与其它列一起等宽分配；不需要 `fixedWidth` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 48.1、模式 1👉首列与其它列一起等宽分配；不需要 `fixedWidth` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 void main1() {
@@ -10105,7 +10192,7 @@ void main1() {
 }
 ```
 
-#### 48.2、模式 2：首列固定宽度，其余列按内容/约束自适应（支持`min/maxColWidth`）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 48.2、模式 2👉首列固定宽度，其余列按内容/约束自适应（支持`min/maxColWidth`）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 void main2() {
@@ -10153,7 +10240,7 @@ void main2() {
 }
 ```
 
-#### 48.3、模式 3：首列固定宽度，其余列等宽均分<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 48.3、模式 3👉首列固定宽度，其余列等宽均分<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 void main3() {

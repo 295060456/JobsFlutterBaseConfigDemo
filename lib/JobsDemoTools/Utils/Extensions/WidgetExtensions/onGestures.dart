@@ -45,7 +45,7 @@ import 'package:flutter/material.dart';
 // ),
 
 // =============== 示例用法 3：缩放+平移（仅 Scale 系列） =================
-// 注意：使用 onScale 后，你的扩展会自动禁用 Pan 系列，避免冲突。
+// 注意：使用 onScale* 后，你的扩展会自动禁用 Pan 系列，避免冲突。
 // Positioned.fill(
 //   child: Transform.translate(
 //     offset: _canvasOffset,
@@ -120,7 +120,7 @@ import 'package:flutter/material.dart';
 // ),
 
 /// 🍬语法糖：手势聚合
-extension WidgetExtension on Widget {
+extension JobsWidgetExtension on Widget {
   Widget gestures({
     Key? key,
     HitTestBehavior? behavior,

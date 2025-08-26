@@ -16,6 +16,7 @@ extension DateTimeFormatExt on DateTime {
   String get ymdHmsCn =>
       '${year}年${_two(month)}月${_two(day)}日 ${_two(hour)}时${_two(minute)}分${_two(second)}秒';
 }
+
 /// 对当前时间（返回带格式的字符串形式）
 class Now {
   static String get ymd => DateTime.now().ymd;
