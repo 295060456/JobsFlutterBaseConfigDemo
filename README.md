@@ -11153,6 +11153,17 @@ Widget KLabel(String text) {
 }
 ```
 
+### 57、🔘按钮的封装 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* 快速设定按钮的**文本**、**背景色**、**点击事件**
+
+  > 涉及到的文件👉`onWidgets.dart`、`onGestures.dart`
+
+  ```dart
+  /// 极简设定
+  Text('点我').bgByInt(0xFFFED49C).onTap(() {})
+  ```
+
 ## 五、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ### 1、修复平台目录：定位到[**Flutter**](https://flutter.dev/)项目根目录，执行👉`flutter create .`  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>

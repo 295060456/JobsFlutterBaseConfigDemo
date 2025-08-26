@@ -5,7 +5,8 @@ import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/Extensions/AnyExten
 
 /// 基础 Widget 扩展（轻量包装）
 extension JobsWidgetExtensions on Widget {
-  Widget builder(Widget Function(BuildContext ctx, Widget child) build, {Key? key}) {
+  Widget builder(Widget Function(BuildContext ctx, Widget child) build,
+      {Key? key}) {
     final child = this;
     return Builder(key: key, builder: (ctx) => build(ctx, child));
   }
@@ -42,22 +43,44 @@ extension JobsWidgetExtensions on Widget {
         child: this,
       );
 
-  Widget expanded({Key? key, int flex = 1}) => Expanded(key: key, flex: flex, child: this);
+  Widget expanded({Key? key, int flex = 1}) =>
+      Expanded(key: key, flex: flex, child: this);
 
   Widget center({Key? key, double? widthFactor, double? heightFactor}) =>
-      Center(key: key, widthFactor: widthFactor, heightFactor: heightFactor, child: this);
+      Center(
+          key: key,
+          widthFactor: widthFactor,
+          heightFactor: heightFactor,
+          child: this);
 
-  Widget align(AlignmentGeometry alignment, {Key? key, double? widthFactor, double? heightFactor}) =>
-      Align(key: key, alignment: alignment, widthFactor: widthFactor, heightFactor: heightFactor, child: this);
+  Widget align(AlignmentGeometry alignment,
+          {Key? key, double? widthFactor, double? heightFactor}) =>
+      Align(
+          key: key,
+          alignment: alignment,
+          widthFactor: widthFactor,
+          heightFactor: heightFactor,
+          child: this);
 
-  Widget padding(EdgeInsetsGeometry padding, {Key? key}) => Padding(key: key, padding: padding, child: this);
+  Widget padding(EdgeInsetsGeometry padding, {Key? key}) =>
+      Padding(key: key, padding: padding, child: this);
 
-  Widget clipRRect(double? borderRadius, {Key? key, CustomClipper<RRect>? clipper, Clip clipBehavior = Clip.antiAlias}) =>
-      ClipRRect(key: key, borderRadius: (borderRadius ?? 0).br, clipper: clipper, clipBehavior: clipBehavior, child: this);
+  Widget clipRRect(double? borderRadius,
+          {Key? key,
+          CustomClipper<RRect>? clipper,
+          Clip clipBehavior = Clip.antiAlias}) =>
+      ClipRRect(
+          key: key,
+          borderRadius: (borderRadius ?? 0).br,
+          clipper: clipper,
+          clipBehavior: clipBehavior,
+          child: this);
 
-  Widget size({double? width, double? height, Key? key}) => SizedBox(key: key, width: width, height: height, child: this);
+  Widget size({double? width, double? height, Key? key}) =>
+      SizedBox(key: key, width: width, height: height, child: this);
 
-  Widget infinity() => SizedBox(width: double.infinity, height: double.infinity, child: this);
+  Widget infinity() =>
+      SizedBox(width: double.infinity, height: double.infinity, child: this);
 
   Widget tooltip(
     String? message, {
@@ -103,8 +126,13 @@ extension JobsWidgetExtensions on Widget {
         child: this,
       );
 
-  Widget opacity(double opacity, {Key? key, bool alwaysIncludeSemantics = false}) =>
-      Opacity(key: key, opacity: opacity, alwaysIncludeSemantics: alwaysIncludeSemantics, child: this);
+  Widget opacity(double opacity,
+          {Key? key, bool alwaysIncludeSemantics = false}) =>
+      Opacity(
+          key: key,
+          opacity: opacity,
+          alwaysIncludeSemantics: alwaysIncludeSemantics,
+          child: this);
 
   Widget hero(
     Object tag, {
@@ -124,8 +152,12 @@ extension JobsWidgetExtensions on Widget {
         child: this,
       );
 
-  Widget clipOval({Key? key, CustomClipper<Rect>? clipper, Clip clipBehavior = Clip.antiAlias}) =>
-      ClipOval(key: key, clipper: clipper, clipBehavior: clipBehavior, child: this);
+  Widget clipOval(
+          {Key? key,
+          CustomClipper<Rect>? clipper,
+          Clip clipBehavior = Clip.antiAlias}) =>
+      ClipOval(
+          key: key, clipper: clipper, clipBehavior: clipBehavior, child: this);
 
   Widget safeArea({
     Key? key,
@@ -159,7 +191,8 @@ extension JobsWidgetExtensions on Widget {
     Clip clipBehavior = Clip.hardEdge,
     HitTestBehavior hitTestBehavior = HitTestBehavior.opaque,
     String? restorationId,
-    ScrollViewKeyboardDismissBehavior keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
+    ScrollViewKeyboardDismissBehavior keyboardDismissBehavior =
+        ScrollViewKeyboardDismissBehavior.manual,
   }) =>
       SingleChildScrollView(
         key: key,
@@ -182,10 +215,14 @@ extension ClipRRectExtensions on Widget {
 }
 
 extension AlignExtensions on Widget {
-  Widget alignLeft({Key? key}) => Align(key: key, alignment: Alignment.centerLeft, child: this);
-  Widget alignRight({Key? key}) => Align(key: key, alignment: Alignment.centerRight, child: this);
-  Widget alignTop({Key? key}) => Align(key: key, alignment: Alignment.topCenter, child: this);
-  Widget alignBottom({Key? key}) => Align(key: key, alignment: Alignment.bottomCenter, child: this);
+  Widget alignLeft({Key? key}) =>
+      Align(key: key, alignment: Alignment.centerLeft, child: this);
+  Widget alignRight({Key? key}) =>
+      Align(key: key, alignment: Alignment.centerRight, child: this);
+  Widget alignTop({Key? key}) =>
+      Align(key: key, alignment: Alignment.topCenter, child: this);
+  Widget alignBottom({Key? key}) =>
+      Align(key: key, alignment: Alignment.bottomCenter, child: this);
 }
 
 /// 样式累积入口（链式 API）
@@ -195,37 +232,69 @@ extension JobsStyleX on Widget {
   JobsStyled padding(EdgeInsetsGeometry v) => style.padding(v);
   JobsStyled margin(EdgeInsetsGeometry v) => style.margin(v);
 
-  JobsStyled size({double? width, double? height}) => style.size(width: width, height: height);
+  JobsStyled size({double? width, double? height}) =>
+      style.size(width: width, height: height);
 
   JobsStyled bg(Color c) => style.bg(c);
+  JobsStyled bgByInt(int c) => style.bg(Color(c));
+
   JobsStyled bgImage(DecorationImage img) => style.bgImage(img);
   JobsStyled gradient(Gradient g) => style.gradient(g);
 
   JobsStyled radius(double r) => style.radius(r);
-  JobsStyled radiusOnly({double? topLeft, double? topRight, double? bottomLeft, double? bottomRight}) =>
-      style.radiusOnly(topLeft: topLeft, topRight: topRight, bottomLeft: bottomLeft, bottomRight: bottomRight);
+  JobsStyled radiusOnly(
+          {double? topLeft,
+          double? topRight,
+          double? bottomLeft,
+          double? bottomRight}) =>
+      style.radiusOnly(
+          topLeft: topLeft,
+          topRight: topRight,
+          bottomLeft: bottomLeft,
+          bottomRight: bottomRight);
 
-  JobsStyled border({Color color = const Color(0x1F000000), double width = 1, BorderStyle borderStyle = BorderStyle.solid}) =>
+  JobsStyled border(
+          {Color color = const Color(0x1F000000),
+          double width = 1,
+          BorderStyle borderStyle = BorderStyle.solid}) =>
       style.border(color: color, width: width, borderStyle: borderStyle);
 
   JobsStyled borderOnly({
-    Color? leftColor, double? leftWidth, BorderStyle? leftStyle,
-    Color? topColor, double? topWidth, BorderStyle? topStyle,
-    Color? rightColor, double? rightWidth, BorderStyle? rightStyle,
-    Color? bottomColor, double? bottomWidth, BorderStyle? bottomStyle,
+    Color? leftColor,
+    double? leftWidth,
+    BorderStyle? leftStyle,
+    Color? topColor,
+    double? topWidth,
+    BorderStyle? topStyle,
+    Color? rightColor,
+    double? rightWidth,
+    BorderStyle? rightStyle,
+    Color? bottomColor,
+    double? bottomWidth,
+    BorderStyle? bottomStyle,
   }) =>
       style.borderOnly(
-        leftColor: leftColor, leftWidth: leftWidth, leftStyle: leftStyle,
-        topColor: topColor, topWidth: topWidth, topStyle: topStyle,
-        rightColor: rightColor, rightWidth: rightWidth, rightStyle: rightStyle,
-        bottomColor: bottomColor, bottomWidth: bottomWidth, bottomStyle: bottomStyle,
+        leftColor: leftColor,
+        leftWidth: leftWidth,
+        leftStyle: leftStyle,
+        topColor: topColor,
+        topWidth: topWidth,
+        topStyle: topStyle,
+        rightColor: rightColor,
+        rightWidth: rightWidth,
+        rightStyle: rightStyle,
+        bottomColor: bottomColor,
+        bottomWidth: bottomWidth,
+        bottomStyle: bottomStyle,
       );
 
-  JobsStyled shadow({List<BoxShadow>? shadows}) => style.shadow(shadows: shadows);
+  JobsStyled shadow({List<BoxShadow>? shadows}) =>
+      style.shadow(shadows: shadows);
   JobsStyled clip([bool v = true]) => style.clip(v);
 }
 
 /// 可累积样式包装实现
+/// 将配置项以属性的方式暴露给调用者，调用者可以链式调用，最终生成一个 Widget
 class JobsStyled extends StatelessWidget {
   final Widget child;
 
@@ -322,14 +391,19 @@ class JobsStyled extends StatelessWidget {
   JobsStyled radius(double r) => JobsStyled(
         padding: _padding,
         margin: _margin,
-        decoration: _mergeDecoration(_decoration, BoxDecoration(borderRadius: BorderRadius.circular(r))),
+        decoration: _mergeDecoration(
+            _decoration, BoxDecoration(borderRadius: BorderRadius.circular(r))),
         clipContent: true,
         width: _width,
         height: _height,
         child: child,
       );
 
-  JobsStyled radiusOnly({double? topLeft, double? topRight, double? bottomLeft, double? bottomRight}) {
+  JobsStyled radiusOnly(
+      {double? topLeft,
+      double? topRight,
+      double? bottomLeft,
+      double? bottomRight}) {
     final br = BorderRadius.only(
       topLeft: (topLeft ?? 0).radius,
       topRight: (topRight ?? 0).radius,
@@ -339,7 +413,8 @@ class JobsStyled extends StatelessWidget {
     return JobsStyled(
       padding: _padding,
       margin: _margin,
-      decoration: _mergeDecoration(_decoration, BoxDecoration(borderRadius: br)),
+      decoration:
+          _mergeDecoration(_decoration, BoxDecoration(borderRadius: br)),
       clipContent: true,
       width: _width,
       height: _height,
@@ -347,11 +422,18 @@ class JobsStyled extends StatelessWidget {
     );
   }
 
-  JobsStyled border({Color color = const Color(0x1F000000), double width = 1, BorderStyle borderStyle = BorderStyle.solid}) =>
+  JobsStyled border(
+          {Color color = const Color(0x1F000000),
+          double width = 1,
+          BorderStyle borderStyle = BorderStyle.solid}) =>
       JobsStyled(
         padding: _padding,
         margin: _margin,
-        decoration: _mergeDecoration(_decoration, BoxDecoration(border: Border.all(color: color, width: width, style: borderStyle))),
+        decoration: _mergeDecoration(
+            _decoration,
+            BoxDecoration(
+                border: Border.all(
+                    color: color, width: width, style: borderStyle))),
         clipContent: _clipContent,
         width: _width,
         height: _height,
@@ -373,7 +455,12 @@ class JobsStyled extends StatelessWidget {
     BorderStyle? bottomStyle,
   }) {
     BorderSide? mk(Color? c, double? w, BorderStyle? s) =>
-        (c == null && w == null && s == null) ? null : BorderSide(color: c ?? const Color(0x1F000000), width: w ?? 1, style: s ?? BorderStyle.solid);
+        (c == null && w == null && s == null)
+            ? null
+            : BorderSide(
+                color: c ?? const Color(0x1F000000),
+                width: w ?? 1,
+                style: s ?? BorderStyle.solid);
 
     final only = Border(
       left: mk(leftColor, leftWidth, leftStyle) ?? BorderSide.none,
@@ -385,7 +472,8 @@ class JobsStyled extends StatelessWidget {
     final mergedBorder = () {
       final exist = (_decoration?.border as Border?);
       if (exist == null) return only;
-      BorderSide pick(BorderSide a, BorderSide b) => (b.style != BorderStyle.none || b.width != 0) ? b : a;
+      BorderSide pick(BorderSide a, BorderSide b) =>
+          (b.style != BorderStyle.none || b.width != 0) ? b : a;
       return Border(
         left: pick(exist.left, only.left),
         top: pick(exist.top, only.top),
@@ -397,7 +485,8 @@ class JobsStyled extends StatelessWidget {
     return JobsStyled(
       padding: _padding,
       margin: _margin,
-      decoration: _mergeDecoration(_decoration, BoxDecoration(border: mergedBorder)),
+      decoration:
+          _mergeDecoration(_decoration, BoxDecoration(border: mergedBorder)),
       clipContent: _clipContent,
       width: _width,
       height: _height,
@@ -418,7 +507,11 @@ class JobsStyled extends StatelessWidget {
   JobsStyled shadow({List<BoxShadow>? shadows}) => JobsStyled(
         padding: _padding,
         margin: _margin,
-        decoration: _mergeDecoration(_decoration, BoxDecoration(boxShadow: shadows ?? [const BoxShadow(blurRadius: 10, offset: Offset(0, 4))])),
+        decoration: _mergeDecoration(
+            _decoration,
+            BoxDecoration(
+                boxShadow: shadows ??
+                    [const BoxShadow(blurRadius: 10, offset: Offset(0, 4))])),
         clipContent: _clipContent,
         width: _width,
         height: _height,
