@@ -11136,8 +11136,67 @@ Future.delayed(Duration(seconds: 1), () {
 
 ### 54、[**下拉刷新&上拉加载**](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/lib/JobsDemoTools/JobsFlutterTools/%E4%B8%8A%E6%8B%89%E5%8A%A0%E8%BD%BD%26%E4%B8%8B%E6%8B%89%E5%88%B7%E6%96%B0/Refresh.dart) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-* **`RefreshIndicator` 只支持下拉刷新**，[**Flutter**](https://flutter.dev/) 没有内建**上拉释放加载更多**
-* <font color=red>要做**上拉加载**，需要自己监听滚动/越界，或者用第三方库</font>
+> * **`RefreshIndicator` 只支持下拉刷新**，[**Flutter**](https://flutter.dev/) 没有内建**上拉释放加载更多**
+> * <font color=red>要做**上拉加载**，需要自己监听滚动/越界，或者用第三方库</font>
+
+```dart
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: const DemoPage(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class DemoPage extends StatefulWidget {
+  const DemoPage({super.key});
+
+  @override
+  State<DemoPage> createState() => _DemoPageState();
+}
+
+class _DemoPageState extends State<DemoPage> {
+  late JobsRefreshLoadController<String> controller;
+
+  @override
+  void initState() {
+    super.initState();
+    // 初始化控制器：模拟分页加载
+    controller = JobsRefreshLoadController<String>(
+      pageSize: 20,
+      fetchPage: (page, size) async {
+        await Future.delayed(const Duration(milliseconds: 800)); // 模拟网络延迟
+        if (page > 3) return []; // 模拟最多三页
+        return List.generate(size, (i) => "Item ${(page - 1) * size + i + 1}");
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("RefreshLoadList Demo")),
+      body: JobsRefreshLoadList<String>(
+        controller: controller,
+        zebra: true, // ✅ 开启斑马纹
+        itemBuilder: (ctx, item, index) {
+          return ListTile(
+            title: Text(item),
+          );
+        },
+      ),
+    );
+  }
+}
+```
 
 ### 55、加解密 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -11191,14 +11250,75 @@ Widget KLabel(String text) {
 
   ```dart
   /// 极简设定
-  Text(searchButtonText)
-      .sizeBy(w: 57, h: 26)
-      .radius(4)
-      .bgByInt(0xFFFED49C)
-      .onTap(() {
+  Text(
+    text,
+    style: style,
+    textAlign: TextAlign.center,     // ✅ 居中对齐
+    maxLines: null,                  // ✅ 允许无限行
+    overflow: TextOverflow.visible,  // ✅ 不截断
+    softWrap: true,                  // ✅ 自动换行
+  ).sizeBy(w: 57, h: 26)
+   .radius(4)
+   .bgByInt(0xFFFED49C)
+   .onTap(() {
     print("ss");
   })
   ```
+
+### 58、`List`奇偶行切换背景色 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```dart
+/// ✅ 奇偶行切换背景色
+Color rowBgColor(int index) {
+  return index.isEven
+      ? const Color(0xFF1E232F) // 偶数行背景
+      : const Color(0xFF262C39); // 奇数行背景
+}
+```
+
+```dart
+Expanded(
+  child: ListView.separated(
+    itemCount: items.length,
+    separatorBuilder: (_, __) =>
+        const Divider(height: 1, color: Color(0xFF2B3140)),
+    itemBuilder: (_, i) {
+      final e = items[i];
+      return Container(
+        color: rowBgColor(i),
+        padding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: [
+          financeCell(e.usrID.toString(),
+              style: const TextStyle(
+                color: Color(0xFFE6EBF2),
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              )),
+          financeCell(e.rechargeStyle,
+              style: const TextStyle(
+                color: Color(0xFFE6EBF2),
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              )),
+          financeCell(fmtMoney(e.rechargeValue),
+              style: const TextStyle(
+                color: Color(0xFFE6EBF2),
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              )),
+          financeCell(e.rechargeTime,
+              style: const TextStyle(
+                color: Color(0xFFE6EBF2),
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              )),
+        ].row(),
+      );
+    },
+  ),
+),
+```
 
 ## 五、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
