@@ -576,57 +576,87 @@
       ```json
       // 🚫 本文件为个人本地 VS Code 设置，仅供自己使用，不推荐加入 Git 管理
       {
-      // ✅ 指定 CMake 项目的源代码目录（用于 CMake 插件）
-      "cmake.sourceDirectory": "/Users/jobs/Documents/GitHub/JobsFlutterBaseConfig/jobs_flutter_base_config/linux",
+        // ✅ 指定 CMake 项目的源代码目录（用于 CMake 插件）
+        "cmake.sourceDirectory": "/Users/jobs/Documents/GitHub/JobsFlutterBaseConfig/jobs_flutter_base_config/linux",
       
-      // ✅ Java 编译时的空值分析模式（自动启用 null 安全检查）
-      "java.compile.nullAnalysis.mode": "automatic",
+        // ✅ Java 编译时的空值分析模式（自动启用 null 安全检查）
+        "java.compile.nullAnalysis.mode": "automatic",
       
-      // ✅ Dart 编辑器：整理 import 时总是使用 package 引用风格
-      "dart.editImports": "always_use_package_imports",
+        // ✅ Dart 编辑器：整理 import 时总是使用 package 引用风格
+        "dart.editImports": "always_use_package_imports",
       
-      // ✅ Flutter SDK 路径（使用 FVM 管理的版本路径）
-      "dart.flutterSdkPath": ".fvm/versions/3.32.8",
+        // ✅ 每次保存文件时自动格式化代码
+        "editor.formatOnSave": true,
       
-      // ✅ 每次保存文件时自动格式化代码
-      "editor.formatOnSave": true,
+        // ✅ 当窗口失焦时自动保存
+        "files.autoSave": "afterDelay",
       
-      // ✅ 当窗口失焦时自动保存
-      "files.autoSave": "afterDelay",
+        // ✅ 自动保存延迟，100ms
+        "files.autoSaveDelay": 100,
       
-      // ✅ 自动保存延迟，100ms
-      "files.autoSaveDelay": 100,
+        // ✅ 关闭窗口时自动保存未保存文件（热退出）
+        "files.hotExit": "onExitAndWindowClose",
       
-      // ✅ 关闭窗口时自动保存未保存文件（热退出）
-      "files.hotExit": "onExitAndWindowClose",
+        // ✅ 每次保存时自动移除每行末尾多余的空格
+        "files.trimTrailingWhitespace": true,
       
-      // ✅ 每次保存时自动移除每行末尾多余的空格
-      "files.trimTrailingWhitespace": true,
+        // ✅ 文件末尾自动插入一个换行符，符合编码规范
+        "files.insertFinalNewline": true,
       
-      // ✅ 文件末尾自动插入一个换行符，符合编码规范
-      "files.insertFinalNewline": true,
+        // ✅ 保存文件时如有冲突，自动覆盖磁盘上的版本（避免弹出冲突提示）
+        "files.saveConflictResolution": "overwriteFileOnDisk",
       
-      // ✅ 保存文件时如有冲突，自动覆盖磁盘上的版本（避免弹出冲突提示）
-      "files.saveConflictResolution": "overwriteFileOnDisk",
+        // ✅ 启动时恢复上次打开的文件
+        "window.restoreWindows": "all",
       
-      // ✅ 启动时恢复上次打开的文件
-      "window.restoreWindows": "all",
+        // ✅ 显示括号对的引导线（active 表示仅在光标位于括号上时显示）
+        "editor.guides.bracketPairs": "active",
       
-      // ✅ 显示括号对的引导线（active 表示仅在光标位于括号上时显示）
-      "editor.guides.bracketPairs": "active",
+        // ✅ 启用括号颜色匹配功能
+        "editor.bracketPairColorization.enabled": true,
       
-      // ✅ 启用括号颜色匹配功能
-      "editor.bracketPairColorization.enabled": true,
+        // ✅ 始终高亮当前括号对
+        "editor.matchBrackets": "always",
       
-      // ✅ 始终高亮当前括号对
-      "editor.matchBrackets": "always",
+        // ✅ Flutter SDK 路径（优先 .fvm）
+        "dart.flutterSdkPath": ".fvm/versions/stable",
+        "dart.sdkPath": ".fvm/flutter_sdk/bin/cache/dart-sdk",
       
-      // ✅ Flutter SDK 路径（优先 .fvm）
-      "dart.flutterSdkPath": ".fvm/flutter_sdk",
-      "dart.sdkPath": ".fvm/flutter_sdk/bin/cache/dart-sdk",
+        // ✅ 让 VSCode 终端继承 Shell 环境（通常默认 true）
+        "terminal.integrated.inheritEnv": true,
       
-      // ✅ 让 VSCode 终端继承 Shell 环境（通常默认 true）
-      "terminal.integrated.inheritEnv": true,
+        // ✅ 在左侧 gutter 区域显示断点栏（点击即可像 Xcode 一样打断点）
+        "editor.glyphMargin": true,
+      
+        // ✅ 自定义调试/断点相关的配色和行高
+        "workbench.colorCustomizations": {
+          // 🔹 当前行背景高亮（半透明，方便定位）
+          "editor.lineHighlightBackground": "#2B314080",
+      
+          // 🔹 当前行边框颜色（配合背景高亮，视觉更明显）
+          "editor.lineHighlightBorder": "#2B3140",
+      
+          // 🔹 加大行高，增大断点点击区域，避免点歪
+          "editor.lineHeight": 24,
+      
+          // 🔹 字体大小（可根据个人习惯调整）
+          "editor.fontSize": 14,
+      
+          // 🔴 已验证断点（正常断点）图标颜色
+          "debugIcon.breakpointForeground": "#FF5A5A",
+      
+          // 🟤 已禁用断点颜色
+          "debugIcon.breakpointDisabledForeground": "#C06F6F",
+      
+          // 🟠 未验证断点颜色（比如调试器还没 attach 时）
+          "debugIcon.breakpointUnverifiedForeground": "#FFAA00",
+      
+          // 🟢 当前执行栈所在断点颜色（正在运行到的断点）
+          "debugIcon.breakpointCurrentStackframeForeground": "#23D17F",
+      
+          // 🟠 条件断点颜色（只有满足条件时才触发）
+          "debugIcon.breakpointConditionalForeground": "#FFAA00"
+        }
       }
       ```
 
@@ -11267,6 +11297,46 @@ Widget KLabel(String text) {
     print("ss");
   })
   ```
+
+* **返回按钮**
+
+  * 使用[**GetX**](https://pub.dev/packages/get)进行返回及回传数据
+
+    ```dart
+    IconButton(
+      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+          color: Color(0xFFE6EBF2)),
+      onPressed: () {
+        Get.back(result: "一些返回数据");
+      },
+    ),
+    
+    /// 在上个页面启用，就能拿到回传的值
+    final result = await Get.to(() => NextPage());
+    print(result); // 就能拿到回传的值
+    ```
+
+  * 标准的[**Flutter**](https://flutter.dev/)导航方式：
+
+    > 必须传上下文：
+    >
+    > 因为 `Navigator` 是依赖 `BuildContext` 去找到当前的 `NavigatorState`。
+    >
+    > 除非自己写了一个 **全局导航 key**，挂在 `MaterialApp` 上
+    >
+    > ```dart
+    > final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+    > ```
+
+    ```dart
+    IconButton(
+      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+          color: Color(0xFFE6EBF2)),
+      onPressed: () {
+        Navigator.pop(context); // 👈 返回上一个页面。
+      },
+    ),
+    ```
 
 ### 58、`List`奇偶行切换背景色 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
