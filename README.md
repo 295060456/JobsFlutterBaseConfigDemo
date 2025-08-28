@@ -2297,6 +2297,29 @@ class SpUtil {
     }
   }
   ```
+  
+  ```dart
+  // 成功提示
+  EasyLoading.showSuccess('复制成功');
+  
+  // 失败提示
+  EasyLoading.showError('保存失败');
+  
+  // 信息提示
+  EasyLoading.showInfo('请先登录');
+  
+  // Toast 提示
+  EasyLoading.showToast('操作已完成');
+  
+  // 普通 Loading
+  EasyLoading.show(status: '加载中...');
+  
+  // 进度条 Loading（0.0 ~ 1.0）
+  EasyLoading.showProgress(0.3, status: '进度 30%');
+  
+  // 关闭 Loading
+  EasyLoading.dismiss();
+  ```
 
 ### 10、<font id=极光原生推送>[**极光原生推送**](https://www.engagelab.com/zh_CN)</font>：[**`FlutterPluginEngagelab`**](https://pub.dev/packages/flutter_plugin_engagelab) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -11038,35 +11061,123 @@ void main3() {
 }
 ```
 
-### 49、空态组件：`JobsEmptyHint`  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 49、空态（占位）组件  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-```dart
-/// 空态组件
-class JobsEmptyHint extends StatelessWidget {
-  final VoidCallback onRetry; // 外部传入的回调
+* `JobsEmptyHint`
 
-  const JobsEmptyHint({
-    super.key,
-    required this.onRetry,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Icon(Icons.image_not_supported_outlined, size: 48),
-        const SizedBox(height: 8),
-        const Text('暂无内容，点我刷新'),
-        OutlinedButton(
-          onPressed: onRetry, // ✅ 调用外部传入的回调
-          child: Text('重试'.tr),
-        ),
-      ],
-    );
+  ```dart
+  /// 空态组件
+  class JobsEmptyHint extends StatelessWidget {
+    final VoidCallback onRetry; // 外部传入的回调
+  
+    const JobsEmptyHint({
+      super.key,
+      required this.onRetry,
+    });
+  
+    @override
+    Widget build(BuildContext context) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.image_not_supported_outlined, size: 48),
+          const SizedBox(height: 8),
+          const Text('暂无内容，点我刷新'),
+          OutlinedButton(
+            onPressed: onRetry, // ✅ 调用外部传入的回调
+            child: Text('重试'.tr),
+          ),
+        ],
+      );
+    }
   }
-}
-```
+  ```
+
+* `JobsEmptyView`@[**`SvgPicture`**](https://pub.dev/packages/flutter_svg)
+
+  * [**`SvgPicture`**](https://pub.dev/packages/flutter_svg)加载本地图片
+
+    ```yaml
+    flutter:
+      assets:
+        - assets/icons/logo.svg
+    ```
+
+    ```dart
+    Widget JobsEmptyViewByLocal() {
+      return Container(
+        height: 500.h,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(30.r),
+        ),
+        child: Column(
+          children: [
+            SizedBox(height: 50.h),
+            SvgPicture.asset(
+              'assets/icons/logo.svg',
+              width: 48,
+              height: 48,
+              colorFilter: const ColorFilter.mode(
+                Color(0xFF00C2C7),
+                BlendMode.srcIn,
+              ), // 👈 可选：统一着色
+            ),
+            Text(
+              '暂无数据'.tr,
+              style: TextStyle(color: Colors.white, fontSize: 40.sp),
+            ),
+          ],
+        ),
+      );
+    }
+    ```
+
+  * [**`SvgPicture`**](https://pub.dev/packages/flutter_svg)加载网络图片
+
+    ```dart
+    Widget JobsEmptyViewByNetwork() {
+      return Container(
+        height: 500.h,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(30.r),
+        ),
+        child: Column(
+          children: [
+            SizedBox(height: 50.h),
+            SvgPicture.network(
+              'https://example.com/icon.svg',
+              width: 48,
+              height: 48,
+              placeholderBuilder: (context) => const CircularProgressIndicator(),
+            ),
+            Text(
+              '暂无数据'.tr,
+              style: TextStyle(color: Colors.white, fontSize: 40.sp),
+            ),
+          ],
+        ),
+      );
+    }
+    ```
+
+    ```dart
+    /// 后端返回的SVG.XML
+    const rawSvg = '''
+    <svg viewBox="0 0 24 24">
+      <path d="M12 2L2 22h20L12 2z" fill="red"/>
+    </svg>
+    ''';
+    
+    SvgPicture.string(
+      rawSvg,
+      width: 24,
+      height: 24,
+    )
+    ```
 
 ### 50、字体 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -11724,6 +11835,22 @@ Widget buildInviteCode(String inviteCode) {
       ),
     ),
   );
+}
+```
+
+```dart
+class ClipboardUtil {
+  /// 复制内容
+  static copy(String? text) {
+    Clipboard.setData(ClipboardData(text: text ?? ''));
+    EasyLoading.showSuccess('复制成功');
+  }
+
+  /// 获取内容
+  static Future<String> paste() async {
+    var clipboardData = await Clipboard.getData(Clipboard.kTextPlain);
+    return clipboardData?.text ?? '';
+  }
 }
 ```
 

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/Network/des.dart';
-import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/NumberUtils.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/Extensions/AnyExtensions/onNum.dart';
 import 'package:pointycastle/export.dart';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
