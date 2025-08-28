@@ -2240,7 +2240,7 @@ class SpUtil {
   ...demo未完待补充
 
 
-### 9、[**`EasyLoading`**](https://pub.dev/documentation/flutter_easyloading/latest/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 9、第三方@[**`EasyLoading`**](https://pub.dev/documentation/flutter_easyloading/latest/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 | 类型       | 方法                                    | 说明                |
 | ---------- | --------------------------------------- | ------------------- |
@@ -2251,30 +2251,52 @@ class SpUtil {
 | 信息提示   | `EasyLoading.showInfo('信息')`          | 显示 ℹ️ 的信息提示   |
 | 关闭提示   | `EasyLoading.dismiss()`                 | 隐藏所有提示        |
 
-```yaml
-/// pubspec.yaml
-dependencies:
-  flutter_easyloading: any
-```
+* 引入第三方@[**`EasyLoading`**](https://pub.dev/documentation/flutter_easyloading/latest/)
 
-```dart
-void configLoading() {
-  // EasyLoading.instance
-  //   ..loadingStyle = EasyLoadingStyle.light
-  //   ..backgroundColor = Colors.white // 自定义背景颜色
-  //   ..dismissOnTap = true; // 点击不能关闭加载框
+  ```yaml
+  /// pubspec.yaml
+  dependencies:
+    flutter_easyloading: any
+  ```
 
-  EasyLoading.instance
-    ..indicatorType = EasyLoadingIndicatorType.fadingCircle
-    ..loadingStyle = EasyLoadingStyle.custom
-    ..backgroundColor = Colors.white
-    ..indicatorColor = const Color(theme01MainColor)
-    ..textColor = const Color(theme01MainColor)
-    ..dismissOnTap = true; // 点击不能关闭加载框
-  // ..maskType = EasyLoadingMaskType.custom
-  // ..maskColor = Colors.black.withOpacity(0.1)
-}
-```
+* 入口处进行全局化配置
+
+  ```dart
+  void main() async {
+    configLoading()
+  }
+  
+  void configLoading() {
+    // EasyLoading.instance
+    //   ..loadingStyle = EasyLoadingStyle.light
+    //   ..backgroundColor = Colors.white // 自定义背景颜色
+    //   ..dismissOnTap = true; // 点击不能关闭加载框
+  
+    EasyLoading.instance
+      ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+      ..loadingStyle = EasyLoadingStyle.custom
+      ..backgroundColor = Colors.white
+      ..indicatorColor = const Color(theme01MainColor)
+      ..textColor = const Color(theme01MainColor)
+      ..dismissOnTap = true; // 点击不能关闭加载框
+    // ..maskType = EasyLoadingMaskType.custom
+    // ..maskColor = Colors.black.withOpacity(0.1)
+  }
+  ```
+
+* 使用场景
+
+  ```dart
+  Future<void> reqDataList() async {
+    try {
+      /// class CommonLoadingView extends StatelessWidget
+      EasyLoading.show(indicator: const CommonLoadingView());
+      /// TODO
+    } finally {
+      EasyLoading.dismiss();
+    }
+  }
+  ```
 
 ### 10、<font id=极光原生推送>[**极光原生推送**](https://www.engagelab.com/zh_CN)</font>：[**`FlutterPluginEngagelab`**](https://pub.dev/packages/flutter_plugin_engagelab) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
