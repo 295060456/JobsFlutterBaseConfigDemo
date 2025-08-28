@@ -11458,7 +11458,7 @@ class _DemoPageState extends State<DemoPage> {
 }
 ```
 
-### 55、加解密 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 55、加/解密 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 import 'package:pointycastle/stream/chacha20poly1305.dart';
@@ -11594,6 +11594,91 @@ ScrollController mainScrollController = ScrollController();
     );
   }
   ```
+
+### 59、✂️剪切板 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+| 操作                                     | 可同步剪贴板？ | 方向   |
+| ---------------------------------------- | -------------- | ------ |
+| 在 **macOS 上复制**，到 iOS 模拟器中粘贴 | ✅ 可以         | 💻 ➜ 📱  |
+| 在 **iOS 模拟器中复制**，到 macOS 上粘贴 | ❌ 不行         | 📱 🚫➜ 💻 |
+
+![image-20250821163652904](./assets/image-20250821163652904.png)
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // ⚡ 必须导入,用于 Clipboard
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/通用点击组件/CommonRipple.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart';
+import 'package:oktoast/oktoast.dart';
+
+void main() => runApp(
+  OKToast(
+    child: JobsMaterialRunner.builder(
+      title: '点击按钮@复制到剪切板',
+      builder: (ctx) => buildInviteCode('123456'), // ← 延后到 ScreenUtilInit 之后再构建
+    ),
+  ),
+);
+
+/// 点击此按钮以后，将外界传入的验证码，复制到系统剪切板，并弹出提示
+Widget buildInviteCode(String inviteCode) {
+  return SizedBox(
+    width: 350.w, // 固定宽度
+    height: 90.h, // 固定高度
+    child: Material(
+      // 给 InkWell 提供水波纹载体（不想水波纹可去掉或设为透明）
+      color: Colors.transparent,
+      child: CommonRipple(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        borderRadius: BorderRadius.circular(6),
+        onTap: () async {
+          await Clipboard.setData(ClipboardData(text: inviteCode));
+          showToast("邀请码:$inviteCode已成功复制到剪切板");
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+          decoration: BoxDecoration(
+            border: Border.all(color: const Color(colorFF00C2C7), width: 1),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.max, // ✅ 撑满宽度
+            mainAxisAlignment: MainAxisAlignment.center, // ✅ 水平居中
+            crossAxisAlignment: CrossAxisAlignment.center, // ✅ 垂直居中
+            children: [
+              Text(
+                "邀请码 ",
+                style: TextStyle(
+                  fontSize: 28.sp,
+                  color: const Color(colorFF333333),
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              Text(
+                inviteCode,
+                style: TextStyle(
+                  fontSize: 28.sp,
+                  color: const Color(colorFF00C2C7),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              SizedBox(width: 8.w),
+              Icon(
+                // 👈 不要用 IconButton，避免与外层 InkWell 冲突
+                Icons.copy,
+                size: 28.sp,
+                color: const Color(colorFF00C2C7),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+```
 
 ## 五、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -12278,128 +12363,124 @@ packages:
   | 🧠 类型系统影响 | 有静态类型检查                 | 无类型检查，靠 runtime dispatch |
   | 📄 新增文件     | 会生成新文件                   | 不会生成新文件                  |
 
-### 11、[**Dart**](https://dart.dev/)抽象类+`factory` 构造函数 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 11、**Dart**.[**Flutter**](https://flutter.dev/)单例 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-> **Dart** 中的抽象类可以定义 `factory` 构造函数，它不能直接被实例化，但可以通过这个 `factory` 返回子类对象或其他实例，从而起到**工厂方法（类方法）+ 构造器**的双重作用。
+| 使用场景            | 推荐写法                           |
+| ------------------- | ---------------------------------- |
+| 简单工具类          | `factory` + 私有构造函数懒汉式     |
+| 资源敏感/要懒加载   | `factory` + `??=` 初始化           |
+| 大型项目 / 解耦依赖 | 使用 `GetIt` / `riverpod` 管理单例 |
+| 多类型缓存管理      | 泛型单例封装模板                   |
 
-  * **Dart**.[**Flutter**](https://flutter.dev/)单例的全部写法
+#### 📌11.1、✅ 最推荐写法（懒汉式 + 工厂构造）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-    | 使用场景            | 推荐写法                           |
-    | ------------------- | ---------------------------------- |
-    | 简单工具类          | `factory` + 私有构造函数懒汉式     |
-    | 资源敏感/要懒加载   | `factory` + `??=` 初始化           |
-    | 大型项目 / 解耦依赖 | 使用 `GetIt` / `riverpod` 管理单例 |
-    | 多类型缓存管理      | 泛型单例封装模板                   |
+```dart
+class Singleton {
+  static Singleton? _instance;
 
-    * ✅ 最推荐写法（懒汉式 + 工厂构造）
+  Singleton._internal(); // 私有构造函数
 
-      ```dart
-      class Singleton {
-        static Singleton? _instance;
+  factory Singleton() {
+    return _instance ??= Singleton._internal();
+  }
 
-        Singleton._internal(); // 私有构造函数
+  void doSomething() {
+    print('Doing something...');
+  }
+}
+```
 
-        factory Singleton() {
-          return _instance ??= Singleton._internal();
-        }
+#### 📌11.2、饿汉式（类加载就创建）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-        void doSomething() {
-          print('Doing something...');
-        }
-      }
-      ```
+```dart
+class Singleton {
+  static final Singleton _instance = Singleton._internal();
 
-    * 📌 饿汉式（类加载就创建）
+  Singleton._internal();
 
-      ```dart
-      class Singleton {
-        static final Singleton _instance = Singleton._internal();
+  factory Singleton() => _instance;
+}
+```
 
-        Singleton._internal();
+#### 📌11.3、静态变量初始化（等效饿汉）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-        factory Singleton() => _instance;
-      }
-      ```
+```dart
+class Singleton {
+  Singleton._(); // 私有构造
 
-    * 📌 静态变量初始化（等效饿汉）
+  static final Singleton instance = Singleton._();
 
-      ```dart
-      class Singleton {
-        Singleton._(); // 私有构造
+  void foo() => print('Singleton foo');
+}
+```
 
-        static final Singleton instance = Singleton._();
+```dart
+Singleton.instance.foo();
+```
 
-        void foo() => print('Singleton foo');
-      }
-      ```
+#### 📌11.4、懒汉式 `getter`（懒加载写法）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-      ```dart
-      Singleton.instance.foo();
-      ```
+```dart
+class Singleton {
+  static Singleton? _instance;
 
-    * 📌 懒汉式 `getter`（懒加载写法）
+  Singleton._();
 
-      ```dart
-      class Singleton {
-        static Singleton? _instance;
+  static Singleton get instance {
+    return _instance ??= Singleton._();
+  }
+}
+```
 
-        Singleton._();
+#### 📌11.5、[**Dart**](https://dart.dev/) 单例完整封装模板（带线程安全/泛型支持）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-        static Singleton get instance {
-          return _instance ??= Singleton._();
-        }
-      }
-      ```
+```dart
+class Singleton<T> {
+  static final Map<Type, Object> _cache = {};
 
-    * 📌 [**Dart**](https://dart.dev/) 单例完整封装模板（带线程安全/泛型支持）
+  Singleton._();
 
-      ```dart
-      class Singleton<T> {
-        static final Map<Type, Object> _cache = {};
+  static T getInstance<T>(T Function() creator) {
+    if (_cache.containsKey(T)) return _cache[T] as T;
+    final instance = creator();
+    _cache[T] = instance as Object;
+    return instance;
+  }
+}
+```
 
-        Singleton._();
+```dart
+class MyService {
+  void sayHi() => print("Hi");
+}
 
-        static T getInstance<T>(T Function() creator) {
-          if (_cache.containsKey(T)) return _cache[T] as T;
-          final instance = creator();
-          _cache[T] = instance as Object;
-          return instance;
-        }
-      }
-      ```
+final service = Singleton.getInstance(() => MyService());
+```
 
-      ```dart
-      class MyService {
-        void sayHi() => print("Hi");
-      }
+#### 📌11.6、使用[**GetIt**](https://pub.dev/packages/get_it)👉实现全局单例（推荐用于大型项目）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-      final service = Singleton.getInstance(() => MyService());
-      ```
+```dart
+import 'package:get_it/get_it.dart';
 
-    * 📌 使用 **GetIt** 实现全局单例（推荐用于大型项目）
+final getIt = GetIt.instance;
 
-      ```dart
-      import 'package:get_it/get_it.dart';
-      
-      final getIt = GetIt.instance;
-      
-      class MyService {
-        void doWork() => print("Working...");
-      }
-      
-      void setup() {
-        getIt.registerLazySingleton(() => MyService());
-      }
-      ```
+class MyService {
+  void doWork() => print("Working...");
+}
 
-      ```dart
-      // 使用：
-      void example() {
-        getIt<MyService>().doWork();
-      }
-      ```
+void setup() {
+  getIt.registerLazySingleton(() => MyService());
+}
+```
 
-### 12、<font color=red>**abstract**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+```dart
+// 使用：
+void example() {
+  getIt<MyService>().doWork();
+}
+```
+
+### 12、<font color=red>**`abstract`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 1️⃣ 防止被实例化
 >
@@ -12407,7 +12488,74 @@ packages:
 >
 > 常用于**纯静态工具类或常量容器类**的定义。提升代码的可读性和语义安全性，是一种更严谨的推荐写法
 
-### 13、**Comparable** <font color=red><b>&lt;T&gt;</b></font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 13、[**Dart**](https://dart.dev/).<font color=red>**`factory`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+> 1️⃣ `factory` **不一定只 new 一次**，它能 new 多次，也能 new 0 次（直接返回已有对象）。
+>
+> 2️⃣ 大多数人习惯用 `factory` 来写 `fromJson`，因为它不一定只是简单地 new 一个对象。
+>
+> 3️⃣ **Dart** 中的抽象类可以定义 `factory` 构造函数，它不能直接被实例化，但可以通过这个 `factory` 返回子类对象或其他实例，从而起到**工厂方法（类方法）+ 构造器**的双重作用。
+
+* 举例对比
+
+  * 🔹普通构造函数
+
+    ```dart
+    class A {
+      final int x;
+      A(this.x);
+    }
+    
+    void main() {
+      var a1 = A(1);
+      var a2 = A(1);
+      print(a1 == a2); // false，每次都是 new
+    }
+    ```
+
+  * 🔹`factory` 构造函数（单例）
+
+    ```dart
+    class B {
+      static final B _instance = B._internal();
+      factory B() => _instance; // 永远返回同一个对象
+      B._internal();
+    }
+    
+    void main() {
+      var b1 = B();
+      var b2 = B();
+      print(b1 == b2); // true，只 new 一次
+    }
+    ```
+
+  * 🔹`factory` 构造函数（返回子类）
+
+    ```dart
+    abstract class Animal {
+      factory Animal(String type) {
+        if (type == "dog") return Dog();
+        if (type == "cat") return Cat();
+        throw Exception("Unknown type");
+      }
+    }
+    
+    class Dog implements Animal {}
+    class Cat implements Animal {}
+    
+    void main() {
+      Animal a1 = Animal("dog");
+      Animal a2 = Animal("cat");
+      print(a1.runtimeType); // Dog
+      print(a2.runtimeType); // Cat
+    }
+    ```
+
+* 使用场景选择
+  * **简单字段映射**（json → model，没什么逻辑）：用命名构造函数就行
+  * **需要做复杂处理/条件判断/可能返回不同对象**：推荐 `factory`
+
+### 14、**Comparable** <font color=red><b>&lt;T&gt;</b></font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 1️⃣ **Dart** 中的一个接口（mixin），表示 **“可比较”类型**
 >
@@ -12425,7 +12573,7 @@ Comparable.compare(a, b)
 
   * 返回 **正数**：表示 `a > b`
 
-### 14、全局事件监听器：**`WidgetsBindingObserver`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 15、全局事件监听器：**`WidgetsBindingObserver`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * 无需额外依赖，原生[**Flutter**](https://flutter.dev/).**API**：**观察者接口（Mixin）**
 
@@ -12462,7 +12610,7 @@ Comparable.compare(a, b)
 
   * 和 `MediaQuery` 区别：`MediaQuery` 是构建 UI 时读状态，`WidgetsBindingObserver` 是实时监听变化。
 
-### 15、**纯静态类** 的（常见）写法 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 16、**纯静态类** 的（常见）写法 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 1️⃣ [**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/)里面没有反射（尤其是 **release** 模式）根本不支持 `dart:mirrors`（导入报错）
 >
@@ -12531,91 +12679,6 @@ Comparable.compare(a, b)
     static const version = '1.0.0';
   }
   ```
-
-### 16、✂️剪切板行为 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
-
-| 操作                                     | 可同步剪贴板？ | 方向   |
-| ---------------------------------------- | -------------- | ------ |
-| 在 **macOS 上复制**，到 iOS 模拟器中粘贴 | ✅ 可以         | 💻 ➜ 📱  |
-| 在 **iOS 模拟器中复制**，到 macOS 上粘贴 | ❌ 不行         | 📱 🚫➜ 💻 |
-
-![image-20250821163652904](./assets/image-20250821163652904.png)
-
-```dart
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // ⚡ 必须导入,用于 Clipboard
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/通用点击组件/CommonRipple.dart';
-import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsMaterialRunner.dart';
-import 'package:oktoast/oktoast.dart';
-
-void main() => runApp(
-  OKToast(
-    child: JobsMaterialRunner.builder(
-      title: '点击按钮@复制到剪切板',
-      builder: (ctx) => buildInviteCode('123456'), // ← 延后到 ScreenUtilInit 之后再构建
-    ),
-  ),
-);
-
-/// 点击此按钮以后，将外界传入的验证码，复制到系统剪切板，并弹出提示
-Widget buildInviteCode(String inviteCode) {
-  return SizedBox(
-    width: 350.w, // 固定宽度
-    height: 90.h, // 固定高度
-    child: Material(
-      // 给 InkWell 提供水波纹载体（不想水波纹可去掉或设为透明）
-      color: Colors.transparent,
-      child: CommonRipple(
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        borderRadius: BorderRadius.circular(6),
-        onTap: () async {
-          await Clipboard.setData(ClipboardData(text: inviteCode));
-          showToast("邀请码:$inviteCode已成功复制到剪切板");
-        },
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-          decoration: BoxDecoration(
-            border: Border.all(color: const Color(colorFF00C2C7), width: 1),
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.max, // ✅ 撑满宽度
-            mainAxisAlignment: MainAxisAlignment.center, // ✅ 水平居中
-            crossAxisAlignment: CrossAxisAlignment.center, // ✅ 垂直居中
-            children: [
-              Text(
-                "邀请码 ",
-                style: TextStyle(
-                  fontSize: 28.sp,
-                  color: const Color(colorFF333333),
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              Text(
-                inviteCode,
-                style: TextStyle(
-                  fontSize: 28.sp,
-                  color: const Color(colorFF00C2C7),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              SizedBox(width: 8.w),
-              Icon(
-                // 👈 不要用 IconButton，避免与外层 InkWell 冲突
-                Icons.copy,
-                size: 28.sp,
-                color: const Color(colorFF00C2C7),
-              ),
-            ],
-          ),
-        ),
-      ),
-    ),
-  );
-}
-```
 
 ### 17、**Dart**.<font color=red>**`Symbol`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
