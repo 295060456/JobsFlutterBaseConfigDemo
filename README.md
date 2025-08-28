@@ -6606,6 +6606,10 @@ class CounterPage extends GetView<CounterController> {
 
 * 🉐 <font id=GetxController的生命周期>**`GetxController`** 的生命周期🧬</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
+  > ⚠️ <font color=red>如果**`GetxController`**里面的字段（成员变量）构建失败，那么不会进**`GetxController`**的生命周期方法</font>。比如：
+  >
+  > `late AController ACtrl= Get.find();`如果`Get.find()`一个没有注册的**`GetxController`**，**即会引发构建失败**
+  
   | 方法名                                 | 触发时机                                                     | 用途说明                                                     |
   | -------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
   | <font color=red>**`onInit()`**</font>  | 控制器初始化时自动调用（在构造函数之后）                     | 类似于 `initState()`，适合初始化变量、监听等                 |
@@ -6616,6 +6620,49 @@ class CounterPage extends GetView<CounterController> {
   | `onResumed()`                          | 配合<a href="#监听App生命周期状态变化" style="font-size:17px; color:green;">**GetObserver**</a>使用，表示页面 **resumed** 状态 | 类似 **App** 生命周期，见下方扩展                            |
   | `onPaused()`                           | 页面切到后台或被覆盖时                                       | ——                                                           |
   | `onDetached()`                         | 页面彻底退出时                                               | ——                                                           |
+  
+* 例：找到一个已经注册的控制器，并调用其中的方法
+
+  ```dart
+  if (Get.isRegistered<CounterController>()) {
+    Get.find<CounterController>().increment();
+  }
+  ```
+
+  ```dart
+  class CounterController extends GetxController {
+    var count = 0.obs; // 使用 .obs 将 count 变量转换为响应式变量
+    void increment() {
+      count.value++;
+      update(); // 手动触发 UI 刷新
+    }
+  }
+  ```
+
+* 压栈参数要求：
+
+  * `Get.put`的入参要求为：已经实例化好的对象
+  * `Get.lazyPut`的入参要求为：一个回调函数。等到 `Get.find<T>()` 被调用时才会真正执行并实例化
+
+* 语法糖封装
+
+  ```dart
+  import 'package:get/get.dart';
+  
+  /// 自动注册或获取 Controller（立即创建并返回）
+  /// 用法：
+  /// final MyController c = jobsFind(MyController());
+  T JobsFind<T extends GetxController>(
+    T instance, {
+    bool permanent = true,
+  }) {
+    if (Get.isRegistered<T>()) {
+      return Get.find<T>();
+    } else {
+      return Get.put<T>(instance, permanent: permanent);
+    }
+  }
+  ```
 
 ###### 27.4.3.2、🉐 **`binding`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
