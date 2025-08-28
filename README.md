@@ -8706,7 +8706,7 @@ final rows = list
 >     * 遍历时才会临时生成数据，如果不存下来，数据用完就没了
 >     * **只有 `.toList()` / `.toSet()`** 这种收集操作，才会把数据铺成连续内存
 
-### 31、<font color=red>**字符串处理**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 31、[<font color=red>**字符串处理**</font>](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/lib/JobsDemoTools/Utils/Extensions/AnyExtensions/onString.dart) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * 多行字符串语法
 
