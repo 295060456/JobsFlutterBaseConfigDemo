@@ -27,7 +27,7 @@
 * **面向信仰编程**
 
 
-## ❤️友情外链🔗
+## 🌍友情外链🔗
 
 * [**Flutter 实战@第二版**](https://book.flutterchina.club/)
 * [**Jobs相关文档支持**](https://github.com/295060456/JobsDocs)
@@ -8725,6 +8725,10 @@ final rows = list
   extension StringAddExtension on String {
     String add(String suffix) => this + suffix;
   }
+  ```
+
+  ```dart
+  Text("首页".add("Jobs").tr),
   ```
 
 * 未完待续...

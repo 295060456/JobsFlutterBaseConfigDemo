@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/Extensions/string_ext.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/Extensions/AnyExtensions/onString.dart';
 import 'package:provider/provider.dart';
 import '../../notifier/locale_notifier.dart';
 import '../../services/theme_service.dart';
