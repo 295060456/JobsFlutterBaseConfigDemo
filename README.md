@@ -6576,7 +6576,7 @@ class CounterPage extends GetView<CounterController> {
 
 </details>
 
-###### 27.4.3.1、🉐**`GetxController`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+###### 27.4.3.1、🉐 **`GetxController`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 1️⃣ `GetxController` 是一个继承自 `Controller` 的类，用于管理你的页面状态和业务逻辑。
 >
@@ -6595,9 +6595,42 @@ class CounterPage extends GetView<CounterController> {
   | `onPaused()`                           | 页面切到后台或被覆盖时                                       | ——                                                           |
   | `onDetached()`                         | 页面彻底退出时                                               | ——                                                           |
 
-###### 27.4.3.2、🉐**`Binding`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+###### 27.4.3.2、🉐 **`binding`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-> **`Binding` 就是提前绑定 `controller` 的地方。**让你不需要在页面里手动写 **`Get.put()`** 或 **`Get.lazyPut()`**
+> **`binding` 就是提前绑定 `controller` 的地方。**让你不需要在页面里手动写 **`Get.put()`** 或 **`Get.lazyPut()`**
+
+* `binding`写法一：`extends Bindings`
+
+  ```dart
+  GetPage(
+    name: _Paths.AGENT_CENTER_REGISTER,
+    page: () => const AgentCenterRegisterView(),
+    binding: AgentCenterRegisterBinding(),
+  ),
+  ```
+
+  ```dart
+  class AgentCenterRegisterBinding extends Bindings {
+    @override
+    void dependencies() {
+      Get.lazyPut<AgentCenterRegisterController>(
+        () => AgentCenterRegisterController(),
+      );
+    }
+  }
+  ```
+
+* `binding`写法二：`BindingsBuilder`
+
+  ```dart
+  GetPage(
+    name: _Paths.AGENT_CENTER_GAME_RECORD,
+    page: () => const AgentCenterGameRecordView(),
+    binding: BindingsBuilder(() {
+      Get.lazyPut(() => AgentCenterGameRecordController());
+    }),
+  ),
+  ```
 
 ###### 27.4.3.3、🉐 <font id=GetView>**`GetView<T>`**</font>  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -6769,7 +6802,7 @@ class JobsBinding extends Bindings {
 
 </details>
 
-###### 27.4.3.5、🉐 <font id=GetPage>**`GetPage()📃`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+###### 27.4.3.5、🉐 <font id=GetPage>**`GetPage()`**</font>📃 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 1️⃣ 用于在 `GetMaterialApp` 中注册页面，它包含了页面路径、页面构造函数、绑定依赖、转场动画等信息。
 >
@@ -7088,7 +7121,7 @@ Get.offAllNamed('/splash');
   ```dart
   Get.toNamed('/home');
   ```
-##### 27.4.5、🉐**`GetxService`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 27.4.5、🉐 **`GetxService`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > `GetxService` 是 [**`GetX`**](https://pub.dev/packages/get)  提供的**专门用于全局单例管理的服务类**，适合放一些只需要创建一次，整个 App 生命周期中都不释放的“后台服务”
 
