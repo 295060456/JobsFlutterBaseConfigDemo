@@ -11791,6 +11791,60 @@ Widget buildInviteCode(String inviteCode) {
   > emulator-5554	device
   > ```
 
+* 查看模拟器 /data 剩余空间
+
+  ```shell
+  adb shell df -h /data
+  ```
+  
+* 卸载已装旧包（避免覆盖写更大体积失败）
+
+  ```shell
+  adb uninstall com.your.package   # 替换成你的 applicationId
+  # 或者直接让 flutter 先卸载再装
+  flutter run --uninstall-first
+  ```
+  
+* 如果之前改过安装位置（外部/优先SD卡），先恢复默认（这条很关键，和“Failed to override installation location”强相关）：
+
+  ```shell
+  adb shell pm set-install-location 0   # 0=自动  1=内部  2=外部
+  ```
+  
+* 命令行批量卸载
+
+  ```shell
+  adb shell pm list packages | grep chrome
+  adb shell pm uninstall --user 0 com.android.chrome
+  # 替换为实际包名，--user 0 仅对当前用户卸载（系统镜像仍在）
+  ```
+  
+* 清理 **Dalvik**/**ART** 临时编译产物（可回收一些空间）：
+
+  ```shell
+  adb shell cmd package compile --reset -a
+  ```
+  
+* 改配置文件：扩容/重置（更自由）
+
+  > 编辑 `~/.android/avd/<你的AVD名字>.avd/config.ini`，加入/修改以下项：
+  >
+  > 保存后 **Cold Boot**（AVD Manager → 下拉 → Cold Boot Now）。
+  
+  ```dart
+  disk.dataPartition.size=8G
+  hw.sdCard=yes
+  sdcard.size=512M
+  ```
+  
+* [**Flutter**](https://flutter.dev/)/**Gradle** 残留导致重新打包变大或失败：
+
+  ```shell
+  flutter clean
+  rm -rf android/.gradle android/build build
+  flutter pub get
+  ```
+  
 * 快速杀死所有模拟器实例
 
   ```shell
