@@ -6540,6 +6540,34 @@ class CounterPage extends StatelessWidget {
 
 >  [**`GetX`**](https://pub.dev/packages/get)  推荐的最佳实践方式：**`GetPage`** ➕ **`Binding`** ➕ **`GetView` ** ➕ **`Controller`**
 
+```mermaid
+graph LR
+    A["<div style='text-align:left;font-family:monospace;white-space:pre;'>
+GetPage(
+  name: _Paths.X,
+  page: () => const XView(),
+  binding: BindingsBuilder(() {
+    Get.lazyPut(() => XController());
+  }),
+)
+</div>"]:::codebox
+
+    A --> B["name: _Paths.X"]:::name
+    A --> C["page: () => const XView()"]:::page
+    A --> D["binding:BindingsBuilder(...)"]:::binding
+
+    B --> B1["👉 任意字符串，推荐路径风格"]:::note
+    C --> C1["👉 class XView extends GetView<XController>"]:::note
+    D --> D1["👉 class XController extends GetxController"]:::note
+
+    classDef codebox fill:#f3e8ff,stroke:#a855f7,stroke-width:2px,font-family:monospace,font-size:20px;
+    classDef name fill:#FFDDC1,stroke:#FF8C42,stroke-width:2px;
+    classDef page fill:#D6F5FF,stroke:#1E90FF,stroke-width:2px;
+   
+    classDef binding fill:#E6E6FA,stroke:#9370DB,stroke-width:2px;
+    classDef note fill:#f8f9fa,stroke:#999,stroke-width:1px,font-size:10px;
+```
+
 <details>
 <summary>点击展开代码</summary>
 
@@ -11487,6 +11515,45 @@ Expanded(
   ),
 ),
 ```
+
+### 59、列表渲染完之后，把滚动条强制拉到最底部 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+> 一般这种逻辑要放到：
+>
+> - `WidgetsBinding.instance.addPostFrameCallback`
+> - 或者在 `controller` 里监听数据变化后再调用
+
+```dart
+/// 创建一个滚动控制器，可以用来操纵 ListView、SingleChildScrollView 等可滚动组件
+/// 在 创建 ScrollController 后马上用 hasClients 一定是 false，因为这时还没 attach 到任何 ListView
+ScrollController mainScrollController = ScrollController();
+```
+
+* 瞬间滚动到可滑动部件的最底部（不带动画）
+
+  ```dart
+  /// 判断这个 ScrollController 有没有绑定到某个可滚动的 Widget 上（比如 ListView）
+  /// 如果还没绑定，就算 jumpTo 也会报错
+  if (mainScrollController.hasClients) {
+    /// jumpTo() 是瞬间跳过去，不会有动画。
+    mainScrollController.jumpTo(mainScrollController.position.maxScrollExtent);
+  }
+  ```
+
+* 平滑滚动到可滑动部件的最底部（带动画）
+
+  ```dart
+  /// 判断这个 ScrollController 有没有绑定到某个可滚动的 Widget 上（比如 ListView）
+  /// 如果还没绑定，就算 jumpTo 也会报错
+  if (mainScrollController.hasClients) {
+    /// 平滑滚动到可滑动部件的最底部
+    mainScrollController.animateTo(
+      mainScrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
+  ```
 
 ## 五、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
