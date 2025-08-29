@@ -81,5 +81,8 @@
 
     // 🟠 条件断点颜色（只有满足条件时才触发）
     "debugIcon.breakpointConditionalForeground": "#FFAA00"
+  },
+  "yaml.schemas": {
+    "https://www.schemastore.org/pubspec.json": "file:///Users/jobs/Documents/Github/jobs_flutter_base_config_demo/pubspec.yaml"
   }
 }

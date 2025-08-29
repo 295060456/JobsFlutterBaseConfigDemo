@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/Extensions/AnyExtensions/onNum.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/Utils/JobsBtnImageSpec.dart';
 
 /// 基础 Widget 扩展（轻量包装）
 extension JobsWidgetExtensions on Widget {
@@ -208,6 +209,20 @@ extension JobsWidgetExtensions on Widget {
         keyboardDismissBehavior: keyboardDismissBehavior,
         child: this,
       );
+
+  /// 等到 Future 完成后再把 DecorationImage 合进来；未完成时返回原始 child
+  Widget bgImageFutureBy(Future<DecorationImage> future) {
+    final child = this;
+    return FutureBuilder<DecorationImage>(
+      future: future,
+      builder: (ctx, snap) {
+        if (snap.hasData) {
+          return child.bgImageBy(snap.data!);
+        }
+        return child; // 加载中就先正常显示，不阻塞
+      },
+    );
+  }
 }
 
 extension ClipRRectExtensions on Widget {
@@ -225,42 +240,46 @@ extension AlignExtensions on Widget {
       Align(key: key, alignment: Alignment.bottomCenter, child: this);
 }
 
+extension JobsBtnConfig on Widget {
+  Widget imageBy(JobsBtnLabelConfig cfg) => JobsBtnLabel(label: this, cfg: cfg);
+}
+
 /// 样式累积入口（链式 API）
 extension JobsStyleX on Widget {
   JobsStyled get style =>
       this is JobsStyled ? (this as JobsStyled) : JobsStyled(child: this);
 
-  JobsStyled padding(EdgeInsetsGeometry v) => style.padding(v);
-  JobsStyled margin(EdgeInsetsGeometry v) => style.margin(v);
+  JobsStyled paddingBy(EdgeInsetsGeometry v) => style.paddingBy(v);
+  JobsStyled marginBy(EdgeInsetsGeometry v) => style.marginBy(v);
 
-  JobsStyled size({double? width, double? height}) =>
-      style.size(width: width, height: height);
+  JobsStyled sizeBy({double? width, double? height}) =>
+      style.sizeBy(width: width, height: height);
 
-  JobsStyled bg(Color c) => style.bg(c);
-  JobsStyled bgByInt(int c) => style.bg(Color(c));
+  JobsStyled bgCorBy(Color c) => style.bgCorBy(c);
+  JobsStyled bgCorByInt(int c) => style.bgCorBy(Color(c));
 
-  JobsStyled bgImage(DecorationImage img) => style.bgImage(img);
-  JobsStyled gradient(Gradient g) => style.gradient(g);
+  JobsStyled bgImageBy(DecorationImage img) => style.bgImageBy(img);
+  JobsStyled gradientBy(Gradient g) => style.gradientBy(g);
 
-  JobsStyled radius(double r) => style.radius(r);
-  JobsStyled radiusOnly(
+  JobsStyled radiusBy(double r) => style.radiusBy(r);
+  JobsStyled radiusOnlyBy(
           {double? topLeft,
           double? topRight,
           double? bottomLeft,
           double? bottomRight}) =>
-      style.radiusOnly(
+      style.radiusOnlyBy(
           topLeft: topLeft,
           topRight: topRight,
           bottomLeft: bottomLeft,
           bottomRight: bottomRight);
 
-  JobsStyled border(
+  JobsStyled borderBy(
           {Color color = const Color(0x1F000000),
           double width = 1,
           BorderStyle borderStyle = BorderStyle.solid}) =>
-      style.border(color: color, width: width, borderStyle: borderStyle);
+      style.borderBy(color: color, width: width, borderStyle: borderStyle);
 
-  JobsStyled borderOnly({
+  JobsStyled borderOnlyBy({
     Color? leftColor,
     double? leftWidth,
     BorderStyle? leftStyle,
@@ -274,7 +293,7 @@ extension JobsStyleX on Widget {
     double? bottomWidth,
     BorderStyle? bottomStyle,
   }) =>
-      style.borderOnly(
+      style.borderOnlyBy(
         leftColor: leftColor,
         leftWidth: leftWidth,
         leftStyle: leftStyle,
@@ -289,9 +308,9 @@ extension JobsStyleX on Widget {
         bottomStyle: bottomStyle,
       );
 
-  JobsStyled shadow({List<BoxShadow>? shadows}) =>
-      style.shadow(shadows: shadows);
-  JobsStyled clip([bool v = true]) => style.clip(v);
+  JobsStyled shadowBy({List<BoxShadow>? shadows}) =>
+      style.shadowBy(shadows: shadows);
+  JobsStyled clipBy([bool v = true]) => style.clipBy(v);
 }
 
 /// 可累积样式包装实现
@@ -339,7 +358,7 @@ class JobsStyled extends StatelessWidget {
   }
 
   // —— 下面所有链式方法都透传 _width/_height，保证顺序无关 —— //
-  JobsStyled size({double? width, double? height}) => JobsStyled(
+  JobsStyled sizeBy({double? width, double? height}) => JobsStyled(
         padding: _padding,
         margin: _margin,
         decoration: _decoration,
@@ -349,7 +368,7 @@ class JobsStyled extends StatelessWidget {
         child: child,
       );
 
-  JobsStyled padding(EdgeInsetsGeometry v) => JobsStyled(
+  JobsStyled paddingBy(EdgeInsetsGeometry v) => JobsStyled(
         padding: v,
         margin: _margin,
         decoration: _decoration,
@@ -359,7 +378,7 @@ class JobsStyled extends StatelessWidget {
         child: child,
       );
 
-  JobsStyled margin(EdgeInsetsGeometry v) => JobsStyled(
+  JobsStyled marginBy(EdgeInsetsGeometry v) => JobsStyled(
         padding: _padding,
         margin: v,
         decoration: _decoration,
@@ -369,7 +388,7 @@ class JobsStyled extends StatelessWidget {
         child: child,
       );
 
-  JobsStyled bgImage(DecorationImage img) => JobsStyled(
+  JobsStyled bgImageBy(DecorationImage img) => JobsStyled(
         padding: _padding,
         margin: _margin,
         decoration: _mergeDecoration(_decoration, BoxDecoration(image: img)),
@@ -379,7 +398,7 @@ class JobsStyled extends StatelessWidget {
         child: child,
       );
 
-  JobsStyled bg(Color c) => JobsStyled(
+  JobsStyled bgCorBy(Color c) => JobsStyled(
         padding: _padding,
         margin: _margin,
         decoration: _mergeDecoration(_decoration, BoxDecoration(color: c)),
@@ -389,7 +408,7 @@ class JobsStyled extends StatelessWidget {
         child: child,
       );
 
-  JobsStyled radius(double r) => JobsStyled(
+  JobsStyled radiusBy(double r) => JobsStyled(
         padding: _padding,
         margin: _margin,
         decoration: _mergeDecoration(
@@ -400,7 +419,7 @@ class JobsStyled extends StatelessWidget {
         child: child,
       );
 
-  JobsStyled radiusOnly(
+  JobsStyled radiusOnlyBy(
       {double? topLeft,
       double? topRight,
       double? bottomLeft,
@@ -423,7 +442,7 @@ class JobsStyled extends StatelessWidget {
     );
   }
 
-  JobsStyled border(
+  JobsStyled borderBy(
           {Color color = const Color(0x1F000000),
           double width = 1,
           BorderStyle borderStyle = BorderStyle.solid}) =>
@@ -441,7 +460,7 @@ class JobsStyled extends StatelessWidget {
         child: child,
       );
 
-  JobsStyled borderOnly({
+  JobsStyled borderOnlyBy({
     Color? leftColor,
     double? leftWidth,
     BorderStyle? leftStyle,
@@ -495,7 +514,7 @@ class JobsStyled extends StatelessWidget {
     );
   }
 
-  JobsStyled gradient(Gradient g) => JobsStyled(
+  JobsStyled gradientBy(Gradient g) => JobsStyled(
         padding: _padding,
         margin: _margin,
         decoration: _mergeDecoration(_decoration, BoxDecoration(gradient: g)),
@@ -505,7 +524,7 @@ class JobsStyled extends StatelessWidget {
         child: child,
       );
 
-  JobsStyled shadow({List<BoxShadow>? shadows}) => JobsStyled(
+  JobsStyled shadowBy({List<BoxShadow>? shadows}) => JobsStyled(
         padding: _padding,
         margin: _margin,
         decoration: _mergeDecoration(
@@ -519,7 +538,7 @@ class JobsStyled extends StatelessWidget {
         child: child,
       );
 
-  JobsStyled clip([bool v = true]) => JobsStyled(
+  JobsStyled clipBy([bool v = true]) => JobsStyled(
         padding: _padding,
         margin: _margin,
         decoration: _decoration,

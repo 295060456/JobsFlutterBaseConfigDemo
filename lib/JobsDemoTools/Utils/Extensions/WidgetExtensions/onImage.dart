@@ -21,7 +21,7 @@ extension JobsImageX on Widget {
     FilterQuality filterQuality = FilterQuality.low,
     // 你也可以继续加 colorFilter / opacity 等
   }) {
-    return JobsStyled(child: this).bgImage(
+    return JobsStyled(child: this).bgImageBy(
       DecorationImage(
         image: provider,
         fit: fit,

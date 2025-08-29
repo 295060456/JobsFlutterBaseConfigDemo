@@ -20,6 +20,8 @@ dependencies:
   flutter:
     sdk: flutter
   # UI组件库
+  ym_flutter_widget: any
+  flutter_svg: any
   oktoast: any # 轻量级toast
   extended_tabs: any # 扩展TabBar
   cupertino_icons: any

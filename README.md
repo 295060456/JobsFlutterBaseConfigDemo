@@ -5716,7 +5716,7 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 | `Material`               | `Widget` | **Material** 风格容器，可设置阴影、圆角、颜色等              |
 | `Ink`                    | `Widget` | 与 `InkWell` 配合实现水波纹背景、圆角、装饰色等              |
 
-#### 21.2、🎍装饰构建类（**`Decoration`** 体系） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 21.2、🎍装饰构建类（**`Decoration`** 体系）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 | 类名                    | 类型                      | 功能说明                                               |
 | ----------------------- | ------------------------- | ------------------------------------------------------ |
@@ -5725,6 +5725,111 @@ class _AnchorLayoutDelegate extends MultiChildLayoutDelegate {
 | `ShapeDecoration`       | **`Decoration`**          | 支持复杂形状的装饰（如 `StadiumBorder`）               |
 | `UnderlineTabIndicator` | **`Decoration`**          | TabBar 下划线装饰                                      |
 | `InputDecoration`       | 类（非 **`Decoration`**） | TextField 输入框样式结构，字段名相似但独立体系         |
+
+##### 21.2.1、**`TextField`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* 控制器 / 焦点
+
+  - **controller**：控制文本内容，管理 `text` / `selection`。不传则内部会创建，常见坑：必须在 `dispose` 时调用 `controller.dispose()`。
+  - **focusNode**：焦点管理。配合 `FocusScope.of(context).requestFocus(node)` 来控制聚焦。
+  - **undoController**：撤销/重做控制器，支持桌面/网页快捷键（Ctrl+Z/Ctrl+Shift+Z）。
+  - **groupId**：同一组 `EditableText` 聚合（少用，内部机制用来共享输入法会话）。
+
+* 外观 / 装饰
+
+  - **decoration**：`InputDecoration`，控制 label、hint、边框、前后缀图标。设为 `null` → 完全移除装饰（包括内边距）。
+  - **style**：输入文本样式（颜色、字体、大小等）。
+  - **strutStyle**：行高控制，确保不同字符（emoji/中英混排）对齐。
+  - **textAlign**：水平方向对齐（start/center/end）。
+  - **textAlignVertical**：垂直方向对齐（top/center/bottom）。
+  - **textDirection**：文字方向（LTR/RTL）。
+
+* 输入法 / 键盘
+
+  - **keyboardType**：键盘类型（text、multiline、number、email、phone…）。
+  - **textInputAction**：软键盘右下角按钮行为（done、send、search、newline…）。
+  - **textCapitalization**：英文大小写规则（none/words/sentences/allCharacters）。
+  - **keyboardAppearance**：仅 iOS 生效，键盘亮/暗色。
+
+* 文本行为
+
+  - **readOnly**：只读模式，可选中复制，但不能编辑。
+  - **autofocus**：页面加载后自动获取焦点。
+  - **enabled**：是否启用（false 时灰显并忽略输入）。
+  - **ignorePointers**：忽略指针事件（类似透明层）。
+  - **scribbleEnabled**：是否允许 Apple Pencil Scribble 输入。
+  - **enableIMEPersonalizedLearning**：是否允许输入法个性化学习。
+
+* 密码 / 智能输入
+
+  - **obscureText**：是否隐藏输入（密码）。必须是单行。
+  - **obscuringCharacter**：隐藏字符，默认 `•`。
+  - **autocorrect**：是否自动纠错。
+  - **enableSuggestions**：是否开启输入建议。
+  - **smartDashesType**：智能破折号（英文）。
+  - **smartQuotesType**：智能引号（英文）。
+
+* 行数 / 布局
+
+  - **maxLines**：最大行数。
+  - **minLines**：最小行数。
+  - **expands**：是否填满父容器高度（此时 max/minLines 必须为 null）。
+
+* 长度 / 计数
+
+  - **maxLength**：最大字符数（按 Unicode 字素 cluster 计）。
+  - **noMaxLength**：特殊常量，值 `-1`，表示只显示已输入长度。
+  - **maxLengthEnforcement**：长度限制策略（enforced/none）。
+  - **buildCounter**：自定义计数器，返回一个 Widget。返回 null → 完全不显示。
+
+* 光标 / 选择
+
+  - **cursorWidth**：光标宽度。
+  - **cursorHeight**：光标高度。
+  - **cursorRadius**：光标圆角。
+  - **cursorOpacityAnimates**：光标是否动画闪烁。
+  - **cursorColor**：光标颜色。
+  - **cursorErrorColor**：错误状态下光标颜色。
+  - **selectionHeightStyle**：选区高亮高度模式。
+  - **selectionWidthStyle**：选区宽度模式。
+  - **selectionControls**：选择控制器，决定手柄形状和菜单。
+  - **enableInteractiveSelection**：是否允许交互选择。
+
+* 滚动 / 溢出
+
+  - **scrollController**：自定义滚动控制器。
+  - **scrollPhysics**：滚动物理效果。
+  - **scrollPadding**：输入框被键盘挡住时，自动滚动的额外留白。
+  - **dragStartBehavior**：拖拽开始行为（start/down）。
+  - **clipBehavior**：超出边界时的裁剪方式。
+
+* 回调事件
+
+  - **onChanged**：输入内容变化时回调。
+  - **onEditingComplete**：编辑完成时回调（默认：收起键盘+失焦）。
+  - **onSubmitted**：按下“完成/回车”键时回调。
+  - **onAppPrivateCommand**：输入法私有命令回调（少用）。
+  - **onTap**：首次点击输入框时回调。
+  - **onTapAlwaysCalled**：是否每次点击都调用 `onTap`。
+  - **onTapOutside**：点击输入框外部区域时回调（常用来收起键盘）。
+
+* 状态管理 / 语义
+
+  - **statesController**：`MaterialStatesController`，跟踪 disabled/hovered/error/focused 状态。
+  - **mouseCursor**：鼠标悬停时的光标样式。
+  - **restorationId**：状态恢复 ID（与 RestorationMixin 搭配，跨页面/重启恢复内容）。
+  - **autofillHints**：自动填充提示（email、password、tel…）。
+  - **contentInsertionConfiguration**：粘贴/拖拽插入的配置。
+  - **contextMenuBuilder**：上下文菜单构建器（替代 toolbarOptions）。
+  - **toolbarOptions**（废弃）：旧版剪切/复制/粘贴菜单开关。
+  - **spellCheckConfiguration**：拼写检查配置。
+  - **magnifierConfiguration**：放大镜配置（长按光标放大镜）。
+
+* 其他
+
+  - **canRequestFocus**：是否能请求焦点（false → 点不进输入框）。
+  - **restorationId**：状态恢复用 ID。
+  - **groupId**：多个输入框共享输入法。
 
 #### 21.3、🎍装饰参数 / 协作类（**`Decoration`** 构成元素）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -11406,18 +11511,34 @@ showSimpleNotification(
   ```dart
   /// 极简设定
   Text(
-    text,
-    style: style,
-    textAlign: TextAlign.center,     // ✅ 居中对齐
-    maxLines: null,                  // ✅ 允许无限行
-    overflow: TextOverflow.visible,  // ✅ 不截断
-    softWrap: true,                  // ✅ 自动换行
-  ).sizeBy(w: 57, h: 26)
-   .radius(4)
-   .bgByInt(0xFFFED49C)
-   .onTap(() {
-    print("ss");
-  })
+        text,
+        style: TextStyle(
+          fontSize: 36.sp,
+          color: context.customTheme?.title2Color,
+        ),
+        textAlign: TextAlign.center, // ✅ 居中对齐
+        maxLines: null, // ✅ 允许无限行
+        overflow: TextOverflow.visible, // ✅ 不截断
+        softWrap: true, // ✅ 自动换行
+      )
+          .sizeBy(w: 57, h: 26)
+          .imageBy(JobsBtnLabelConfig(
+            icon: JobsBtnImageSpecSource.svgAsset(
+                Assets.theme1.images.agentCenter.iconArrowDown),
+            position: JobsIconPosition.right, // 图在右
+            spec: const JobsBtnImageSpec(width: 14, height: 14), // 图标尺寸
+            spacing: 6, // 图文间距
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            minHeight: 36, // 最小高度（手感）
+          ))
+          .radiusBy(4)
+          .bgCorByInt(0xFFFED49C)
+          .onTap(() {
+        print("ss");
+      });
   ```
 
 * **返回按钮**
@@ -11857,6 +11978,112 @@ class ClipboardUtil {
   }
 }
 ```
+
+### 60、[**级联选择器**](https://pub.dev/packages/ym_flutter_widget) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* 引入
+
+  ```yaml
+  dependencies:
+    # 核心库
+    flutter:
+      sdk: flutter
+    # UI组件库
+    ym_flutter_widget: any
+  ```
+
+* 单数据
+
+  ```dart
+  void showGamePicker(
+    AgentCenterGameRecordController controller, {
+    required ValueChanged<String> onPicked,
+  }) {
+    showModalBottomSheet(
+      context: Get.context!,
+      builder: (BuildContext builder) {
+        return Obx(() {
+          if (!controller.isInit.value) {
+            return const SizedBox();
+          }
+          return YmCascader(
+            data: controller.gameListData,
+            dataMap: controller.gameListMap,
+            isOnlyOne: true,
+            currentIndex:
+                controller.isNeedReset.value ? [0, 0] : controller.gameIndex,
+            isFixed: true,
+            onOkClick: (list) async {
+              Get.back();
+              // 等内部状态更新
+              await Future.delayed(const Duration(milliseconds: 100));
+              controller.confirmGame(list);
+  
+              // —— 把“展示给 Dropdown 的文案”拼出来 —— //
+              final left = controller.gameListData[0][list[0]].label;
+              onPicked(left); // 关键：回传给 recordSearchBar
+            },
+            onCancelClick: () {
+              Get.back();
+            },
+            onChanged: (position, index, value) {
+              // 可选：需要联动时加逻辑
+            },
+          );
+        });
+      },
+    );
+  }
+  ```
+
+* 多数据
+
+  ```dart
+  void showGamePicker(
+    AgentCenterGameRecordController controller, {
+    required ValueChanged<String> onPicked,
+  }) {
+    showModalBottomSheet(
+      context: Get.context!,
+      builder: (BuildContext builder) {
+        return Obx(() {
+          if (!controller.isInit.value) {
+            return const SizedBox();
+          }
+          return YmCascader(
+            data: controller.gameListData,
+            dataMap: controller.gameListMap,
+            currentIndex:
+                controller.isNeedReset.value ? [0, 0] : controller.gameIndex,
+            isFixed: true,
+            onOkClick: (list) async {
+              Get.back();
+              // 等内部状态更新
+              await Future.delayed(const Duration(milliseconds: 100));
+              controller.confirmGame(list);
+  
+              // —— 把“展示给 Dropdown 的文案”拼出来 —— //
+              final left = controller.gameListData[0][list[0]].label;
+              final rightList = controller.gameListMap?[list[0]] ?? const [];
+              final right = (list.length > 1 && list[1] < rightList.length)
+                  ? rightList[list[1]].label
+                  : null;
+  
+              final label = right == null ? left : '$left / $right';
+              onPicked(label); // 关键：回传给 recordSearchBar
+            },
+            onCancelClick: () {
+              Get.back();
+            },
+            onChanged: (position, index, value) {
+              // 可选：需要联动时加逻辑
+            },
+          );
+        });
+      },
+    );
+  }
+  ```
 
 ## 五、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
