@@ -11979,7 +11979,24 @@ class ClipboardUtil {
 }
 ```
 
-### 60、[**级联选择器**](https://pub.dev/packages/ym_flutter_widget) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 60、输入框 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* 点击以后，不弹出键盘，而执行其他操作（比如弹出：[**级联选择器**](https://pub.dev/packages/ym_flutter_widget) ）
+
+  ```dart
+  TextField(
+    readOnly: true, // ✅ 不弹键盘
+    onTap: () {
+      AppManager.instance.tapVibrate();
+      showGamePicker(ctrl, onPicked: (label) {
+        onCategoryChanged(label);
+      });
+    },
+    controller: TextEditingController(text: category), // 显示当前选中
+  ),
+  ```
+
+### 61、[**级联选择器**](https://pub.dev/packages/ym_flutter_widget) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * 引入
 
