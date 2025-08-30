@@ -14265,14 +14265,24 @@ class Person {
 
 #### 25.0、[**配置Shell打包命令**](https://github.com/295060456/JobsMacEnvVarConfig) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-> 直接写入`.zshrc`
+> 直接写入`.zshrc`👉[**Flutter**](https://flutter.dev/)的版本锁定+用于[**Android**](https://www.android.com/)的**Java**环境的锁定
 
 ```shell
-# ✅ 为Flutter打包📦作准备
+# ✅ 打包构建前置：清理 & 拉依赖 & doctor（保证一定在项目根执行）
 buildCheck() {
+  local here="$PWD"
+  local project_path
+
+  if is_flutter_project "$here"; then
+    project_path="$here"
+  else
+    project_path="$(get_flutter_project_dir "$here")" || { echo "已取消"; return 1; }
+    cd "$project_path" || return 1
+  fi
+
   read -r "?是否执行清理和依赖安装 (回车=执行，任意字符=跳过): " ans
   if [[ -z "$ans" ]]; then
-    echo "🧹 flutter clean / pub get / doctor"
+    echo "🧹 flutter clean / pub get / doctor @ $project_path"
     flutter clean || return $?
     flutter pub get || return $?
     flutter doctor -v || return $?
@@ -14297,42 +14307,186 @@ get_flutter_project_dir() {
 
   while ! is_flutter_project "$project_path"; do
     echo "❌ [$project_path] 不是合法的 Flutter 项目目录（缺少 lib/ 或 pubspec.yaml）" >&2
-    read -r "?👉 请输入 Flutter 项目路径: " input_path
-    # 空输入：继续循环
+    read -r "?👉 请输入 Flutter 项目路径（回车=继续询问，q=退出）: " input_path
+    [[ "$input_path" == "q" || "$input_path" == "Q" ]] && return 1
     [[ -z "$input_path" ]] && continue
-
-    # 支持 ~ 展开；保持对空格路径友好
-    eval "project_path=\"$input_path\""
+    eval "project_path=\"$input_path\""                       # 展开 ~
     project_path="$(cd "$project_path" 2>/dev/null && pwd || echo "")"
-
-    if [[ -z "$project_path" ]]; then
-      echo "⚠️ 输入的路径无效，请重新输入" >&2
-      project_path="$start"
-    fi
+    [[ -z "$project_path" ]] && echo "⚠️ 路径无效，请重试" >&2
   done
 
-  # 只输出最终路径到 stdout
   printf "%s\n" "$project_path"
 }
 
-# ================================== 构建 APK（复用目录函数） ==================================
-apk() {
-  # 可选：存在 buildCheck 就执行
-  if typeset -f buildCheck >/dev/null; then buildCheck || return $?; fi
+# ================================== 构建前置：保证 fvm + 版本 + flutter_cmd ==================================
+# ✅ 设定 flutter_cmd 为命令数组（优先 fvm），确保后续以 "${flutter_cmd[@]}" 执行
+set_flutter_cmd() {
+  export PATH="$HOME/.pub-cache/bin:$PATH"
+  if command -v fvm >/dev/null 2>&1; then
+    flutter_cmd=(fvm flutter)
+  else
+    flutter_cmd=(flutter)
+  fi
+  echo "[INFO] flutter_cmd = ${flutter_cmd[*]}"
+}
 
+# ✅ 读取当前项目希望使用的 Flutter 版本（优先 .fvmrc / .fvm/fvm_config.json）
+read_project_flutter_version() {
+  local v=""
+  if [[ -f .fvmrc ]]; then
+    v="$(jq -r '.flutterSdkVersion // empty' .fvmrc 2>/dev/null)"
+  elif [[ -f .fvm/fvm_config.json ]]; then
+    v="$(jq -r '.flutterSdkVersion // empty' .fvm/fvm_config.json 2>/dev/null)"
+  fi
+  [[ -n "$v" ]] && echo "$v"
+}
+
+# ✅ 读取当前项目希望使用的 Flutter 版本（更健壮）
+read_project_flutter_version() {
+  local v=""
+
+  # 1) 优先：.fvm/version（FVM 3.x/4.x 常见）
+  if [[ -f .fvm/version ]]; then
+    v="$(tr -d '\r' < .fvm/version | tr -d '[:space:]')"
+    [[ -n "$v" ]] && echo "$v" && return 0
+  fi
+
+  # 2) .fvmrc：可能是 JSON，也可能是纯文本；键名可能是 "flutter" 或 "flutterSdkVersion"
+  if [[ -f .fvmrc ]]; then
+    # 2.1 JSON 解析
+    if command -v jq >/dev/null 2>&1 && head -c1 .fvmrc | grep -q '{'; then
+      v="$(jq -r '.flutter // .flutterSdkVersion // empty' .fvmrc 2>/dev/null | tr -d '[:space:]')"
+      [[ -n "$v" ]] && echo "$v" && return 0
+    fi
+    # 2.2 纯文本（直接写版本号）
+    v="$(sed -E 's/^[[:space:]]+|[[:space:]]+$//g' .fvmrc \
+        | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | head -n1)"
+    [[ -n "$v" ]] && echo "$v" && return 0
+  fi
+
+  # 3) .fvm/fvm_config.json（旧工具链常见）
+  if [[ -f .fvm/fvm_config.json ]] && command -v jq >/dev/null 2>&1; then
+    v="$(jq -r '.flutter // .flutterSdkVersion // empty' .fvm/fvm_config.json 2>/dev/null | tr -d '[:space:]')"
+    [[ -n "$v" ]] && echo "$v" && return 0
+  fi
+
+  # 4) 兜底：如果项目内已经有 .fvm/flutter_sdk/bin/flutter，就直接读取版本号
+  if [[ -x .fvm/flutter_sdk/bin/flutter ]]; then
+    v="$(.fvm/flutter_sdk/bin/flutter --version 2>/dev/null \
+        | grep -Eo 'Flutter [0-9]+\.[0-9]+\.[0-9]+' | awk '{print $2}' | head -n1)"
+    [[ -n "$v" ]] && echo "$v" && return 0
+  fi
+
+  # 未找到
+  return 1
+}
+
+# ✅ 在 apk 构建前调用：确保 fvm 存在 & 选定并安装好 Flutter 版本（若已有配置则不打扰）
+ensure_fvm_and_flutter_version_before_build() {
+  if ! command -v fvm >/dev/null 2>&1; then
+    echo "[INFO] 未检测到 fvm，准备安装"
+    if ! command -v dart >/dev/null 2>&1; then
+      echo "[ERROR] 未检测到 dart，请先安装 dart 后重试"
+      return 1
+    fi
+    dart pub global deactivate fvm >/dev/null 2>&1 || true
+    dart pub global activate  fvm || { echo "[ERROR] fvm 安装失败"; return 1; }
+    echo "[OK] fvm 安装成功"
+  else
+    # 确保 fvm 是用当前 Dart 重新激活过的，避免 kernel 版本不匹配
+    dart pub global activate fvm >/dev/null 2>&1 || true
+    echo "[INFO] fvm 已就绪"
+  fi
+
+  set_flutter_cmd
+
+  local desired_version=""
+  if desired_version="$(read_project_flutter_version)"; then
+    echo "[INFO] 项目已绑定 Flutter 版本：$desired_version"
+  else
+    echo "[INFO] 项目未绑定 Flutter 版本，尝试获取 stable 列表"
+    local versions latest
+    versions="$(curl -fsSL https://storage.googleapis.com/flutter_infra_release/releases/releases_macos.json \
+      | jq -r '.releases[] | select(.channel=="stable") | .version' | sort -V | uniq | tac)"
+    latest="$(echo "$versions" | head -n1)"
+
+    if command -v fzf >/dev/null 2>&1; then
+      local pick
+      pick="$(echo "$versions" | fzf --prompt='选择 Flutter 版本：' --height=50% --border --ansi)"
+      desired_version="$(echo "$pick" | grep -Eo '^[0-9]+\.[0-9]+\.[0-9]+$')"
+    fi
+    desired_version="${desired_version:-$latest}"
+
+    # 同步写入两处配置，兼容新旧工具链
+    printf '{ "flutter": "%s" }\n' "$desired_version" > .fvmrc
+    mkdir -p .fvm
+    printf '{ "flutter": "%s", "flutterSdkVersion": "%s" }\n' "$desired_version" "$desired_version" > .fvm/fvm_config.json
+    printf '%s\n' "$desired_version" > .fvm/version
+    echo "[OK] 已写入 .fvmrc / .fvm/fvm_config.json / .fvm/version：$desired_version"
+  fi
+
+  # 安装 & 切换（install 幂等，直接执行最省事）
+  echo "[INFO] 安装 Flutter $desired_version（如已安装会跳过下载）"
+  fvm install "$desired_version" || { echo "[ERROR] fvm install 失败"; return 1; }
+
+  fvm use "$desired_version" --force || { echo "[ERROR] fvm use 失败"; return 1; }
+
+  set_flutter_cmd
+  echo "[OK] Flutter $desired_version 就绪"
+}
+
+# ✅ 打 Android 包需要Java环境@17
+ensure_jdk17() {
+  if ! /usr/libexec/java_home -v 17 >/dev/null 2>&1; then
+    err "系统未安装 JDK 17；请先安装（Temurin 17 / Zulu 17 等）。"
+    exit 1
+  fi
+  jenv add "$(/usr/libexec/java_home -v 17)" >/dev/null 2>&1 || true
+  jenv rehash
+  local pick_17
+  pick_17="$(jenv versions --bare | grep -E '(^|[[:space:]])(.*17(\.|$).*)' | head -n1 || true)"
+  [[ -z "${pick_17:-}" ]] && { err "jenv 中未发现 JDK 17。"; exit 1; }
+
+  jenv shell "$pick_17"
+  export JENV_VERSION="$pick_17"
+  export JAVA_HOME="$(jenv prefix)"
+  export PATH="$JAVA_HOME/bin:$PATH"
+
+  echo "$pick_17" > .java-version
+  echo "JENV_VERSION=$JENV_VERSION"
+  echo "JAVA_HOME=$JAVA_HOME"
+  java -version
+}
+
+# ✅ 打 Android 包📦
+apk() {
   local project_path
   project_path="$(get_flutter_project_dir "$PWD")" || return 1
-  echo "✅ 已确认 Flutter 项目目录: $project_path"
+  echo "[OK] 已确认 Flutter 项目目录: $project_path"
   cd "$project_path" || return 1
 
-  echo "🚀 开始构建 APK（release）..."
-  flutter build apk --release || return $?
+  # 现在才执行 buildCheck（保证在项目根）
+  if typeset -f buildCheck >/dev/null; then buildCheck || return $?; fi
 
-  echo "📂 打开输出目录: ./build/app/outputs/"
+  ensure_fvm_and_flutter_version_before_build || return $?
+  ensure_jdk17 || return $?
+
+  # 子插件依赖更新
+  if [[ -f "plugins/htprotect/pubspec.yaml" ]]; then
+    echo "[INFO] 执行子插件依赖更新: plugins/htprotect"
+    (cd plugins/htprotect && "${flutter_cmd[@]}" pub get) || return $?
+  else
+    echo "[WARN] 未找到 plugins/htprotect/pubspec.yaml，跳过 pub get"
+  fi
+
+  echo "[INFO] 开始构建 APK（debug）..."
+  "${flutter_cmd[@]}" build apk --debug || return $?
+
+  echo "[INFO] 打开输出目录: ./build/app/outputs/"
   open "./build/app/outputs/"
 }
 
-# ✅ 📦打 iOS 包
+# ✅ 打 iOS 包📦
 ipa() {
   if typeset -f buildCheck >/dev/null; then buildCheck; fi
 
