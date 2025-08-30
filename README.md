@@ -14266,6 +14266,8 @@ class Person {
 #### 25.0、[**配置Shell打包命令**](https://github.com/295060456/JobsMacEnvVarConfig) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 直接写入`.zshrc`👉[**Flutter**](https://flutter.dev/)的版本锁定+用于[**Android**](https://www.android.com/)的**Java**环境的锁定
+>
+> <font color=red>**如果修改了环境变量文件，要输入`rb`唤起`exec "$SHELL"`,可以避免不重启终端而加载修改项**</font>
 
 ```shell
 # ✅ 打包构建前置：清理 & 拉依赖 & doctor（保证一定在项目根执行）
