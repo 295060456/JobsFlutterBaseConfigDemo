@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jobs_flutter_base_config/JobsDemoTools/JobsFlutterTools/JobsRunners/JobsGetXRunner.dart';
-import 'package:jobs_flutter_base_config/JobsDemoTools/UI/UI.3rd🌹/GetX/JobsGetXTool.dart'
+import 'package:jobs_flutter_base_config/JobsDemoTools/UI/UI.3rd%F0%9F%8C%B9/GetX/JobsGetXTool.dart'
     show JobsFind;
 import 'package:jobs_flutter_base_config/JobsDemoTools/UI/UI.Origin🌍/TabBar切换/Common/MyTabCtrl.dart';
 

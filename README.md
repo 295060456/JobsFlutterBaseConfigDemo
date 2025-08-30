@@ -12285,6 +12285,99 @@ class ClipboardUtil {
   }
   ```
 
+### 62、自动化代码生成应用外观资源  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+#### 62.1、App启动图标 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+##### 62.1.1、使用插件[**`flutter_launcher_icons`**](https://pub.dev/packages/flutter_launcher_icons)替换  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+> 🚨 常见问题
+>
+> - **运行后还是旧图标？**
+>    <font color=red>**需要清理缓存后重建：**</font>
+>
+>   ```shell
+>   flutter clean
+>   flutter pub get
+>   ```
+>
+>   iOS 还需要在 Xcode → Product → Clean Build Folder
+>
+> - **图标模糊或显示不对**：
+>    一定要用 **正方形、高分辨率（1024x1024）PNG**，插件会自动生成各个尺寸。
+
+* **在 `pubspec.yaml` 添加依赖**：
+
+  > `flutter_launcher_icons` 的 `android` 字段既可以是 **布尔**，也可以是 **字符串**：
+  >
+  > - `android: true`
+  >   **覆盖当前默认图标**（通常是 `@mipmap/ic_launcher`）。适合“就把默认的 ic_launcher 换掉”的场景。
+  > - `android: "ic_launcher"`（字符串）
+  >    **按你指定的名字生成 mipmap 资源**。如果写的是 `"launcher_icon"`，它会生成 `@mipmap/launcher_icon`，而**不会删除旧的默认图标**；这时你需要把 `AndroidManifest.xml` 里的
+  >    `<application android:icon="@mipmap/…">` 改成对应的新名字，否则还是会指到旧图标。写成 `"ic_launcher"` 本质上就等价于把同名资源重生成。
+
+  ```yaml
+  dev_dependencies:
+    flutter_launcher_icons: any
+  
+  flutter_launcher_icons:
+    android: true
+    ios: true
+    image_path: "assets/icon/app_icon.png"
+  ```
+
+* **执行生成命令**：
+
+  ```shell
+  dart run flutter_launcher_icons
+  # 或
+  flutter pub run flutter_launcher_icons:main
+  ```
+  
+  > 生成后的图标会自动覆盖 `android/app/src/main/res/mipmap-*/ic_launcher.png` 和 `ios/Runner/Assets.xcassets/AppIcon.appiconset`。
+
+##### 62.1.2、手动替换  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+- **Android**：
+  - 图标在：`android/app/src/main/res/`
+  - 需要替换所有 `mipmap-*/ic_launcher.png`，保持文件名一致。
+- **iOS**：
+  - 图标在：`ios/Runner/Assets.xcassets/AppIcon.appiconset/`
+  - 用 Xcode 打开项目，点击 Runner → General → App Icon，然后替换对应尺寸的图标。
+
+#### 62.2、启动页（Splash）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* ```yaml
+  dev_dependencies:
+    flutter_native_splash: any
+  flutter_native_splash:
+    color: "#FFFFFF"
+    image: assets/splash/logo.png
+    android: true
+    ios: true
+  ```
+
+* ```shell
+  dart run flutter_native_splash:create
+  ```
+
+#### 62.3、资源/字体/颜色常量（类型安全） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* ```yaml
+  dev_dependencies:
+    flutter_gen_runner: any
+  flutter_gen:
+    output: lib/gen/
+    integrations:
+      flutter_svg: true
+  ```
+
+* ```shell
+  flutter pub run build_runner build --delete-conflicting-outputs
+  # 或只依赖 flutter_gen：
+  flutter pub get
+  ```
+
 ## 五、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ### 1、修复平台目录：定位到[**Flutter**](https://flutter.dev/)项目根目录，执行👉`flutter create .`  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
@@ -14263,7 +14356,7 @@ class Person {
   | **dynamic**                        | [**Flutter**](https://flutter.dev/) 动态集成场景 | **JIT + AOT**      | 依项目配置 | 依项目配置   | Add-to-App 混合开发               | **Android**<br/>**iOS**               | 原生动态加载 Flutter            |
   | **flavor 模式**                    | `flutter build apk --flavor staging`             | 依所选模式         | 依所选模式 | 依所选模式   | 多环境打包（`staging`、`uat` 等） | **Android**<br/>**iOS**               | 非编译模式，属于构建配置        |
 
-#### 25.0、[**配置Shell打包命令**](https://github.com/295060456/JobsMacEnvVarConfig) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 25.1、[**配置Shell打包命令**](https://github.com/295060456/JobsMacEnvVarConfig) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 直接写入`.zshrc`👉[**Flutter**](https://flutter.dev/)的版本锁定+用于[**Android**](https://www.android.com/)的**Java**环境的锁定
 >
@@ -14481,8 +14574,8 @@ apk() {
     echo "[WARN] 未找到 plugins/htprotect/pubspec.yaml，跳过 pub get"
   fi
 
-  echo "[INFO] 开始构建 APK（debug）..."
-  "${flutter_cmd[@]}" build apk --debug || return $?
+  echo "[INFO] 开始构建 APK（release）..."
+  "${flutter_cmd[@]}" build apk --release || return $?
 
   echo "[INFO] 打开输出目录: ./build/app/outputs/"
   open "./build/app/outputs/"
@@ -14505,9 +14598,490 @@ ipa() {
 }
 ```
 
-#### 25.1、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)（较为复杂和繁琐） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 25.4、配置[**`SourceTree`**](https://www.sourcetreeapp.com/)打包脚本 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-##### 25.1.1、 [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+* [**打包Flutter.Android**](https://github.com/295060456/SourceTree.sh/blob/main/%E3%80%90MacOS%40SourceTree%E3%80%91%F0%9F%93%A6%E5%8F%8C%E5%87%BB%E6%89%93%E5%8C%85Flutter.android.command)
+
+  <img src="./assets/image-20250830215352008.png" alt="image-20250830215352008" style="zoom:50%;" />
+
+  ```shell
+  #!/bin/zsh
+  # 【SourceTree 专用】Flutter Android 打包（自动发现子项目；纯文本；带心跳与阶段标记）
+  set -euo pipefail
+  
+  # ---------------- 基本日志 ----------------
+  SCRIPT_BASENAME=$(basename "$0" | sed 's/\.[^.]*$//')
+  LOG_FILE="/tmp/${SCRIPT_BASENAME}.log"; : > "$LOG_FILE"
+  BUILD_LOG="/tmp/flutter_build_log.txt"; : > "$BUILD_LOG"
+  
+  log()  { echo "$1" | tee -a "$LOG_FILE"; }
+  info() { log "[INFO] $*"; }
+  ok()   { log "[OK]   $*"; }
+  warn() { log "[WARN] $*"; }
+  err()  { log "[ERR]  $*" >&2; }
+  
+  ts()   { date "+%Y-%m-%d %H:%M:%S"; }
+  hr()   { log "----------------------------------------------------------------"; }
+  section(){ hr; log "== $* =="; hr; }
+  
+  HEARTBEAT_SECS="${HEARTBEAT_SECS:-15}"     # 心跳间隔（秒）
+  OPEN_AFTER_BUILD="${OPEN_AFTER_BUILD:-1}"   # 1=构建成功后自动 open 产物目录
+  
+  # ---------------- 参数/环境 ----------------
+  BUILD_TARGET="${BUILD_TARGET:-apk}"       # apk | appbundle | all
+  BUILD_MODE="${BUILD_MODE:-release}"       # release | debug | profile
+  FLAVOR="${FLAVOR:-}"                      # 可为空
+  
+  # 支持命令行覆盖
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --target)  BUILD_TARGET="${2:-$BUILD_TARGET}"; shift 2;;
+      --mode)    BUILD_MODE="${2:-$BUILD_MODE}";     shift 2;;
+      --flavor)  FLAVOR="${2:-$FLAVOR}";             shift 2;;
+      --)        shift; break;;
+      *)         break;;
+    esac
+  done
+  
+  REPO_DIR="${1:-$PWD}"
+  
+  # ---------------- 小工具 ----------------
+  is_flutter_root() { [[ -f "$1/pubspec.yaml" && -d "$1/lib" ]]; }
+  
+  # 安全执行（带心跳、统计耗时、正确保留退出码；输出同时写入 LOG_FILE/BUILD_LOG）
+  # 用法：run_with_heartbeat "标题" 目录 cmd args...
+  run_with_heartbeat() {
+    local title="$1"; shift
+    local wdir="$1"; shift
+    local start_ts=$(date +%s)
+    section "$title"
+    info "start: $(ts)"
+    info "workdir: $wdir"
+    info "heartbeat: ${HEARTBEAT_SECS}s"
+  
+    # 启动命令
+    (
+      cd "$wdir" && "$@"
+    ) 2>&1 | tee -a "$BUILD_LOG" &
+    local cmd_pid=$!
+  
+    # 心跳
+    (
+      while kill -0 "$cmd_pid" 2>/dev/null; do
+        sleep "$HEARTBEAT_SECS"
+        kill -0 "$cmd_pid" 2>/dev/null || break
+        log "[HB] $(ts) running: $title (pid=$cmd_pid)"
+      done
+    ) & local hb_pid=$!
+  
+    # 等待
+    wait "$cmd_pid"; ec=$?
+    kill "$hb_pid" 2>/dev/null || true
+  
+    local end_ts=$(date +%s)
+    local dur=$(( end_ts - start_ts ))
+    if [[ $ec -eq 0 ]]; then
+      ok "$title done (duration ${dur}s)"
+    else
+      err "$title failed (duration ${dur}s, ec=$ec). See $BUILD_LOG"
+    fi
+    return $ec
+  }
+  
+  # ---------------- 解析 Flutter 根目录（自动向下搜索） ----------------
+  resolve_flutter_root() {
+    local base="$1"
+    if ! cd "$base" 2>/dev/null; then
+      err "无法进入目录：$base"; exit 1
+    fi
+    base="$(pwd -P)"
+    section "定位 Flutter 项目"
+    info "基准目录：$base"
+  
+    if is_flutter_root "$base"; then
+      FLUTTER_ROOT="$base"; ok "命中：$FLUTTER_ROOT"; return 0
+    fi
+    local hit
+    hit="$(/usr/bin/find "$base" -name pubspec.yaml -type f -print 2>/dev/null | head -n1 || true)"
+    if [[ -n "$hit" ]]; then
+      FLUTTER_ROOT="$(dirname "$hit")"
+      if is_flutter_root "$FLUTTER_ROOT"; then
+        ok "在子目录中找到：$FLUTTER_ROOT"; return 0
+      fi
+    fi
+    err "未找到 Flutter 项目（缺 pubspec.yaml 或 lib/）"; exit 1
+  }
+  
+  # ---------------- 选择 flutter 命令 ----------------
+  choose_flutter_cmd() {
+    if command -v fvm >/dev/null 2>&1 && [[ -f "$FLUTTER_ROOT/.fvm/fvm_config.json" ]]; then
+      FLUTTER_CMD=("fvm" "flutter"); info "使用：fvm flutter"
+    else
+      FLUTTER_CMD=("flutter"); info "使用：flutter"
+    fi
+  }
+  
+  # ---------------- Java 环境（固定 JDK17） ----------------
+  ensure_java17() {
+    section "Java 环境"
+    if /usr/libexec/java_home -v 17 >/dev/null 2>&1; then
+      export JAVA_HOME="$(/usr/libexec/java_home -v 17)"
+      export PATH="$JAVA_HOME/bin:$PATH"
+    else
+      for p in /opt/homebrew/opt/openjdk@17 /usr/local/opt/openjdk@17; do
+        if [[ -d "$p" && -x "$p/bin/java" ]]; then
+          export JAVA_HOME="$p"; export PATH="$JAVA_HOME/bin:$PATH"; break
+        fi
+      done
+    fi
+    if ! command -v java >/dev/null 2>&1; then
+      err "未检测到 JDK 17（java 不可用）。请安装 Temurin/Zulu/OpenJDK 17。"; exit 1
+    fi
+    ok "JAVA_HOME = $JAVA_HOME"
+    info "java -version："; java -version | tee -a "$LOG_FILE" || true
+  }
+  
+  # ---------------- 版本打印（防早退） ----------------
+  print_versions() {
+    section "环境版本"
+    set +e
+    if [[ -x "$FLUTTER_ROOT/android/gradlew" ]]; then
+      info "Gradle Wrapper："
+      (cd "$FLUTTER_ROOT/android" && ./gradlew -v) | tee -a "$LOG_FILE" || true
+    else
+      warn "未找到 $FLUTTER_ROOT/android/gradlew"
+    fi
+    local agp=""
+    if [[ -f "$FLUTTER_ROOT/android/build.gradle" ]]; then
+      agp="$(grep -Eo 'com\.android\.tools\.build:gradle:[0-9.]+' \
+            "$FLUTTER_ROOT/android/build.gradle" 2>/dev/null | head -n1 | cut -d: -f3 || true)"
+    fi
+    if [[ -z "$agp" && -f "$FLUTTER_ROOT/android/settings.gradle" ]]; then
+      agp="$(grep -Eo "com\.android\.application['\"]?[[:space:]]+version[[:space:]]+['\"]?[0-9.]+" \
+            "$FLUTTER_ROOT/android/settings.gradle" 2>/dev/null | head -n1 \
+            | grep -Eo '[0-9]+(\.[0-9]+){1,2}' || true)"
+    fi
+    set -e
+    [[ -n "$agp" ]] && info "AGP：$agp" || warn "未检测到 AGP 版本"
+  }
+  
+  # ---------------- pub get & build ----------------
+  pub_get() {
+    run_with_heartbeat "flutter pub get" "$FLUTTER_ROOT" "${FLUTTER_CMD[@]}" pub get
+  }
+  
+  build_one() {
+    local target="$1"
+    local args=(build "$target" "--$BUILD_MODE")
+    [[ -n "$FLAVOR" ]] && args+=(--flavor "$FLAVOR")
+    run_with_heartbeat "flutter build $target ($BUILD_MODE ${FLAVOR:+/ flavor=$FLAVOR})" \
+                       "$FLUTTER_ROOT" "${FLUTTER_CMD[@]}" "${args[@]}"
+  }
+  
+  # ---------------- 打开产物目录（存在才开） ----------------
+  open_if_exists() {
+    local p="$1"
+    if [[ "$OPEN_AFTER_BUILD" != "1" ]]; then return 0; fi
+    if [[ -d "$p" ]]; then info "打开目录：$p"; open "$p" 2>/dev/null || true
+    else warn "目录不存在：$p"; fi
+  }
+  
+  # ---------------- 主流程 ----------------
+  main() {
+    section "启动参数"
+    info "target=$BUILD_TARGET  mode=$BUILD_MODE  flavor=${FLAVOR:-<none>}  heartbeat=${HEARTBEAT_SECS}s"
+    info "脚本日志：$LOG_FILE"
+    info "构建日志：$BUILD_LOG"
+  
+    resolve_flutter_root "$REPO_DIR"
+    choose_flutter_cmd
+    ensure_java17
+    print_versions
+    pub_get
+  
+    case "$BUILD_TARGET" in
+      apk)        build_one apk        || { err "APK 构建失败（见 $BUILD_LOG）"; exit 1; } ;;
+      appbundle)  build_one appbundle  || { err "AAB 构建失败（见 $BUILD_LOG）"; exit 1; } ;;
+      all)
+        build_one apk       || { err "APK 构建失败（见 $BUILD_LOG）"; exit 1; }
+        build_one appbundle || { err "AAB 构建失败（见 $BUILD_LOG）"; exit 1; }
+        ;;
+      *) warn "未知 BUILD_TARGET=$BUILD_TARGET，回退到 apk"; build_one apk || { err "APK 构建失败（见 $BUILD_LOG）"; exit 1; } ;;
+    esac
+  
+    # 列出产物，并在存在时打开目录
+    if [[ -d "$FLUTTER_ROOT/build/app/outputs" ]]; then
+      section "产物列表"
+      (cd "$FLUTTER_ROOT/build/app/outputs" && ls -lhR) | tee -a "$LOG_FILE" || true
+    fi
+    [[ "$BUILD_TARGET" == "apk" || "$BUILD_TARGET" == "all" ]] \
+      && open_if_exists "$FLUTTER_ROOT/build/app/outputs/flutter-apk"
+    [[ "$BUILD_TARGET" == "appbundle" || "$BUILD_TARGET" == "all" ]] \
+      && open_if_exists "$FLUTTER_ROOT/build/app/outputs/bundle/$BUILD_MODE"
+  
+    ok "完成。构建日志：$BUILD_LOG ；脚本日志：$LOG_FILE"
+  }
+  
+  main "$@"
+  ```
+
+* [**打包Flutter.iOS**](https://github.com/295060456/SourceTree.sh/blob/main/%E3%80%90MacOS%40SourceTree%E3%80%91%F0%9F%93%A6%E5%8F%8C%E5%87%BB%E6%89%93%E5%8C%85Flutter.iOS.command)
+
+  <img src="./assets/image-20250830215325146.png" alt="image-20250830215325146" style="zoom:50%;" />
+
+  ```shell
+  #!/bin/zsh
+  # 【SourceTree 专用】Flutter iOS 打包（自动发现子项目，纯文本；全局心跳 + 分阶段耗时）
+  
+  set -euo pipefail
+  
+  # ================= 日志/工具 =================
+  SCRIPT_BASENAME="macos_sourcetree_build_ios"
+  LOG_FILE="/tmp/${SCRIPT_BASENAME}.log"; : > "$LOG_FILE"
+  BUILD_LOG="/tmp/flutter_build_ios.log"; : > "$BUILD_LOG"
+  
+  log()      { echo "$1" | tee -a "$LOG_FILE"; }
+  info()     { log "[INFO] $*"; }
+  ok()       { log "[OK]   $*"; }
+  warn()     { log "[WARN] $*"; }
+  err()      { log "[ERR]  $*" >&2; }
+  hr()       { log "----------------------------------------------------------------"; }
+  section()  { hr; log "== $* =="; hr; }
+  ts()       { date "+%Y-%m-%d %H:%M:%S"; }
+  
+  HEARTBEAT_SECS="${HEARTBEAT_SECS:-15}"   # 心跳间隔（秒）
+  OPEN_AFTER_BUILD="${OPEN_AFTER_BUILD:-1}" # 1=成功后打开产物目录
+  STEP="init"
+  
+  # ======== 全局存活心跳（无论卡哪都能看到） ========
+  HB_PID=""
+  start_global_hb() {
+    (
+      while :; do
+        sleep "$HEARTBEAT_SECS"
+        echo "[HB] $(ts) alive pid=$$ step=$STEP" | tee -a "$LOG_FILE"
+      done
+    ) & HB_PID=$!
+  }
+  stop_global_hb() { [[ -n "${HB_PID:-}" ]] && kill "$HB_PID" 2>/dev/null || true; }
+  
+  cleanup() { stop_global_hb; }
+  trap cleanup EXIT INT TERM
+  
+  # ================= 选项 =================
+  BUILD_MODE="${BUILD_MODE:-release}"   # release | debug | profile
+  FLAVOR="${FLAVOR:-}"                  # 可为空
+  
+  # 命令行覆盖
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --mode)   BUILD_MODE="${2:-$BUILD_MODE}"; shift 2;;
+      --flavor) FLAVOR="${2:-$FLAVOR}";         shift 2;;
+      --)       shift; break;;
+      *)        break;;
+    esac
+  done
+  
+  BASE_DIR="${1:-$PWD}"
+  
+  # ================= 辅助函数 =================
+  is_flutter_root() { [[ -f "$1/pubspec.yaml" && -d "$1/lib" ]]; }
+  
+  # 带心跳的长任务执行器（阶段心跳 + 耗时 + 保留退出码）
+  run_with_heartbeat() {
+    local title="$1"; shift
+    local wdir="$1"; shift
+    local start=$(date +%s)
+    STEP="$title"
+  
+    section "$title"
+    info "start: $(ts)"
+    info "workdir: $wdir"
+    info "heartbeat: ${HEARTBEAT_SECS}s"
+  
+    (
+      cd "$wdir" && "$@"
+    ) 2>&1 | tee -a "$BUILD_LOG" &
+    local pid=$!
+  
+    (
+      while kill -0 "$pid" 2>/dev/null; do
+        sleep "$HEARTBEAT_SECS"
+        kill -0 "$pid" 2>/dev/null || break
+        echo "[HB] $(ts) running: $title (pid=$pid)" | tee -a "$LOG_FILE"
+      done
+    ) & local local_hb=$!
+  
+    wait "$pid"; local ec=$?
+    kill "$local_hb" 2>/dev/null || true
+  
+    local end=$(date +%s)
+    local dur=$(( end - start ))
+    if [[ $ec -eq 0 ]]; then
+      ok "$title done (duration ${dur}s)"
+    else
+      err "$title failed (duration ${dur}s, ec=$ec). See $BUILD_LOG"
+    fi
+    return $ec
+  }
+  
+  # ================= 定位 Flutter 项目（自动向下搜索） =================
+  resolve_flutter_root() {
+    STEP="resolve"
+    local base="$1"
+    if ! cd "$base" 2>/dev/null; then
+      err "无法进入目录：$base"; exit 1
+    fi
+    base="$(pwd -P)"
+    section "定位 Flutter 项目"
+    info "基准目录：$base"
+  
+    if is_flutter_root "$base"; then
+      FLUTTER_ROOT="$base"; ok "命中：$FLUTTER_ROOT"; return 0
+    fi
+  
+    local hit
+    hit="$(/usr/bin/find "$base" -name pubspec.yaml -type f -print 2>/dev/null | head -n1 || true)"
+    if [[ -n "$hit" ]]; then
+      FLUTTER_ROOT="$(dirname "$hit")"
+      if is_flutter_root "$FLUTTER_ROOT"; then
+        ok "在子目录中找到：$FLUTTER_ROOT"; return 0
+      fi
+    fi
+  
+    err "未找到 Flutter 项目（缺 pubspec.yaml 或 lib/）"
+    exit 1
+  }
+  
+  # ================= 选择 flutter 命令 =================
+  choose_flutter_cmd() {
+    STEP="choose_flutter"
+    if command -v fvm >/dev/null 2>&1 && [[ -f "$FLUTTER_ROOT/.fvm/fvm_config.json" ]]; then
+      FLUTTER_CMD=("fvm" "flutter"); info "使用：fvm flutter"
+    else
+      FLUTTER_CMD=("flutter"); info "使用：flutter"
+    fi
+  }
+  
+  # ================= 环境检查 =================
+  check_env() {
+    STEP="check_env"
+    section "检查 Xcode / CocoaPods"
+    if ! command -v xcodebuild >/dev/null 2>&1; then
+      err "未检测到 Xcode（xcodebuild）。请安装 Xcode 并同意许可（首次需运行一次 xcodebuild）。"
+      exit 1
+    fi
+    if ! command -v pod >/dev/null 2>&1; then
+      warn "未检测到 CocoaPods（pod）。如项目使用 Pods，构建可能失败。"
+    fi
+    ok "环境检查完成"
+  }
+  
+  # ================= 版本打印（安全，不早退） =================
+  print_versions() {
+    STEP="versions"
+    section "环境版本"
+    set +e
+    info "xcodebuild -version："
+    xcodebuild -version | tee -a "$LOG_FILE" || true
+  
+    info "flutter --version："
+    (cd "$FLUTTER_ROOT" && "${FLUTTER_CMD[@]}" --version) | tee -a "$LOG_FILE" || true
+  
+    # 兼容新旧：优先静默试 flutter dart，失败再试系统 dart
+    if (cd "$FLUTTER_ROOT" && "${FLUTTER_CMD[@]}" dart --version >/dev/null 2>&1); then
+      info "flutter dart --version："
+      (cd "$FLUTTER_ROOT" && "${FLUTTER_CMD[@]}" dart --version) | tee -a "$LOG_FILE" || true
+    elif command -v dart >/dev/null 2>&1; then
+      info "dart --version："
+      dart --version | tee -a "$LOG_FILE" || true
+    else
+      warn "未检测到 dart 命令（新版本 Flutter 已移除 'flutter dart' 子命令）"
+    fi
+    set -e
+  }
+  
+  # ================= pub get & build ipa =================
+  pub_get()   { run_with_heartbeat "flutter pub get" "$FLUTTER_ROOT" "${FLUTTER_CMD[@]}" pub get; }
+  build_ios() {
+    local args=(build ipa "--$BUILD_MODE")
+    [[ -n "$FLAVOR" ]] && args+=(--flavor "$FLAVOR")
+    run_with_heartbeat "flutter build ipa ($BUILD_MODE${FLAVOR:+ / flavor=$FLAVOR})" \
+                       "$FLUTTER_ROOT" "${FLUTTER_CMD[@]}" "${args[@]}"
+  }
+  
+  # ================= 打开产物（存在才开） =================
+  open_if_exists() {
+    local p="$1"
+    if [[ -e "$p" ]]; then
+      info "打开：$p"
+      open "$p" 2>/dev/null || true
+    else
+      warn "不存在：$p"
+    fi
+  }
+  
+  open_outputs() {
+    STEP="open_outputs"
+    local ipa_dir="$FLUTTER_ROOT/build/ios/ipa"
+    local first_ipa=""
+    if [[ -d "$ipa_dir" ]]; then
+      first_ipa="$(/usr/bin/find "$ipa_dir" -type f -name '*.ipa' -print 2>/dev/null | head -n1 || true)"
+    fi
+  
+    if [[ -n "$first_ipa" ]]; then
+      ok "已生成 IPA：$(basename "$first_ipa")"
+      [[ "$OPEN_AFTER_BUILD" == "1" ]] && open_if_exists "$ipa_dir"
+      return 0
+    fi
+  
+    local archive_dir="$FLUTTER_ROOT/build/ios/archive"
+    local first_archive=""
+    if [[ -d "$archive_dir" ]]; then
+      first_archive="$(/usr/bin/find "$archive_dir" -type d -name '*.xcarchive' -print 2>/dev/null | head -n1 || true)"
+    fi
+  
+    if [[ -n "$first_archive" ]]; then
+      ok "生成了 xcarchive：$(basename "$first_archive")"
+      [[ "$OPEN_AFTER_BUILD" == "1" ]] && open_if_exists "$archive_dir"
+      return 0
+    fi
+  
+    warn "未发现 IPA 或 xcarchive。请查看构建日志：$BUILD_LOG"
+  }
+  
+  # ================= 主流程 =================
+  main() {
+    start_global_hb
+  
+    section "启动参数"
+    info "mode=$BUILD_MODE  flavor=${FLAVOR:-<none>}  heartbeat=${HEARTBEAT_SECS}s"
+    info "脚本日志：$LOG_FILE"
+    info "构建日志：$BUILD_LOG"
+  
+    resolve_flutter_root "$BASE_DIR"
+    choose_flutter_cmd
+    check_env
+    print_versions
+    pub_get   || { err "pub get 失败，见：$BUILD_LOG"; exit 1; }
+    build_ios || { err "构建失败，见：$BUILD_LOG"; exit 1; }
+  
+    if [[ -d "$FLUTTER_ROOT/build/ios" ]]; then
+      section "产物列表：$FLUTTER_ROOT/build/ios"
+      (cd "$FLUTTER_ROOT/build/ios" && ls -lhR) | tee -a "$LOG_FILE" || true
+    fi
+  
+    open_outputs
+    ok "完成。构建日志：$BUILD_LOG ；脚本日志：$LOG_FILE"
+    STEP="done"
+  }
+  
+  main "$@"
+  ```
+
+#### 25.3、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)（较为复杂和繁琐） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+##### 25.3.1、 [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 >  [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) （<font color=red>**建议保持最新**</font>）是[**Android**](https://www.android.com/).**SDK**命令行工具：[Android **Command Line Tools**](https://developer.android.com/tools?hl=zh-cn)的一部分，用于管理 [**Android**](https://www.android.com/).**SDK** 的组件。它允许你从终端安装、更新、查看和卸载[**Android**](https://www.android.com/).**SDK**中的各种包，比如：
 >
