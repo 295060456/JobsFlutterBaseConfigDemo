@@ -14802,7 +14802,13 @@ graph TD
   | 第三方依赖                                                   | 来自 [**pub.dev**](https://pub.dev/) 的插件中声明的 AAR/JAR，如 [`image_gallery_saver`](https://pub.dev/packages/image_gallery_saver)、[`engagelab`](https://pub.dev/packages?q=engagelab) |
   | [**Google Maven**](https://maven.google.com/web/index.html) / [**JCenter**](https://mvnrepository.com/repos/jcenter) / [**MavenCentral**](https://central.sonatype.com/) | 默认构建源，国内访问会慢                                     |
 
-##### 25.1.9、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)打包脚本（MacOS） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 25.1.9、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/) [打包脚本（MacOS）](https://github.com/295060456/JobsCommand-Flutter/blob/main/%E3%80%90MacOS%E3%80%91%F0%9F%93%A6%E5%8F%8C%E5%87%BB%E6%89%93%E5%8C%85Flutter.Android.command) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+><font color=red>**阻碍打包进程的几个关键点**</font>
+>
+>* [**Flutter**](https://flutter.dev/)版本号是否对齐
+>* [**Android**](https://www.android.com/)所需的Java版本号是否对齐
+>* 需要在`Flutter项目根目录/plugins/htprotect`下运行`flutter pub get`
 
 <details>
 <summary>点击展开代码</summary>
@@ -14899,7 +14905,7 @@ inject_shellenv_block() {
     eval "$shellenv"
     success_echo "🟢 shellenv 已在当前终端生效"
 }
-
+ 
 # ✅ 判断芯片架构（ ARM64 / x86_64）
 get_cpu_arch() {
   [[ $(uname -m) == "arm64" ]] && echo "arm64" || echo "x86_64"
@@ -14917,12 +14923,14 @@ install_homebrew() {
     warn_echo "🧩 未检测到 Homebrew，正在安装中...（架构：$arch）"
 
     if [[ "$arch" == "arm64" ]]; then
+      # Apple Silicon 原生 Homebrew（/opt/homebrew）
       /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
         error_echo "❌ Homebrew 安装失败（arm64）"
         exit 1
       }
       brew_bin="/opt/homebrew/bin/brew"
     else
+      # Intel 或在 Apple Silicon 下装一份 Intel 版 Homebrew（需要 Rosetta）
       arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
         error_echo "❌ Homebrew 安装失败（x86_64）"
         exit 1
@@ -14934,19 +14942,35 @@ install_homebrew() {
 
     # ==== 注入 shellenv 到对应配置文件（自动生效） ====
     shellenv_cmd="eval \"\$(${brew_bin} shellenv)\""
-
     case "$shell_path" in
       zsh)   profile_file="$HOME/.zprofile" ;;
       bash)  profile_file="$HOME/.bash_profile" ;;
       *)     profile_file="$HOME/.profile" ;;
     esac
-
     inject_shellenv_block "$profile_file" "$shellenv_cmd"
 
+    # 立刻对当前会话生效（不等重开终端）
+    eval "$(${brew_bin} shellenv)"
+
   else
-    info_echo "🔄 Homebrew 已安装，正在更新..."
-    brew update && brew upgrade && brew cleanup && brew doctor && brew -v
-    success_echo "✅ Homebrew 已更新"
+    info_echo "🔄 Homebrew 已安装。是否执行更新？"
+    echo "👉 按 [Enter] 继续：将依次执行  brew update && brew upgrade && brew cleanup && brew doctor && brew -v"
+    echo "👉 输入任意字符后回车：跳过更新"
+    # 仅当“直接回车”时继续；其他输入一律跳过
+    local confirm
+    IFS= read -r confirm
+    if [[ -z "$confirm" ]]; then
+      info_echo "⏳ 正在更新 Homebrew..."
+      # 分步执行，任一步失败立即报错退出，方便定位
+      brew update       || { error_echo "❌ brew update 失败"; return 1; }
+      brew upgrade      || { error_echo "❌ brew upgrade 失败"; return 1; }
+      brew cleanup      || { error_echo "❌ brew cleanup 失败"; return 1; }
+      brew doctor       || { warn_echo  "⚠️  brew doctor 有警告/错误，请按提示处理"; }
+      brew -v           || { warn_echo  "⚠️  打印 brew 版本失败（可忽略）"; }
+      success_echo "✅ Homebrew 已更新"
+    else
+      note_echo "⏭️ 已选择跳过 Homebrew 更新"
+    fi
   fi
 }
 
@@ -14957,9 +14981,20 @@ install_fzf() {
     brew install fzf || { error_echo "❌ fzf 安装失败"; exit 1; }
     success_echo "✅ fzf 安装成功"
   else
-    info_echo "🔄 fzf 已安装，升级中..."
-    brew upgrade fzf && brew cleanup
-    success_echo "✅ fzf 已是最新版"
+    info_echo "🔄 fzf 已安装。是否执行升级？"
+    echo "👉 按 [Enter] 继续：将依次执行  brew upgrade fzf && brew cleanup"
+    echo "👉 输入任意字符后回车：跳过升级"
+
+    local confirm
+    IFS= read -r confirm
+    if [[ -z "$confirm" ]]; then
+      info_echo "⏳ 正在升级 fzf..."
+      brew upgrade fzf       || { error_echo "❌ fzf 升级失败"; return 1; }
+      brew cleanup           || { warn_echo  "⚠️  brew cleanup 执行时有警告"; }
+      success_echo "✅ fzf 已升级到最新版本"
+    else
+      note_echo "⏭️ 已选择跳过 fzf 升级"
+    fi
   fi
 }
 
@@ -15045,7 +15080,7 @@ select_build_target() {
   esac
   success_echo "✅ 构建类型：$selected"
 }
-
+  
 # ✅ 选择 flavor 和构建模式（release/debug/profile）
 prompt_flavor_and_mode() {
   read "flavor_name?📎 请输入 flavor（可留空）: "
@@ -15210,6 +15245,30 @@ maybe_flutter_clean_and_get() {
   fi
 }
 
+# ✅ 在 Flutter 根目录下的 plugins/htprotect 执行 flutter pub get
+ensure_htprotect_pub_get() {
+  local plugin_dir="$flutter_root/plugins/htprotect"
+  if [[ ! -d "$plugin_dir" ]]; then
+    note_echo "⏭️ 未找到插件目录：$plugin_dir，跳过"
+    return 0
+  fi
+  if [[ ! -f "$plugin_dir/pubspec.yaml" ]]; then
+    warn_echo "⚠️ 插件目录存在，但缺少 pubspec.yaml：$plugin_dir，跳过"
+    return 0
+  fi
+
+  if confirm_step "在 plugins/htprotect 执行 flutter pub get"; then
+    pushd "$plugin_dir" >/dev/null || { error_echo "❌ 进入目录失败：$plugin_dir"; return 1; }
+    # 继承当前 JAVA_HOME 与 flutter_cmd（支持 FVM）
+    JAVA_HOME="$JAVA_HOME" PATH="$JAVA_HOME/bin:$PATH" "${flutter_cmd[@]}" pub get \
+      && success_echo "✅ plugins/htprotect 依赖拉取完成" \
+      || { error_echo "✖ plugins/htprotect pub get 失败"; popd >/dev/null; return 1; }
+    popd >/dev/null
+  else
+    note_echo "⏭️ 已选择跳过 plugins/htprotect 的 pub get"
+  fi
+}
+
 # ✅ 环境信息输出
 print_env_diagnostics() {
   local log_file="/tmp/flutter_build_log.txt"
@@ -15285,11 +15344,12 @@ main() {
     prompt_flavor_and_mode                      # ✅ 选择 flavor 和构建模式（release/debug/profile）
     detect_flutter_command                      # ✅ 判断是否使用 FVM
     configure_java_env                          # ✅ 配置 Java 环境（支持记忆）
-
+    
     print_env_diagnostics                       # ✅ 第一阶段：环境信息检查
     maybe_flutter_clean_and_get                 # ✅ 第二阶段：flutter clean 与 pub get
+    ensure_htprotect_pub_get                    # ✅ 插件 htprotect 依赖拉取
     run_flutter_build                           # ✅ 第三阶段：执行构建
-
+    
     open_output_folder                          # ✅ 打开构建产物目录
     success_echo "🎉 构建完成，日志保存在 /tmp/flutter_build_log.txt"
 }
