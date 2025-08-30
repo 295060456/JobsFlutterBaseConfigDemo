@@ -11981,6 +11981,40 @@ class ClipboardUtil {
 
 ### 60、输入框 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
+* ```dart
+  final TextEditingController textFieldCtrl = TextEditingController();
+  ```
+
+  * **`TextEditingController`** 的消亡
+
+    ```dart
+    textFieldCtrl.dispose();
+    ```
+
+  * 输入框当前的值
+
+    ```dart
+    textFieldCtrl.text;
+    ```
+
+  *  **监听 UI 输入框的内容变化**
+
+    ```dart
+    textFieldCtrl.addListener(() {
+      final String textFieldValue = textFieldCtrl.text.trim();
+    });
+    ```
+
+  *  **监听业务状态（Rx）变化**
+
+    ```dart
+    final TextEditingController categoryCtrl = TextEditingController();
+    final RxString category = '选择游戏类别'.obs; // 默认值
+    
+    // 只要 category 的值变化，就执行后面的回调。
+    ever<String>(category, (v) => categoryCtrl.text = v);
+    ```
+
 * 点击以后，不弹出键盘，而执行其他操作（比如弹出：[**级联选择器**](https://pub.dev/packages/ym_flutter_widget) ）
 
   ```dart
@@ -11994,6 +12028,155 @@ class ClipboardUtil {
     },
     controller: TextEditingController(text: category), // 显示当前选中
   ),
+  ```
+
+* 用[**GetX**](https://pub.dev/packages/get)对输入框进行数据的双向绑定
+
+  ```dart
+  class GameRecordQueryController extends GetxController {
+    // —— 真正挂在 TextField 的 controller —— //
+    final TextEditingController memberCtrl = TextEditingController();
+    final TextEditingController categoryCtrl = TextEditingController();
+  
+    // —— 对外暴露的响应式值（Obx 用它） —— //
+    final RxString memberId = ''.obs;
+    final RxString category = '选择游戏类别'.obs; // 默认值
+  
+    @override
+    void onInit() {
+      super.onInit();
+      // TextField → Rx 同步
+      memberCtrl.addListener(() {
+        memberId.value = memberCtrl.text.trim();// trim() 的意思是把字符串前后的空白字符去掉
+      });
+      // Rx → TextField 同步（用于“只读分类框”的显示）
+      ever<String>(category, (v) => categoryCtrl.text = v);
+    }
+  
+    @override
+    void onClose() {
+      memberCtrl.dispose();
+      categoryCtrl.dispose();
+      super.onClose();
+    }
+  
+    /// 生成网络请求需要的 Query（空值用 null）
+    RecordQuery buildQuery() {
+      final m = memberId.value.isEmpty ? null : memberId.value;
+      final c = (category.value.isEmpty || category.value == '选择游戏类别')
+          ? null
+          : category.value;
+      return RecordQuery(memberId: m, gameCategory: c);
+    }
+  }
+  ```
+
+  ```dart
+  SizedBox(
+    width: 125,
+    height: height,
+    child: Obx(() => TextField(
+          readOnly: true, // ✅ 不弹键盘
+          onTap: () {
+            AppManager.instance.tapVibrate();
+            showGamePicker(ctrl, onPicked: (label) {
+              onCategoryChanged(label);
+            });
+          },
+          controller: TextEditingController(text: category), // 显示当前选中
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Color(0xFFE6EBF2), fontSize: 12),
+          decoration: InputDecoration(
+            isDense: true,
+            hintText: '请选择',
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+            suffixIcon: const Icon(Icons.arrow_drop_down,
+                size: 18, color: Color(0xFF9AA3B2)),
+            filled: true,
+            fillColor: const Color(0xFF171925), // 你的 0xFFFED49C
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(4),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        )),
+  ),
+  ```
+
+* 输入框数据双向绑定的最小Demo
+
+  ```dart
+  import 'package:flutter/material.dart';
+  import 'package:get/get.dart';
+  
+  class TextFieldBindingDemo extends StatelessWidget {
+    @override
+    Widget build(BuildContext context) {
+      // 注册控制器
+      final demoCtrl = Get.put(DemoController());
+  
+      return Scaffold(
+        appBar: AppBar(title: const Text("双向绑定示例")),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              // TextField（输入框）
+              TextField(
+                controller: demoCtrl.textCtrl, // UI ←→ 控制器
+                decoration: const InputDecoration(
+                  labelText: "请输入内容",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 20),
+  
+              // 实时显示（响应式）
+              Obx(() => Text(
+                    "RxString 当前值：${demoCtrl.value.value}",
+                    style: const TextStyle(fontSize: 16),
+                  )),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+  
+  class DemoController extends GetxController {
+    // TextField 控制器
+    final TextEditingController textCtrl = TextEditingController();
+  
+    // 响应式字符串
+    final RxString value = ''.obs;
+  
+    @override
+    void onInit() {
+      super.onInit();
+  
+      // TextField → Rx（UI 改变，更新状态）
+      textCtrl.addListener(() {
+        value.value = textCtrl.text.trim(); // 去掉首尾空格
+      });
+  
+      // Rx → TextField（状态改变，更新 UI）
+      ever<String>(value, (v) {
+        if (textCtrl.text != v) {
+          textCtrl.text = v;
+          textCtrl.selection = TextSelection.fromPosition(
+            TextPosition(offset: v.length), // 保证光标在最后
+          );
+        }
+      });
+    }
+  
+    @override
+    void onClose() {
+      textCtrl.dispose();
+      super.onClose();
+    }
+  }
   ```
 
 ### 61、[**级联选择器**](https://pub.dev/packages/ym_flutter_widget) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
@@ -13955,7 +14138,7 @@ void main() {
 }
 ```
 
-#### 24.4、**`const` 构造函数**（**`Widget`** 常用） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 24.4、**`const` 构造函数**（**`Widget`** 常用）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > | 作用                          | 好处                                                         |
 > | ----------------------------- | ------------------------------------------------------------ |
@@ -14079,6 +14262,92 @@ class Person {
   | **jit_release**                    | 内部测试配置（非官方公开）                       | **JIT (Release)**  | ⚠️ 限制     | ✅ 类 release | 内部测试、验证行为差异            | 实验性/嵌入式场景                     | CLI 不支持，需手动设置          |
   | **dynamic**                        | [**Flutter**](https://flutter.dev/) 动态集成场景 | **JIT + AOT**      | 依项目配置 | 依项目配置   | Add-to-App 混合开发               | **Android**<br/>**iOS**               | 原生动态加载 Flutter            |
   | **flavor 模式**                    | `flutter build apk --flavor staging`             | 依所选模式         | 依所选模式 | 依所选模式   | 多环境打包（`staging`、`uat` 等） | **Android**<br/>**iOS**               | 非编译模式，属于构建配置        |
+
+#### 25.0、[**配置Shell打包命令**](https://github.com/295060456/JobsMacEnvVarConfig) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+> 直接写入`.zshrc`
+
+```shell
+# ✅ 为Flutter打包📦作准备
+buildCheck() {
+  read -r "?是否执行清理和依赖安装 (回车=执行，任意字符=跳过): " ans
+  if [[ -z "$ans" ]]; then
+    echo "🧹 flutter clean / pub get / doctor"
+    flutter clean || return $?
+    flutter pub get || return $?
+    flutter doctor -v || return $?
+  else
+    echo "⏩ 跳过 flutter clean / pub get / doctor"
+  fi
+}
+
+# ✅ Flutter 项目识别
+is_flutter_project() {
+  local dir="$1"
+  [[ -d "$dir/lib" && -f "$dir/pubspec.yaml" ]]
+}
+
+# ✅ 获取 Flutter 项目目录（仅把“最后的路径”输出到 stdout）
+# 用法：
+#   local project_path; project_path="$(get_flutter_project_dir "$PWD")" || return 1
+#   cd "$project_path" || return 1
+get_flutter_project_dir() {
+  local start="${1:-$PWD}"
+  local project_path="$start"
+
+  while ! is_flutter_project "$project_path"; do
+    echo "❌ [$project_path] 不是合法的 Flutter 项目目录（缺少 lib/ 或 pubspec.yaml）" >&2
+    read -r "?👉 请输入 Flutter 项目路径: " input_path
+    # 空输入：继续循环
+    [[ -z "$input_path" ]] && continue
+
+    # 支持 ~ 展开；保持对空格路径友好
+    eval "project_path=\"$input_path\""
+    project_path="$(cd "$project_path" 2>/dev/null && pwd || echo "")"
+
+    if [[ -z "$project_path" ]]; then
+      echo "⚠️ 输入的路径无效，请重新输入" >&2
+      project_path="$start"
+    fi
+  done
+
+  # 只输出最终路径到 stdout
+  printf "%s\n" "$project_path"
+}
+
+# ================================== 构建 APK（复用目录函数） ==================================
+apk() {
+  # 可选：存在 buildCheck 就执行
+  if typeset -f buildCheck >/dev/null; then buildCheck || return $?; fi
+
+  local project_path
+  project_path="$(get_flutter_project_dir "$PWD")" || return 1
+  echo "✅ 已确认 Flutter 项目目录: $project_path"
+  cd "$project_path" || return 1
+
+  echo "🚀 开始构建 APK（release）..."
+  flutter build apk --release || return $?
+
+  echo "📂 打开输出目录: ./build/app/outputs/"
+  open "./build/app/outputs/"
+}
+
+# ✅ 📦打 iOS 包
+ipa() {
+  if typeset -f buildCheck >/dev/null; then buildCheck; fi
+
+  local project_path
+  project_path="$(get_flutter_project_dir "$PWD")" || return 1
+  echo "✅ 已确认 Flutter 项目目录: $project_path"
+  cd "$project_path" || return 1
+
+  echo "🚀 开始构建 iOS（release）..."
+  flutter build ipa --release || return $?
+
+  echo "📂 打开输出目录: ./build/ios/ipa/"
+  open "./build/ios/ipa/"
+}
+```
 
 #### 25.1、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)（较为复杂和繁琐） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -14239,7 +14508,7 @@ class Person {
   | 版本关系               | 不同 [<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn)  需配套不同 [**Gradle**](https://gradle.org/) | 独立更新                                           |
   | **Flutter** 项目中位置 | `build.gradle` 中的 `classpath`                              | `gradle-wrapper.properties` 中的 `distributionUrl` |
 
-##### 25.1.4、[**Android**](https://www.android.com/)  打包的产物 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 25.1.4、[**Android**](https://www.android.com/)打包的产物 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 | 项目                 | <font color=red>**A**</font>ndroid <font color=red>**p**</font>ac<font color=red>**k**</font>age | <font color=red>**A**</font>ndroid <font color=red>**a**</font>pp <font color=red>**b**</font>undle |
 | -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -14323,9 +14592,9 @@ graph TD
 
 ##### 25.1.8、⚙️ 相关配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-* [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/) 打包需要涉及到**Java**环境推荐使用[<font color=red>**openJDK**</font>](https://openjdk.org/)
+* [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)打包需要涉及到**Java**环境推荐使用[<font color=red>**openJDK**</font>](https://openjdk.org/)
 
-* <font color=red>为了不污染系统的开发环境，推荐用[**Homebrew**](https://brew.sh/)➕[**jenv**](https://formulae.brew.sh/formula/jenv)的形式。每个项目单独配置一个独属的**Java**环境</font>
+* <font color=red>为了不污染系统的开发环境，推荐用 [**Homebrew**](https://brew.sh/)➕[**jenv**](https://formulae.brew.sh/formula/jenv) 的形式。每个项目单独配置一个独属的**Java**环境</font>
 
   * 铆定的[**Java**](https://www.java.com/zh-CN/)版本号📝记录于[**Flutter**](https://flutter.dev/)项目根目录下的：`.java-version`
 
@@ -14369,7 +14638,7 @@ graph TD
 
 
 
-* [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/) 项目在首次构建或执行 `flutter clean` 后会重新下载👇
+* [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)项目在首次构建或执行 `flutter clean` 后会重新下载👇
 
   | 资源                                                         | 说明                                                         |
   | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -14908,19 +15177,19 @@ graph TD
 | 🚀 提测/发包                                         | `apk/release/app-release.apk`（需签名）                  |
 | 🌐 上架  [**Google Play**](https://play.google.com/) | `bundle/release/app-release.aab`                         |
 
-#### 25.2、📦 [**Flutter**](https://flutter.dev/).**iOS**（相对简单）  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 25.2、📦 [**Flutter**](https://flutter.dev/).**iOS**（相对简单）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-##### 25.2.1、🪖<font color=red>**构建指令**</font>：`flutter build ios` 和 `flutter build ipa` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 25.2.1、🪖<font color=red>**构建指令**</font>：`flutter build ios` 和 <font color=red>**`flutter build ipa`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > **iOS** 项目主流是使用[**XCode**](https://developer.apple.com/xcode/) + [**XCode**](https://developer.apple.com/xcode/) **build system** 来进行构建
 
-| 构建类型          | 构建命令                                      | 说明                                                         |
-| ----------------- | --------------------------------------------- | ------------------------------------------------------------ |
-| **Debug** 构建    | `flutter build ios --debug`                   | 构建用于调试的 **iOS** 包（默认使用模拟器架构）              |
-| **Profile** 构建  | `flutter build ios --profile`                 | 构建用于性能分析的中间态包                                   |
-| **Release** 构建  | `flutter build ios --release`                 | 构建用于发布的 **iOS** 包（仅支持真机）                      |
-| 构建 `.xcarchive` | `flutter build ipa --export-method app-store` | 构建用于 App Store 提交的归档包（需配置 [**XCode**](https://developer.apple.com/xcode/) 导出选项） |
-| 构建 `.ipa` 包    | `flutter build ipa`                           | 自动使用 Release 模式归档并导出 `.ipa` 文件（默认导出方式为 development） |
+| 构建类型          | 构建命令                                                 | 说明                                                         |
+| ----------------- | -------------------------------------------------------- | ------------------------------------------------------------ |
+| **Debug** 构建    | `flutter build ios --debug`                              | 构建用于调试的 **iOS** 包（默认使用模拟器架构）              |
+| **Profile** 构建  | `flutter build ios --profile`                            | 构建用于性能分析的中间态包                                   |
+| **Release** 构建  | `flutter build ios --release`                            | 构建用于发布的 **iOS** 包（仅支持真机）                      |
+| 构建 `.xcarchive` | `flutter build ipa --export-method app-store`            | 构建用于 App Store 提交的归档包（需配置 [**XCode**](https://developer.apple.com/xcode/) 导出选项） |
+| 构建 `.ipa` 包    | <font color=red>**`flutter build ipa --release`**</font> | 自动使用 **Release** 模式归档并导出 `.ipa` 文件（默认导出方式为 development） |
 
 | 参数名                   | 示例                                             | 说明                                     |
 | ------------------------ | ------------------------------------------------ | ---------------------------------------- |
