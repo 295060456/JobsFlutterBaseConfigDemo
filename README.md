@@ -16602,6 +16602,42 @@ list.add('C');
       };
   ```
 
+### 31、<font color=blue>**Function**</font>（回调）的使用 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* 定义
+
+  > 1️⃣ 用 <font color=blue>**Function**</font> 定义这个回调的**入参**和**出参**
+  >
+  > 2️⃣ 这个<font color=blue>**Function**</font> 的形式，很长一串，略显臃肿，所以需要 <font color=red>**typedef **</font> 来进行别名化处理
+
+  ```dart
+  // 定义一个回调类型，接受 int，返回 void
+  typedef IntCallback = void Function(int value);
+  ```
+
+* 在函数里使用回调（**传入参数，即使用回调**）
+
+  > 在高级语言中，这个回调可以被定义为可选性（可以为null）；但是，如果在低级语言中，没有判定这个回调是否存在的前提下就直接用，程序会崩溃
+
+  ```dart
+  void doSomething(int x, IntCallback? callback) {
+    print("doing something with $x");
+    if (callback != null) {
+      callback(x * 2); // 安全调用
+    }
+  }
+  ```
+
+* 传入一个回调函数
+
+  ```dart
+  void main() {
+    doSomething(10, (result) {
+      print("callback result: $result");
+    });
+  }
+  ```
+
 ## 六、FAQ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * <font color=red>不出**UI**的总结</font>
