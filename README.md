@@ -1153,6 +1153,11 @@ extension JobsPrintExt<T> on T {
     JobsPrint(this);
     return this; // 返回自身，方便链式调用
   }
+
+  T l(String tag) {
+    JobsPrint({'$tag': this});
+    return this;
+  }
 }
 ```
 
@@ -1266,11 +1271,17 @@ extension JobsPrintExt<T> on T {
 >  >
 >  > * 在程序内打印
 >  >
->  >   ```
+>  >   ```dart
 >  >   JobsPrint(mockListData);
 >  >   ```
 
 ##### 1.3.1、控制台打印 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+<span>
+  <img src="./assets/image-20250901191221540.png" alt="image-20250901191221540" style="zoom:30%; display:inline-block;" />
+  <img src="./assets/image-20250901191322809.png" alt="image-20250901191322809" style="zoom:30%; display:inline-block;" />
+  <img src="./assets/image-20250901191421451.png" alt="image-20250901191421451" style="zoom:30%; display:inline-block;" />
+</span>
 
 ```dart
 import 'dart:convert';
@@ -1473,6 +1484,11 @@ extension InspectX on Object? {
         maxString: maxString,
         showTypes: showTypes,
       );
+
+  Object? get p {
+    JobsPrint(this);
+    return this; // 允许链式 (data.p as List).length
+  }
 }
 ```
 

@@ -18,4 +18,9 @@ extension JobsPrintExt<T> on T {
     JobsPrint(this);
     return this; // 返回自身，方便链式调用
   }
+
+  T l(String tag) {
+    JobsPrint({'$tag': this});
+    return this;
+  }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart' show debugPrint;
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_plugin_engagelab/flutter_plugin_engagelab.dart';
+
 /// 用法
 void main() {
   final mockData = {
@@ -284,6 +285,11 @@ extension InspectX on Object? {
         maxString: maxString,
         showTypes: showTypes,
       );
+
+  Object? get p {
+    JobsPrint(this);
+    return this; // 允许链式 (data.p as List).length
+  }
 }
 
 /// =============================== 程序内打印 ==================================
