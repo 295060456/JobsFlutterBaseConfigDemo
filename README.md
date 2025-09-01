@@ -1104,7 +1104,17 @@ plugins/
 
 ### 1、🖨️调试打印 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-#### 1.1、 <font id=极光原生推送>🌌</font><a href="#极光原生推送" style="font-size:20px; color:green;"><b>极光原生推送</b></a>封装的全局打印（🧨强烈推荐）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 1.1、🖨️系统自带的打印方法：`debugPrint` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* ```dart
+  debugPrint(this);
+  ```
+
+* ```dart
+  print(this);
+  ```
+
+#### 1.2、🖨️第三方封装的打印方法：<font id=极光原生推送>🌌</font><a href="#极光原生推送" style="font-size:20px; color:green;"><b>极光原生推送</b></a>全局打印（🧨强烈推荐）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 虽然这个方法原本是插件内部封装的，但它本质上是一个对 `print()` 的增强封装，用法通用、效果更强大。
 
@@ -1120,19 +1130,46 @@ FlutterPluginEngagelab.printMy(xxx);
 | ✅ 可屏蔽 **Release** 输出 | 保证线上不暴露调试信息  |
 | ✅ 日志更美观 / 可写文件   | 后期接入文件记录也方便  |
 
-#### 1.2、`debugPrint` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 1.3、对系统&自定义打印方法的二次封装 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
-debugPrint("XXX");
+import 'package:flutter_tiyu_app/utils/JobsCommonUtil.dart';
+
+extension AnyLogGetter<T> on T {
+  /// 使用点语法 `.log;` 打印对象
+  T get log {
+    assert(() {
+      // ignore: avoid_print
+      print(this);
+      return true;
+    }());
+    return this; // 返回自身，方便链式调用
+  }
+}
+
+extension JobsPrintExt<T> on T {
+  /// 调用 .p 就会走 JobsPrint(this)
+  T get p {
+    JobsPrint(this);
+    return this; // 返回自身，方便链式调用
+  }
+}
 ```
 
-####  1.3、自定义打印对象 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+> 使用方式：
+>
+> ```dart
+> rawList.log;
+> rawList.p;
+> ```
+
+####  1.4、🖨️自定义打印（对象）方法 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 >* **Mock**数据：最外层字典
 >
 >  ```dart
 >  final mockData = {
->    "status": "success",
+>  "status": "success",
 >    "code": 200,
 >    "meta": {
 >      "page": 1,
@@ -1185,37 +1222,37 @@ debugPrint("XXX");
 >
 >* **Mock**数据：最外层数组
 >
->  ```dart
->  final mockListData = [
->    {
->      "id": 1,
->      "name": "First",
->      "metaJson":
->          '{"views": 100, "likes": 50, "tags": ["news", "sports"]}', // JSON字符串
->      "details": {
->        "category": "A",
->        "attributes": [
->          {"key": "color", "value": "red"},
->          {"key": "size", "value": "M"}
->        ]
->      }
->    },
->    {
->      "id": 2,
->      "name": "Second",
->      "metaJson":
->          '{"views": 200, "likes": 120, "tags": ["tech", "gaming"]}', // JSON字符串
->      "details": {
->        "category": "B",
->        "attributes": [
->          {"key": "material", "value": "cotton"},
->          {"key": "origin", "value": "USA"}
->        ]
->      }
->    },
->    '{"jsonStringRoot": true, "nested": {"a": 1, "b": [10, 20]}}' // 根List里的JSON字符串
->  ];
->  ```
+>   ```dart
+>   final mockListData = [
+>     {
+>       "id": 1,
+>       "name": "First",
+>       "metaJson":
+>           '{"views": 100, "likes": 50, "tags": ["news", "sports"]}', // JSON字符串
+>       "details": {
+>         "category": "A",
+>         "attributes": [
+>           {"key": "color", "value": "red"},
+>           {"key": "size", "value": "M"}
+>         ]
+>       }
+>     },
+>     {
+>       "id": 2,
+>       "name": "Second",
+>       "metaJson":
+>           '{"views": 200, "likes": 120, "tags": ["tech", "gaming"]}', // JSON字符串
+>       "details": {
+>         "category": "B",
+>         "attributes": [
+>           {"key": "material", "value": "cotton"},
+>           {"key": "origin", "value": "USA"}
+>         ]
+>       }
+>     },
+>     '{"jsonStringRoot": true, "nested": {"a": 1, "b": [10, 20]}}' // 根List里的JSON字符串
+>   ];
+>   ```
 >
 >  > * 在控制台打印
 >  >
@@ -1657,7 +1694,6 @@ bool isOver18Years(int y, int m, int d) {
   if (now.month < m || (now.month == m && now.day < d)) age--;
   return age >= 18;
 }
-
 ```
 
 ### 2、`SystemChrome`常用于设置<u>**状态栏和系统底部导航栏样式**</u>的配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
