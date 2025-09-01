@@ -12015,6 +12015,42 @@ class ClipboardUtil {
     ever<String>(category, (v) => categoryCtrl.text = v);
     ```
 
+* 输入框的前后图片`prefixIcon`/`suffixIcon`和相应的尺寸`prefixIconConstraints`/`suffixIconConstraints`
+
+  ```dart
+  Obx(() => TextField(
+    readOnly: true, // ✅ 不弹键盘
+    onTap: () {
+      AppManager.instance.tapVibrate();
+      showGamePicker(ctrl, onPicked: (label) {
+        onCategoryChanged(label);
+      });
+    },
+    controller:
+        TextEditingController(text: q.category.value), // 显示当前选中
+    textAlign: TextAlign.center,
+    style: const TextStyle(color: Color(0xFFE6EBF2), fontSize: 12),
+    decoration: InputDecoration(
+      isDense: true,
+      hintText: '请选择',
+      contentPadding:
+          const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+      suffixIcon: const Icon(Icons.arrow_drop_down,
+          size: 18, color: Color(0xFF9AA3B2)),
+      suffixIconConstraints: const BoxConstraints(
+        minWidth: 24, // 默认是 48，改小即可
+        minHeight: double.infinity, // 保证和图标大小接近
+      ),
+      filled: true,
+      fillColor: const Color(0xFF171925), // 你的 0xFFFED49C
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(4),
+        borderSide: BorderSide.none,
+      ),
+    ),
+  )),
+  ```
+
 * 点击以后，不弹出键盘，而执行其他操作（比如弹出：[**级联选择器**](https://pub.dev/packages/ym_flutter_widget) ）
 
   ```dart
@@ -16608,7 +16644,7 @@ list.add('C');
 
   > 1️⃣ 用 <font color=blue>**Function**</font> 定义这个回调的**入参**和**出参**
   >
-  > 2️⃣ 这个<font color=blue>**Function**</font> 的形式，很长一串，略显臃肿，所以需要 <font color=red>**typedef **</font> 来进行别名化处理
+  > 2️⃣ 这个<font color=blue>**Function**</font> 的形式，很长一串，略显臃肿，所以需要 <font color=red>**typedef **</font>来进行别名化处理。以后，就用此**别名**来替代如此冗长的定义部分
 
   ```dart
   // 定义一个回调类型，接受 int，返回 void
