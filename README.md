@@ -29,10 +29,14 @@
 
 ## 🌍友情外链🔗
 
-* [**Flutter 实战@第二版**](https://book.flutterchina.club/)
-* [**Jobs相关文档支持**](https://github.com/295060456/JobsDocs)
-* [**效率工具：SourceTree的脚本配置**](https://github.com/295060456/SourceTree.sh)
-* [**常见环境变量配置文件（按使用场景分类）**](https://github.com/295060456/JobsMacEnvVarConfig)
+* [**Jobs**](https://github.com/)自我知识产权
+  * [**Jobs相关文档支持**](https://github.com/295060456/JobsDocs)
+  * [**效率工具：SourceTree的脚本配置**](https://github.com/295060456/SourceTree.sh)
+  * [**常见环境变量配置文件（按使用场景分类）**](https://github.com/295060456/JobsMacEnvVarConfig)
+* 外部文档
+  * [***Dart/Flutter社区生态：Pub.dev***](https://pub.dev/)
+  * [***Flutter 面试知识点集锦· GitBook***](https://guoshuyu.cn/home/wx/Flutter-msjj.html)
+  * [**Flutter 实战@第二版**](https://book.flutterchina.club/)
 
 ## 一、🎯项目白皮书 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -12704,17 +12708,60 @@ Future<void> resilientLoop(Future<void> Function() task,
 
 * 仅在数据变更时触发 `update/Obx` 重建
 
-### 64、推送 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 64、推送（TODO） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 /// TODO
 ```
 
-### 65、唤醒 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 65、唤醒（TODO） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 /// TODO
 ```
+
+### 66、热更新（TODO） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```dart
+/// TODO
+```
+
+### 67、调取设备摄像头（TODO） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```dart
+/// TODO
+```
+
+### 68、调取设备相册（TODO） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```dart
+/// TODO
+```
+
+### 69、音视频（TODO） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+*  [***flutter_ffmpeg***](https://github.com/tanersener/flutter-ffmpeg)：
+   * ***开源项目*** <font color="red">**（停止维护）**</font>；
+   * 这是一个基于 *FFmpeg* 的 Dart.Flutter 插件，它提供了一种在 Dart.Flutter 应用程序中执行音视频处理和转码的方式。
+   * 使用 [***flutter_ffmpeg***](https://github.com/tanersener/flutter-ffmpeg)，您可以执行各种音视频处理任务，如裁剪、合并、转码等。它是一个功能强大的音视频处理解决方案，但***需要对 FFmpeg 的使用和命令行参数有一定的了解***。
+*  [***Agora SDK***](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK)：
+   * [***Agora SDK***](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK) <font color="red">***是不开源的***</font>。[***Agora SDK***](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK)是由 *Agora* 公司开发和维护的，用于***实时音视频通信的 SDK***；
+   * [***Agora SDK***](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK)是一个专门用于实时音视频通信的 SDK，它提供了丰富的功能和强大的性能，包括音视频通话、直播、互动白板等功能；
+   * [***Agora SDK***](https://github.com/AgoraIO-Extensions/Agora-Flutter-SDK)提供了 Dart.Flutter 插件，可以方便地在 Dart.Flutter 应用程序中集成实时音视频通信功能；
+*  [***Flutter_webrtc***](https://github.com/flutter-webrtc/flutter-webrtc)：
+   * ***开源项目***；
+   * 这是一个 *WebRTC* 的 Dart.Flutter 插件，用于实现***实时音视频通信功能***；
+   * 提供了一种在 Web 浏览器和移动应用程序中实现实时通信的标准化解决方案；
+   * *Flutter_webrtc* 插件使得在 Dart.Flutter 应用程序中集成 *WebRTC* 功能变得易；
+*  [***flutter_vlc_player***](https://github.com/solid-software/flutter_vlc_player)：
+   * ***开源项目***<font color="red">**（停止维护）**</font>；
+   * 这是一个基于[***libVLC***](https://github.com/videolan/libvlcpp) 的 Flutter 插件，用于在 Dart.Flutter 应用程序中播放本地或网络上的视频文件；
+   * 它提供了一种简单的方式来集成 VLC 播放器功能，并支持各种视频格式和网络流媒体协议；
+*  [***flutter_exoplayer***](https://github.com/danielR2001/flutter_exoplayer)：
+   * ***开源项目***；
+   * 这是一个基于 [***ExoPlayer***](https://github.com/google/ExoPlayer) 的 Dart.Flutter 插件，用于在 Dart.Flutter 应用程序中播放音频和视频文件；
+   * *ExoPlayer* 是一个功能强大的跨平台媒体播放器，***支持 Android、iOS 和 Web 平台***；
+   * 使用 *flutter_exoplayer*，您可以方便地在 Dart.Flutter 应用程序中实现高性能的音视频播放功能；
 
 ## 五、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -12841,6 +12888,8 @@ Future<void> resilientLoop(Future<void> Function() task,
   ```
 
 #### 2.2、📱关于**iOS**模拟器（最新版本[**XCode**](https://developer.apple.com/xcode/)：16.4） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* <font color=red>**iOS** 模拟器存在假后台现象，需要完全退出此进程，否则无法打开**iOS** 模拟器</font>
 
 * **iOS** 模拟器无法运行 **Profile** 模式的 [**Flutter**](https://flutter.dev/) APP（只支持 **Debug 模式运行**）
 
@@ -13430,12 +13479,12 @@ packages:
 
 ### 10、注解 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-<font color=red>注解（以`@JsonSerializable() `为例） 🆚 OC 分类（Category）</font>
-
 * 确实都达到了**在不改动原类结构下，增加功能**的目的
 
-    📌 相同点
+    > <font color=red>注解（以`@JsonSerializable() `为例） 🆚 OC 分类（Category）</font>
 
+  📌 相同点
+  
   | 特点                          | @JsonSerializable()（Flutter） | Category（Objective-C） |
   | ----------------------------- | ------------------------------ | ----------------------- |
   | ✅ 不改动类的核心逻辑          | 是                             | 是                      |
@@ -13444,16 +13493,29 @@ packages:
   | ✅ 开发者不用手写大量样板代码  | 是                             | 是                      |
 
     ❌ 不同点（本质机制不一样）
-
+  
   | 特点           | @JsonSerializable()（Dart）    | Category（Obj-C）               |
-  | -------------- | ------------------------------ | ------------------------------- |
+  | :------------- | ------------------------------ | ------------------------------- |
   | ⚙️ 本质         | 靠代码生成器自动生成 Dart 代码 | 运行时动态将方法加入类          |
   | 📦 产物         | 编译阶段生成 `.g.dart` 文件    | 运行时加入新方法映射表          |
   | 🔧 工作时机     | 编译阶段（build_runner）       | 运行时（Objective-C runtime）   |
   | 🧠 类型系统影响 | 有静态类型检查                 | 无类型检查，靠 runtime dispatch |
   | 📄 新增文件     | 会生成新文件                   | 不会生成新文件                  |
+  
+* 常见注解一览
 
-### 11、**Dart**.[**Flutter**](https://flutter.dev/)单例 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+    * `@override`: 用于标记方法重写了父类的方法。
+  * `@immutable`: 用于标记类是不可变的，其属性也应该是不可变的。
+  * `@required`: 用于标记方法参数是必需的，在调用时必须提供值。
+  * `@optionalTypeArgs`: 用于在使用泛型时，标记类型参数是可选的。
+  * `@factory`: 用于标记一个工厂构造函数。
+  * `@visibleForTesting`: 用于标记一个成员是供测试代码访问的，但不是公共API。
+  * `@mustCallSuper`：用于表示子类应该在覆盖父类中使用了 `@mustCallSuper` 注解的方法时，调用父类的相同方法。这通常用于确保在子类中重写方法时，仍然执行了父类的逻辑，以确保程序的正确性和完整性。
+  * `@protected`: 用于标记一个成员是受保护的，在定义类的库以及子类中可见。
+  * `@Deprecated`: 用于标记一个成员已经被弃用，在使用时应该考虑替代方案。
+  * `@internal`: 用于标记一个成员是内部的，不应该被外部使用。
+
+### 11、[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/)单例 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 | 使用场景            | 推荐写法                           |
 | ------------------- | ---------------------------------- |
@@ -13570,13 +13632,22 @@ void example() {
 }
 ```
 
-### 12、<font color=red>**`abstract`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 12、[**Dart**](https://dart.dev/).<font color=red>**`abstract`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 1️⃣ 防止被实例化
 >
 > 2️⃣ 不能背继承
 >
 > 常用于**纯静态工具类或常量容器类**的定义。提升代码的可读性和语义安全性，是一种更严谨的推荐写法
+
+| 特性                   | Flutter (`abstract class`)                             | Objective-C (`@protocol`)                                    |
+| ---------------------- | ------------------------------------------------------ | ------------------------------------------------------------ |
+| **定义目的**           | 定义一个不能被直接实例化的类，用来作为子类的模板       | 定义一个接口，声明方法或属性，任何类都可以实现               |
+| **是否可以包含实现？** | ✅ 可以有部分实现（抽象类可包含普通方法）               | ❌ 只能定义方法（iOS 13+ 支持 protocol extension 加默认实现） |
+| **是否可以包含属性？** | ✅ 可以定义字段或 getter/setter                         | ✅ 只支持声明属性（必须由实现类提供实现）                     |
+| **是否支持多继承？**   | ❌ 不支持类的多继承（但可以用 `implements` 多实现接口） | ✅ 支持多个协议（`<A, B>`）                                   |
+| **实例化行为**         | ❌ 抽象类不能直接实例化                                 | ❌ 协议本身不能实例化                                         |
+| **用途区别**           | 更接近 Java 的抽象类，可用作逻辑模板                   | 更像纯接口，只定义行为规范                                   |
 
 ### 13、[**Dart**](https://dart.dev/).<font color=red>**`factory`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -16976,7 +17047,1132 @@ list.add('C');
   }
   ```
 
-## 六、FAQ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 32、<font id="Diff">`Diff` 算法</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* 在 Dart.Flutter 中，`Diff` 算法指的是用于**比较新旧 *Widget* 树的差异，并确定哪些部分需要更新**的算法。这个算法被称为 "Diff" 是因为它会找出两个树之间的差异，并尽可能地最小化更新的成本，**只更新必要的部分**。
+* `Diff` 算法的基本思想是递归地比较新旧 *Widget* 树的每个节点，找出它们之间的差异。这个比较是根据节点的类型、属性、以及子节点的情况来进行的。当发现节点之间存在差异时，`Diff` 算法会尝试**尽可能地复用已有的节点，并更新其属性**，而不是直接销毁和重建节点。
+* 以下是 `Diff` 算法的基本步骤：
+  * **比较节点类型**：首先比较新旧节点的类型。如果它们的类型不同，则说明节点需要被替换；
+  * **比较属性**：如果节点的类型相同，那么就比较它们的属性。如果属性有变化，则需要更新节点的属性；
+  * **比较子节点**：如果节点是容器类节点（比如 `Row`、`Column`、`ListView` 等），则需要递归地比较它们的子节点。如果子节点有变化，则需要更新子节点；
+  * **更新差异部分**：根据比较的结果，确定哪些部分需要更新，并执行相应的更新操作；
+    通过这种方式，`Diff` 算法可以高效地找出新旧 *Widget* 树之间的差异，并尽可能地减少更新的成本。这种优化可以帮助 Flutter 在处理复杂 UI 结构时保持良好的性能。
+
+### 33、[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).**`Widget`树** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* 有状态的*Widget*通常由两部分组成：
+  * 一个是状态对象（State Object），用于存储和管理状态；
+  * 另一个是小部件本身，用于构建UI；
+* 在 Dart.Flutter 中，*Widget* 树是由各种 *Widget* 组成的**层次结构**，用于描述应用程序的用户界面；
+* *Widget* 树是 Dart.Flutter 中**构建用户界面的基本概念**，它由 *Widget* 对象组成，**每个 *Widget* 对象代表一个 UI 元素**，比如文本、按钮、布局等；
+* *Widget* 树是一个**不可变的树结构**，其中每个节点都是一个 *Widget* 对象，它们描述了应用程序界面的**布局、外观和交互**；
+* *Widget* 树中的**每个节点都可以有一个或多个子节点**，这些子节点也是 *Widget* 对象；
+* Dart.Flutter 使用 *Widget* 树来构建应用程序的用户界面，并在需要时重新构建部分或全部界面；
+* 当 *Widget* 树中的任何一个节点发生变化时（比如属性变化、状态变化等），Dart.Flutter 会根据变化情况重新构建 *Widget* 树，并更新应用程序的用户界面。**重新构建不是在原有的基础上直接修改，而是重新创建整个（局部的） *Widget* 树**。这种重新构建的方式有以下几个特点：
+  * **不可变性**：***Widget* 树中的节点是不可变的，一旦创建就不能被修改**。因此，当节点的属性变化时，Dart.Flutter 不会直接修改原有的节点，而是**创建一个新的节点来替换旧的节点**；
+  * [***Diff 算法***](#Diff)：Dart.Flutter 使用一种称为 `Diff` 算法的技术来**比较新旧 *Widget* 树的差异**，并仅在**必要时更新** UI。`Diff` 算法会逐级比较新旧 *Widget* 树的节点，找出需要更新的部分，并仅重新构建和更新这部分节点，而不是重新构建整个 *Widget* 树；
+  * **重建顶级节点**：虽然 *Widget* 树中的大部分节点可能保持不变，但在某些情况下，比如状态变化或路由导航等，顶级节点可能会发生变化。在这种情况下，Dart.Flutter 会重新构建整个 *Widget* 树，从根节点开始，而不是从变化的节点开始；
+  * **重用已构建的部分**：为了提高性能，Dart.Flutter 会尽可能地重用已构建的部分 *Widget* 树。如果某些节点在新旧 *Widget* 树中是相同的（例如，它们具有相同的类型和属性），Dart.Flutter 将重用已构建的节点，而不是重新创建它们；
+    *虽然重新构建 Widget树看起来像是创建一个全新的树，但实际上 Flutter 会**尽可能地重用已有的节点**，并仅在必要时更新变化的部分，以提高性能和效率*
+
+### 34、<font id=稳定key>稳定 `key`</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* key是***Widgets***，***Elements***和***SemanticsNodes***的标识符；
+
+* key有**`LocalKey`** 和 **`GlobalKey`**两种；
+
+  * **`LocalKey`**  是一个*抽象类*，用于标识和区分[***Widget树***](#Widget树)中的不同节点。它是***所有用于本地（局部）标识的关键类的基类***。常见的用法是在需要在同一父级下修改控件顺序或数量时使用 `LocalKey`
+    *演示了如何使用 `LocalKey` 来标识 `Container` 和 `Text` Widget，并在它们之间交换位置👇🏻*
+
+* **`GlobalKey`**是一个通用的全局标识符，**用于标识 ** *Widget* **树中的单个元素**； 
+
+  * 与 `LocalKey` 不同，`GlobalKey` 不仅能够**在同一父级下修改控件顺序或数量**，还可以在**整个应用程序中引用一个** *Widget* **的状态**；
+  * 允许 *Widget* 在应用中的**任何位置更改父级而不会丢失 ** *State*；
+    *演示了如何使用 `GlobalKey` 来引用 `TextField` 控件的状态，并在按下按钮时清除文本框中的文本*
+
+  <font color="red">*核心思想：将数据进行📌标记，而非对控件进行📌标记*</font>
+
+  ```dart
+  import 'package:flutter/material.dart';
+  
+  void main() {
+    runApp(MyApp());
+  }
+  
+  class MyApp extends StatelessWidget {
+    // 创建一个 GlobalKey 用于引用 TextField 的状态
+    final GlobalKey<TextFieldState> textFieldKey = GlobalKey();
+  
+    @override
+    Widget build(BuildContext context) {
+      return MaterialApp(
+        home: Scaffold(
+          appBar: AppBar(
+            title: Text('GlobalKey Demo'),
+          ),
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // 使用 GlobalKey 引用的 TextField
+                TextField(key: textFieldKey),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    // 清除 TextField 中的文本
+                    textFieldKey.currentState!.clear();
+                  },
+                  child: Text('Clear Text'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+  }
+  /**
+  	实际上我通过textFieldKey就拿到了textField的一个（状态）引用，可以对textField做一些操作;
+  	GlobalKey 提供了一种方便的机制来跨 Widget 访问和管理 Widget 的状态，同时也可以提高代码的灵活性和可维护性。
+  */
+  ```
+
+  > 使用 `GlobalKey` 相比直接持有对象的引用，有一些区别和优势：
+  >
+  > * **跨 *Widget* 访问**：`GlobalKey` 允许你在整个应用程序中引用特定的 *Widget* 实例。这意味着你可以在任何地方访问这个 *Widget* 的状态并对其进行操作，而不受 *Widget* 树结构的限制。**而直接持有对象的引用通常限制在同一** *Widget* **树中**；
+  > * **无需传递引用**：通过 `GlobalKey`，你可以直接通过键来访问 *Widget* 的状态，而不需要手动将对象引用传递到需要的地方。这样可以**减少代码的耦合度**，使代码更加清晰简洁；
+  > * **组件状态管理**：`GlobalKey` 还可以用于管理 *Widget* 的状态。例如，你可以使用 `GlobalKey` 来保存和恢复 *Widget* 的状态，或者在需要时重新构建 *Widget*；
+  > * **重建 Widget**：使用 `GlobalKey` 可以在需要时重新构建整个 *Widget*，而不必手动保存和重新创建 *Widget* 的状态。这在一些场景下可能会更加方便；
+
+* **Key 的本质**：帮助 [**Flutter**](https://flutter.dev/)  区分哪些 **`widget`** 还是同一个。
+
+* **稳定 Key 的意义**：用业务唯一 ID（比如 `orderNo`）确保 item 在列表中有持续一致的身份。
+
+* **没有稳定 Key 的风险**：刷新 / 翻页时可能出现闪烁、错位、状态丢失。
+
+* [**Flutter**](https://flutter.dev/) 渲染机制和 Key 的作用
+
+  * [**Flutter**](https://flutter.dev/) 在 `ListView`、`Column` 这种有多个子节点”的 **`widget`**  树里，**会尝试复用 `widget` 节点**，以减少重建和提高性能。
+
+  * 判断“能不能复用”的依据就是 **`Key`**。
+
+    - 如果子 **`widget`**  的 `Key` 没变，[**Flutter**](https://flutter.dev/)  认为这是同一个 **`widget`** ，只会更新数据，不会销毁重建。
+    - 如果 `Key` 变了，[**Flutter**](https://flutter.dev/)  会把旧 **`widget`**  销毁，再新建一个 **`widget`** ，导致 UI 重新构建。
+
+  * <font color=red>**如果没有稳定 Key，会发生什么？**</font>
+
+    ```
+    ListView.builder(
+      itemCount: records.length,
+      itemBuilder: (_, i) {
+        final record = records[i];
+        return betRecordTile(record); // ❌ 没有 key
+      },
+    );
+    ```
+
+    > 当下拉刷新时，列表会清空再填充新的数据。
+    >
+    > [**Flutter**](https://flutter.dev/) 只会用**位置 (index)** 来推断是否能复用。
+    >
+    > 如果顺序或数据不完全一致，[**Flutter**](https://flutter.dev/)  可能把“第 0 个元素”的旧 **`widget`**  用来显示“新的第 0 个元素”。
+    >
+    > 结果就是：**UI 出现闪烁 / 滚动错乱**，比如明明是另一条订单，但动画/状态还残留。
+
+### 35、[**Flutter**](https://flutter.dev/).<font color="red">**`set/get`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+  * ```dart
+    import 'dart:async';
+    import 'package:flutter/material.dart';
+    
+    void main() {
+      scheduleMicrotask(() => debugPrint("Microtask 1"));// 会自动导入asyn包，即：import 'dart:async';
+      Future.microtask(() => debugPrint("Microtask 2"));
+      Future.value(123).then((value) => debugPrint("Microtask 3"));
+    
+      debugPrint("main1");
+      Future.sync(() => debugPrint("sync 1"));
+      Future.value(getName());
+      debugPrint("main2");
+    
+      runApp(const MyApp());
+    }
+    
+    String getName() {
+      debugPrint("get name");
+      return "bob";
+    }
+    // 运行结果
+    Launching lib/main.dart on iPhone Xs in debug mode...
+    Xcode build done.                                            7.4s
+    Connecting to VM Service at ws://127.0.0.1:58560/hTChdl8QhRw=/ws
+    flutter: main1
+    flutter: sync 1
+    flutter: get name
+    flutter: main2
+    flutter: Microtask 1
+    flutter: Microtask 2
+    flutter: Microtask 3
+    ```
+
+  * 代码加入到Event
+
+    ```dart
+    import 'dart:async';
+    import 'package:flutter/material.dart';
+    
+    void main() {
+      Future.delayed(Duration(seconds: 1),()=>debugPrint("event 3"));
+      Future(()=>debugPrint("event 1"));
+      // 这里的时间，不是精确的时间，而是最短的等待时间
+      // 这里的Duration.zero不是立即执行，而是0秒以后，系统有机会尽快执行
+      // Future(()=>debugPrint("event 1")); 和 Future.delayed(Duration.zero,()=>debugPrint("event 2")); 都是等待0秒，谁在前，先执行谁
+      Future.delayed(Duration.zero,()=>debugPrint("event 2"));
+    
+      scheduleMicrotask(() => debugPrint("Microtask 1"));
+      Future.microtask(() => debugPrint("Microtask 2"));
+      Future.value(123).then((value) => debugPrint("Microtask 3"));
+    
+      debugPrint("main1");
+      Future.sync(() => debugPrint("sync 1"));
+      Future.value(getName());
+      debugPrint("main2");
+    
+      runApp(const MyApp());
+    }
+    
+    String getName() {
+      debugPrint("get name");
+      return "bob";
+    }
+    // 运行结果
+    Launching lib/main.dart on iPhone Xs in debug mode...
+    Xcode build done.                                            7.3s
+    Connecting to VM Service at ws://127.0.0.1:58560/hTChdl8QhRw=/ws
+    flutter: main1
+    flutter: sync 1
+    flutter: get name
+    flutter: main2
+    flutter: Microtask 1
+    flutter: Microtask 2
+    flutter: Microtask 3
+    flutter: event 1
+    flutter: event 2
+    flutter: event 3
+    ```
+
+### 36、<font color="red">***`var`***</font>、<font color="red">***`dynamic`***</font>、<font color="red">***`object`***</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* <font color="red">***`var`***</font>定义的类型是不可变的；
+* <font color="red">***`dynamic`***</font>和<font color="red">***`object`***</font>类型是可以变的，而<font color="red">***`dynamic`***</font>与<font color="red">***`object`***</font>的区别是在静态类型检查上；
+  * <font color="red">***`dynamic`***</font>：编译时**不**进行静态类型检查的类型（更灵活），而是在运行期间进行类型检查。（被编译后，实际是一个<font color="red">***`object`***</font>类型）
+  * <font color="red">***`object`***</font>：编译时会进行类型检查（更安全）
+
+### 37、<font color="red">***`const`***</font>和<font color="red">***`final`***</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* ***相同点***  
+  * <font color="red">***`final`***</font>、<font color="red">***`const`***</font>必须初始化；
+  *  <font color="red">***`final`***</font>、<font color="red">***`const`***</font>只能赋值一次；
+  * 均表示不可被修改  
+  
+*  ***不同点***
+  
+  * 访问类中<font color="red">***`const`***</font>修饰的变量需要<font color="red">***`static`***</font>修饰；
+  
+    ```dart
+    import 'package:flutter/material.dart';
+    
+    class MyClass {
+      // 如果要声明一个类中的静态变量，并且希望它是编译时常量，可以使用 static const：
+      // 所以，这里的 static const 位置不能互换
+      static const int myConstVar = 42;
+      static void printConstVar() {
+        debugPrint('My const variable: $myConstVar');
+      }
+    }
+    
+    void main() {
+      // 直接访问静态方法
+      MyClass.printConstVar();
+      // 或者通过类名访问静态变量
+      debugPrint('Accessing const variable via class: ${MyClass.myConstVar}');
+    }
+    ```
+  
+  * <font color="red">***const***</font>修饰的List集合任意索引不可修改
+  
+    <font color="red">***final***</font>修饰的可以修改；
+  
+    ```dart
+    import 'package:flutter/material.dart';
+    
+    void main() {
+      // 使用 const 修饰的 List，其中的元素是编译时常量，不可修改
+      const List<int> constList = [1, 2, 3];
+      // 尝试修改元素，会导致编译时错误
+      // constList[0] = 10;
+    
+      // 使用 final 修饰的 List 是一个运行时常量，其引用是不可变的，但可以添加、删除或修改元素
+      final List<int> finalList = [1, 2, 3];
+      // 修改元素
+      finalList[0] = 10;
+      // 添加元素
+      finalList.add(4);
+      // 删除元素
+      finalList.removeAt(1);
+    
+      debugPrint('Final List: $finalList');
+    }
+    ```
+  *  <font color="red">***`const`***</font>不可以修饰实例变量
+     
+     <font color="red">***`final`***</font>可修饰实例变量
+     
+  *  <font color="red">***`const`***</font>用来修饰变量 只能被赋值一次，在**编译**时赋值；**仅用于标识编译时常量**
+     <font color="red">***`final`***</font>用来修饰变量 只能被赋值一次，在**运行**时赋值；
+     
+  * <font color="red">***`const`***</font>关键字即可修饰变量也可用来修饰常量构造函数；当<font color="red">***const***</font>修饰类的构造函数时，它要求该类的所有成员都必须是<font color="red">***final***</font>的；
+  
+    <font color="red">***`final`***</font>**只可用来修饰变量**；
+  
+    ```dart
+    import 'package:flutter/material.dart';
+    
+    class MyClass {
+      final int x;
+      final int y;
+      const MyClass(this.x, this.y); // 使用 const 修饰构造函数，并要求所有成员都是 final 的
+      void printValues() {
+        debugPrint('x: $x, y: $y');
+      }
+    }
+    
+    void main() {
+      // 创建编译时常量对象
+      const myConstObject = MyClass(10, 20);
+      // 尝试修改对象的属性，会导致编译时错误
+      // myConstObject.x = 30;
+      // 调用对象的方法
+      myConstObject.printValues();
+    }
+    ```
+  
+*  其他
+  
+  * ```dart
+    const a = NextPage(); // ✅ 编译时创建实例并缓存
+    const b = NextPage(); // ✅ 相同参数 → 复用缓存
+    
+    print(identical(a, b)); // ✅ true，确实是同一个对象
+    ```
+  
+    ```dart
+    /// final 并不表示这个对象是“唯一”或者“全局单例”。它的意思是：“这个变量只赋值一次”，不能再被重新指向别的对象。
+    final a = NextPage(); // 创建了一个新的 NextPage 实例，赋值给变量 a
+    final b = NextPage(); // 又创建了一个新的实例，赋值给变量 b
+    // a 和 b 是两个不同的对象，但都不能再改成别的值
+    print(identical(a, b)); // false ❌ 两个新对象
+    ```
+  
+  * > 1、`const Text('xxx')` 和 `Text('xxx')` 在功能上没有区别，但加了 `const` 能显著提升性能，避免不必要的 Widget 重建，因此**强烈推荐：能加就加**。
+    >
+    > 2、在 **频繁重建的 UI / 列表中** 不加 `const` 会浪费内存和 CPU
+    >
+    > 3、在大型项目中，**加 `const` 是规范和习惯**，也是静态分析工具推荐的（在 VSCode / Android Studio 中打开：`Dart: Prefer const constructors`）
+  
+  * | 构造方式           | 行为                             | 类比                         |
+    | ------------------ | -------------------------------- | ---------------------------- |
+    | `NextPage()`       | 每次都创建新实例                 | 普通 new 调用，像构造函数    |
+    | `const NextPage()` | 复用内存中已存在的实例（如果有） | 更像类级别方法或单例构造优化 |
+
+### 38、[**Dart**](https://dart.dev/).<font color=red>**Lambda表达式(箭头函数)**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* ```dart
+  class LaunchScreen extends StatefulWidget {
+    const LaunchScreen({super.key});
+    @override
+    _LaunchScreenState createState() => _LaunchScreenState();
+    /// => 是 Dart 的简写语法（箭头函数）。等价写法
+    _LaunchScreenState createState() {
+      return _LaunchScreenState();
+    }
+  }
+  ```
+
+* ```dart
+  List<CurrencyBean> findCommonData(List<CurrencyBean> currencyList, List<CoinBean> availableList) {
+    return currencyList
+        .where((currency) =>
+            availableList.any((availableCurrency) => currency.cur == availableCurrency.currencyId))
+        .toList();
+  }
+  ```
+
+  * 方法名：`findCommonData`
+
+  * 方法入参列表：`(List<CurrencyBean> currencyList, List<CoinBean> availableList)`
+
+    * 入参1：`List<CurrencyBean> currencyList`，参数名是`currencyList`，参数类型是`List`，这个`List`里面装的元素类型是`CurrencyBean`
+    * 入参2：`List<CoinBean> availableList`，参数名是`availableList`，参数类型是`List`，这个`List`里面装的元素类型是`CoinBean`
+
+  * 方法返回值：`List<CurrencyBean>`。返回值类型是List，List里面的元素是CurrencyBean类型
+
+  * 条件函数：将满足 `currency.cur == availableCurrency.currencyId` 的元素进行返回
+
+  * `toList()`：返回的元素形成List（List里面的元素是CurrencyBean类型）对外输出
+
+  * **`currency`是一个迭代器中的元素，它代表了 `currencyList` 中的每个 `CurrencyBean` 对象**
+
+  * ❤️这段方法都是意思是：对入参1的引用<font color=red>**currencyList**</font>：`List<CurrencyBean> currencyList`作为目标进行轮询操作（挨个取出里面`CurrencyBean`类型的元素对象，命名为`currency`）；对于入参2：`List<CoinBean> availableList`里面的每一个（any）元素引用<font color=red>**availableCurrency**</font>，将满足条件<font color=red>**currencyList**</font>.**cur** == <font color=red>**availableCurrency**</font>.**currencyId**❤️
+
+  * `where`方法定义在`abstract class Iterable<E>`。`Iterable`是迭代器接口，**接口不定义具体实现（在外部具体调用的时候实现，因为不知道具体的条件过滤方法）**
+
+  * ```dart
+    abstract class List<E> implements EfficientLengthIterable<E> 
+    ```
+
+  * `currencyList`之所以能够调用`where`方法，是因为 `List<CurrencyBean> currencyList` ， `currencyList`的类型是`List`
+  
+  * 等价OC化
+  
+    ```objective-c
+    - (NSArray<CurrencyBean *> *)findCommonDataWithCurrencyList:(NSArray<CurrencyBean *> *)currencyList
+                                                   availableList:(NSArray<CoinBean *> *)availableList {
+        NSMutableArray<CurrencyBean *> *result = NSMutableArray.array;
+        for (CurrencyBean *currency in currencyList) {
+            for (CoinBean *coin in availableList) {
+                if ([currency.cur isEqualToString:coin.currencyId]) {
+                    [result addObject:currency];
+                    break; // 匹配到后可跳出内层循环
+                }
+            }
+        }return result.copy;
+    }
+    ```
+
+### 39、[**Dart**](https://dart.dev/).**import** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+| 导入方式                       | 含义                                   |
+| ------------------------------ | -------------------------------------- |
+| `import 'xxx.dart';`           | 导入整个文件，所有 public 成员都可以用 |
+| `import 'xxx.dart' show A, B;` | 只导入 `A` 和 `B`                      |
+| `import 'xxx.dart' hide A;`    | 导入除 `A` 以外的所有成员              |
+
+#### 39.1、[**Dart**](https://dart.dev/).<font color="red">**`part`**</font>  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* 用于将一个源文件分割成多个部分，每个部分被称为一个<font color="red">*`part`*</font>。通常情况下，一个库（库是Dart中代码组织的单元）可以由多个源文件组成，这些源文件通过<font color="red">*`part`*</font>关键字进行引入;
+
+* 注意事项：
+  * 一个库可以有多个部分文件，但是每个部分文件只能属于一个库；
+  * <font color="red">*`part`*</font>关键字只能在源文件的最顶部使用，并且必须是文件的第一个非空白、非注释行；
+  
+* 使用<font color="red">*`part`*</font>关键字的两个关键点：
+  * **主文件**：包含库的声明以及引入其他部分的声明。通常以`.dart`作为文件扩展名。主文件使用<font color="red">*library*</font>关键字声明库；
+  
+    ```dart
+    // main.dart
+    library my_library;
+    
+    import 'part1.dart';
+    import 'part2.dart';
+    
+    // 主文件中的其他代码
+    ```
+  * **部分文件**：
+    
+    ```dart
+    // part1.dart
+    part of my_library;
+    // 部分文件中的代码
+    ```
+    
+    * 部分文件包含库的一部分代码，它们不包含库的声明，而是使用<font color="red">*`part of`*</font>关键字引入到主文件中。通常也以`.dart`作为文件扩展名；
+    * 使用<font color="red">*`part of`*</font>关键字，将部分文件与主文件关联起来，形成一个完整的库；
+    * 这种方式可以将大型代码库拆分成更小的模块，提高代码的可维护性和可读性；
+
+### 40、[**Dart**](https://dart.dev/).**事件循环（Event Loop）** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+![image-20240321163915070](./assets/image-20240321163915070.png)
+
+* **Microtask Queue**（微服务队列）
+  * 优先级别高于**Event Queue**（事件队列）<font color="red">***等于VIP***</font>；
+  * 只有当**Microtask Queue**（微服务队列）全部执行完成以后，系统才会有机会执行**Event Queue**（事件队列）里面的代码；
+  * 一般是交给[**Dart**](https://dart.dev/)自己来处理的，不建议强行往此队列添加事件，**尽量不要去干涉**[**Dart**](https://dart.dev/)**的内部行为**；
+  * 一般用**`scheduleMicrotask`**方法来对**Microtask Queue**（微服务队列）添加事件，但是一般实战中是不会使用的。
+* **Event Queue**（事件队列） 
+  * 主要就是不停的检查**Event Queue**（事件队列），如果有新的事件，就要把响应的代码送去执行；
+  * 所谓异步操作，其实就是在**Event Queue**（事件队列）上添加事件；
+
+### 41、🧵[**Dart**](https://dart.dev/).**线程处理** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+> <font color="red">**值得注意的是：在Dart中，异步操作不是多线程（有别于Java）**</font>
+
+#### 41.2、🧵[**Dart**](https://dart.dev/).<font id="Isolate">**`Isolate`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* 在[**Dart**](https://dart.dev/) 2.6 版本中引入。**`Isolate`** 是 [**Dart**](https://dart.dev/) 中的<u>并发执行单元</u>，<font color="red">***类似于线程***</font>（即，[**Dart**](https://dart.dev/)**的线程是被封装在Isolate里面的**）。但具有独立的堆内存；
+* **`Isolate`** 之间通过**消息传递**进行通信，这种模型<u>有助于避免共享内存的并发问题</u>。( JS里面也是模拟多线程，<font color="red">**因为总共才一个线程**</font>)
+
+#### 41.3、🧵[**Dart**](https://dart.dev/).<font id="Future">**`Future`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+> **`Future`** 是一个***用于表示异步操作结果的对象***。通常用于处理需要等待一段时间才能完成的操作。它表示一个在某个未来时刻会产生值或错误的计算过程；
+
+##### 41.3.1、🧵快速入手 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* 示例一：以下这三种方式等价
+
+  ```dart
+  /// 用async和await
+  void _incrementCounter()async{
+    await Future.delayed(Duration(seconds: 1));
+    setState(() {
+      _counter++;
+    });
+  }
+  ```
+
+  ```dart
+  /// 不用async和await，直接用函数包裹起来的形式
+  void _incrementCounter() {
+    Future.delayed(Duration(seconds: 1),(){
+      setState(() {
+        _counter++;
+    });
+  });
+  ```
+
+  ```dart
+  /// 不用async和await，直接用Future + then
+  /// then会在Future执行完毕的瞬间（拿到处理结果）继续去执行
+  void _incrementCounter() {
+    Future.delayed(Duration(seconds: 1)).then(
+      (value) => setState(() {
+        _counter++;
+      }),
+    );   
+  }
+  ```
+* 示例二：
+
+  ```dart
+  Future<String> getFuture(){
+    return Future(() => "Alice");/// Future对象包裹字符串对象
+  }
+  
+  void _incrementCounter() {
+    getFuture().then((value) => debugPrint(value));/// Future对象用then打开。这里的value就是String，也就是"Alice"
+  }
+  ```
+##### 41.3.2、🧵异步操作的结果 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* ***Future*** 代表一个异步操作的结果。当异步操作完成时，***Future*** 将会返回一个值（data）或一个错误（error）。*错误和值不可能同时出现*；
+* 所以，***Future*** 总共有3种形态：**刚进来没有完成的状态**、**正常完成以后得状态**、**异常完成以后得到的错误信息**；
+
+##### 41.3.3、🧵代码执行优先级 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+  * [**Dart**](https://dart.dev/)代码直接<u>Debug</u>模式运行**立即执行的**
+
+    ```dart
+    import 'package:flutter/material.dart';
+    
+    void main() {
+      debugPrint("main1");
+      Future.sync(() => debugPrint("main2"));
+      Future.value(getName());// 已经确定一个字符串"bob",将他封装成Future
+      debugPrint("main2");
+    
+      runApp(const MyApp());
+    }
+    
+    String getName() {
+      debugPrint("get name");
+      return "bob";
+    }
+    // 运行结果
+    Launching lib/main.dart on iPhone Xs in debug mode...
+    Xcode build done.                                           17.3s
+    Connecting to VM Service at ws://127.0.0.1:58560/hTChdl8QhRw=/ws
+    flutter: main1
+    flutter: main2
+    flutter: get name
+    flutter: main2
+    ```
+  * 代码加入到**`Microtask`**
+
+    ```dart
+    import 'dart:async';
+    import 'package:flutter/material.dart';
+    
+    void main() {
+      scheduleMicrotask(() => debugPrint("Microtask 1"));// 会自动导入asyn包，即：import 'dart:async';
+      Future.microtask(() => debugPrint("Microtask 2"));
+      Future.value(123).then((value) => debugPrint("Microtask 3"));
+    
+      debugPrint("main1");
+      Future.sync(() => debugPrint("sync 1"));
+      Future.value(getName());
+      debugPrint("main2");
+    
+      runApp(const MyApp());
+    }
+    
+    String getName() {
+      debugPrint("get name");
+      return "bob";
+    }
+    // 运行结果
+    Launching lib/main.dart on iPhone Xs in debug mode...
+    Xcode build done.                                            7.4s
+    Connecting to VM Service at ws://127.0.0.1:58560/hTChdl8QhRw=/ws
+    flutter: main1
+    flutter: sync 1
+    flutter: get name
+    flutter: main2
+    flutter: Microtask 1
+    flutter: Microtask 2
+    flutter: Microtask 3
+
+  * 代码加入到**`Event`**
+
+    ```dart
+    import 'dart:async';
+    import 'package:flutter/material.dart';
+    
+    void main() {
+      Future.delayed(Duration(seconds: 1),()=>debugPrint("event 3"));
+      Future(()=>debugPrint("event 1"));
+      // 这里的时间，不是精确的时间，而是最短的等待时间
+      // 这里的Duration.zero不是立即执行，而是0秒以后，系统有机会尽快执行
+      // Future(()=>debugPrint("event 1")); 和 Future.delayed(Duration.zero,()=>debugPrint("event 2")); 都是等待0秒，谁在前，先执行谁
+      Future.delayed(Duration.zero,()=>debugPrint("event 2"));
+    
+      scheduleMicrotask(() => debugPrint("Microtask 1"));
+      Future.microtask(() => debugPrint("Microtask 2"));
+      Future.value(123).then((value) => debugPrint("Microtask 3"));
+    
+      debugPrint("main1");
+      Future.sync(() => debugPrint("sync 1"));
+      Future.value(getName());
+      debugPrint("main2");
+    
+      runApp(const MyApp());
+    }
+    
+    String getName() {
+      debugPrint("get name");
+      return "bob";
+    }
+    // 运行结果
+    Launching lib/main.dart on iPhone Xs in debug mode...
+    Xcode build done.                                            7.3s
+    Connecting to VM Service at ws://127.0.0.1:58560/hTChdl8QhRw=/ws
+    flutter: main1
+    flutter: sync 1
+    flutter: get name
+    flutter: main2
+    flutter: Microtask 1
+    flutter: Microtask 2
+    flutter: Microtask 3
+    flutter: event 1
+    flutter: event 2
+    flutter: event 3
+    ```
+
+##### 41.3.4、🧵`then()`方法 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+> 1️⃣ 可以使用**`Future`对象的`then()`方法注册回调函数**
+>
+> 2️⃣ <font color="red">在正常情况下，等待中的**`Future`**在完成时的瞬间，**`then()`**方法会被立即执行，而不会产生**`Microtask`**事件</font>。
+
+```dart
+import 'dart:async';
+import 'package:flutter/material.dart';
+
+void main() {
+  Future.delayed(Duration(seconds: 1),() => debugPrint("delayed"))
+    .then((value) {
+    scheduleMicrotask(() => debugPrint("micro"));
+    debugPrint("then");
+    })
+    .then((value) => debugPrint("then 2"));// Furture的then还是返回一个Future
+
+  runApp(const MyApp());   
+}
+// 运行结果
+Launching lib/main.dart on iPhone Xs in debug mode...
+Xcode build done.                                            9.0s
+Connecting to VM Service at ws://127.0.0.1:58560/hTChdl8QhRw=/ws
+flutter: delayed
+flutter: then
+flutter: then 2
+flutter: micro 
+```
+
+> 1️⃣ <font color="red">在已经完成的**`Future`**上使用`then()`，是会被添加到`Microtask`</font>；
+>
+> 2️⃣`then()`方法接受两个可选参数：一个用于处理成功情况的回调函数和一个用于处理错误情况的回调函数；
+
+```dart
+import 'dart:async';
+
+void main() {
+  debugPrint('Fetching Number...');
+
+  fetchNumber().then((value) {
+    debugPrint('Fetched Number: $value');
+  }).catchError((error) {
+    debugPrint('Error Fetching Number: $error');
+  });
+
+  debugPrint('Continuing Execution...');
+}
+```
+
+```dart
+import 'dart:async';
+
+Future<int> fetchNumber() {
+  // 正常的返回值
+  return Future.delayed(Duration(seconds: 2), () => 42);
+}
+
+运行结果：
+Fetching Number..
+Continuing Execution...
+Fetched Number: 42
+```
+
+```dart
+import 'dart:async';
+
+Future<int> fetchNumber() {
+  return Future.delayed(Duration(seconds: 2), () {
+    // 模拟一个错误，假设异步操作失败了
+    throw Exception('Failed To Fetch Number');
+  });
+}
+
+运行结果：
+Fetching Number...
+Continuing Execution...
+Error Fetching Number: Exception: Failed To Fetch Number
+```
+
+##### 41.3.5、🧵[**Dart**](https://dart.dev/).**`async`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+> 以下3种写法等价
+
+```dart
+Future<int> getFuture(){
+  return Future.value(100);
+}
+```
+
+```dart
+// ❤️async Function会直接包装函数的返回值，使之成为Future类型❤️
+Future<int> getFuture()async{
+  return 100;
+}
+```
+
+```dart
+// 当然，也可以省略Future<int>，但是不能写成int
+getFuture(){
+  return Future.value(100);
+}
+```
+
+##### 41.3.6、🧵[**Dart**](https://dart.dev/).<font color="red">`await`</font> 和 [**Dart**](https://dart.dev/).<font color="red">`async`</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+> * 通过<font color="red">*`async`*</font>关键字标记的函数可以使用<font color="red">*`await`*</font>关键字来等待*Future*的完成，而不必使用`then()`方法注册回调函数
+> * <font color="red">***`await`是`async`的反义词***</font>
+
+```dart
+Future<int> getFuture()async{
+  return 100;
+}
+
+xxx()async{
+  int id = await getFuture();
+  debugPrint(id);
+  id *=2;
+  debugPrint(id);
+}
+// 运行结果
+Launching lib/main.dart on iPhone Xs in debug mode...
+Xcode build done.                                            9.5s
+Connecting to VM Service at ws://127.0.0.1:58560/hTChdl8QhRw=/ws
+flutter: 100
+flutter: 200
+```
+
+*让抛出异常变得简单*
+
+  ```dart
+Future<int> getFuture()async{
+  throw "oops";
+}
+
+xxx() async{
+  try {
+    int id = await getFuture();
+  } catch (e) {
+    debugPrint(e);
+  }
+}
+// 运行结果
+Launching lib/main.dart on iPhone Xs in debug mode...
+Xcode build done.                                            8.1s
+Connecting to VM Service at ws://127.0.0.1:59963/uNDeeaH8Z-0=/ws
+flutter: oops 
+  ```
+
+##### 41.3.7、🧵[**Dart**](https://dart.dev/).**`error`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```dart
+Future<String> getFuture(){
+  return Future.error(Exception("Something went wrong"));
+}
+
+void _incrementCounter() {
+  // 有错误出现，就不能打印value了，需要用catchError进行捕获错误error
+  getFuture()
+    .then((value)=>debugPrint(value))
+    .catchError((err) => debugPrint(err))
+    .whenComplete(() => debugPrint("complete"));// whenComplete == finally
+  debugPrint("hi");
+}
+// 运行结果
+Launching lib/main.dart on iPhone Xs in debug mode...
+Xcode build done.                                            7.8s
+Connecting to VM Service at ws://127.0.0.1:58560/hTChdl8QhRw=/ws
+flutter: hi
+flutter: Exception: Something went wrong
+flutter: complete
+```
+
+```dart
+Future<int> getFuture(){
+  return Future.value(100);
+}
+
+void _incrementCounter() {
+  getFuture().then((value) {
+    debugPrint(value);// 这里的value就是上面传进来的100
+    return 5;
+  })
+  .then((value)=>debugPrint(value))// 打印上一个then的返回值：Future类型的int，值为5
+  .catchError((err) => debugPrint(err))
+  .whenComplete(() => debugPrint("complete"));
+  debugPrint("hi");
+  setState(() {
+    _counter++;
+  });
+}
+// 运行结果
+Launching lib/main.dart on iPhone Xs in debug mode...
+Xcode build done.                                            9.1s
+Connecting to VM Service at ws://127.0.0.1:56052/1B9ZBF0rAQg=/ws
+flutter: hi
+flutter: 100
+flutter: 5
+flutter: complete
+```
+
+##### 41.3.8、🧵[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).**`FutureBuilder`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+> *  **`Future`**提供了一个名为 **`FutureBuilder`** 的**`Widget`**，<font color="red">**用于在Future完成后构建UI**</font>。
+> *  使用 **`FutureBuilder`**，你可以轻松地根据 **`Future`** 的状态（未完成、完成并成功返回结果、完成但返回错误）来构建不同的UI；
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+  final String title;
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  int _counter = 0;
+
+  void _incrementCounter() {
+    setState(() {
+      _counter++;
+    });
+  }
+  // 异步操作始终是围绕着：等待、正确、错误，三种状态进行的
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
+      ),
+      // ❤️关键代码❤️
+      body: Center(
+        // 最大的好处是在 StatelessWidget里面就可以使用FutureBuilder
+        child: FutureBuilder(
+          initialData: 72, // 在异步操作开始之前，会使用这个初始值来构建 UI
+          future:
+              Future.delayed(const Duration(seconds: 2), () => throw ('oops')),
+          // snapshot就是这个Future最近的状态
+          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Text("${snapshot.data}",
+                style: const TextStyle(fontSize: 72));
+            }
+            // ConnectionState.done，这里的done只是完成，而不是正常完成。
+            // Future在没有完成的时候data和error都为空
+            if (snapshot.hasError) {
+              return const Icon(Icons.error, size: 80);
+            }
+            if (snapshot.hasData) {
+              return Text("${snapshot.data}",
+                  style: const TextStyle(fontSize: 72));
+            }
+            return const CircularProgressIndicator(); // 显示进度条
+          },
+        ),
+      ),
+    );
+  }
+}
+// 运行效果：设备屏幕正中央，先出现72，等待2秒以后，出现错误图标
+```
+
+##### 41.3.9、🧵[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).<font id="AsyncSnapshot">**`AsyncSnapshot`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* 只存在于[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/)中；
+* **`AsyncSnashot`** 是[**Flutter**](https://flutter.dev/)中用于表示异步操作的快照的类。它通常与 [***FutureBuilder***](#FutureBuilder) 或 [***StreamBuilder***](#StreamBuilder) 一起使用，用于获取异步操作的结果或状态，并在 UI 中进行相应的处理。
+* **`AsyncSnashot`**包含了有关异步操作当前状态的信息，例如数据、错误、连接状态等；
+
+### 44、[**Dart**](https://dart.dev/).<font id="Stream">**`Stream`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+#### 44.1、资料来源 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* [***在 Flutter 里使用 Stream***](https://juejin.cn/post/6844904131287580685)
+* [***Flutter 教程 Async***](https://www.youtube.com/watch?v=qBksSix4qj0&list=PLDD3xNHFJjoob3GCF1JqaDxwrOTmpGGbe&index=1)
+
+#### 44.2、相关细节 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* 在使用[***GetX***](#GetX)框架时，通常可以避免使用显式的***Stream***；
+* 在 [**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/) 中有两种处理异步操作的方式 ***Future*** 和 ***Stream***； 
+  * ***Future*** 用于处理单个异步操作（***以后给我们一个值***）， ***Stream***用来处理连续的异步操作（***给我们一连串的值***）。
+
+![Flutter.Stream](./assets/Flutter.Stream.png)
+
+> <font color="red">*比如，往水杯倒水，将一个水杯倒满为一个 **Future**，连续的将多个水杯倒满就**Stream***</font>
+
+```dart
+final future = Future.delayed(Duration(seconds: 1), () => 42);
+final stream = Stream.periodic(Duration(seconds: 1), (_) => 42);
+
+void _incrementCounter() {
+  setState(() {
+    _counter++;
+  });
+}
+
+@override
+void initState() {
+  future.then((value) => debugPrint("future complete:$value"));
+  // 除了以这样一种方式，还可以用SteamBuilder的方式来进行监听
+  stream.listen((event) {
+    debugPrint("steam :$event");
+  });
+  super.initState();
+}
+// 运行结果
+Launching lib/main.dart on iPhone Xs in debug mode...
+Xcode build done.                                           10.0s
+[ERROR:flutter/shell/platform/darwin/graphics/FlutterDarwinContextMetalImpeller.mm(42)] Using the Impeller rendering backend.
+Connecting to VM Service at ws://127.0.0.1:61385/ShWG62w8EkE=/ws
+flutter: future complete:42
+53 flutter: steam :42 （源源不断的打印 42）
+```
+
+#### 44.3、[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).**`Widget`**.**`StreamBuilder`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* [**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).**`Widget`**.**`StreamBuilder`** *.builder.[**snapshot**](#AsyncSnapshot).ConectionState* 比 ***FutureBuilder*** *.builder.snapshot.ConectionState* 多一个 ***active***状态；
+* [**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).**`Widget`**.**`StreamBuilder`** *.builder.[**snapshot**](#AsyncSnapshot).ConectionState === active* 可以出现无数新的数值（data）和错误（error）；
+* [**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).**`Widget`**.**`StreamBuilder`** *.builder.[**snapshot**](#AsyncSnapshot).ConectionState === done* 以后，不可以出现新的数值（data）和错误（error）；
+* [**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).**`Widget`**.**`StreamBuilder`**是在*active*阶段产生数值（data）和错误（error）；而***FutureBuilder*** 是在*done*阶段产生数值（data）和错误（error）；
+* [**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).**`Widget`**.**`StreamBuilder`**监听的当前最新流进来的数据值；
+
+```dart
+File("").openRead();// 读取文件
+///   Stream<List<int>> openRead([int? start, int? end]);
+```
+
+```dart
+import 'dart:async';
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'StreamBuilder Demo',
+      home: RandomNumberScreen(),
+    );
+  }
+}
+
+class RandomNumberScreen extends StatefulWidget {
+  @override
+  _RandomNumberScreenState createState() => _RandomNumberScreenState();
+}
+
+class _RandomNumberScreenState extends State<RandomNumberScreen> {
+  final StreamController<int> _streamController = StreamController<int>();
+  late Stream<int> _stream;
+  late int _currentRandomNumber;
+
+  @override
+  void initState() {
+    super.initState();
+    _stream = _streamController.stream;
+    _generateRandomNumber();
+  }
+
+  @override
+  void dispose() {
+    _streamController.close();
+    super.dispose();
+  }
+
+  void _generateRandomNumber() {
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      _currentRandomNumber = _generateRandom();
+      _streamController.add(_currentRandomNumber);
+    });
+  }
+
+  int _generateRandom() {
+    return DateTime.now().second;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('StreamBuilder Demo')),
+      body: Center(
+        child: StreamBuilder<int>(
+          stream: _stream,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Text(
+                'Random Number: ${snapshot.data}',
+                style: TextStyle(fontSize: 24),
+              );
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              return CircularProgressIndicator();
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
+/**
+  在这个示例中，我们创建了一个名为 RandomNumberScreen 的 StatefulWidget，其中包含一个 StreamController<int> 用于生成随机数，并使用 StreamBuilder 来监听这个 Stream。StreamBuilder 根据 Stream 的状态自动构建 Widget，并在 UI 中显示随机数的变化。当 Stream 中有新数据到达时，StreamBuilder 会自动重新构建 UI，显示最新的随机数。
+*/
+```
+
+#### 44.4、[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).<font id="StreamController">**`StreamController`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* [**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/)中用于创建和管理流（[**Dart**](https://dart.dev/).`Stream`）的类。充当了流的生产者，可以使用它来创建一个新的流，并在需要时向该流中添加数据；
+
+* 借助**`StreamController`**实现更精确的控制。创建一个**`StreamController`**的时候，系统会自动帮我们生成一个***水龙头（sink）***和***水流（stream）***，他们是一一对应的关系；
+
+```dart
+// 创建
+final controller = StreamController();
+// 添加事件或者错误 
+controller.sink.add(72);
+// 监听
+controller.stream.listen((event) {
+   // TODO
+});
+// 结束stream需要进行关闭（2种方式关闭）
+@override
+void dispose() {
+  controller.close();
+  // 或者
+  controller.sink.close();
+  super.dispose();
+}
+```
+
+* 除了可以用***StreamController***创建***stream***，还可以用👇🏻
+
+```dart
+// 间隔1秒打印当前时间
+Stream<DateTime> getTime() async* {
+  while (true) {
+    await Future.delayed(const Duration(seconds: 1));
+    yield DateTime.now();
+  }
+}
+```
+
+* 如果不关闭***水流（stream）***，***水龙头（sink）***会一直运行；是否需要结束***水流（stream）***，看应用场景；
+* ***stream***里面添加的可以是任意数据类型；
+* 可以对***stream*** 进行一些操作；
+
+```dart
+// where 是用来过滤（条件限制）。满足where限定为真，才可以执行下面的监听（否则没有响应）
+// distinct 去重：同样的数据流输入，不会每次都builder一次
+controller.stream.map((event) => event * 2).where((event) => event is int).distinct();
+```
+
+* <font color="red">优点：当没有对象进行监听***stream***的时候，数据是有所缓存的</font>（案例：5秒以后发起监听，之前点按的数据可以进行输出）
+* **默认情况下，一个数据流，只允许一个对象进行监听**；
+* 如果需要多对象监听数据流，那么需要把***stream***变成广播***broadcast***；
+  * <font color="red">缺点：当没有对象进行监听***broadcast***的时候，数据是不会有所缓存的</font>案例：5秒以后发起监听，之前点按的数据不能进行输出）
+
+```dart
+final controller = StreamController.broadcast();
+```
+
+### 45、[**Dart**](https://dart.dev/)**.**[**Flutter**](https://flutter.dev/)@**页面的销毁**  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* 当通过`Navigator.push()`方法将一个新页面推送到导航堆栈时，通常情况下该页面并不会被销毁。相反，它会被添加到导航堆栈中，并且保持在内存中，直到你显式地将其从导航堆栈中移除。
+* 然而，如果内存资源不足或者 Flutter 的路由管理系统认为需要释放页面以节省内存，那么这个页面可能会被销毁。Flutter提供了一些机制来帮助你管理页面的生命周期和内存使用，例如使用`AutomaticKeepAliveClientMixin`混入类可以在页面切换时保持页面状态。
+* 页面的销毁：不能直接销毁一个页面，**Flutter的路由管理系统会负责管理页面的生命周期和内存**。但是可以通过以下方法实现类似的效果：
+  * **手动管理页面状态**：可以手动管理页面的状态，当页面不再需要时，清除或重置页面的状态和数据。例如，可以在页面的`dispose()`方法中取消订阅流或清除数据
+  * **使用`Navigator.pop()`返回上一页**：当你使用`Navigator.pop()`返回上一页时，当前页面将被弹出栈，并且通常情况下不会立即销毁，但它不再可见，并且不会继续消耗资源。
+  * **使用`Navigator.pushReplacement()`替换当前页面**：如果你希望将当前页面替换为新页面并销毁当前页面，可以使用`Navigator.pushReplacement()`方法。
+  * **手动调用`Navigator.removeRoute()`或`Navigator.removeRouteBelow()`**：这两个方法可以手动从导航栈中移除指定的路由或指定路由下面的所有路由。但是要小心使用，因为**直接操作导航栈可能会导致意外的行为**。
+  * **使用`PageRoute`的回调函数**：你可以通过`PageRoute`的回调函数来监听页面的生命周期事件，并在适当的时候执行一些操作。例如，你可以在页面`dispose`时执行一些清理操作。
+
+## 六、<font color=red>**F**</font><font color=green>**A**</font><font color=blue>**Q**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * <font color=red>不出**UI**的总结</font>
 
@@ -17327,6 +18523,18 @@ list.add('C');
         }
     }
     ```
+
+* `.trim()`
+
+  > 👉 **去掉字符串开头和结尾的所有空白字符（whitespace）**，返回一个新的字符串。
+
+  ```dart
+  void main() {
+    print("   hello   ".trim());   // 输出: "hello"   （前后的空格被去掉）
+    print("\n\t hi \t\n".trim());  // 输出: "hi"      （换行符 \n 和制表符 \t 也算空白）
+    print("abc".trim());           // 输出: "abc"     （没有空格，原样返回）
+  }
+  ```
 
 * 🌊**流式布局**
 
