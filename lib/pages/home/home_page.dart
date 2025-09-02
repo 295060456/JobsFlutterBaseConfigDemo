@@ -17,7 +17,7 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("首页".add("Jobs").tr),
+        title: Text("首页".append("Jobs").tr),
         actions: [
           IconButton(
             icon: const Icon(Icons.language),

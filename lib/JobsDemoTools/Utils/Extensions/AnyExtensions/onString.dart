@@ -10,9 +10,10 @@ extension StringX on String {
     return imagePattern.hasMatch(this);
   }
 
-  String add(String suffix) => this + suffix;
+  String append(String suffix) => this + suffix;
+  String operator &(String suffix) => this + suffix; // 运算符重载
 
-    Color color() {
+  Color color() {
     String _this = this;
     _this = _this.toUpperCase().replaceAll('#', '');
     if (_this.length == 6) {

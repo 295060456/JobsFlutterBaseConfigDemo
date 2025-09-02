@@ -8784,6 +8784,13 @@ class FadeInImageDemo extends StatelessWidget {
 
 #### 30.6、♻️<font color=red>**循环处理数据**</font>（以下写法等价） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
+> ```dart
+> /// 遍历 List 的每个元素 item
+> /// 把 item 交给 {} 里的函数处理（返回值是什么，就生成什么）
+> /// 再把整个结果转换成一个新的 List
+> List.map((item) {}).toList();
+> ```
+
 ```dart
 final rows = [
     for (final e in list)
@@ -8865,30 +8872,41 @@ final rows = list
 
 ### 31、[<font color=red>**字符串处理**</font>](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/lib/JobsDemoTools/Utils/Extensions/AnyExtensions/onString.dart) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-* 多行字符串语法
+#### 31.1、多行字符串语法 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-  > 1️⃣ 三引号的目的：每一行省略都要加入的 `\n`（换行符）
-  >
-  > 2️⃣ 用 `'''` 是 Dart 官方推荐的**多行文本拼接方式**，特别适合 HTML、SQL、JSON 等结构化模板内容，优雅、简洁、无须转义。
+> 1️⃣ 三引号的目的：每一行省略都要加入的 `\n`（换行符）
+>
+> 2️⃣ 用 `'''` 是 Dart 官方推荐的**多行文本拼接方式**，特别适合 HTML、SQL、JSON 等结构化模板内容，优雅、简洁、无须转义。
 
-  | 写法             | 示例                 | 说明                             |
-  | ---------------- | -------------------- | -------------------------------- |
-  | `'''多行内容'''` | `'''line1\nline2'''` | 三个单引号，适合内容中含有双引号 |
-  | `"""多行内容"""` | `"""line1\nline2"""` | 三个双引号，适合内容中含有单引号 |
+| 写法             | 示例                 | 说明                             |
+| ---------------- | -------------------- | -------------------------------- |
+| `'''多行内容'''` | `'''line1\nline2'''` | 三个单引号，适合内容中含有双引号 |
+| `"""多行内容"""` | `"""line1\nline2"""` | 三个双引号，适合内容中含有单引号 |
 
-* 字符串拼接
+#### 31.2、字符串拼接 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-  ```dart
+* ```dart
+  /// 避免与系统其他的函数（add）重名
   extension StringAddExtension on String {
-    String add(String suffix) => this + suffix;
+    String append(String suffix) => this + suffix;
   }
   ```
 
-  ```dart
-  Text("首页".add("Jobs").tr),
+  > ```dart
+  > /// 字符串拼接 + 字符串去掉开头和结尾的所有空白字符 + 字符串多语言化处理
+  > Text("首页".append("Jobs").trim().tr),
+  > ```
+
+* ```dart
+  /// 运算符重载
+  extension StringAddExtension on String {
+    String operator &(String suffix) => this + suffix; 
+  }
   ```
 
-* 未完待续...
+  > ```dart
+  > print("abc" & "123"); // abc123
+  > ```
 
 ### 32、🧭 可以承载一切的**`WebViewWidget`** 工具模版 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
