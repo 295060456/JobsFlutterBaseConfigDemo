@@ -12655,7 +12655,9 @@ class ClipboardUtil {
   }
   ```
 
-### 62、[**自动化代码生成应用外观资源**](https://github.com/295060456/SourceTree.sh/blob/main/%E3%80%90MacOS%40SourceTree%E3%80%91%F0%9F%90%A6Flutter%E8%87%AA%E5%8A%A8%E5%8C%96%E7%94%9F%E4%BA%A7%E4%BB%A3%E7%A0%81.command)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 62、<font id=自动化代码生成应用外观资源>[**自动化代码生成应用外观资源**](https://github.com/295060456/SourceTree.sh/blob/main/%E3%80%90MacOS%40SourceTree%E3%80%91%F0%9F%90%A6Flutter%E8%87%AA%E5%8A%A8%E5%8C%96%E7%94%9F%E4%BA%A7%E4%BB%A3%E7%A0%81.command)</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+> <a href="#构建打包" style="font-size:17px; color:green;"><b>👉构建打包</b></a>
 
 #### 62.1、App启动图标 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -12714,6 +12716,16 @@ class ClipboardUtil {
 - **iOS**：
   - 图标在：`ios/Runner/Assets.xcassets/AppIcon.appiconset/`
   - 用 Xcode 打开项目，点击 Runner → General → App Icon，然后替换对应尺寸的图标。
+
+##### 62.1.3、验证图标资源是否存在  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* ```shell
+  ls -lh ios/Runner/Assets.xcassets/AppIcon.appiconset/*.png 2>/dev/null
+  ```
+
+* ```shell
+  ls android/app/src/main/res/mipmap-*/ic_launcher.*
+  ```
 
 #### 62.2、启动页（Splash）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -14947,11 +14959,13 @@ class Person {
 }
 ```
 
-### 25、📦构建打包 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 25、📦<font id=构建打包>**构建打包**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-> 1️⃣ 打包慢，尤其[**Android**](https://www.android.com/)平台
+> 1️⃣ <a href="#自动化代码生成应用外观资源" style="font-size:17px; color:green;"><b>自动化代码生成应用外观资源</b></a>
 >
-> 2️⃣ [**Flutter**](https://flutter.dev/) 的3大构建模式
+> 2️⃣ 打包慢，尤其[**Android**](https://www.android.com/)平台
+>
+> 3️⃣ [**Flutter**](https://flutter.dev/) 的3大构建模式
 >
 > | 对比项                     | `debug` 模式                                         | `profile` 模式                      | `release` 模式                     |
 > | -------------------------- | ---------------------------------------------------- | ----------------------------------- | ---------------------------------- |
