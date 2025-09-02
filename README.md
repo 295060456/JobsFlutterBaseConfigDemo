@@ -12657,7 +12657,7 @@ class ClipboardUtil {
 
 ### 62、<font id=自动化代码生成应用外观资源>[**自动化代码生成应用外观资源**](https://github.com/295060456/SourceTree.sh/blob/main/%E3%80%90MacOS%40SourceTree%E3%80%91%F0%9F%90%A6Flutter%E8%87%AA%E5%8A%A8%E5%8C%96%E7%94%9F%E4%BA%A7%E4%BB%A3%E7%A0%81.command)</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-> <a href="#构建打包" style="font-size:17px; color:green;"><b>👉构建打包</b></a>
+> <a href="#构建打包" style="font-size:17px; color:green;"><b>👉构建打包📦</b></a>
 
 #### 62.1、App启动图标 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -12673,10 +12673,25 @@ class ClipboardUtil {
 >   flutter pub get
 >   ```
 >
->   iOS 还需要在 Xcode → Product → Clean Build Folder
+>   **iOS** 还需要在 **Xcode** 👉 **Product** 👉 **Clean Build Folder**
 >
-> - **图标模糊或显示不对**：
->    一定要用 **正方形、高分辨率（1024x1024）PNG**，插件会自动生成各个尺寸。
+> - **图标模糊或显示不对**：一定要用 **正方形、高分辨率（1024x1024）PNG**，插件会自动生成各个尺寸。
+>    
+> - <font color=blue>`flutter clean `完成以后，必须先`flutter pub get`，再跑`dart run flutter_launcher_icons`</font>
+>    
+>    ```shell
+>    ➜ flutter_tiyu_app git:(merge_theme（黑金打包分支）) ✗ flutter pub run flutter_launcher_icons:main Deprecated. Use dart run instead. Cannot open file, path = '.dart_tool/package_config.json' (OS Error: No such file or directory, errno = 2)
+>    ```
+>    
+> - ⚠️`dart run flutter_launcher_icons` <font color=red>**≠**</font> `flutter pub run flutter_launcher_icons`
+>    
+>    * 虽然官方建议我们使用`dart run flutter_launcher_icons`，但是如果`pubspec.yaml`里面运行`flutter pub get`失败会进行阻塞。没有办法正常生成[**Android**](https://www.android.com/)的图标资源，所以对于某些项目，只能使用`flutter pub run flutter_launcher_icons`
+>    
+>      ![telegram-cloud-photo-size-5-6167947438401374612-w](./assets/telegram-cloud-photo-size-5-6167947438401374612-w.jpg)
+>    
+> - `flutter clean`对iOS的图标资源无影响，但是对Android的图标资源有影响
+>    
+>    * 区别在于，[**Android**](https://www.android.com/) 的 `mipmap-anydpi-v26/ic_launcher.xml` / `drawable/ic_launcher_background.xml` 等文件，部分会在构建过程中被覆盖/重写，**有些版本的 Flutter clean 会顺带清理 res 下的某些中间产物**。
 
 * **在 `pubspec.yaml` 添加依赖**：
 
@@ -12698,7 +12713,7 @@ class ClipboardUtil {
     image_path: "assets/icon/app_icon.png"
   ```
 
-* **执行生成命令**：
+* **执行生成命令**：⚠️`dart run flutter_launcher_icons` <font color=red>**≠**</font> `flutter pub run flutter_launcher_icons`
 
   ```shell
   dart run flutter_launcher_icons
@@ -12724,7 +12739,7 @@ class ClipboardUtil {
   ```
 
 * ```shell
-  ls android/app/src/main/res/mipmap-*/ic_launcher.*
+  ls -1 android/app/src/main/res/mipmap-*/ic_launcher.*
   ```
 
 #### 62.2、启动页（Splash）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
