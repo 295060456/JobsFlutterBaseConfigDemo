@@ -12706,11 +12706,20 @@ class ClipboardUtil {
   ```yaml
   dev_dependencies:
     flutter_launcher_icons: any
-  
+    
   flutter_launcher_icons:
     android: true
     ios: true
-    image_path: "assets/icon/app_icon.png"
+    # 普通旧式图标（低版本用）
+    image_path: "assets/icon.png"
+  
+    # Android 8.0+ 自适应图标配置
+    adaptive_icon_background: "#FFFFFF"            # 可以是颜色或一张背景图
+    adaptive_icon_foreground: "assets/icon.png"    # 建议放前景透明图
+    # Android 13+ 单色图（可选，但推荐提供）
+    adaptive_icon_monochrome: "assets/icon.png"
+  
+    min_sdk_android: 19
   ```
 
 * **执行生成命令**：⚠️`dart run flutter_launcher_icons` <font color=red>**≠**</font> `flutter pub run flutter_launcher_icons`
@@ -12730,12 +12739,12 @@ class ClipboardUtil {
   - 需要替换所有 `mipmap-*/ic_launcher.png`，保持文件名一致。
 - **iOS**：
   - 图标在：`ios/Runner/Assets.xcassets/AppIcon.appiconset/`
-  - 用 Xcode 打开项目，点击 Runner → General → App Icon，然后替换对应尺寸的图标。
+  - 用 **Xcode** 打开项目，点击 **Runner** 👉 **General** 👉 **App Icon**，然后替换对应尺寸的图标。
 
 ##### 62.1.3、验证图标资源是否存在  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * ```shell
-  ls -lh ios/Runner/Assets.xcassets/AppIcon.appiconset/*.png 2>/dev/null
+  ls -1 ios/Runner/Assets.xcassets/AppIcon.appiconset/*.png 2>/dev/null
   ```
 
 * ```shell
