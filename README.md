@@ -764,7 +764,7 @@
     .vscode/
     ```
 
-### 5、[**ohmyz.sh**](https://ohmyz.sh/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 5、</b></a>😱[**ohmyz.sh**](https://ohmyz.sh/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽
 
 ```shell
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
@@ -776,13 +776,13 @@ or
 sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
 ```
 
-### 6、[**Homebrew**](https://brew.sh/)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 6、🏠[**Homebrew**](https://brew.sh/)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```shell
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-#### 6.1、[**Homebrew**](https://brew.sh/).[<font color=red>Dart</font>](https://dart.dev/)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 6.1、🏠[**Homebrew**](https://brew.sh/).[<font color=red>Dart</font>](https://dart.dev/)  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > [**Flutter**](https://flutter.dev/) 里面自带一个[Dart](https://dart.dev/) 环境，理论上是比最新的[Dart](https://dart.dev/) 版本落后的。如果系统里面既装了[Dart](https://dart.dev/) 环境又装了[**Flutter**](https://flutter.dev/)环境，那么[**Flutter**](https://flutter.dev/)项目默认使用[**Flutter**](https://flutter.dev/).SDK里面自带那个[Dart](https://dart.dev/) 环境
 
@@ -790,7 +790,7 @@ sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/ins
 brew tap dart-lang/dart
 ```
 
-#### 6.2、<font id=jenv>[**Homebrew**](https://brew.sh/).[<font color=red>jenv</font>](https://github.com/jenv/jenv) </font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 6.2、🏠<font id=jenv>[**Homebrew**](https://brew.sh/).[<font color=red>jenv</font>](https://github.com/jenv/jenv) </font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 >涉及到[**Android**](https://www.android.com/)的部分需要[**Java**](https://www.java.com/zh-CN/)环境的支持（打包、运行）
 >
@@ -12465,6 +12465,238 @@ class ClipboardUtil {
   # 或只依赖 flutter_gen：
   flutter pub get
   ```
+
+### 63、轮询 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+> 如果没有科学合理的使用轮询，当页面请求过多的情况下，会造成一定概率的页面卡死
+
+#### 63.1、轮询（安全）代码 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+##### 63.1.1、最小可用且安全的轮询器 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```dart
+class Poller {
+  final Duration interval;
+  final Duration timeout;
+  final Future<void> Function() task;
+  bool _running = false;
+  Timer? _timer;
+
+  Poller({
+    required this.task,
+    this.interval = const Duration(seconds: 5),
+    this.timeout = const Duration(seconds: 8),
+  });
+
+  void start() {
+    if (_running) return;
+    _running = true;
+    _tick();
+  }
+
+  void _tick() {
+    if (!_running) return;
+    // 用 Future.delayed 链式轮询，比 Timer.periodic 更可控（便于串行、错误处理）
+    Future.delayed(interval, () async {
+      if (!_running) return;
+      try {
+        // 加超时，避免卡一堆悬挂请求
+        await task().timeout(timeout);
+      } catch (_) {
+        // 可记录日志/上报
+      } finally {
+        _tick(); // 继续下一轮
+      }
+    });
+  }
+
+  void stop() {
+    _running = false;
+    _timer?.cancel();
+    _timer = null;
+  }
+}
+```
+
+> ```dart
+> late final Poller poller;
+> 
+> @override
+> void initState() {
+>   super.initState();
+>   poller = Poller(task: () async {
+>     final resp = await dio.get('/api/status'); // 不要 setState 太频繁
+>     // 只更新改变的字段，避免整个页面重建
+>     valueNotifier.value = parse(resp.data);
+>   });
+>   poller.start();
+> }
+> 
+> @override
+> void dispose() {
+>   poller.stop();
+>   super.dispose();
+> }
+> ```
+
+##### 63.1.2、[`GetX`](https://pub.dev/packages/get) 控制器内的轮询 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```dart
+class StatusController extends GetxController with WidgetsBindingObserver {
+  final Rx<StatusModel?> status = Rx<StatusModel?>(null);
+  final _running = false.obs;
+  final _interval = const Duration(seconds: 5);
+  late final Dio _dio;
+  CancelToken? _cancel;
+
+  @override
+  void onInit() {
+    super.onInit();
+    WidgetsBinding.instance.addObserver(this);
+    _dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 8)));
+    start();
+  }
+
+  void start() {
+    if (_running.value) return;
+    _running.value = true;
+    _loop();
+  }
+
+  Future<void> _loop() async {
+    while (_running.value) {
+      _cancel?.cancel();
+      _cancel = CancelToken();
+      try {
+        final resp = await _dio.get('/api/status', cancelToken: _cancel);
+        // 只在数据有变化时写入，减少 Obx rebuild
+        final next = StatusModel.fromJson(resp.data);
+        if (status.value != next) status.value = next;
+      } catch (_) {/* swallow or log */}
+      await Future.delayed(_interval);
+    }
+  }
+
+  void stop() {
+    _running.value = false;
+    _cancel?.cancel();
+  }
+
+  @override
+  void onClose() {
+    stop();
+    WidgetsBinding.instance.removeObserver(this);
+    super.onClose();
+  }
+
+  // 前后台切换自动暂停/恢复，省电防卡
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) start();
+    if (state == AppLifecycleState.paused) stop();
+  }
+}
+```
+
+#### 63.2、指数退避 + 抖动模板 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+> <font color=red>**指数退避**</font>：一种**失败重试策略**，常用于网络请求、轮询等场景，避免“疯狂重试”把服务器打爆
+>
+> 规则：
+>
+> 1. **第一次失败** → 等 **2 秒** 再试
+> 2. **第二次失败** → 等 **4 秒** 再试
+> 3. **第三次失败** → 等 **8 秒** 再试
+> 4. **第四次失败** → 等 **16 秒** 再试
+>     …依次类推，等待时间指数级增长（一般是 *2 倍*）。
+>
+> 这样能：
+>
+> - 减轻服务器压力（不会一秒几十次地轰炸接口）。
+> - 给系统“喘息空间”，等临时性问题（网络波动、服务挂掉）恢复。
+>
+> <font color=red>**抖动**</font>：如果**很多客户端同时轮询**，光用指数退避，大家的重试时间点可能还是“撞车”。所以要**加点随机数**，让每个客户端错开。
+>
+> 比如：
+>
+> - 算出来需要等 8 秒
+> - 加个 ±20% 的抖动 → 实际等 6.5s ~ 9.5s 之间
+> - 这样多个客户端不会整齐划一地一起请求。
+
+```dart
+Future<void> resilientLoop(Future<void> Function() task,
+    {Duration base = const Duration(seconds: 2),
+     Duration max = const Duration(seconds: 30)}) async {
+  var backoff = base;
+  while (true) {
+    try {
+      await task();               // 成功：重置退避
+      backoff = base;
+    } catch (_) {
+      // 抖动：±20%
+      final jitter = backoff * (0.8 + (Random().nextDouble() * 0.4));
+      await Future.delayed(jitter);
+      backoff = Duration(
+        milliseconds: min(max.inMilliseconds, (backoff.inMilliseconds * 2)),
+      );
+      continue;
+    }
+    await Future.delayed(base);    // 正常间隔
+  }
+}
+```
+
+#### 63.3、防卡关键点 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* **串行执行**：一轮完成后再发下一轮（上面用 `Future.delayed` + `await` 实现）。别让请求堆积。
+
+* **限频**：常规轮询 3~10s/次。需要“准实时”用 **WebSocket/SSE/推送**，别用 1s 轮询硬怼。
+
+* **细粒度刷新**：状态放到 `ValueNotifier/Rx`，只在值变化时更新；拆小部件，用 `Obx` 包小区域，避免整页 rebuild。
+
+* **后台暂停**：监听生命周期，后台就 **stop**；切回前台再 **start**。
+
+* **可取消**：网络请求配 `CancelToken` / `timeout`；组件销毁时必须取消。
+
+* **重活下放**：网络解码/大 JSON 解析用 `compute` / `Isolate.run`，别在主线程做大量 `jsonDecode`。
+
+* **退避与抖动**：失败时指数退避，避免雪崩；多用户/多轮询来源加随机抖动，错峰。
+
+* **合并多源**：多个地方想轮询同一接口？做一个 **共享仓库/Service**，下游订阅数据流，别各自开定时器。
+
+#### 63.4、什么时候不要轮询 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* 需要接近实时（<1s）的状态同步 → **WebSocket/SSE**。
+
+* 事件驱动场景（订单状态、消息通知）→ 后端推送或长连接。
+
+* 用户不在该页面/应用在后台 → **停止**，等回到前台再继续。
+
+#### 63.5、快速自检清单 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* 只有一个轮询源？（统一在 Service/Controller，别到处开定时器）
+
+* 每次请求都可取消、带超时
+
+* 页面销毁/应用后台已停止轮询
+
+* 间隔 ≥3s；失败有退避和抖动
+
+* 解析放 `compute`；UI 局部刷新
+
+* 仅在数据变更时触发 `update/Obx` 重建
+
+### 64、推送 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```dart
+/// TODO
+```
+
+### 65、唤醒 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+```dart
+/// TODO
+```
 
 ## 五、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
