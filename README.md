@@ -17880,8 +17880,11 @@ flutter: complete
 
 ##### 41.3.8、🧵[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).**`FutureBuilder`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-> *  **`Future`**提供了一个名为 **`FutureBuilder`** 的**`Widget`**，<font color="red">**用于在Future完成后构建UI**</font>。
-> *  使用 **`FutureBuilder`**，你可以轻松地根据 **`Future`** 的状态（未完成、完成并成功返回结果、完成但返回错误）来构建不同的UI；
+> 1️⃣ **`Future`**提供了一个名为 **`FutureBuilder`** 的**`Widget`**，<font color="red">**用于在Future完成后构建UI**</font>。
+>
+> 2️⃣ 使用 **`FutureBuilder`**，你可以轻松地根据 **`Future`** 的状态（未完成、完成并成功返回结果、完成但返回错误）来构建不同的UI；
+>
+> 3️⃣ <font color=red>**使用 [GetX](https://pub.dev/packages/get) 可以避免使用`FutureBuilder`**</font>
 
 ```dart
 import 'package:flutter/material.dart';
