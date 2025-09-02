@@ -37,6 +37,8 @@
   * [***Dart/Flutter社区生态：Pub.dev***](https://pub.dev/)
   * [***Flutter 面试知识点集锦· GitBook***](https://guoshuyu.cn/home/wx/Flutter-msjj.html)
   * [**Flutter 实战@第二版**](https://book.flutterchina.club/)
+  * [***在 Flutter 里使用 Stream***](https://juejin.cn/post/6844904131287580685)
+  * [***Flutter 教程 Async***](https://www.youtube.com/watch?v=qBksSix4qj0&list=PLDD3xNHFJjoob3GCF1JqaDxwrOTmpGGbe&index=1)
 
 ## 一、🎯项目白皮书 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -6939,6 +6941,14 @@ class CounterPage extends StatelessWidget {
 
 ###### 27.4.3.4、🉐 [**`GetX`**](https://pub.dev/packages/get) 值的双向绑定：<font color=red>**`Obx`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
+>  ```dart
+>  final RxBool loading = false.obs;// 数据的包装
+>  /// 任何地方都可以用。
+>  /// 但是，如果在Obx下，会触发数据的双向绑定。
+>  /// 如果不在Obx下，仅仅是读取数据
+>  loading.value;// 数据的解包（使用）
+>  ```
+
 <details>
 <summary>点击展开代码</summary>
 
@@ -11754,66 +11764,316 @@ Future.delayed(Duration(seconds: 1), () {
 >
 > 2️⃣ <font color=red>要做**上拉加载**，需要自己监听滚动/越界，或者用第三方库</font>
 >
-> 3️⃣ **要做下拉刷新/上拉加载就别用 Stateless**。得改成 `StatefulWidget` 来托管
+> 3️⃣ **要做下拉刷新/上拉加载就别用 `Stateless`**。得改成 `StatefulWidget` 来托管
 
-```dart
-void main() {
-  runApp(const MyApp());
-}
+* 最小使用方式
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: const DemoPage(),
-      debugShowCheckedModeBanner: false,
-    );
+  ```dart
+  void main() {
+    runApp(const MyApp());
   }
-}
-
-class DemoPage extends StatefulWidget {
-  const DemoPage({super.key});
-
-  @override
-  State<DemoPage> createState() => _DemoPageState();
-}
-
-class _DemoPageState extends State<DemoPage> {
-  late JobsRefreshLoadController<String> controller;
-
-  @override
-  void initState() {
-    super.initState();
-    // 初始化控制器：模拟分页加载
-    controller = JobsRefreshLoadController<String>(
-      pageSize: 20,
-      fetchPage: (page, size) async {
-        await Future.delayed(const Duration(milliseconds: 800)); // 模拟网络延迟
-        if (page > 3) return []; // 模拟最多三页
-        return List.generate(size, (i) => "Item ${(page - 1) * size + i + 1}");
-      },
-    );
+  
+  class MyApp extends StatelessWidget {
+    const MyApp({super.key});
+  
+    @override
+    Widget build(BuildContext context) {
+      return MaterialApp(
+        home: const DemoPage(),
+        debugShowCheckedModeBanner: false,
+      );
+    }
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("RefreshLoadList Demo")),
-      body: JobsRefreshLoadList<String>(
-        controller: controller,
-        zebra: true, // ✅ 开启斑马纹
-        itemBuilder: (ctx, item, index) {
-          return ListTile(
-            title: Text(item),
-          );
+  
+  class DemoPage extends StatefulWidget {
+    const DemoPage({super.key});
+  
+    @override
+    State<DemoPage> createState() => _DemoPageState();
+  }
+  
+  class _DemoPageState extends State<DemoPage> {
+    late JobsRefreshLoadController<String> controller;
+  
+    @override
+    void initState() {
+      super.initState();
+      // 初始化控制器：模拟分页加载
+      controller = JobsRefreshLoadController<String>(
+        pageSize: 20,
+        fetchPage: (page, size) async {
+          await Future.delayed(const Duration(milliseconds: 800)); // 模拟网络延迟
+          if (page > 3) return []; // 模拟最多三页
+          return List.generate(size, (i) => "Item ${(page - 1) * size + i + 1}");
         },
-      ),
-    );
+      );
+    }
+  
+    @override
+    Widget build(BuildContext context) {
+      return Scaffold(
+        appBar: AppBar(title: const Text("RefreshLoadList Demo")),
+        body: JobsRefreshLoadList<String>(
+          controller: controller,
+          zebra: true, // ✅ 开启斑马纹
+          itemBuilder: (ctx, item, index) {
+            return ListTile(
+              title: Text(item),
+            );
+          },
+        ),
+      );
+    }
   }
-}
-```
+  ```
+
+* 相关组件释义
+
+  * 列表内部触发刷新
+
+    > ```dart
+    > /// JobsRefreshLoadList:StatefulWidget
+    > @override
+    > void initState() {
+    >   super.initState();
+    >   widget.controller.addListener(_onChanged);  // 订阅
+    >   // 很可能首帧后自动拉第一页
+    >   WidgetsBinding.instance.addPostFrameCallback((_) {
+    >     widget.controller.refresh();              // 自动触发首次加载
+    >   });
+    > }
+    > 
+    > void _onChanged() {
+    >   setState(() {}); // 只要 controller 调了 notifyListeners，这里就重建 → 触发 itemBuilder
+    > }
+    > ```
+
+    ```dart
+    import 'package:flutter/material.dart';
+    import 'package:flutter_tiyu_app/app/widget/JobsViews.dart';
+    import 'package:flutter_tiyu_app/utils/JobsRefreshLoad/JobsRefreshLoadController.dart';
+    
+    /// 通用列表组件
+    class JobsRefreshLoadList<T> extends StatefulWidget {
+      final JobsRefreshLoadController<T> controller;
+      final Widget Function(BuildContext ctx, T item, int index) itemBuilder;
+      final Widget? Function(BuildContext ctx, int index)? separatorBuilder;
+      final EdgeInsetsGeometry? padding;
+      final ScrollPhysics? physics;
+      final Color? refreshColor;
+      final bool zebra; // ✅ 行条纹
+      final Color? zebraOddColor;
+      final Color? zebraEvenColor;
+      final Widget Function(BuildContext ctx)? emptyBuilder;
+      final Widget Function(BuildContext ctx)? loadingBuilder;
+      final Widget Function(BuildContext ctx)? footerLoadingBuilder;
+      final Widget Function(BuildContext ctx)? footerNoMoreBuilder;
+    
+      const JobsRefreshLoadList({
+        super.key,
+        required this.controller,
+        required this.itemBuilder,
+        this.separatorBuilder,
+        this.padding,
+        this.physics,
+        this.refreshColor,
+        this.zebra = false,
+        this.zebraOddColor,
+        this.zebraEvenColor,
+        this.emptyBuilder,
+        this.loadingBuilder,
+        this.footerLoadingBuilder,
+        this.footerNoMoreBuilder,
+      });
+    
+      @override
+      State<JobsRefreshLoadList<T>> createState() => _JobsRefreshLoadListState<T>();
+    }
+    
+    class _JobsRefreshLoadListState<T> extends State<JobsRefreshLoadList<T>> {
+      final _scrollCtrl = ScrollController();
+    
+      @override
+      void initState() {
+        super.initState();
+        widget.controller.addListener(_onChanged);
+        _scrollCtrl.addListener(_onScroll);
+        // 首次自动刷新
+        WidgetsBinding.instance
+            .addPostFrameCallback((_) => widget.controller.refresh());
+      }
+    
+      @override
+      void didUpdateWidget(covariant JobsRefreshLoadList<T> oldWidget) {
+        super.didUpdateWidget(oldWidget);
+        if (oldWidget.controller != widget.controller) {
+          oldWidget.controller.removeListener(_onChanged);
+          widget.controller.addListener(_onChanged);
+        }
+      }
+    
+      @override
+      void dispose() {
+        _scrollCtrl.dispose();
+        widget.controller.removeListener(_onChanged);
+        super.dispose();
+      }
+    
+      void _onChanged() => setState(() {});
+      void _onScroll() {
+        final c = widget.controller;
+        if (c.hasMore &&
+            !c.isLoadingMore &&
+            !c.isRefreshing &&
+            _scrollCtrl.position.pixels >=
+                _scrollCtrl.position.maxScrollExtent - 200) {
+          c.loadMore();
+        }
+      }
+    
+      @override
+      Widget build(BuildContext context) {
+        final c = widget.controller;
+    
+        // 初次加载中的占位
+        if (c.items.isEmpty && (c.isRefreshing || c.isLoadingMore)) {
+          return widget.loadingBuilder?.call(context) ??
+              const Center(child: CircularProgressIndicator(strokeWidth: 2));
+        }
+        // 空态
+        if (c.items.isEmpty) {
+          return RefreshIndicator(
+            onRefresh: c.refresh,
+            color: widget.refreshColor,
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 80),
+                  child: widget.emptyBuilder?.call(context) ??
+                      const Center(child: Text('暂无数据')),
+                ),
+              ],
+            ),
+          );
+        }
+    
+        return RefreshIndicator(
+          onRefresh: c.refresh,
+          color: widget.refreshColor,
+          child: ListView.separated(
+            controller: _scrollCtrl,
+            physics: widget.physics ?? const AlwaysScrollableScrollPhysics(),
+            padding: widget.padding,
+            itemCount: c.items.length + 1, // +1 footer
+            separatorBuilder: (ctx, i) =>
+                widget.separatorBuilder?.call(ctx, i) ?? const SizedBox.shrink(),
+            itemBuilder: (ctx, i) {
+              // footer
+              if (i == c.items.length) {
+                if (c.isLoadingMore) {
+                  return widget.footerLoadingBuilder?.call(ctx) ??
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        child: Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        ),
+                      );
+                }
+                if (!c.hasMore) {
+                  return widget.footerNoMoreBuilder?.call(ctx) ??
+                       JobsNoMoreView();
+                }
+                return const SizedBox(height: 12);
+              }
+    
+              final item = c.items[i];
+              Widget child = widget.itemBuilder(ctx, item, i);
+    
+              // 行条纹
+              if (widget.zebra) {
+                final odd = widget.zebraOddColor ?? const Color(0xFF262C39);
+                final even = widget.zebraEvenColor ?? const Color(0xFF1E232F);
+                child = Container(
+                  color: (i.isEven) ? even : odd,
+                  child: child,
+                );
+              }
+    
+              return child;
+            },
+          ),
+        );
+      }
+    }
+    ```
+
+  * <font color=red>**`JobsRefreshLoadController`** 继承了**`ChangeNotifier`**，而**`ChangeNotifier`**.**`notifyListeners`**，启动了页面刷新/数据重载</font>
+
+    ```dart
+    import 'package:flutter/foundation.dart';
+    import 'package:flutter/widgets.dart';
+    
+    typedef FetchPage<T> = Future<List<T>> Function(int page, int pageSize);
+    
+    /// 通用控制器
+    class JobsRefreshLoadController<T> extends ChangeNotifier {
+      final int pageSize;
+      final FetchPage<T> fetchPage;
+    
+      final List<T> items = [];
+      int _page = 1;
+      bool _hasMore = true;
+      bool _isRefreshing = false;
+      bool _isLoadingMore = false;
+    
+      bool get hasMore => _hasMore;
+      bool get isRefreshing => _isRefreshing;
+      bool get isLoadingMore => _isLoadingMore;
+    
+      JobsRefreshLoadController({
+        required this.fetchPage,
+        this.pageSize = 20,
+      });
+    
+      Future<void> refresh() async {
+        if (_isRefreshing) return;
+        _isRefreshing = true;
+        notifyListeners();
+        try {
+          _page = 1;
+          final list = await fetchPage(_page, pageSize);
+          items
+            ..clear()
+            ..addAll(list);
+          _hasMore = list.length == pageSize;
+        } finally {
+          _isRefreshing = false;
+          notifyListeners();
+        }
+      }
+    
+      Future<void> loadMore() async {
+        if (_isLoadingMore || !_hasMore || _isRefreshing) return;
+        _isLoadingMore = true;
+        notifyListeners();
+        try {
+          final next = _page + 1;
+          final list = await fetchPage(next, pageSize);
+          _page = next;
+          items.addAll(list);
+          _hasMore = list.length == pageSize;
+        } finally {
+          _isLoadingMore = false;
+          notifyListeners();
+        }
+      }
+    }
+    ```
 
 ### 55、加/解密 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -12053,7 +12313,7 @@ class ClipboardUtil {
 }
 ```
 
-### 60、输入框 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 60、⌨️ 输入框 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * ```dart
   final TextEditingController textFieldCtrl = TextEditingController();
@@ -12488,13 +12748,13 @@ class ClipboardUtil {
   flutter pub get
   ```
 
-### 63、轮询 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 63、🔄 轮询 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 如果没有科学合理的使用轮询，当页面请求过多的情况下，会造成一定概率的页面卡死
 
-#### 63.1、轮询（安全）代码 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 63.1、🔄 轮询（安全）代码 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-##### 63.1.1、最小可用且安全的轮询器 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 63.1.1、🔄 最小可用且安全的轮询器 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 class Poller {
@@ -12561,7 +12821,7 @@ class Poller {
 > }
 > ```
 
-##### 63.1.2、[`GetX`](https://pub.dev/packages/get) 控制器内的轮询 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 63.1.2、🔄 [`GetX`](https://pub.dev/packages/get) 控制器内的轮询 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 class StatusController extends GetxController with WidgetsBindingObserver {
@@ -12620,7 +12880,7 @@ class StatusController extends GetxController with WidgetsBindingObserver {
 }
 ```
 
-#### 63.2、指数退避 + 抖动模板 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 63.2、🔄 指数退避 + 抖动模板 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > <font color=red>**指数退避**</font>：一种**失败重试策略**，常用于网络请求、轮询等场景，避免“疯狂重试”把服务器打爆
 >
@@ -12668,7 +12928,7 @@ Future<void> resilientLoop(Future<void> Function() task,
 }
 ```
 
-#### 63.3、防卡关键点 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 63.3、🔄 防卡关键点 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * **串行执行**：一轮完成后再发下一轮（上面用 `Future.delayed` + `await` 实现）。别让请求堆积。
 
@@ -12686,7 +12946,7 @@ Future<void> resilientLoop(Future<void> Function() task,
 
 * **合并多源**：多个地方想轮询同一接口？做一个 **共享仓库/Service**，下游订阅数据流，别各自开定时器。
 
-#### 63.4、什么时候不要轮询 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 63.4、🔄 什么时候不要轮询 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * 需要接近实时（<1s）的状态同步 → **WebSocket/SSE**。
 
@@ -12694,7 +12954,7 @@ Future<void> resilientLoop(Future<void> Function() task,
 
 * 用户不在该页面/应用在后台 → **停止**，等回到前台再继续。
 
-#### 63.5、快速自检清单 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 63.5、🔄 快速自检清单 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * 只有一个轮询源？（统一在 Service/Controller，别到处开定时器）
 
@@ -17971,12 +18231,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 ### 44、[**Dart**](https://dart.dev/).<font id="Stream">**`Stream`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-#### 44.1、资料来源 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
-
-* [***在 Flutter 里使用 Stream***](https://juejin.cn/post/6844904131287580685)
-* [***Flutter 教程 Async***](https://www.youtube.com/watch?v=qBksSix4qj0&list=PLDD3xNHFJjoob3GCF1JqaDxwrOTmpGGbe&index=1)
-
-#### 44.2、相关细节 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 44.1、相关细节 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * 在使用[***GetX***](#GetX)框架时，通常可以避免使用显式的***Stream***；
 * 在 [**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/) 中有两种处理异步操作的方式 ***Future*** 和 ***Stream***； 
@@ -18014,7 +18269,7 @@ flutter: future complete:42
 53 flutter: steam :42 （源源不断的打印 42）
 ```
 
-#### 44.3、[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).**`Widget`**.**`StreamBuilder`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 44.2、[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).**`Widget`**.**`StreamBuilder`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * [**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).**`Widget`**.**`StreamBuilder`** *.builder.[**snapshot**](#AsyncSnapshot).ConectionState* 比 ***FutureBuilder*** *.builder.snapshot.ConectionState* 多一个 ***active***状态；
 * [**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).**`Widget`**.**`StreamBuilder`** *.builder.[**snapshot**](#AsyncSnapshot).ConectionState === active* 可以出现无数新的数值（data）和错误（error）；
@@ -18108,7 +18363,7 @@ class _RandomNumberScreenState extends State<RandomNumberScreen> {
 */
 ```
 
-#### 44.4、[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).<font id="StreamController">**`StreamController`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 44.3、[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).<font id="StreamController">**`StreamController`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * [**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/)中用于创建和管理流（[**Dart**](https://dart.dev/).`Stream`）的类。充当了流的生产者，可以使用它来创建一个新的流，并在需要时向该流中添加数据；
 
