@@ -76,6 +76,9 @@ void main() {
   // 打印整个对象
   // po(mockData);
   // po(mockListData);
+  // mockData.p
+  // mockData.p.value
+  // mockData.jobsee()
   // 打印指定路径
   // po(mockData, path: 'user.settingsJson');
   // po(mockListData, path: '[0]');
@@ -267,6 +270,22 @@ dynamic _tryDecodeJson(String s) {
   }
 }
 
+class _Printed<T> {
+  final T value;
+  _Printed(this.value);
+
+  @override
+  String toString() {
+    // VSCode 展开时，走我们自己的多行格式化
+    final unwrapped = _unwrapForPretty(value, maxUnwrap: 3);
+    return _messageToPrettyString(
+      unwrapped,
+      maxDepth: 6,
+      maxItemsPerLevel: 200,
+    );
+  }
+}
+
 // 语法糖：任何对象上直接 .jobsee()
 extension InspectX on Object? {
   /// 方法名前加前缀，避免与内置方法冲突
@@ -286,22 +305,78 @@ extension InspectX on Object? {
         showTypes: showTypes,
       );
 
-  Object? get p {
-    JobsPrint(this);
-    return this; // 允许链式 (data.p as List).length
+  /// 控制台打一份（美化），并返回包装器用于链式：resp.p.value
+  _Printed<Object?> get p {
+    final unwrapped = _unwrapForPretty(this, maxUnwrap: 3);
+    JobsPrint(unwrapped); // 只打一份美化后的
+    return _Printed(this); // 链式拿原对象：.p.value
   }
+}
+
+Object? _unwrapForPretty(Object? v, {int maxUnwrap = 2}) {
+  var cur = v;
+  for (int i = 0; i < maxUnwrap; i++) {
+    final next = _unwrapKnown(cur);
+    if (identical(next, cur)) break;
+    cur = next;
+  }
+  return cur;
+}
+
+// 针对常见响应类型做 Duck Typing：有 data/body 就取出来；能 toJson 就用 toJson
+Object? _unwrapKnown(Object? v) {
+  if (v == null) return null;
+  if (v is Map ||
+      v is Iterable ||
+      v is String ||
+      v is num ||
+      v is bool ||
+      v is DateTime) {
+    return v;
+  }
+
+  // 1) data
+  try {
+    final d = (v as dynamic).data;
+    if (d != null) return d;
+  } catch (_) {}
+
+  // 2) body
+  try {
+    final b = (v as dynamic).body;
+    if (b != null) return b;
+  } catch (_) {}
+
+  // 3) toJson
+  try {
+    final j = (v as dynamic).toJson();
+    if (j is Map || j is List) return j;
+  } catch (_) {}
+
+  // 4) 最后一招：字符串里如果是 { ... } 或 [ ... ]，尝试 jsonDecode（不强制）
+  final s = v.toString().trim();
+  if ((s.startsWith('{') && s.endsWith('}')) ||
+      (s.startsWith('[') && s.endsWith(']'))) {
+    try {
+      final j = jsonDecode(s);
+      if (j is Map || j is List) return j;
+    } catch (_) {/* 忽略 */}
+  }
+
+  return v; // 保持原样
 }
 
 /// =============================== 程序内打印 ==================================
 void JobsPrint(Object? message,
     {int maxDepth = 6, int maxItemsPerLevel = 200}) {
   final String where = _captureCaller();
+  final normalized = _unwrapForPretty(message, maxUnwrap: 3);
   final String text = _messageToPrettyString(
-    message,
+    normalized,
     maxDepth: maxDepth,
     maxItemsPerLevel: maxItemsPerLevel,
   );
-  _emit('[$where] $text');
+  _emit('[$where]\n$text'); // 换行更清晰
 }
 
 /// 根据环境选择输出：优先插件，其次 debugPrint，兜底 print

@@ -1290,8 +1290,6 @@ extension JobsPrintExt<T> on T {
 </span>
 
 ```dart
-import 'dart:convert';
-import 'package:flutter/foundation.dart'
 /// =============================== 控制台打印对象 ===============================
 /// 命名po，延续iOS开发中打印对象的方法命名的传统
 void po(
@@ -1472,6 +1470,22 @@ dynamic _tryDecodeJson(String s) {
   }
 }
 
+class _Printed<T> {
+  final T value;
+  _Printed(this.value);
+
+  @override
+  String toString() {
+    // VSCode 展开时，走我们自己的多行格式化
+    final unwrapped = _unwrapForPretty(value, maxUnwrap: 3);
+    return _messageToPrettyString(
+      unwrapped,
+      maxDepth: 6,
+      maxItemsPerLevel: 200,
+    );
+  }
+}
+
 // 语法糖：任何对象上直接 .jobsee()
 extension InspectX on Object? {
   /// 方法名前加前缀，避免与内置方法冲突
@@ -1491,9 +1505,205 @@ extension InspectX on Object? {
         showTypes: showTypes,
       );
 
-  Object? get p {
-    JobsPrint(this);
-    return this; // 允许链式 (data.p as List).length
+  /// 控制台打一份（美化），并返回包装器用于链式：resp.p.value
+  _Printed<Object?> get p {
+    final unwrapped = _unwrapForPretty(this, maxUnwrap: 3);
+    JobsPrint(unwrapped); // 只打一份美化后的
+    return _Printed(this); // 链式拿原对象：.p.value
+  }
+}
+
+Object? _unwrapForPretty(Object? v, {int maxUnwrap = 2}) {
+  var cur = v;
+  for (int i = 0; i < maxUnwrap; i++) {
+    final next = _unwrapKnown(cur);
+    if (identical(next, cur)) break;
+    cur = next;
+  }
+  return cur;
+}
+
+// 针对常见响应类型做 Duck Typing：有 data/body 就取出来；能 toJson 就用 toJson
+Object? _unwrapKnown(Object? v) {
+  if (v == null) return null;
+  if (v is Map ||
+      v is Iterable ||
+      v is String ||
+      v is num ||
+      v is bool ||
+      v is DateTime) {
+    return v;
+  }
+
+  // 1) data
+  try {
+    final d = (v as dynamic).data;
+    if (d != null) return d;
+  } catch (_) {}
+
+  // 2) body
+  try {
+    final b = (v as dynamic).body;
+    if (b != null) return b;
+  } catch (_) {}
+
+  // 3) toJson
+  try {
+    final j = (v as dynamic).toJson();
+    if (j is Map || j is List) return j;
+  } catch (_) {}
+
+  // 4) 最后一招：字符串里如果是 { ... } 或 [ ... ]，尝试 jsonDecode（不强制）
+  final s = v.toString().trim();
+  if ((s.startsWith('{') && s.endsWith('}')) ||
+      (s.startsWith('[') && s.endsWith(']'))) {
+    try {
+      final j = jsonDecode(s);
+      if (j is Map || j is List) return j;
+    } catch (_) {/* 忽略 */}
+  }
+
+  return v; // 保持原样
+}
+
+/// =============================== 程序内打印 ==================================
+void JobsPrint(Object? message,
+    {int maxDepth = 6, int maxItemsPerLevel = 200}) {
+  final String where = _captureCaller();
+  final normalized = _unwrapForPretty(message, maxUnwrap: 3);
+  final String text = _messageToPrettyString(
+    normalized,
+    maxDepth: maxDepth,
+    maxItemsPerLevel: maxItemsPerLevel,
+  );
+  _emit('[$where]\n$text'); // 换行更清晰
+}
+
+/// 根据环境选择输出：优先插件，其次 debugPrint，兜底 print
+void _emit(String s) {
+  final bool onMobile = !kIsWeb && (GetPlatform.isAndroid || GetPlatform.isIOS);
+  try {
+    if (onMobile) {
+      // 1) 原生插件
+      try {
+        FlutterPluginEngagelab.printMy(s);
+      } catch (_) {
+        // 忽略插件异常
+      }
+    }
+    // 2) 一律也打到控制台（debugPrint 带节流；出问题再兜底 print）
+    try {
+      debugPrint(s);
+    } catch (_) {
+      // ignore: avoid_print
+      print(s);
+    }
+  } catch (_) {
+    // ignore: avoid_print
+    print(s);
+  }
+}
+
+/// 捕获调用方文件:行号
+String _captureCaller() {
+  final lines = StackTrace.current.toString().split('\n');
+  for (var i = 1; i < lines.length && i < 5; i++) {
+    final s = _formatStackTraceLine(lines[i]);
+    if (s != null) return s;
+  }
+  return 'unknown:0';
+}
+
+String? _formatStackTraceLine(String line) {
+  final re1 = RegExp(r'\(([^:()]+):(\d+)(?::\d+)?\)');
+  final m1 = re1.firstMatch(line);
+  if (m1 != null) return '${m1.group(1)}:${m1.group(2)}';
+
+  final re2 = RegExp(r'(\S+\.dart)\s+(\d+)(?::\d+)?');
+  final m2 = re2.firstMatch(line);
+  if (m2 != null) return '${m2.group(1)}:${m2.group(2)}';
+
+  return null;
+}
+
+/// 对象转字符串（带 JSON 识别 & 美化）
+String _messageToPrettyString(
+  Object? value, {
+  int maxDepth = 6,
+  int maxItemsPerLevel = 200,
+}) {
+  return _pretty(value, maxDepth, maxItemsPerLevel, 0);
+}
+
+String _pretty(
+  Object? value,
+  int maxDepth,
+  int maxItemsPerLevel,
+  int depth,
+) {
+  if (depth > maxDepth) return '...';
+  if (value == null) return 'null';
+
+  if (value is String) {
+    final s = value.trim();
+    if ((s.startsWith('{') && s.endsWith('}')) ||
+        (s.startsWith('[') && s.endsWith(']'))) {
+      try {
+        final decoded = json.decode(s);
+        return _pretty(decoded, maxDepth, maxItemsPerLevel, depth + 1);
+      } catch (_) {
+        return value;
+      }
+    }
+    return value;
+  }
+
+  if (value is num || value is bool || value is DateTime) {
+    return value.toString();
+  }
+
+  if (value is Map) {
+    final entries = value.entries.toList();
+    final limited = entries.length > maxItemsPerLevel
+        ? entries.sublist(0, maxItemsPerLevel)
+        : entries;
+    final b = StringBuffer()..writeln('{');
+    for (var i = 0; i < limited.length; i++) {
+      final e = limited[i];
+      final v = _pretty(e.value, maxDepth, maxItemsPerLevel, depth + 1)
+          .replaceAll('\n', '\n  ');
+      b.writeln('  ${e.key}: $v${i == limited.length - 1 ? '' : ','}');
+    }
+    if (entries.length > limited.length) {
+      b.writeln('  ... (${entries.length - limited.length} more)');
+    }
+    b.write('}');
+    return b.toString();
+  }
+
+  if (value is Iterable) {
+    final list = value.toList();
+    final limited = list.length > maxItemsPerLevel
+        ? list.sublist(0, maxItemsPerLevel)
+        : list;
+    final b = StringBuffer()..writeln('[');
+    for (var i = 0; i < limited.length; i++) {
+      final v = _pretty(limited[i], maxDepth, maxItemsPerLevel, depth + 1)
+          .replaceAll('\n', '\n  ');
+      b.writeln('  $v${i == limited.length - 1 ? '' : ','}');
+    }
+    if (list.length > limited.length) {
+      b.writeln('  ... (${list.length - limited.length} more)');
+    }
+    b.write(']');
+    return b.toString();
+  }
+
+  try {
+    final dynamic jsonData = (value as dynamic).toJson();
+    return _pretty(jsonData, maxDepth, maxItemsPerLevel, depth + 1);
+  } catch (_) {
+    return value.toString();
   }
 }
 ```
