@@ -60,3 +60,5 @@ plugins/
 /web/
 /ios/
 /android/
+# local VSCode configs
+.vscode/
