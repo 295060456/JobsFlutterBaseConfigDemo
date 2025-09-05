@@ -5533,6 +5533,28 @@ minHeight: 取两个 minHeight 中较大的：60
 
 ##### 19.3.5、🧱<font id=AspectRatio>`AspectRatio`</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a> <a href="#约束类布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
 
+> `aspectRatio: 1.0` → 正方形
+>
+> `aspectRatio: 3 / 2` → 宽比高大 1.5 倍s
+
+```dart
+AspectRatio(
+  aspectRatio: 16 / 9,  // 宽 : 高
+  child: Container(color: Colors.red),
+)
+```
+
+> 会创建一个长宽比为 **16:9** 的红色容器。无论父容器多大，`AspectRatio` 都会尽量调整自身的尺寸来保持这个比例。
+>
+> **计算规则**
+>
+> 1️⃣ `AspectRatio` 会先查看父容器的约束（constraints）。
+>
+> 2️⃣ 它会在这些约束范围内，找到一个尽量满足 `aspectRatio` 的尺寸。
+>
+> 3️⃣ 如果父容器宽度无限制（如 `Column` 没有约束），它会尝试根据高度来算宽度；
+> 4️⃣ 如果高度无限制（如 `Row` 没有限制），它会根据宽度来算高度。
+
 ##### 19.3.6、🧱<font id=LimitedBox>`LimitedBox`</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a> <a href="#约束类布局" style="font-size:17px; color:green;"><b>⬆️</b></a>
 
 #### 19.4、🧱<font id=自动换行&流式布局>自动换行&流式布局</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
