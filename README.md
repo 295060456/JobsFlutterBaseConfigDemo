@@ -517,11 +517,11 @@
   <img src="./assets/image-20250713101045523.png" alt="image-4" style="width:65%; display:inline-block; vertical-align: top;" />
   </div>
 
-#### 4.3、[**VSCode**](https://code.visualstudio.com/)的配置文件：
+#### 4.3、⚙️[**VSCode**](https://code.visualstudio.com/)的配置文件 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * [**VSCode**](https://code.visualstudio.com/)键盘快捷键：打开命令面板 (**`⌘`**➕**`Shift`**➕**`P`**) ，输入👉  **`Preferences: Open Keyboard Shortcuts (JSON)`**
 
-  > `~/Library/Application Support/Code/User/keybindings.json`
+  > 此文件位于[**VSCode**](https://code.visualstudio.com/)软件内部：`~/Library/Application Support/Code/User/keybindings.json`
 
   ```json
   // Place your key bindings in this file to override the defaultsauto[]
@@ -615,206 +615,206 @@
   ]
   ```
 
-* [**VSCode**](https://code.visualstudio.com/)锚定具体[**Flutter**](https://flutter.dev/)项目的[**配置文件**](https://github.com/295060456/VScodeConfigByFlutter)
+* [**VSCode**](https://code.visualstudio.com/)锚定具体[**Flutter**](https://flutter.dev/)项目的[<font color=red>**配置文件**</font>](https://github.com/295060456/VScodeConfigByFlutter)
 
-  * **Git**管理👉[**一键下载**](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/%E3%80%90MacOS%E3%80%91%E2%8F%AC%E5%8F%8C%E5%87%BB%E4%B8%8B%E8%BD%BDVSCode%40Flutter%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6.command)
+  * **Git**管理👉[<font color=red>**一键下载**</font>](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/%E3%80%90MacOS%E3%80%91%E2%8F%AC%E5%8F%8C%E5%87%BB%E4%B8%8B%E8%BD%BDVSCode%40Flutter%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6.command)
 
     ![image-20250905225009284](./assets/image-20250905225009284.png)
 
   * 直接（手动）同步下列文件到目标项目中
 
-  ```mermaid
-  %% vscode 配置文件结构
-  flowchart TD
-      A[Flutter项目根目录] --> B[.vscode/]
-      B --> B1[extensions.json ✅ 插件推荐列表<br/>（推荐加入 Git）]
-      B --> B2[launch.json ▶️ 启动配置<br/>（如调试 main.dart）（推荐加入 Git）]
-      B --> B3[settings.json ⚙️ 全局项目设置<br/>（⚠️ 视情况加入 Git，仅保留通用设置）]
-      B --> B4[settings.local.json 🧪 本地专属设置<br/>（❌ 不建议加入 Git，应添加至 .gitignore）]
-      B --> B5[tasks.json 🔁 自定义任务<br/>（如自动构建、格式化）（推荐加入 Git）]
-  ```
-
-  * `extensions.json` 👉 <font color=green>推荐加入**Git**管理</font>
-
-    ```json
-    /// 推荐使用的插件清单（团队统一）
-    {
-        "recommendations": [
-            // ✅ Flutter/Dart 支持
-            "dart-code.flutter", // Flutter 插件（包含 Dart 支持）
-            // ✅ 通用开发体验
-            "esbenp.prettier-vscode", // Prettier 格式化工具
-            "editorconfig.editorconfig", // 统一代码风格配置
-            "streetsidesoftware.code-spell-checker", // 拼写检查器（防错别字）
-            "gruntfuggly.todo-tree", // 高亮 TODO / FIXME 等标记
-            "formulahendry.auto-rename-tag", // 自动重命名 HTML/Widget 标签
-            "formulahendry.auto-close-tag", // 自动闭合标签（如 HTML）
-            // ✅ Git 支持增强
-            "eamodio.gitlens", // Git 历史高亮与增强
-            "github.vscode-pull-request-github", // GitHub PR 工具
-            // ✅ 国际化支持（如果你用到了 easy_localization 或 i18n）
-            "lokalise.i18n-ally", // i18n 文件辅助管理
-            // ✅ 中文语言包（可选）
-            "ms-ceintl.vscode-language-pack-zh-hans" // 中文语言支持（若为中文环境）
-        ]
-    }
+    ```mermaid
+    %% vscode 配置文件结构
+    flowchart TD
+        A[Flutter项目根目录] --> B[.vscode/]
+        B --> B1[extensions.json ✅ 插件推荐列表<br/>（推荐加入 Git）]
+        B --> B2[launch.json ▶️ 启动配置<br/>（如调试 main.dart）（推荐加入 Git）]
+        B --> B3[settings.json ⚙️ 全局项目设置<br/>（⚠️ 视情况加入 Git，仅保留通用设置）]
+        B --> B4[settings.local.json 🧪 本地专属设置<br/>（❌ 不建议加入 Git，应添加至 .gitignore）]
+        B --> B5[tasks.json 🔁 自定义任务<br/>（如自动构建、格式化）（推荐加入 Git）]
     ```
 
-  * `launch.json` 👉 <font color=green>推荐加入**Git**管理</font>
+    * `extensions.json` 👉 <font color=green>推荐加入**Git**管理</font>
 
-    ```json
-    /// 调试配置（如 Flutter 调试参数）
-    {
-        // 使用 IntelliSense 了解相关属性。
-        // 悬停以查看现有属性的描述。
-        // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
-        "version": "0.2.0",
-        "configurations": [
-            {
-                "name": "JobsFlutterBaseConfigDemo", // 调试配置名称
-                "request": "launch", // 调试器请求类型，通常为 "launch" 或 "attach"
-                "type": "dart", // 调试器类型，通常为 "dart" 或 "flutter"
-                "program": "lib/调用本地相册+调用本机摄像头拍照（全部验证通过）/CameraDemo.dart", // ❤️要调试的程序的入口点
-                "flutterMode": "debug",
-                /// 👇关闭 SDK 和外部库的调用栈展开
-                "debugSdkLibraries": false,
-                "debugExternalLibraries": false,
-                "env": {// 配置Java环境（Android运行打包需要）
-                  "JAVA_HOME": "/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home",
-                  "PATH": "/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home/bin:${env:PATH}"
-                }
-            },
-            // {
-            //     "name": "JobsFlutterBaseConfigDemo (profile mode)",
-            //     "request": "launch",
-            //     "type": "dart",
-            //     "flutterMode": "profile"
-            // },
-            // {
-            //     "name": "JobsFlutterBaseConfigDemo (release mode)",
-            //     "request": "launch",
-            //     "type": "dart",
-            //     "flutterMode": "release"
-            // }
-        ]
-    }
-    ```
+      ```json
+      /// 推荐使用的插件清单（团队统一）
+      {
+          "recommendations": [
+              // ✅ Flutter/Dart 支持
+              "dart-code.flutter", // Flutter 插件（包含 Dart 支持）
+              // ✅ 通用开发体验
+              "esbenp.prettier-vscode", // Prettier 格式化工具
+              "editorconfig.editorconfig", // 统一代码风格配置
+              "streetsidesoftware.code-spell-checker", // 拼写检查器（防错别字）
+              "gruntfuggly.todo-tree", // 高亮 TODO / FIXME 等标记
+              "formulahendry.auto-rename-tag", // 自动重命名 HTML/Widget 标签
+              "formulahendry.auto-close-tag", // 自动闭合标签（如 HTML）
+              // ✅ Git 支持增强
+              "eamodio.gitlens", // Git 历史高亮与增强
+              "github.vscode-pull-request-github", // GitHub PR 工具
+              // ✅ 国际化支持（如果你用到了 easy_localization 或 i18n）
+              "lokalise.i18n-ally", // i18n 文件辅助管理
+              // ✅ 中文语言包（可选）
+              "ms-ceintl.vscode-language-pack-zh-hans" // 中文语言支持（若为中文环境）
+          ]
+      }
+      ```
 
-  * `settings.json` 👉 <font color=red>不推荐加入**Git**管理</font>
+    * `launch.json` 👉 <font color=green>推荐加入**Git**管理</font>
 
-    ```json
-    // 🚫 本文件为个人本地 VS Code 设置，仅供自己使用，不推荐加入 Git 管理
-    {
-      // ✅ 指定 CMake 项目的源代码目录（用于 CMake 插件）
-      "cmake.sourceDirectory": "/Users/jobs/Documents/GitHub/JobsFlutterBaseConfig/jobs_flutter_base_config/linux",
-    
-      // ✅ Java 编译时的空值分析模式（自动启用 null 安全检查）
-      "java.compile.nullAnalysis.mode": "automatic",
-    
-      // ✅ Dart 编辑器：整理 import 时总是使用 package 引用风格
-      "dart.editImports": "always_use_package_imports",
-    
-      // ✅ 关闭 VSCode 的校验提示
-      "json.schemaDownload.enable": false,
-      "json.validate.enable": false,
-    
-      // ✅ 每次保存文件时自动格式化代码
-      "editor.formatOnSave": true,
-    
-      // ✅ 当窗口失焦时自动保存
-      "files.autoSave": "afterDelay",
-    
-      // ✅ 自动保存延迟，100ms
-      "files.autoSaveDelay": 100,
-    
-      // ✅ 关闭窗口时自动保存未保存文件（热退出）
-      "files.hotExit": "onExitAndWindowClose",
-    
-      // ✅ 每次保存时自动移除每行末尾多余的空格
-      "files.trimTrailingWhitespace": true,
-    
-      // ✅ 文件末尾自动插入一个换行符，符合编码规范
-      "files.insertFinalNewline": true,
-    
-      // ✅ 保存文件时如有冲突，自动覆盖磁盘上的版本（避免弹出冲突提示）
-      "files.saveConflictResolution": "overwriteFileOnDisk",
-    
-      // ✅ 启动时恢复上次打开的文件
-      "window.restoreWindows": "all",
-    
-      // ✅ 括号配对高亮.显示括号对的引导线（active 表示仅在光标位于括号上时显示）@项目级配置
-      "editor.guides.bracketPairs": "active",
-    
-      // ✅ 括号配对高亮.启用括号颜色匹配功能@项目级配置
-      "editor.bracketPairColorization.enabled": true,
-    
-      // ✅ 始终高亮当前括号对
-      "editor.matchBrackets": "always",
-    
-      // ✅ Flutter SDK 路径（使用 FVM 管理的版本路径）
-      "dart.flutterSdkPath": ".fvm/versions/3.24.5",
-      "dart.sdkPath": ".fvm/flutter_sdk/bin/cache/dart-sdk",
-    
-      // ✅ 让 VSCode 终端继承 Shell 环境（通常默认 true）
-      "terminal.integrated.inheritEnv": true,
-    
-      // ✅ 在左侧 gutter 区域显示断点栏（点击即可像 Xcode 一样打断点）
-      "editor.glyphMargin": true,
-    
-      // ✅ 自定义调试/断点相关的配色和行高
-      "workbench.colorCustomizations": {
-        // 🔹 当前行背景高亮（半透明，方便定位）
-        "editor.lineHighlightBackground": "#2B314080",
-    
-        // 🔹 当前行边框颜色（配合背景高亮，视觉更明显）
-        "editor.lineHighlightBorder": "#2B3140",
-    
-        // 🔹 加大行高，增大断点点击区域，避免点歪
-        "editor.lineHeight": 24,
-    
-        // 🔹 字体大小（可根据个人习惯调整）
-        "editor.fontSize": 14,
-    
-        // 🔴 已验证断点（正常断点）图标颜色
-        "debugIcon.breakpointForeground": "#FF5A5A",
-    
-        // 🟤 已禁用断点颜色
-        "debugIcon.breakpointDisabledForeground": "#C06F6F",
-    
-        // 🟠 未验证断点颜色（比如调试器还没 attach 时）
-        "debugIcon.breakpointUnverifiedForeground": "#FFAA00",
-    
-        // 🟢 当前执行栈所在断点颜色（正在运行到的断点）
-        "debugIcon.breakpointCurrentStackframeForeground": "#23D17F",
-    
-        // 🟠 条件断点颜色（只有满足条件时才触发）
-        "debugIcon.breakpointConditionalForeground": "#FFAA00"
-      },
-    
-      // ✅ 配置 errorLens
-      "errorLens.enabled": true,
-      "errorLens.fontStyleItalic": false,
-      "errorLens.errorBackground": "#ff000033", // 红色背景半透明
-      "errorLens.warningBackground": "#ffa50033", // 橙色背景半透明
-      "errorLens.infoBackground": "#0080ff33", // 蓝色背景半透明
-    
-      "problems.showCurrentInStatus": true, // 状态栏显示当前行的问题
-      "problems.showCurrentInStatusSeverity": "warning", // 显示级别（error/warning/info）
-      "problems.decorations.enabled": true // 在行号旁边显示小图标
-    }
-    ```
+      ```json
+      /// 调试配置（如 Flutter 调试参数）
+      {
+          // 使用 IntelliSense 了解相关属性。
+          // 悬停以查看现有属性的描述。
+          // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+          "version": "0.2.0",
+          "configurations": [
+              {
+                  "name": "JobsFlutterBaseConfigDemo", // 调试配置名称
+                  "request": "launch", // 调试器请求类型，通常为 "launch" 或 "attach"
+                  "type": "dart", // 调试器类型，通常为 "dart" 或 "flutter"
+                  "program": "lib/调用本地相册+调用本机摄像头拍照（全部验证通过）/CameraDemo.dart", // ❤️要调试的程序的入口点
+                  "flutterMode": "debug",
+                  /// 👇关闭 SDK 和外部库的调用栈展开
+                  "debugSdkLibraries": false,
+                  "debugExternalLibraries": false,
+                  "env": {// 配置Java环境（Android运行打包需要）
+                    "JAVA_HOME": "/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home",
+                    "PATH": "/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home/bin:${env:PATH}"
+                  }
+              },
+              // {
+              //     "name": "JobsFlutterBaseConfigDemo (profile mode)",
+              //     "request": "launch",
+              //     "type": "dart",
+              //     "flutterMode": "profile"
+              // },
+              // {
+              //     "name": "JobsFlutterBaseConfigDemo (release mode)",
+              //     "request": "launch",
+              //     "type": "dart",
+              //     "flutterMode": "release"
+              // }
+          ]
+      }
+      ```
 
+    * `settings.json` 👉 <font color=red>不推荐加入**Git**管理</font>
 
+      ```json
+      // 🚫 本文件为个人本地 VS Code 设置，仅供自己使用，不推荐加入 Git 管理
+      {
+        // ✅ 指定 CMake 项目的源代码目录（用于 CMake 插件）
+        "cmake.sourceDirectory": "/Users/jobs/Documents/GitHub/JobsFlutterBaseConfig/jobs_flutter_base_config/linux",
+      
+        // ✅ Java 编译时的空值分析模式（自动启用 null 安全检查）
+        "java.compile.nullAnalysis.mode": "automatic",
+      
+        // ✅ Dart 编辑器：整理 import 时总是使用 package 引用风格
+        "dart.editImports": "always_use_package_imports",
+      
+        // ✅ 关闭 VSCode 的校验提示
+        "json.schemaDownload.enable": false,
+        "json.validate.enable": false,
+      
+        // ✅ 每次保存文件时自动格式化代码
+        "editor.formatOnSave": true,
+      
+        // ✅ 当窗口失焦时自动保存
+        "files.autoSave": "afterDelay",
+      
+        // ✅ 自动保存延迟，100ms
+        "files.autoSaveDelay": 100,
+      
+        // ✅ 关闭窗口时自动保存未保存文件（热退出）
+        "files.hotExit": "onExitAndWindowClose",
+      
+        // ✅ 每次保存时自动移除每行末尾多余的空格
+        "files.trimTrailingWhitespace": true,
+      
+        // ✅ 文件末尾自动插入一个换行符，符合编码规范
+        "files.insertFinalNewline": true,
+      
+        // ✅ 保存文件时如有冲突，自动覆盖磁盘上的版本（避免弹出冲突提示）
+        "files.saveConflictResolution": "overwriteFileOnDisk",
+      
+        // ✅ 启动时恢复上次打开的文件
+        "window.restoreWindows": "all",
+      
+        // ✅ 括号配对高亮.显示括号对的引导线（active 表示仅在光标位于括号上时显示）@项目级配置
+        "editor.guides.bracketPairs": "active",
+      
+        // ✅ 括号配对高亮.启用括号颜色匹配功能@项目级配置
+        "editor.bracketPairColorization.enabled": true,
+      
+        // ✅ 始终高亮当前括号对
+        "editor.matchBrackets": "always",
+      
+        // ✅ Flutter SDK 路径（使用 FVM 管理的版本路径）
+        "dart.flutterSdkPath": ".fvm/versions/3.24.5",
+        "dart.sdkPath": ".fvm/flutter_sdk/bin/cache/dart-sdk",
+      
+        // ✅ 让 VSCode 终端继承 Shell 环境（通常默认 true）
+        "terminal.integrated.inheritEnv": true,
+      
+        // ✅ 在左侧 gutter 区域显示断点栏（点击即可像 Xcode 一样打断点）
+        "editor.glyphMargin": true,
+      
+        // ✅ 自定义调试/断点相关的配色和行高
+        "workbench.colorCustomizations": {
+          // 🔹 当前行背景高亮（半透明，方便定位）
+          "editor.lineHighlightBackground": "#2B314080",
+      
+          // 🔹 当前行边框颜色（配合背景高亮，视觉更明显）
+          "editor.lineHighlightBorder": "#2B3140",
+      
+          // 🔹 加大行高，增大断点点击区域，避免点歪
+          "editor.lineHeight": 24,
+      
+          // 🔹 字体大小（可根据个人习惯调整）
+          "editor.fontSize": 14,
+      
+          // 🔴 已验证断点（正常断点）图标颜色
+          "debugIcon.breakpointForeground": "#FF5A5A",
+      
+          // 🟤 已禁用断点颜色
+          "debugIcon.breakpointDisabledForeground": "#C06F6F",
+      
+          // 🟠 未验证断点颜色（比如调试器还没 attach 时）
+          "debugIcon.breakpointUnverifiedForeground": "#FFAA00",
+      
+          // 🟢 当前执行栈所在断点颜色（正在运行到的断点）
+          "debugIcon.breakpointCurrentStackframeForeground": "#23D17F",
+      
+          // 🟠 条件断点颜色（只有满足条件时才触发）
+          "debugIcon.breakpointConditionalForeground": "#FFAA00"
+        },
+      
+        // ✅ 配置 errorLens
+        "errorLens.enabled": true,
+        "errorLens.fontStyleItalic": false,
+        "errorLens.errorBackground": "#ff000033", // 红色背景半透明
+        "errorLens.warningBackground": "#ffa50033", // 橙色背景半透明
+        "errorLens.infoBackground": "#0080ff33", // 蓝色背景半透明
+      
+        "problems.showCurrentInStatus": true, // 状态栏显示当前行的问题
+        "problems.showCurrentInStatusSeverity": "warning", // 显示级别（error/warning/info）
+        "problems.decorations.enabled": true // 在行号旁边显示小图标
+      }
+      ```
+  
   * **Git**忽略文件对于[**VSCode**](https://code.visualstudio.com/)的配置文件的处理：**团队开发一般不建议Git同步**
-
+  
     ```
     # 当前文件：Flutter项目根目录/.gitignore
     
     # VSCode
     .vscode/
     ```
+  
 
-### 5、</b></a>😱[**ohmyz.sh**](https://ohmyz.sh/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽
+### 5、😱[**ohmyz.sh**](https://ohmyz.sh/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```shell
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
