@@ -617,7 +617,7 @@
 
 * [**VSCode**](https://code.visualstudio.com/)锚定具体[**Flutter**](https://flutter.dev/)项目的[**配置文件**](https://github.com/295060456/VScodeConfigByFlutter)
 
-  * **Git**管理👉[**一键下载**]()
+  * **Git**管理👉[**一键下载**](https://github.com/295060456/JobsFlutterBaseConfigDemo/blob/main/%E3%80%90MacOS%E3%80%91%E2%8F%AC%E5%8F%8C%E5%87%BB%E4%B8%8B%E8%BD%BDVSCode%40Flutter%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6.command)
 
     ![image-20250905225009284](./assets/image-20250905225009284.png)
 
@@ -676,6 +676,9 @@
                 "type": "dart", // 调试器类型，通常为 "dart" 或 "flutter"
                 "program": "lib/调用本地相册+调用本机摄像头拍照（全部验证通过）/CameraDemo.dart", // ❤️要调试的程序的入口点
                 "flutterMode": "debug",
+                /// 👇关闭 SDK 和外部库的调用栈展开
+                "debugSdkLibraries": false,
+                "debugExternalLibraries": false,
                 "env": {// 配置Java环境（Android运行打包需要）
                   "JAVA_HOME": "/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home",
                   "PATH": "/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home/bin:${env:PATH}"
@@ -711,6 +714,10 @@
       // ✅ Dart 编辑器：整理 import 时总是使用 package 引用风格
       "dart.editImports": "always_use_package_imports",
     
+      // ✅ 关闭 VSCode 的校验提示
+      "json.schemaDownload.enable": false,
+      "json.validate.enable": false,
+    
       // ✅ 每次保存文件时自动格式化代码
       "editor.formatOnSave": true,
     
@@ -735,17 +742,17 @@
       // ✅ 启动时恢复上次打开的文件
       "window.restoreWindows": "all",
     
-      // ✅ 显示括号对的引导线（active 表示仅在光标位于括号上时显示）
+      // ✅ 括号配对高亮.显示括号对的引导线（active 表示仅在光标位于括号上时显示）@项目级配置
       "editor.guides.bracketPairs": "active",
     
-      // ✅ 启用括号颜色匹配功能
+      // ✅ 括号配对高亮.启用括号颜色匹配功能@项目级配置
       "editor.bracketPairColorization.enabled": true,
     
       // ✅ 始终高亮当前括号对
       "editor.matchBrackets": "always",
     
-      // ✅ Flutter SDK 路径（优先 .fvm）
-      "dart.flutterSdkPath": ".fvm/versions/stable",
+      // ✅ Flutter SDK 路径（使用 FVM 管理的版本路径）
+      "dart.flutterSdkPath": ".fvm/versions/3.24.5",
       "dart.sdkPath": ".fvm/flutter_sdk/bin/cache/dart-sdk",
     
       // ✅ 让 VSCode 终端继承 Shell 环境（通常默认 true）
@@ -782,7 +789,18 @@
     
         // 🟠 条件断点颜色（只有满足条件时才触发）
         "debugIcon.breakpointConditionalForeground": "#FFAA00"
-      }
+      },
+    
+      // ✅ 配置 errorLens
+      "errorLens.enabled": true,
+      "errorLens.fontStyleItalic": false,
+      "errorLens.errorBackground": "#ff000033", // 红色背景半透明
+      "errorLens.warningBackground": "#ffa50033", // 橙色背景半透明
+      "errorLens.infoBackground": "#0080ff33", // 蓝色背景半透明
+    
+      "problems.showCurrentInStatus": true, // 状态栏显示当前行的问题
+      "problems.showCurrentInStatusSeverity": "warning", // 显示级别（error/warning/info）
+      "problems.decorations.enabled": true // 在行号旁边显示小图标
     }
     ```
 
