@@ -6255,6 +6255,38 @@ DropdownButtonHideUnderline(
 | 显隐控制     | `Visibility`, `Offstage`, `Opacity`             |
 | 占位/延迟    | `FutureBuilder`, `StreamBuilder`, `Placeholder` |
 
+##### 22.3.1、<font id=FutureBuilder>**`Widget`.`FutureBuilder`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a> 
+
+> `FutureBuilder` 是 [**Flutter**](https://flutter.dev/) 里专门用来处理 <a href="#Future" style="font-size:17px; color:green;"><b>异步任务（Future）</b></a>**结果** 的 **Widget**。它的核心作用就是：在等待异步任务完成前、完成后、以及出错时，自动帮你切换 UI。
+
+* 基本结构
+
+  > **不要在 `builder` 里重新创建 Future**：会导致无限重建。
+  >
+  > ```dart
+  > // ❌ 错误写法
+  > FutureBuilder(
+  > future: fetchData(), // 每次 build 都会重新请求
+  > )
+  > ```
+
+  ```dart
+  FutureBuilder<T>(
+    future: someFuture, // 异步任务，比如网络请求
+    builder: (BuildContext context, AsyncSnapshot<T> snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return CircularProgressIndicator(); // 加载中
+      } else if (snapshot.hasError) {
+        return Text('Error: ${snapshot.error}'); // 出错
+      } else if (snapshot.hasData) {
+        return Text('Result: ${snapshot.data}'); // 成功
+      } else {
+        return Text('没有数据');
+      }
+    },
+  )
+  ```
+
 #### 22.4、🖥️ 内容展示类  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 用来呈现用户可见的内容：文字、图片、图标、视频等
@@ -13340,38 +13372,6 @@ Future<void> resilientLoop(Future<void> Function() task,
    * 这是一个基于 [***ExoPlayer***](https://github.com/google/ExoPlayer) 的 Dart.Flutter 插件，用于在 Dart.Flutter 应用程序中播放音频和视频文件；
    * *ExoPlayer* 是一个功能强大的跨平台媒体播放器，***支持 Android、iOS 和 Web 平台***；
    * 使用 *flutter_exoplayer*，您可以方便地在 Dart.Flutter 应用程序中实现高性能的音视频播放功能；
-
-### 70、<font id=FutureBuilder>**`Widget`.`FutureBuilder`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a> 
-
-> `FutureBuilder` 是 [**Flutter**](https://flutter.dev/) 里专门用来处理 <a href="#Future" style="font-size:17px; color:green;"><b>异步任务（Future）</b></a>**结果** 的 **Widget**。它的核心作用就是：在等待异步任务完成前、完成后、以及出错时，自动帮你切换 UI。
-
-* 基本结构
-
-  > **不要在 `builder` 里重新创建 Future**：会导致无限重建。
-  >
-  > ```dart
-  > // ❌ 错误写法
-  > FutureBuilder(
-  >   future: fetchData(), // 每次 build 都会重新请求
-  > )
-  > ```
-
-  ```dart
-  FutureBuilder<T>(
-    future: someFuture, // 异步任务，比如网络请求
-    builder: (BuildContext context, AsyncSnapshot<T> snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return CircularProgressIndicator(); // 加载中
-      } else if (snapshot.hasError) {
-        return Text('Error: ${snapshot.error}'); // 出错
-      } else if (snapshot.hasData) {
-        return Text('Result: ${snapshot.data}'); // 成功
-      } else {
-        return Text('没有数据');
-      }
-    },
-  )
-  ```
 
 ## 五、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
