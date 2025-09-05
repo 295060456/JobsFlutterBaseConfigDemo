@@ -2735,7 +2735,9 @@ print(now.weekday);    // 星期几（1=星期一，7=星期日）
   | `k` / `kk` | 24小时制（1–24）         | `24`（不会是 0）                    |
   | `K` / `KK` | 12小时制（0–11）         | `0` 表示 12点                       |
 
-### 13、<font id=Navigator>✅**`Navigator`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 13、✅<font color=red>**推页面**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+#### 13.1、<font id=Navigator>**`Navigator`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 1️⃣ 在 [**Flutter**](https://flutter.dev/) 中，每一个 `Navigator` 都会有**自己的路由栈**，并不是全局唯一的
 >
@@ -2748,7 +2750,7 @@ print(now.weekday);    // 星期几（1=星期一，7=星期日）
 >
 > 3️⃣ 默认调用 `Navigator.of(context)`，是**从当前 context 向上查找最近的 Navigator**，**而不是找最上层的**
 
-#### 13.1、正向传参 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 13.1.1、正向传参 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * 构造函数传参（✅最推荐）
 
@@ -3074,7 +3076,7 @@ print(now.weekday);    // 星期几（1=星期一，7=星期日）
 
   </details>
 
-#### 13.2、返向传参 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 13.2.1、返向传参 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * 标准型
 
@@ -3199,6 +3201,10 @@ print(now.weekday);    // 星期几（1=星期一，7=星期日）
     Navigator.pop(context);
     ```
     </details>
+
+#### 13.2、<font id=GetX路由>**[GetX](https://pub.dev/packages/get)路由**</font>（跳转查看） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+#### 13.3、<a href="#按钮的封装" style="font-size:20px; color:green;"><b>按钮的封装</b></a>（跳转查看）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ### 14、🔙 导航栏返回按钮 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -7454,7 +7460,7 @@ class MyApp extends StatelessWidget {
 
 </details>
 
-##### 27.4.4、🉐 [**`GetX`**](https://pub.dev/packages/get) 路由🧭 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 27.4.4、🉐 <font id=GetX路由>[**`GetX`**](https://pub.dev/packages/get) 路由</font>🧭 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 >  [**`GetX`**](https://pub.dev/packages/get)  的路由系统是一套集命名路由、依赖注入、中间件、动画于一体的强大路由管理机制，推荐用 `GetPage` + 命名跳转方式为主线结构！
 
@@ -10016,13 +10022,13 @@ final rows = list
 
 ### 37、🧬 <font id=Flutt.App的生命周期>[**Flutter**](https://flutter.dev/).**App**的生命周期</font>监听 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-#### 37.1、<a href="#混入" style="font-size:20px; color:green;"><b>混入</b></a> （mixin）观察者： <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 37.1、<a href="#混入" style="font-size:20px; color:green;"><b>混入</b></a> （mixin）观察者 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 class MyController extends GetxController with WidgetsBindingObserver
 ```
 
-#### 37.2、添加观察者： <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 37.2、添加观察者 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 @override
@@ -10033,7 +10039,7 @@ void onInit() {
 }
 ```
 
-#### 37.3、监听变化： <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 37.3、监听变化 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 @override
@@ -10067,7 +10073,7 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
 }
 ```
 
-#### 37.4、移除观察者：
+#### 37.4、移除观察者 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 @override
@@ -11440,7 +11446,7 @@ void main2() {
 }
 ```
 
-#### 48.3、模式 3👉首列固定宽度，其余列等宽均分<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 48.3、模式 3👉首列固定宽度，其余列等宽均分 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 void main3() {
@@ -11818,7 +11824,7 @@ showSimpleNotification(
 );
 ```
 
-### 52、🔘按钮的封装 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 52、🔘<font id=按钮的封装>**按钮的封装**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * 快速设定按钮的**文本**、**背景色**、**点击事件**、**尺寸**
 
@@ -13290,6 +13296,38 @@ Future<void> resilientLoop(Future<void> Function() task,
    * 这是一个基于 [***ExoPlayer***](https://github.com/google/ExoPlayer) 的 Dart.Flutter 插件，用于在 Dart.Flutter 应用程序中播放音频和视频文件；
    * *ExoPlayer* 是一个功能强大的跨平台媒体播放器，***支持 Android、iOS 和 Web 平台***；
    * 使用 *flutter_exoplayer*，您可以方便地在 Dart.Flutter 应用程序中实现高性能的音视频播放功能；
+
+### 70、<font id=FutureBuilder>**`Widget`.`FutureBuilder`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a> 
+
+> `FutureBuilder` 是 [**Flutter**](https://flutter.dev/) 里专门用来处理 <a href="#Future" style="font-size:17px; color:green;"><b>异步任务（Future）</b></a>**结果** 的 **Widget**。它的核心作用就是：在等待异步任务完成前、完成后、以及出错时，自动帮你切换 UI。
+
+* 基本结构
+
+  > **不要在 `builder` 里重新创建 Future**：会导致无限重建。
+  >
+  > ```dart
+  > // ❌ 错误写法
+  > FutureBuilder(
+  >   future: fetchData(), // 每次 build 都会重新请求
+  > )
+  > ```
+
+  ```dart
+  FutureBuilder<T>(
+    future: someFuture, // 异步任务，比如网络请求
+    builder: (BuildContext context, AsyncSnapshot<T> snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return CircularProgressIndicator(); // 加载中
+      } else if (snapshot.hasError) {
+        return Text('Error: ${snapshot.error}'); // 出错
+      } else if (snapshot.hasData) {
+        return Text('Result: ${snapshot.data}'); // 成功
+      } else {
+        return Text('没有数据');
+      }
+    },
+  )
+  ```
 
 ## 五、📃其他 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -18092,12 +18130,14 @@ list.add('C');
     getFuture().then((value) => debugPrint(value));/// Future对象用then打开。这里的value就是String，也就是"Alice"
   }
   ```
-##### 41.3.2、🧵异步操作的结果 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 41.3.2、🧵 <a href="#FutureBuilder" style="font-size:17px; color:green;"><b>`FutureBuilder`</b></a>（跳转查看） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+##### 41.3.3、🧵异步操作的结果 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * ***Future*** 代表一个异步操作的结果。当异步操作完成时，***Future*** 将会返回一个值（data）或一个错误（error）。*错误和值不可能同时出现*；
 * 所以，***Future*** 总共有3种形态：**刚进来没有完成的状态**、**正常完成以后得状态**、**异常完成以后得到的错误信息**；
 
-##### 41.3.3、🧵代码执行优先级 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 41.3.4、🧵代码执行优先级 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
   * [**Dart**](https://dart.dev/)代码直接<u>Debug</u>模式运行**立即执行的**
 
@@ -18207,7 +18247,7 @@ list.add('C');
     flutter: event 3
     ```
 
-##### 41.3.4、🧵`then()`方法 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 41.3.5、🧵`then()`方法 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 1️⃣ 可以使用**`Future`对象的`then()`方法注册回调函数**
 >
@@ -18287,7 +18327,7 @@ Continuing Execution...
 Error Fetching Number: Exception: Failed To Fetch Number
 ```
 
-##### 41.3.5、🧵[**Dart**](https://dart.dev/).**`async`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 41.3.6、🧵[**Dart**](https://dart.dev/).**`async`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 以下3种写法等价
 
@@ -18311,7 +18351,7 @@ getFuture(){
 }
 ```
 
-##### 41.3.6、🧵[**Dart**](https://dart.dev/).<font color="red">`await`</font> 和 [**Dart**](https://dart.dev/).<font color="red">`async`</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 41.3.7、🧵[**Dart**](https://dart.dev/).<font color="red">`await`</font> 和 [**Dart**](https://dart.dev/).<font color="red">`async`</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > * 通过<font color="red">*`async`*</font>关键字标记的函数可以使用<font color="red">*`await`*</font>关键字来等待*Future*的完成，而不必使用`then()`方法注册回调函数
 > * <font color="red">***`await`是`async`的反义词***</font>
@@ -18356,7 +18396,7 @@ Connecting to VM Service at ws://127.0.0.1:59963/uNDeeaH8Z-0=/ws
 flutter: oops 
   ```
 
-##### 41.3.7、🧵[**Dart**](https://dart.dev/).**`error`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 41.3.8、🧵[**Dart**](https://dart.dev/).**`error`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 Future<String> getFuture(){
@@ -18408,7 +18448,7 @@ flutter: 5
 flutter: complete
 ```
 
-##### 41.3.8、🧵[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).**`FutureBuilder`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 41.3.9、🧵[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).**`FutureBuilder`** <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 1️⃣ **`Future`**提供了一个名为 **`FutureBuilder`** 的**`Widget`**，<font color="red">**用于在Future完成后构建UI**</font>。
 >
@@ -18493,7 +18533,7 @@ class _MyHomePageState extends State<MyHomePage> {
 // 运行效果：设备屏幕正中央，先出现72，等待2秒以后，出现错误图标
 ```
 
-##### 41.3.9、🧵[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).<font id="AsyncSnapshot">**`AsyncSnapshot`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 41.3.10、🧵[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/).<font id="AsyncSnapshot">**`AsyncSnapshot`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * 只存在于[**Dart**](https://dart.dev/).[**Flutter**](https://flutter.dev/)中；
 * **`AsyncSnashot`** 是[**Flutter**](https://flutter.dev/)中用于表示异步操作的快照的类。它通常与 [***FutureBuilder***](#FutureBuilder) 或 [***StreamBuilder***](#StreamBuilder) 一起使用，用于获取异步操作的结果或状态，并在 UI 中进行相应的处理。
