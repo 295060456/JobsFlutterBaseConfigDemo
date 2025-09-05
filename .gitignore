@@ -61,4 +61,4 @@ plugins/
 /ios/
 /android/
 # local VSCode configs
-.vscode/
+#.vscode/
