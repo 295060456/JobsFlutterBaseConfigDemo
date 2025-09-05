@@ -26,40 +26,51 @@
 * **站在巨人的肩膀上，才能看得更远**
 * **面向信仰编程**
 
-
-## 🌍友情外链🔗
-
-* [**Jobs**](https://github.com/)自我知识产权
-  * [**Jobs相关文档支持**](https://github.com/295060456/JobsDocs)
-  * [**效率工具：SourceTree的脚本配置**](https://github.com/295060456/SourceTree.sh)
-  * [**常见环境变量配置文件（按使用场景分类）**](https://github.com/295060456/JobsMacEnvVarConfig)
-* 外部文档
-  * [***Dart/Flutter社区生态：Pub.dev***](https://pub.dev/)
-  * [***Flutter 面试知识点集锦· GitBook***](https://guoshuyu.cn/home/wx/Flutter-msjj.html)
-  * [**Flutter 实战@第二版**](https://book.flutterchina.club/)
-  * [***在 Flutter 里使用 Stream***](https://juejin.cn/post/6844904131287580685)
-  * [***Flutter 教程 Async***](https://www.youtube.com/watch?v=qBksSix4qj0&list=PLDD3xNHFJjoob3GCF1JqaDxwrOTmpGGbe&index=1)
-
 ## 一、🎯项目白皮书 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 程序员是一个高消耗的职业，除了日常基本的业务开发以外，新事物的不断涌现也需要持续性的学习，所以是一件非常消耗精力的事；而且由于长期的高压、高情绪、熬夜，**会打乱人体内正常的内分泌节奏**，大概率也会逐渐的引发各种职业疾病。业内普遍认为程序员的**黄金年龄在25～35周岁**。那么，还是希望，在我们（亦或者是暂时性的）离开这个行业的时候，一定要为自己或者后人，留下点什么，算是这么多年的一个工作总结。此外，能最大化的辅助人，帮助其在极短的时间内去：<u>回忆/上手/学习/实验</u>这个编程语言下的工程项目。所以，此项目就一定是要结合商业需求去务实拓展，解决当前痛点。
 
-* 品控标准（只能严格的保证编译器正常，而不能完全保证运行时的不出错）
+* ✅品控标准（只能严格的保证编译器正常，而不能完全保证运行时的不出错）
   * 一定要保证这个工程的成功编译通过，方便以后项目直接进行引用，乃至开新版本
   * <font color=blue>**示例Demo可能因为相关Api的升级，没有及时的覆盖处理，可能会出现闪退。修复即可**</font>
-* 自此以后，所有新开的项目都可以根据这个**根项目**来进行统一的调配和使用
+* 📌 自此以后，所有新开的项目都可以根据这个**根项目**来进行统一的调配和使用
   * 将它作为所有项目的母版和基类，最大限度的做到全局的统一
   * 日积月累的记录一些平时生产生活中萌发的一些优秀的想法、灵光一现的创意。包括但不仅限于：<u>语法糖的封装</u>、<u>方法的调用</u>，<u>第三方的选用</u>、以及一些心得体会
-* 作为某些代码**实践靶场**，在实际开发过程中，是非常有必要的
+* 🎯 作为某些代码**实践靶场**，在实际开发过程中，是非常有必要的
   * 为我们快速且稳定的复现一些业务场景，作为代码实验室🧪，而搭建的一个平台
-* 作为代码笔记，记录一些常用的代码，方便查阅
+* 📝 作为代码笔记，记录一些常用的代码，方便查阅
   * 主要形式是：<font color=red>**可以直接运行的代码**</font> ➕ <font color=red>**文字性叙述**</font> ➕ <font color=red>**图文混编讲解**</font>
   * 作为学习的资料，可以快速了解到一些常用的知识，大幅**降低学习成本**
   * 作为其他项目的参考，可以快速的了解到项目的架构，代码规范，以及一些设计模式
   * 这么一些优秀的成果，其来源不仅仅是来自于作者本身的持续付出与积累。更是这个领域大家庭中各路优秀作者的智慧结晶
-* **保姆级教程**：附带独立的测试单元
+* 👩**保姆级教程**：附带独立的测试单元
   * 对于单个的[**Flutter**](https://flutter.dev/)工程文件（小**Demo**）可以利用[**运行脚本**](./【MacOS】☀️双击运行Flutter项目（iOS 模拟器）.command)，在**MacOS**的**终端**直接拖入进行运行和展示（终端运行不支持断点，只能输出日志）
   * 为了保证各个**Demo**在形式上的独立性，所以尽可能的在单个`.dart`文件里面进行叙述。**每一个[Flutter](https://flutter.dev/)的Demo文件里，都会存在其程序的入口函数**
+* 🌍友情外链🔗
+  * [**Jobs**](https://github.com/) **自我知识产权**
+    * [**Jobs相关文档支持**](https://github.com/295060456/JobsDocs)
+    * [**效率工具：SourceTree的脚本配置**](https://github.com/295060456/SourceTree.sh)
+    * [**常见环境变量配置文件（按使用场景分类）**](https://github.com/295060456/JobsMacEnvVarConfig)
+  * 外部支持文档
+    * [**Dart/Flutter社区生态：Pub.dev**](https://pub.dev/)
+    * [**Flutter 面试知识点集锦· GitBook**](https://guoshuyu.cn/home/wx/Flutter-msjj.html)
+    * [**Flutter 实战@第二版**](https://book.flutterchina.club/)
+    * [**在 Flutter 里使用 Stream**](https://juejin.cn/post/6844904131287580685)
+    * [**Flutter 教程 Async**](https://www.youtube.com/watch?v=qBksSix4qj0&list=PLDD3xNHFJjoob3GCF1JqaDxwrOTmpGGbe&index=1)
+* 🌟特色与亮点
+  * [**Github**](https://github.com/)统一管理[**VSCode**](https://code.visualstudio.com/)配置
+  * 脚本一键配置[**Flutter**](https://flutter.dev/)开发环境
+  * [**Sourcetree**](https://www.sourcetreeapp.com/)工具：锚定特殊环境运行（[**fvm**](https://fvm.app/)、[**jenv**](https://www.jenv.be/)）
+  * **iOS**/**Android**模拟器录屏（独立脚本）
+  * 新建**iOS**/**Android**模拟器（独立脚本）
+  * **iOS**/安卓打包工具（**终端函数**/[**Sourcetree**](https://www.sourcetreeapp.com/)**工具脚本**/**独立脚本**）
+  * 终端易用工具（配置ZSH函数）
+    * 开发环境
+    * 颜色转换
+    * 时间戳转换
+  * 靶场项目
+    * [**Flutter**](https://flutter.dev/)易用语法糖
+    * 独立[**Dart**](https://dart.dev/)文件的[**Flutter**](https://flutter.dev/).**Demo**
 
 ## 二、🌱[**环境配置**](https://github.com/295060456/JobsMacEnvVarConfig)@[**Flutter**](https://flutter.dev/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
