@@ -1,4 +1,4 @@
-# [Dart.**`🐦Flutter`**](https://flutter.dev)@<font color=red>靶场项目</font>蓝皮书📘
+# [**Dart**](https://dart.dev/).[**🐦`Flutter`**](https://flutter.dev)@<font color=red>靶场项目</font>蓝皮书📘
 
 <p align="left">
   <a><img src="https://img.shields.io/badge/flutter-3.22.1-blue" alt="Flutter"/></a>
@@ -15630,7 +15630,7 @@ ipa() {
 }
 ```
 
-#### 25.4、配置[**`SourceTree`**](https://www.sourcetreeapp.com/)打包脚本 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 25.2、配置[**`SourceTree`**](https://www.sourcetreeapp.com/)打包脚本 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * [**打包Flutter.Android**](https://github.com/295060456/SourceTree.sh/blob/main/%E3%80%90MacOS%40SourceTree%E3%80%91%F0%9F%93%A6%E5%8F%8C%E5%87%BB%E6%89%93%E5%8C%85Flutter.android.command)
 
@@ -16111,11 +16111,62 @@ ipa() {
   main "$@"
   ```
 
-#### 25.3、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)（较为复杂和繁琐） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 25.3、[**Flutter**](https://flutter.dev/)打包和运行流程 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-##### 25.3.1、 [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+> 打包只依赖于 **SDK、编译工具链（Android SDK / NDK / Xcode）**，不需要设备。
+>
+> 本地或 CI/CD 上：只需安装 Flutter + Android SDK/Xcode，就能 **无设备打包**。
+>
+> 部署到设备测试：才需要连接真机/模拟器。
+>
+> **真机调试特性**：比如调试相机、传感器、蓝牙等依赖硬件的功能，必须插上真机。
 
->  [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) （<font color=red>**建议保持最新**</font>）是[**Android**](https://www.android.com/).**SDK**命令行工具：[Android **Command Line Tools**](https://developer.android.com/tools?hl=zh-cn)的一部分，用于管理 [**Android**](https://www.android.com/).**SDK** 的组件。它允许你从终端安装、更新、查看和卸载[**Android**](https://www.android.com/).**SDK**中的各种包，比如：
+* **本地打包流程（不需要iOS设备）**
+
+  ```mermaid
+  flowchart TD
+      A["Flutter 源码"] --> B["Flutter 编译器 (AOT)"]
+      B --> C["平台构建工具链"]
+      C -->|Android Gradle 构建| D["APK / AAB"]
+      C -->|iOS Xcode 构建| E["IPA / APP"]
+      J["签名证书 / Provisioning Profile (仅 iOS 必需)"] --> E
+      classDef build fill:#00C2C7,stroke:#008B8B,color:#ffffff;
+      classDef cert fill:#4CAF50,stroke:#1B5E20,color:#ffffff;
+      class B,C,D,E build;
+      class J cert;
+  ```
+
+*  **CI/CD 云端打包（也不需要iOS设备）**
+
+  ```mermaid
+  flowchart TD
+      A["Flutter 源码"] --> H["CI/CD 服务 (GitHub Actions / Codemagic)"]
+      H --> I["云端工具链构建"]
+      I -->|产出安装包| D["APK / AAB"]
+      I -->|产出安装包| E["IPA / APP"]
+      J["签名证书 / Provisioning Profile (仅 iOS 必需)"] --> E
+      classDef cloud fill:#673AB7,stroke:#4527A0,color:#ffffff;
+      classDef cert fill:#4CAF50,stroke:#1B5E20,color:#ffffff;
+      class H,I cloud;
+      class J cert;
+  ```
+
+* **部署与运行（才需要iOS设备）**
+
+  ```mermaid
+  flowchart TD
+      D["APK / AAB"] --> F["部署到设备"]
+      E["IPA / APP"] --> F
+      F --> G["真机 / 模拟器运行"]
+      classDef device fill:#FF9800,stroke:#E65100,color:#ffffff;
+      class F,G device;
+  ```
+
+#### 25.4、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)（较为复杂和繁琐）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+##### 25.4.1、 [**Android  Command Line Tools**](https://developer.android.com/tools?hl=zh-cn).[**sdkmanager**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+>  [**sdkmanager**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) （<font color=red>**建议保持最新**</font>）是[**Android**](https://www.android.com/).**SDK**命令行工具：[**Android  Command Line Tools**](https://developer.android.com/tools?hl=zh-cn)的一部分，用于管理 [**Android**](https://www.android.com/).**SDK** 的组件。它允许你从终端安装、更新、查看和卸载[**Android**](https://www.android.com/).**SDK**中的各种包，比如：
 >
 >  - [**Android**](https://www.android.com/) 平台（如 `platforms;android-34`）
 >  - 构建工具（如 `build-tools;34.0.0`）
@@ -16123,11 +16174,11 @@ ipa() {
 >  - 模拟器（如 `emulator`）
 >  - 其他工具组件（如 `cmdline-tools`, `platform-tools`, `ndk`, `sources` 等）
 
-*  [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn)的安装方式
+*  [**sdkmanager**](https://developer.android.com/tools/sdkmanager?hl=zh-cn)的安装方式
 
   * [**Android Studio**](https://developer.android.com/studio?hl=zh-cn) 自带（最常见方式）
 
-    * 安装 [**Android Studio**](https://developer.android.com/studio?hl=zh-cn) 时，会自动安装[**Android**](https://www.android.com/).**SDK**和 [**`sdkmanager`**](https://developer.android.com/tools/sdkmanager?hl=zh-cn)
+    * 安装 [**Android Studio**](https://developer.android.com/studio?hl=zh-cn) 时，会自动安装[**Android**](https://www.android.com/).**SDK**和 [**sdkmanager**](https://developer.android.com/tools/sdkmanager?hl=zh-cn)
 
     * 路径一般在：
 
@@ -16143,19 +16194,19 @@ ipa() {
 
   * [**Homebrew**](https://brew.sh/) 安装（<font color=red>**macOS** 推荐</font>）
 
-    * ```shell
-      brew install --cask android-commandlinetools
-      ```
+    ```shell
+    brew install --cask android-commandlinetools
+    ```
 
-      ```shell
-      cp -R /opt/homebrew/share/android-commandlinetools/cmdline-tools ~/Library/Android/sdk/cmdline-tools/latest
-      ```
+    ```shell
+    cp -R /opt/homebrew/share/android-commandlinetools/cmdline-tools ~/Library/Android/sdk/cmdline-tools/latest
+    ```
 
   * 手动下载安装（[**🔗 官方 zip 包**](https://developer.android.com/studio#command-tools)） ：解压到 👉 `~/Library/Android/sdk/cmdline-tools/latest/bin/sdkmanager`
 
     * 用于自定义 **CI/CD** 环境（如 [**Docker**](https://www.docker.com/)镜像）
 
-##### 25.1.2、[**Gradle**](https://gradle.org/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 25.4.2、[**Gradle**](https://gradle.org/) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 一个高度可配置、插件化、现代化的自动化构建工具（平台无关）
 
@@ -16177,7 +16228,7 @@ ipa() {
   - **Android**用 [**Gradle**](https://gradle.org/)  构建
   - **iOS** 使用 [**Gradle**](https://gradle.org/) 生成共享模块（`.framework`），再由[**XCode**](https://developer.apple.com/xcode/) 集成
 
-  📌 所以  [**Gradle**](https://gradle.org/) 可以参与构建 iOS 的一部分（共享逻辑），但最终生成和打包 IPA 仍然交给 [XCode](https://developer.apple.com/xcode/)完成**。
+  📌 所以  [**Gradle**](https://gradle.org/) 可以参与构建 **iOS** 的一部分（共享逻辑），但最终生成和打包 IPA 仍然交给 [XCode](https://developer.apple.com/xcode/)完成**。
 
 * [**Gradle**](https://gradle.org/)的优势
 
@@ -16225,7 +16276,7 @@ ipa() {
   }
   ```
 
-##### 25.1.3、<font id=AGP>[<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) = <font color=red>**A**</font>ndroid <font color=red>**G**</font>radle <font color=red>**P**</font>lugin</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 25.4.3、<font id=AGP>[<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) = <font color=red>**A**</font>ndroid <font color=red>**G**</font>radle <font color=red>**P**</font>lugin</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * 🧱  [<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn) 是连接 [**Gradle**](https://gradle.org/) 和 **[Android](https://www.android.com/) 构建逻辑** 的桥梁
 
@@ -16270,7 +16321,7 @@ ipa() {
   | 版本关系               | 不同 [<font color=red>**AGP**</font>](https://developer.android.com/build/agp-upgrade-assistant?hl=zh-cn)  需配套不同 [**Gradle**](https://gradle.org/) | 独立更新                                           |
   | **Flutter** 项目中位置 | `build.gradle` 中的 `classpath`                              | `gradle-wrapper.properties` 中的 `distributionUrl` |
 
-##### 25.1.4、[**Android**](https://www.android.com/)打包的产物 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 25.4.4、[**Android**](https://www.android.com/)打包的产物 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 | 项目                 | <font color=red>**A**</font>ndroid <font color=red>**p**</font>ac<font color=red>**k**</font>age | <font color=red>**A**</font>ndroid <font color=red>**a**</font>pp <font color=red>**b**</font>undle |
 | -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -16285,7 +16336,7 @@ ipa() {
 | **常见用途**         | 内部测试、第三方分发、安装包备份                             | 上传 [**Google Play**](https://play.google.com/) 商店        |
 | **是否推荐**         | ✅ 第三方或私有渠道使用                                       | ✅ [**Google**](https://www.google.com/) 官方推荐上传 [**Play**](https://play.google.com/) 商店使用 |
 
-##### 25.1.5、[**Flutter**](https://flutter.dev/)打[**Android**](https://www.android.com/) 包的流程图 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 25.4.5、[**Flutter**](https://flutter.dev/)打[**Android**](https://www.android.com/) 包的流程图 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```mermaid
 graph TD
@@ -16297,7 +16348,7 @@ graph TD
     F --> G[Generate final APK]
 ```
 
-##### 25.1.6、如何加快[**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)的打包速度？ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 25.4.6、如何加快[**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)的打包速度？ <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 | 优化方式                                            | 操作说明                                                     |
 | --------------------------------------------------- | ------------------------------------------------------------ |
@@ -16310,7 +16361,7 @@ graph TD
 | ✅ **设置构建线程数**                                | [**Gradle**](https://gradle.org/) 中设置：`org.gradle.parallel=true` |
 | ✅ [**Flutter**](https://flutter.dev/) **版本更新**  | 新版本通常对构建性能有优化                                   |
 
-##### 25.1.7、🪖<font color=red>**构建指令**</font>：`flutter build apk` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 25.4.7、🪖<font color=red>**构建指令**</font>：`flutter build apk` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 | 模式      | 命令                                                   | 简称说明             |
 | --------- | ------------------------------------------------------ | -------------------- |
@@ -16352,7 +16403,7 @@ graph TD
   | `-Psplit-debug-info`      | 是否分离调试信息                                |
   | `assembleRelease`         | 构建 release 产物，最终生成 `app-release.apk`   |
 
-##### 25.1.8、⚙️ 相关配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 25.4.8、⚙️ 相关配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)打包需要涉及到**Java**环境推荐使用[<font color=red>**openJDK**</font>](https://openjdk.org/)
 
@@ -16364,9 +16415,9 @@ graph TD
 
   | 项目         | 作用时间点 | 决定了什么                                 | 影响范围                                                     |
   | ------------ | ---------- | ------------------------------------------ | ------------------------------------------------------------ |
+  | `targetSdk`  | 运行时     | 系统判断你是否适配该系统的新行为（兼容性） | 影响行为变更 +  [**Play**](https://play.google.com/)  审核要求 |
   | `compileSdk` | 编译时     | 你能用的 API 上限                          | 限制代码编写 +  <a href="#AGP" style="font-size:17px; color:green;"><b>**AGP**</b></a> 要求 |
   | `minSdk`     | 安装时     | **App** 最低可运行系统版本                 | 影响能否安装，越低设备越多                                   |
-  | `targetSdk`  | 运行时     | 系统判断你是否适配该系统的新行为（兼容性） | 影响行为变更 +  [**Play**](https://play.google.com/)  审核要求 |
 
   * **`compileSdk`**
 
@@ -16410,7 +16461,7 @@ graph TD
   | 第三方依赖                                                   | 来自 [**pub.dev**](https://pub.dev/) 的插件中声明的 AAR/JAR，如 [`image_gallery_saver`](https://pub.dev/packages/image_gallery_saver)、[`engagelab`](https://pub.dev/packages?q=engagelab) |
   | [**Google Maven**](https://maven.google.com/web/index.html) / [**JCenter**](https://mvnrepository.com/repos/jcenter) / [**MavenCentral**](https://central.sonatype.com/) | 默认构建源，国内访问会慢                                     |
 
-##### 25.1.9、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/) [打包脚本（MacOS）](https://github.com/295060456/JobsCommand-Flutter/blob/main/%E3%80%90MacOS%E3%80%91%F0%9F%93%A6%E5%8F%8C%E5%87%BB%E6%89%93%E5%8C%85Flutter.Android.command) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 25.4.9、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/) [打包脚本（MacOS）](https://github.com/295060456/JobsCommand-Flutter/blob/main/%E3%80%90MacOS%E3%80%91%F0%9F%93%A6%E5%8F%8C%E5%87%BB%E6%89%93%E5%8C%85Flutter.Android.command) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ><font color=red>**阻碍打包进程的几个关键点**</font>
 >
@@ -16967,7 +17018,7 @@ main "$@"
 ```
 </details>
 
-##### 25.1.10、打包成品  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 25.4.10、打包成品  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > [**Flutter**](https://flutter.dev/) 和 [**Gradle**](https://gradle.org/)  的构建系统默认会将最新产物**覆盖上一次的构建产物**
 
@@ -16999,9 +17050,9 @@ graph TD
 | 🚀 提测/发包                                         | `apk/release/app-release.apk`（需签名）                  |
 | 🌐 上架  [**Google Play**](https://play.google.com/) | `bundle/release/app-release.aab`                         |
 
-#### 25.2、📦 [**Flutter**](https://flutter.dev/).**iOS**（相对简单）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 25.5、📦 [**Flutter**](https://flutter.dev/).**iOS**（相对简单）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-##### 25.2.1、🪖<font color=red>**构建指令**</font>：`flutter build ios` 和 <font color=red>**`flutter build ipa`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 25.5.1、🪖<font color=red>**构建指令**</font>：`flutter build ios` 和 <font color=red>**`flutter build ipa`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > **iOS** 项目主流是使用[**XCode**](https://developer.apple.com/xcode/) + [**XCode**](https://developer.apple.com/xcode/) **build system** 来进行构建
 
@@ -17019,7 +17070,7 @@ graph TD
 | `--export-options-plist` | `--export-options-plist=ios/ExportOptions.plist` | 指定导出 **ipa** 所需的 **plist**        |
 | `--no-codesign`          | `flutter build ios --no-codesign`                | 构建时跳过签名，常用于 CI 环境或手动签名 |
 
-##### 25.2.2、📁生成的包目录  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 25.5.2、📁生成的包目录  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 虽然[**Flutter**](https://flutter.dev/)构建**iOS**的`.ipa`包最终还是调用**Xcode**的内部组件，<font color=red>但是生成的`.ipa`包的物理位置，与**Xcode**打正常的**iOS**原生`.ipa`是不同的</font>
 
@@ -17060,7 +17111,7 @@ graph TD
     F --> F2[📄 ExportOptions.plist<br/>导出配置文件<br/>📝 控制签名/上传方式]
 ```
 
-##### 25.2.3、📦 打包脚本 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 25.5.3、📦 打包脚本 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```shell
 #!/bin/zsh
@@ -17279,7 +17330,7 @@ main() {
 main "$@"
 ```
 
-##### 25.2.4、⚠️注意事项  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 25.5.4、⚠️注意事项  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * 必须要有苹果的开发者账号（普通账户充值）
 
