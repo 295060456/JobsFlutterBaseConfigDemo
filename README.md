@@ -3263,7 +3263,9 @@ print(now.weekday);    // 星期几（1=星期一，7=星期日）
 
 ##### 13.3.1、🔜 [**GetX**](https://pub.dev/packages/get)<a href="#GetX弹出框" style="font-size:17px; color:green;"><b>弹出框</b></a>（跳转查看）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-> 本质上只是对 [**Flutter**](https://flutter.dev/) 原生弹窗 API 的封装。简化了 **context** 传递，不用层层传 **context**，也省去了 **Navigator** 调用。
+* 本质上只是对 [**Flutter**](https://flutter.dev/) 原生弹窗 API 的封装。
+* 简化了 **context** 传递，不用层层传 **context**，也省去了 **Navigator** 调用。
+* <font color=red>**顶层必须是在`GetMaterialApp`之下**</font>，方可起作用。否则点击弹出无效
 
 ##### 13.3.2、🔜 [**Flutter**](https://flutter.dev/)原生弹出框 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
