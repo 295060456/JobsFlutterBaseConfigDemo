@@ -66,7 +66,7 @@
   * **iOS**/安卓打包工具（**终端函数**/[**Sourcetree**](https://www.sourcetreeapp.com/)**工具脚本**/**独立脚本**）
   * 终端易用工具（配置ZSH函数）
     * 开发环境
-    * 颜色格式转换
+    * 颜色格式转换（可显示色块）
     * 时间戳转换
   * 靶场项目
     * [**Flutter**](https://flutter.dev/)易用语法糖
