@@ -2790,9 +2790,9 @@ print(now.weekday);    // 星期几（1=星期一，7=星期日）
   | `k` / `kk` | 24小时制（1–24）         | `24`（不会是 0）                    |
   | `K` / `KK` | 12小时制（0–11）         | `0` 表示 12点                       |
 
-### 13、✅<font color=red>**推页面**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 13、🔜  <font color=red>**推页面**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-#### 13.1、<font id=Navigator>**`Navigator`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 13.1、🔜 <font id=Navigator>**`Navigator`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 1️⃣ 在 [**Flutter**](https://flutter.dev/) 中，每一个 `Navigator` 都会有**自己的路由栈**，并不是全局唯一的
 >
@@ -2805,7 +2805,7 @@ print(now.weekday);    // 星期几（1=星期一，7=星期日）
 >
 > 3️⃣ 默认调用 `Navigator.of(context)`，是**从当前 context 向上查找最近的 Navigator**，**而不是找最上层的**
 
-##### 13.1.1、正向传参 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 13.1.1、🔜 正向传参 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * 构造函数传参（✅最推荐）
 
@@ -3131,7 +3131,7 @@ print(now.weekday);    // 星期几（1=星期一，7=星期日）
 
   </details>
 
-##### 13.2.1、返向传参 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 13.1.2、🔜 返向传参 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * 标准型
 
@@ -3257,9 +3257,96 @@ print(now.weekday);    // 星期几（1=星期一，7=星期日）
     ```
     </details>
 
-#### 13.2、<font id=GetX路由>**[GetX](https://pub.dev/packages/get)路由**</font>（跳转查看） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 13.2、🔜 <font id=GetX路由>**[GetX](https://pub.dev/packages/get)路由**</font>（跳转查看）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-#### 13.3、<a href="#按钮的封装" style="font-size:20px; color:green;"><b>按钮的封装</b></a>（跳转查看）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 13.3、🔜 弹出页面 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+##### 13.3.1、🔜 [**GetX**](https://pub.dev/packages/get)<a href="#GetX弹出框" style="font-size:17px; color:green;"><b>弹出框</b></a>（跳转查看）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+> 本质上只是对 [**Flutter**](https://flutter.dev/) 原生弹窗 API 的封装。简化了 **context** 传递，不用层层传 **context**，也省去了 **Navigator** 调用。
+
+##### 13.3.2、🔜 [**Flutter**](https://flutter.dev/)原生弹出框 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* 中间弹出
+
+  ```dart
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text("标题"),
+        content: const Text("这是弹窗的内容"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(), // 关闭弹窗
+            child: const Text("取消"),
+          ),
+          TextButton(
+            onPressed: () {
+              // 确认逻辑
+              Navigator.of(context).pop("ok");
+            },
+            child: const Text("确定"),
+          ),
+        ],
+      );
+    },
+  );
+  ```
+
+  ```dart
+  /// 任意 Widget
+  showDialog(
+    context: context,
+    barrierDismissible: false, // 点击背景是否可关闭
+    builder: (context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text("自定义弹窗"),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("关闭"),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+  ```
+
+* 底部弹出
+
+  ```dart
+  showModalBottomSheet(
+    context: context,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (context) {
+      return Wrap(
+        children: [
+          ListTile(
+            title: const Text("选项1"),
+            onTap: () => Navigator.of(context).pop(1),
+          ),
+          ListTile(
+            title: const Text("选项2"),
+            onTap: () => Navigator.of(context).pop(2),
+          ),
+        ],
+      );
+    },
+  );
+  ```
+
+#### 13.4、🔜 <a href="#按钮的封装" style="font-size:20px; color:green;"><b>按钮的封装</b></a>（跳转查看）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ### 14、🔙 导航栏返回按钮 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -8142,7 +8229,7 @@ late final MyTabCtrl tabController = getOrPut(() => MyTabCtrl());
     > class GetObserver extends NavigatorObserver with WidgetsBindingObserver
     > ```
 
-##### 27.4.13、🉐 [**`GetX`**](https://pub.dev/packages/get)@弹出框🪟 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 27.4.13、🉐<font id=GetX弹出框> [**`GetX`**](https://pub.dev/packages/get)@弹出框</font>🪟 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ###### 27.4.13.1、🉐 `Get.dialog(widget)` <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -10769,7 +10856,7 @@ Positioned(
 ),
 ```
 
-##### 44.1.3、缩放+平移（仅 Scale 系列）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 44.1.3、缩放 ➕ 平移（仅 Scale 系列）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 Positioned.fill(
@@ -14691,17 +14778,64 @@ Comparable.compare(a, b)
 #### 20.3、混入的复杂用法 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * Dart 规则：带 `on SomeType` 约束的 mixin，必须出现在 `with` 列表里 **SomeType 之后**。否则类型约束不成立会报错
-
-  ```dart
-  /// 这意味着：任何想用 Widget_Mixin 的类，必须同时是 Tools_Mixin 的子类型。
-  mixin Widget_Mixin on Tools_Mixin { ... }
   
-  /// ⚠️ 注意此时with后面必须同时写，且先后次序不能乱
-  class A_State extends State<GameRecordsPage>
-      with Tools_Mixin, Widget_Mixin {  // ✅
-    // ...
-  }
-  ```
+  * 用于 **`StatelessWidget`**
+  
+    ```dart
+    mixin class Tools_Mixin {}
+    
+    /// 这意味着：任何想用 Widget_Mixin 的类，必须同时是 Tools_Mixin 的子类型。
+    /// 此时，放宽限制，可以用于 StatelessWidget
+    mixin Widget_Mixin on Tools_Mixin{
+     // TODO
+    }
+    ```
+    
+    > ```dart
+    > class DemoPage extends StatelessWidget
+    >     with Tools_Mixin, Widget_Mixin {
+    >   const DemoPage({super.key});
+    > 
+    >   @override
+    >   Widget build(BuildContext context) {
+    >     return const SizedBox(width: 10,height: 10);
+    >   }
+    > }
+    > ```
+    
+  * 用于 **`StatefulWidget`**
+  
+    ```dart
+    mixin class Tools_Mixin {}
+    
+    /// 这意味着：任何想用 Widget_Mixin 的类，必须同时是 Tools_Mixin 的子类型。
+    /// 此时，只能用于 StatefulWidget
+    mixin Widget_Mixin<T extends StatefulWidget> on State<T>, Tools_Mixin{
+     // TODO
+    }
+    ```
+  
+    > ```dart
+    > class _Content extends StatefulWidget {
+    > final String title;
+    > 
+    > const _Content({
+    >  required this.title,
+    > });
+    > 
+    > @override
+    > State<_Content> createState() => _ContentState();
+    > }
+    > 
+    > /// ⚠️ 注意此时with后面必须同时写，且先后次序不能乱
+    > class _ContentState extends State<_Content> with Tools_Mixin, Widget_Mixin<_Content> {
+    >   @override
+    >   Widget build(BuildContext context) {
+    >     return Stack();
+    >   }
+    > }
+    > ```
+  
 
 ### 21、基础的数据类型 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -16164,7 +16298,7 @@ ipa() {
 
 #### 25.4、📦 [**Flutter**](https://flutter.dev/).[**Android**](https://www.android.com/)（较为复杂和繁琐）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-##### 25.4.1、 [**Android  Command Line Tools**](https://developer.android.com/tools?hl=zh-cn).[**sdkmanager**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 25.4.1、 [**`Android Command Line Tools`**](https://developer.android.com/tools?hl=zh-cn).[**sdkmanager**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 >  [**sdkmanager**](https://developer.android.com/tools/sdkmanager?hl=zh-cn) （<font color=red>**建议保持最新**</font>）是[**Android**](https://www.android.com/).**SDK**命令行工具：[**Android  Command Line Tools**](https://developer.android.com/tools?hl=zh-cn)的一部分，用于管理 [**Android**](https://www.android.com/).**SDK** 的组件。它允许你从终端安装、更新、查看和卸载[**Android**](https://www.android.com/).**SDK**中的各种包，比如：
 >
