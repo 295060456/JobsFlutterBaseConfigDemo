@@ -26,6 +26,23 @@ Widget JobsLoadingView() {
   );
 }
 
+Widget JobsEmptyHint({
+  required VoidCallback onRetry,
+}) {
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      const Icon(Icons.image_not_supported_outlined, size: 48),
+      const SizedBox(height: 8),
+      const Text('暂无内容'),
+      OutlinedButton(
+        onPressed: onRetry,
+        child: Text('点我重试'.tr),
+      ),
+    ],
+  );
+}
+
 // Widget JobsEmptyView() {
 //   return Container(
 //     height: 500.h,

@@ -1,10 +1,9 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
+import 'package:jobs_flutter_base_config/JobsDemoTools/UI/UI.Origin%F0%9F%8C%8D/JobsViews.dart';
 
 /// 🛜网络图片
 void main() {
@@ -174,32 +173,6 @@ void main() {
 //     ),
 //   );
 // }
-
-/// 空态组件
-class JobsEmptyHint extends StatelessWidget {
-  final VoidCallback onRetry; // 外部传入的回调
-
-  const JobsEmptyHint({
-    super.key,
-    required this.onRetry,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Icon(Icons.image_not_supported_outlined, size: 48),
-        const SizedBox(height: 8),
-        const Text('暂无内容'),
-        OutlinedButton(
-          onPressed: onRetry, // ✅ 调用外部传入的回调
-          child: Text('点我重试'.tr),
-        ),
-      ],
-    );
-  }
-}
 
 class JobsBannerCarousel extends StatefulWidget {
   const JobsBannerCarousel({
