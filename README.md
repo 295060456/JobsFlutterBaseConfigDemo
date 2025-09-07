@@ -60,11 +60,13 @@
 * 🌟特色与亮点
   * [**Github**](https://github.com/)统一管理[**VSCode**](https://code.visualstudio.com/)配置
   * 脚本一键配置[**Flutter**](https://flutter.dev/)开发环境
+  * 脚本一键执行授权（**ZSH终端函数**）
   * [**Sourcetree**](https://www.sourcetreeapp.com/)工具：锚定特殊环境运行（[**fvm**](https://fvm.app/)、[**jenv**](https://www.jenv.be/)）
-  * **iOS**/**Android**模拟器录屏（独立脚本）
-  * 新建**iOS**/**Android**模拟器（独立脚本）
-  * **iOS**/安卓打包工具（**终端函数**/[**Sourcetree**](https://www.sourcetreeapp.com/)**工具脚本**/**独立脚本**）
-  * 终端易用工具（配置ZSH函数）
+  * **iOS**/**Android**模拟器录屏（**独立脚本**）
+  * 新建**iOS**/**Android**模拟器（**独立脚本**）
+  * 脚本一键替换**iOS**/**Android**的启动图和应用程序图标（**独立脚本**）
+  * **iOS**/安卓打包工具（**ZSH终端函数**/[**Sourcetree**](https://www.sourcetreeapp.com/)**工具脚本**/**独立脚本**）
+  * 终端易用工具（**ZSH终端函数**/**独立脚本**）
     * 开发环境
     * 颜色格式转换（可显示色块）
     * 时间戳转换
@@ -13083,8 +13085,8 @@ class ClipboardUtil {
 >    <font color=red>**需要清理缓存后重建：**</font>
 >
 >   ```shell
->   flutter clean
->   flutter pub get
+>   flutter clean # 清理构建缓存
+>   flutter pub get # 把项目依赖都下载好、放到本地缓存，再生成工程用的 .dart_tool 配置
 >   ```
 >
 >   **iOS** 还需要在 **Xcode** 👉 **Product** 👉 **Clean Build Folder**
@@ -13103,9 +13105,9 @@ class ClipboardUtil {
 >    
 >      ![telegram-cloud-photo-size-5-6167947438401374612-w](./assets/telegram-cloud-photo-size-5-6167947438401374612-w.jpg)
 >    
-> - `flutter clean`对iOS的图标资源无影响，但是对Android的图标资源有影响
+> - `flutter clean`对iOS的图标资源无影响，但是对[**Android**](https://www.android.com/)的图标资源有影响
 >    
->    * 区别在于，[**Android**](https://www.android.com/) 的 `mipmap-anydpi-v26/ic_launcher.xml` / `drawable/ic_launcher_background.xml` 等文件，部分会在构建过程中被覆盖/重写，**有些版本的 Flutter clean 会顺带清理 res 下的某些中间产物**。
+>    * 区别在于，[**Android**](https://www.android.com/)的 `mipmap-anydpi-v26/ic_launcher.xml` / `drawable/ic_launcher_background.xml` 等文件，部分会在构建过程中被覆盖/重写，**有些版本的 Flutter clean 会顺带清理 res 下的某些中间产物**。
 
 * **在 `pubspec.yaml` 添加依赖**：
 
@@ -13148,7 +13150,7 @@ class ClipboardUtil {
 
 ##### 62.1.2、手动替换  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-- **Android**：
+- [**Android**](https://www.android.com/) ：
   - 图标在：`android/app/src/main/res/`
   - 需要替换所有 `mipmap-*/ic_launcher.png`，保持文件名一致。
 - **iOS**：
@@ -13157,11 +13159,15 @@ class ClipboardUtil {
 
 ##### 62.1.3、验证图标资源是否存在  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-* ```shell
+* **iOS**
+  
+  ```shell
   ls -1 ios/Runner/Assets.xcassets/AppIcon.appiconset/*.png 2>/dev/null
   ```
-
-* ```shell
+  
+* [**Android**](https://www.android.com/) 
+  
+  ```shell
   ls -1 android/app/src/main/res/mipmap-*/ic_launcher.*
   ```
 
