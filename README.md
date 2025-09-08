@@ -9338,6 +9338,32 @@ final rows = list
   > print("abc" & "123"); // abc123
   > ```
 
+#### 31.3、字符串防空 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* ```dart
+  (title?.isEmpty ?? true) ? '暂无数据'.tr : title!
+  ```
+
+  > ```dart
+  > String? title;
+  > 
+  > // 情况1：null
+  > title = null;
+  > // title?.isEmpty = null → ?? true → true → 走 '暂无数据'
+  > 
+  > // 情况2：空字符串
+  > title = '';
+  > // title?.isEmpty = true → 不用 ?? → true → 走 '暂无数据'
+  > 
+  > // 情况3：有内容
+  > title = 'Flutter';
+  > // title?.isEmpty = false → 不用 ?? → false → 走 title!
+  > ```
+
+* ```dart
+  (title == null || title.isEmpty) ? '暂无数据'.tr : title
+  ```
+
 ### 32、🧭 可以承载一切的**`WebViewWidget`** 工具模版 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 本质上是对 [**Flutter**](https://flutter.dev/) 官方的 `WebViewWidget`（来自 `webview_flutter` 插件）的 **二次封装增强版**
