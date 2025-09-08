@@ -3259,17 +3259,20 @@ print(now.weekday);    // 星期几（1=星期一，7=星期日）
     ```
     </details>
 
-#### 13.2、🔜 <font id=GetX路由>**[GetX](https://pub.dev/packages/get)路由**</font>（跳转查看）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 13.2、🔜[**GetX**](https://pub.dev/packages/get)<a href="#GetX路由" style="font-size:20px; color:green;"><b>路由（跳转查看）</b></a> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-#### 13.3、🔜 弹出页面 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 13.3、🔜[**GetX**](https://pub.dev/packages/get)<a href="#Getx@正向路由传参" style="font-size:20px; color:green;"><b>正向路由传参（跳转查看）</b></a> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-##### 13.3.1、🔜 [**GetX**](https://pub.dev/packages/get)<a href="#GetX弹出框" style="font-size:17px; color:green;"><b>弹出框</b></a>（跳转查看）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+#### 13.4、🔜 弹出页面 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+##### 13.4.1、🔜[**GetX**](https://pub.dev/packages/get)<a href="#GetX弹出框" style="font-size:20px; color:green;"><b>弹出框（跳转查看）</b></a> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * 本质上只是对 [**Flutter**](https://flutter.dev/) 原生弹窗 API 的封装。
 * 简化了 **context** 传递，不用层层传 **context**，也省去了 **Navigator** 调用。
 * <font color=red>**顶层必须是在`GetMaterialApp`之下**</font>，方可起作用。否则点击弹出无效
 
-##### 13.3.2、🔜 [**Flutter**](https://flutter.dev/)原生弹出框 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+##### 13.4.2、🔜 [**Flutter**](https://flutter.dev/)原生弹出框 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 * 中间弹出
 
@@ -3350,7 +3353,7 @@ print(now.weekday);    // 星期几（1=星期一，7=星期日）
   );
   ```
 
-#### 13.4、🔜 <a href="#按钮的封装" style="font-size:20px; color:green;"><b>按钮的封装</b></a>（跳转查看）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 13.5、🔜 <a href="#按钮的封装" style="font-size:20px; color:green;"><b>按钮的封装</b></a>（跳转查看）<a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ### 14、🔙 导航栏返回按钮 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -7303,7 +7306,47 @@ class CounterPage extends GetView<CounterController> {
   ),
   ```
 
-###### 27.4.3.3、🉐 <font id=GetView>**`GetView<T>`**</font>  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+###### 27.4.3.3、🉐 <font id=Getx@正向路由传参>**[`GetX`](https://pub.dev/packages/get) （正向）路由传参**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+* 数据绑定
+
+  ```dart
+  GetPage(
+    name: _Paths.ACTIVITY_SHARE,
+    page: () => const ActivityShareView(),
+    binding: BindingsBuilder(() {
+      Get.lazyPut(() => ActivityDetailController());
+    }),
+  ),
+  ```
+
+* （正向）传参数
+
+  ```dart
+  Get.toNamed(
+    Routes.ACTIVITY_SHARE,
+    arguments: {
+      "title": itemData.activityName,
+      "type": ActivityTypsEnum.share,
+      "presaveModel": data,
+    },
+  );
+  ```
+
+* 获得参数
+
+  ```dart
+  class ActivityDetailController extends GetxController {
+    @override
+    void onInit() {
+      super.onInit();
+  
+      final arguments = Get.arguments as Map<String, dynamic>;
+    }
+  }
+  ```
+
+###### 27.4.3.4、🉐 <font id=GetView>**`GetView<T>`**</font>  <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > * 是 `StatelessWidget` 的子类：`class GetView<T extends GetxController> extends StatelessWidget`
 > * 适用于 `StatelessWidget`。<font color=red>不能用于 `StatefulWidget`</font>
@@ -7355,7 +7398,7 @@ class CounterPage extends StatelessWidget {
 ```
 </details>
 
-###### 27.4.3.4、🉐 [**`GetX`**](https://pub.dev/packages/get) 值的双向绑定：<font color=red>**`Obx`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+###### 27.4.3.5、🉐 [**`GetX`**](https://pub.dev/packages/get) 值的双向绑定：<font color=red>**`Obx`**</font> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 >  ```dart
 >  final RxBool loading = false.obs;// 数据的包装
@@ -7368,13 +7411,13 @@ class CounterPage extends StatelessWidget {
 <details>
 <summary>点击展开代码</summary>
 
-```dart
-lib/
-├── Counter/
-│   ├── jobs_binding.dart
-│   ├── jobs_controller.dart
-│   └── jobs_page.dart
-└── 💥GetX的值双向绑定.dart.dart
+```mermaid
+graph LR
+  A[lib] --> B[Counter]
+  B --> B1[jobs_binding.dart]
+  B --> B2[jobs_controller.dart]
+  B --> B3[jobs_page.dart]
+  A --> C[💥GetX的值双向绑定.dart.dart]
 ```
 ```dart
 import 'package:flutter/material.dart';
@@ -7481,7 +7524,7 @@ class JobsBinding extends Bindings {
 
 </details>
 
-###### 27.4.3.5、🉐 <font id=GetPage>**`GetPage()`**</font>📃 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+###### 27.4.3.6、🉐 <font id=GetPage>**`GetPage()`**</font>📃 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 1️⃣ 用于在 `GetMaterialApp` 中注册页面，它包含了页面路径、页面构造函数、绑定依赖、转场动画等信息。
 >
@@ -7517,26 +7560,26 @@ GetPage(
 )
 ```
 
-###### 27.4.3.6、🉐 基于[**`GetX`**](https://pub.dev/packages/get) 最佳实践的完整项目结构模板（项目名为：`getx_demo`） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+###### 27.4.3.7、🉐 基于[**`GetX`**](https://pub.dev/packages/get) 最佳实践的完整项目结构模板（项目名为：`getx_demo`） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 <details>
 <summary>点击展开代码</summary>
 
-```dart
-lib/
-├── app/
-│   ├── modules/
-│   │   ├── home/
-│   │   │   ├── bindings/          # 页面绑定
-│   │   │   │   └── home_binding.dart
-│   │   │   ├── controllers/       # 控制器
-│   │   │   │   └── home_controller.dart
-│   │   │   ├── views/             # 页面视图
-│   │   │   │   └── home_view.dart
-│   ├── routes/
-│   │   ├── app_pages.dart         # 页面路由总表
-│   │   └── app_routes.dart        # 路由名常量
-├── main.dart
+```mermaid
+graph LR
+  A[lib] --> B[app]
+  B --> C[modules]
+  C --> D[home]
+  D --> D1[bindings]
+  D1 --> D1a[home_binding.dart]
+  D --> D2[controllers]
+  D2 --> D2a[home_controller.dart]
+  D --> D3[views]
+  D3 --> D3a[home_view.dart]
+  B --> E[routes]
+  E --> E1[app_pages.dart]
+  E --> E2[app_routes.dart]
+  A --> F[main.dart]
 ```
 ```dart
 /// home_controller.dart
