@@ -10687,56 +10687,79 @@ void onClose() {
 
 * <font color=red>**`@RestApi`**</font>：是 [**Retrofit**](https://pub.dev/packages/retrofit)  提供的一个注解，用来声明一个 HTTP API 客户端接口，它的作用是**让 [Retrofit](https://pub.dev/packages/retrofit)  自动生成实现类，帮你把 Dart 方法和 HTTP 请求绑定起来**，这样就不用手写繁琐的 Dio 请求逻辑
 
-### 41、🧩 网络请求以后的（数据）数据建模处理 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### 41、🧩 数据建模 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 #### 41.1、🧩 数据模型的建立 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-```dart
-import 'package:json_annotation/json_annotation.dart';
-import 't.dart';
-part 'activity_coding_model.g.dart';
+* <a href="#json_serializable" style="font-size:17px; color:green;"><b>使用json_serializable自动化建模</b></a>
 
-@JsonSerializable()
-class ActivityCodingModel {
-  T? t;
+* ```dart
+  import 'package:json_annotation/json_annotation.dart';
+  import 't.dart';
+  part 'activity_coding_model.g.dart';
+  
+  @JsonSerializable()
+  class ActivityCodingModel {
+    T? t;
+    @JsonKey(name: 'response_code')
+    String? responseCode;
+    String? msg;
+  
+    ActivityCodingModel({this.t, this.responseCode, this.msg});
+  
+    @override
+    String toString() {
+      return 'ActivityCodingModel(t: $t, responseCode: $responseCode, msg: $msg)';
+    }
+  
+    factory ActivityCodingModel.fromJson(Map<String, dynamic> json) {
+      return _$ActivityCodingModelFromJson(json);
+    }
+  
+    Map<String, dynamic> toJson() => _$ActivityCodingModelToJson(this);
+  
+    ActivityCodingModel copyWith({
+      T? t,
+      String? responseCode,
+      String? msg,
+    }) {
+      return ActivityCodingModel(
+        t: t ?? this.t,
+        responseCode: responseCode ?? this.responseCode,
+        msg: msg ?? this.msg,
+      );
+    }
+  }
+  ```
+
+* `@JsonKey`：是 [**`json_serializable`**](https://pub.dev/packages/json_serializable) 提供的注解，用来告诉代码生成器（`build_runner`）在 **序列化 / 反序列化** 时，这个字段应该如何处理。
+
+  * `@JsonKey(name: 'xxx')` → 指定 JSON 的 key 名（常用）。
+  * `@JsonKey(defaultValue: 0)` → 指定默认值。
+  * `@JsonKey(ignore: true)` → 让某个字段不参与 JSON 转换。
+  * `@JsonKey(fromJson: customFn, toJson: customFn)` → 指定自定义的序列化 / 反序列化逻辑。
+
+  ```dart
   @JsonKey(name: 'response_code')
   String? responseCode;
-  String? msg;
+  ```
 
-  ActivityCodingModel({this.t, this.responseCode, this.msg});
-
-  @override
-  String toString() {
-    return 'ActivityCodingModel(t: $t, responseCode: $responseCode, msg: $msg)';
-  }
-
-  factory ActivityCodingModel.fromJson(Map<String, dynamic> json) {
-    return _$ActivityCodingModelFromJson(json);
-  }
-
-  Map<String, dynamic> toJson() => _$ActivityCodingModelToJson(this);
-
-  ActivityCodingModel copyWith({
-    T? t,
-    String? responseCode,
-    String? msg,
-  }) {
-    return ActivityCodingModel(
-      t: t ?? this.t,
-      responseCode: responseCode ?? this.responseCode,
-      msg: msg ?? this.msg,
-    );
-  }
-}
-```
+  > Dart 模型里的字段叫 **`responseCode`**
+  >
+  > 但 JSON 数据里的 key 叫 **`response_code`**
+  >
+  > 当 `fromJson` 的时候，生成的代码会把 JSON 里的 `"response_code"` 映射到 `responseCode` 这个属性。
+  >
+  > 当 `toJson` 的时候，也会把 Dart 的 `responseCode` 转换成 `"response_code": "xxx"`
 
 * `copyWith`
+  
   * `copyWith` **不会复制内存里的对象**，它只是帮你**新建一个新的 `ActivityCodingModel` 实例**，然后用传进来的参数覆盖掉原有的某些字段。即：“复用旧对象的值 + 覆盖部分”。这种模式在 Flutter/Dart 里用得特别多，因为它非常适合 **不可变数据（immutable data）** 的写法。
   * `copyWith` 默认是 **浅拷贝**：
     - 如果 `t` 是一个对象引用（class），新对象里还是用的同一个引用。
     - 如果你希望 `t` 也复制一份新的，就得在 `copyWith` 里显式调用 `t.copyWith(...)`。
 
-#### 41.2、安全取（📚字典）值 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 41.2、🧩 安全取（📚字典）值 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```dart
 /// 安全获取 Map 中的值，支持类型推断与默认值
@@ -10781,7 +10804,7 @@ void main() {
 ```
 </details>
 
-#### 41.3、模型处理`Json`字符串（一种优雅的`json_serializable`框架的高级用法） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+#### 41.3、🧩 模型处理`Json`字符串（一种优雅的 [**`json_serializable`**](https://pub.dev/packages/json_serializable)框架的高级用法） <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 > 平时我们 `fromJson` 都是在整个 model 级别改逻辑，但那样会污染整个类。
 >
@@ -15334,9 +15357,9 @@ void main() {
       output: lib/gen/ # 生成文件的目录
     ```
 
-  * <font color=blue>自动化代码生成**Model**</font>
+  * <font color=blue id=自动化代码生成Model>自动化代码生成**Model**</font>
 
-    * 使用 [<font color=red>**json_serializable**</font>](https://pub.dev/packages/json_serializable)：用于<u>序列化</u>/<u>反序列化</u>**JSON**数据（<font color=blue>**函数、方法、闭包等在 Dart 中是不可序列化的类型**</font>）
+    * 使用 [<font color=red id=json_serializable>**json_serializable**</font>](https://pub.dev/packages/json_serializable)：用于<u>序列化</u>/<u>反序列化</u>**JSON**数据（<font color=blue>**函数、方法、闭包等在 Dart 中是不可序列化的类型**</font>）
 
         > ```yaml
         > # pubspec.yaml 编辑完后执行：dart pub get
