@@ -9198,10 +9198,10 @@ class FadeInImageDemo extends StatelessWidget {
   '≥${(e.amount ?? 0) ~/ 1000}',
   ```
 
-* 保留 2 位小数
+* 保留 2 位小数：（比如 50000 → "50.00"）
 
   ```dart
-  '≥${((e.amount ?? 0) / 1000).toStringAsFixed(2)}'
+  '${((e.amount ?? 0) / 1000).toStringAsFixed(2)}'
   ```
 
 * 保留两位小数但去掉多余的 `.00`（比如 12.00 → 12）
